@@ -1,0 +1,16 @@
+# Local tool settings
+.claude/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Notebook / local artifacts
+.ipynb_checkpoints/
+tmp/
+*.wav
+.DS_Store
+
+# Private notes
+private/
