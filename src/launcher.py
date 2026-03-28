@@ -62,6 +62,7 @@ def launch_cloudflared(settings: Settings) -> str | None:
         stderr=subprocess.STDOUT,
         text=True,
         cwd=str(settings.root_dir),
+        start_new_session=True,
     )
     public_url = None
     start = time.time()
