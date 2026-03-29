@@ -25,6 +25,7 @@ def install(settings: Settings) -> dict:
     env = {
         **os.environ,
         "PYTHONUNBUFFERED": "1",
+        "MPLBACKEND": "agg",
         "OPENAI_MODEL_ID": settings.openai_model_id or "xtts_v2",
         "XTTS_LANGUAGE": settings.xtts_language,
         "XTTS_SPEAKER_WAV": settings.xtts_speaker_wav,
