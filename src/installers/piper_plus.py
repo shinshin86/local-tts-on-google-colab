@@ -3,7 +3,24 @@ from __future__ import annotations
 import os
 
 from src.config import Settings
-from src.runtime import ensure_venv, popen, run, tail_log, uv_pip_install, wait_http, write_text
+from src.runtime import ensure_venv, popen, uv_pip_install, write_text
+
+
+def _find_model_paths(engine_dir):
+    """Find the downloaded onnx and config paths in engine_dir."""
+    onnx_files = list(engine_dir.glob("*.onnx"))
+    if not onnx_files:
+        return None, None
+    onnx_path = str(onnx_files[0])
+    config_path = ""
+    json_candidate = engine_dir / (onnx_files[0].name + ".json")
+    if json_candidate.exists():
+        config_path = str(json_candidate)
+    else:
+        plain_config = engine_dir / "config.json"
+        if plain_config.exists():
+            config_path = str(plain_config)
+    return onnx_path, config_path
 
 
 def install(settings: Settings) -> dict:
@@ -12,57 +29,26 @@ def install(settings: Settings) -> dict:
     python_bin = ensure_venv(engine_dir)
     uv_pip_install(
         python_bin,
-        ["fastapi", "uvicorn", "requests", "flask", "piper-tts-plus"],
+        ["fastapi", "uvicorn", "piper-tts-plus"],
     )
-    download_result = run(
-        [
-            str(python_bin), "-m", "piper",
-            "--download-model", settings.piper_plus_model,
-        ],
+    # Download model using piper CLI (files go to cwd = engine_dir)
+    from src.runtime import run
+    run(
+        [str(python_bin), "-m", "piper", "--download-model", settings.piper_plus_model],
         cwd=str(engine_dir),
-        capture_output=True,
     )
-    # Extract onnx path from download output (e.g. "Use with:  --model /path/to/model.onnx")
-    onnx_path = None
-    for line in (download_result.stdout or "").splitlines():
-        if "--model" in line and ".onnx" in line:
-            onnx_path = line.split("--model")[-1].strip()
-            break
+    onnx_path, config_path = _find_model_paths(engine_dir)
     if not onnx_path:
-        # Fallback: find onnx file in engine_dir
-        onnx_files = list(engine_dir.glob("*.onnx"))
-        if onnx_files:
-            onnx_path = str(onnx_files[0])
-        else:
-            raise RuntimeError(f"No .onnx model found after downloading {settings.piper_plus_model}")
-    backend_proc = popen(
-        [
-            str(python_bin),
-            "-m",
-            "piper.http_server",
-            "--model",
-            onnx_path,
-            "--host",
-            "127.0.0.1",
-            "--port",
-            str(settings.piper_backend_port),
-        ],
-        cwd=str(engine_dir),
-        env={**os.environ, "PYTHONUNBUFFERED": "1"},
-        log_path=settings.log_dir / "piper-plus-backend.log",
-    )
-    if not wait_http(f"http://127.0.0.1:{settings.piper_backend_port}/", timeout=120):
-        tail_log(settings.log_dir / "piper-plus-backend.log")
-        raise RuntimeError("Piper-Plus backend did not become ready.")
-    write_text(engine_dir / "app.py", settings.read_repo_text("src/apps/piper_proxy_app.py"))
+        raise RuntimeError(f"No .onnx model found after downloading {settings.piper_plus_model}")
+
+    write_text(engine_dir / "app.py", settings.read_repo_text("src/apps/piper_plus_app.py"))
     env = {
         **os.environ,
         "PYTHONUNBUFFERED": "1",
-        "BACKEND_URL": f"http://127.0.0.1:{settings.piper_backend_port}",
         "OPENAI_MODEL_ID": settings.openai_model_id or settings.piper_plus_model,
-        "PROXY_DEFAULT_VOICE": settings.piper_plus_model,
-        "PROXY_SPEAKER_ID": "-1",
-        "PROXY_ENGINE": "Piper-Plus",
+        "PIPER_PLUS_ONNX": onnx_path,
+        "PIPER_PLUS_CONFIG": config_path or "",
+        "PIPER_PLUS_DEFAULT_LANGUAGE": "ja",
     }
     proc = popen(
         [
@@ -77,12 +63,6 @@ def install(settings: Settings) -> dict:
         ],
         cwd=str(engine_dir),
         env=env,
-        log_path=settings.log_dir / "piper-plus-proxy-uvicorn.log",
+        log_path=settings.log_dir / "piper-plus-uvicorn.log",
     )
-    return {
-        "proc": proc,
-        "backend_proc": backend_proc,
-        "app_dir": engine_dir,
-        "log_path": settings.log_dir / "piper-plus-proxy-uvicorn.log",
-        "backend_log_path": settings.log_dir / "piper-plus-backend.log",
-    }
+    return {"proc": proc, "app_dir": engine_dir, "log_path": settings.log_dir / "piper-plus-uvicorn.log"}
