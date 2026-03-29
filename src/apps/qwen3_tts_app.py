@@ -60,7 +60,7 @@ def get_model() -> Qwen3TTSModel:
     global _model
     if _model is None:
         device = "cuda" if torch.cuda.is_available() else "cpu"
-        dtype = torch.float16 if device == "cuda" else torch.float32
+        dtype = torch.bfloat16 if device == "cuda" else torch.float32
         _model = Qwen3TTSModel.from_pretrained(
             QWEN3_HF_MODEL,
             device_map=device,
