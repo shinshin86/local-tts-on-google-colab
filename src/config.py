@@ -59,6 +59,9 @@ class Settings:
     piper_speaker_id: int = -1
     xtts_language: str = "ja"
     xtts_speaker_wav: str = ""
+    qwen3_hf_model: str = "Qwen/Qwen3-TTS-12Hz-0.6B-CustomVoice"
+    qwen3_language: str = "Japanese"
+    qwen3_default_speaker: str = "Chelsie"
     root_dir: Path = Path("/content/openai-compatible-local-tts")
     repo_dir: Path = field(default_factory=default_repo_dir)
     app_port: int = 8000

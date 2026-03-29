@@ -44,6 +44,12 @@ def print_engine_voice_hints(settings: Settings):
         print("Style-Bert-VITS2 は speaker_id ベースです。起動後の /v1/voices を確認して speaker_id を選んでください。")
     elif settings.engine == "Piper":
         print("Piper は voice 名がそのままモデル指定です。必要なら PIPER_VOICE を変更してください。")
+    elif settings.engine == "Qwen3-TTS":
+        print("Qwen3-TTS は多言語対応の高品質 TTS です。")
+        print(f"モデル: {settings.qwen3_hf_model}")
+        print(f"language: {settings.qwen3_language}")
+        print(f"デフォルト speaker: {settings.qwen3_default_speaker}")
+        print("候補: Chelsie, Aidan, Vivienne, Ryan, Annaliese, Marcus, Elara, Theo, Luna")
     elif settings.engine == "Coqui-XTTS":
         print("XTTS v2 は多言語対応のボイスクローン TTS です。")
         print(f"現在の language: {settings.xtts_language}")

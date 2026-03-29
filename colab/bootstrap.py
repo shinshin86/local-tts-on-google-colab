@@ -40,6 +40,9 @@ def parse_args():
     parser.add_argument("--piper-speaker-id", type=int, default=-1)
     parser.add_argument("--xtts-language", default="ja")
     parser.add_argument("--xtts-speaker-wav", default="")
+    parser.add_argument("--qwen3-hf-model", default="Qwen/Qwen3-TTS-12Hz-0.6B-CustomVoice")
+    parser.add_argument("--qwen3-language", default="Japanese")
+    parser.add_argument("--qwen3-default-speaker", default="Chelsie")
     parser.add_argument("--root-dir", default="/content/openai-compatible-local-tts")
     return parser.parse_args()
 
@@ -70,6 +73,9 @@ def main():
         piper_speaker_id=args.piper_speaker_id,
         xtts_language=args.xtts_language,
         xtts_speaker_wav=args.xtts_speaker_wav,
+        qwen3_hf_model=args.qwen3_hf_model,
+        qwen3_language=args.qwen3_language,
+        qwen3_default_speaker=args.qwen3_default_speaker,
         root_dir=Path(args.root_dir),
         repo_dir=REPO_DIR,
     )

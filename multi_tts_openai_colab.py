@@ -11,7 +11,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Coqui-XTTS", "Irodori-TTS", "Kokoro", "MeloTTS", "Style-Bert-VITS2", "Piper"]
+ENGINE = "Kokoro"  #@param ["Coqui-XTTS", "Irodori-TTS", "Kokoro", "MeloTTS", "Piper", "Qwen3-TTS", "Style-Bert-VITS2"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -51,6 +51,12 @@ PIPER_SPEAKER_ID = -1  #@param {type:"integer"}
 #@markdown Coqui-XTTS (GPU required)
 XTTS_LANGUAGE = "ja"  #@param ["en", "es", "fr", "de", "it", "pt", "pl", "tr", "ru", "nl", "cs", "ar", "zh-cn", "ja", "ko", "hu", "hi"]
 XTTS_SPEAKER_WAV = ""  #@param {type:"string"}
+
+#@markdown ---
+#@markdown Qwen3-TTS (GPU required)
+QWEN3_HF_MODEL = "Qwen/Qwen3-TTS-12Hz-0.6B-CustomVoice"  #@param ["Qwen/Qwen3-TTS-12Hz-0.6B-CustomVoice", "Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice"]
+QWEN3_LANGUAGE = "Japanese"  #@param ["Chinese", "English", "Japanese", "Korean", "German", "French", "Russian", "Portuguese", "Spanish", "Italian"]
+QWEN3_DEFAULT_SPEAKER = "Chelsie"  #@param ["Chelsie", "Aidan", "Vivienne", "Ryan", "Annaliese", "Marcus", "Elara", "Theo", "Luna"]
 
 import shlex
 import subprocess
@@ -130,6 +136,12 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         XTTS_LANGUAGE,
         "--xtts-speaker-wav",
         XTTS_SPEAKER_WAV,
+        "--qwen3-hf-model",
+        QWEN3_HF_MODEL,
+        "--qwen3-language",
+        QWEN3_LANGUAGE,
+        "--qwen3-default-speaker",
+        QWEN3_DEFAULT_SPEAKER,
     ]
     cmd.append("--expose-public-url" if EXPOSE_PUBLIC_URL else "--no-expose-public-url")
     return cmd
