@@ -31,8 +31,13 @@ def install(settings: Settings) -> dict:
         python_bin,
         ["fastapi", "uvicorn", "piper-tts-plus"],
     )
-    # Download model using piper CLI (files go to cwd = engine_dir)
+    # Download NLTK data required by g2p-en
     from src.runtime import run
+    run(
+        [str(python_bin), "-c", "import nltk; nltk.download('averaged_perceptron_tagger_eng')"],
+        cwd=str(engine_dir),
+    )
+    # Download model using piper CLI (files go to cwd = engine_dir)
     run(
         [str(python_bin), "-m", "piper", "--download-model", settings.piper_plus_model],
         cwd=str(engine_dir),
