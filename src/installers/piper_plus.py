@@ -51,7 +51,7 @@ def install(settings: Settings) -> dict:
         env={**os.environ, "PYTHONUNBUFFERED": "1"},
         log_path=settings.log_dir / "piper-plus-backend.log",
     )
-    if not wait_http(f"http://127.0.0.1:{settings.piper_backend_port}/voices", timeout=120):
+    if not wait_http(f"http://127.0.0.1:{settings.piper_backend_port}/", timeout=120):
         tail_log(settings.log_dir / "piper-plus-backend.log")
         raise RuntimeError("Piper-Plus backend did not become ready.")
     write_text(engine_dir / "app.py", settings.read_repo_text("src/apps/piper_proxy_app.py"))
