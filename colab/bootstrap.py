@@ -42,7 +42,7 @@ def parse_args():
     parser.add_argument("--xtts-speaker-wav", default="")
     parser.add_argument("--qwen3-hf-model", default="Qwen/Qwen3-TTS-12Hz-0.6B-CustomVoice")
     parser.add_argument("--qwen3-language", default="Japanese")
-    parser.add_argument("--qwen3-default-speaker", default="Chelsie")
+    parser.add_argument("--qwen3-default-speaker", default="ono_anna")
     parser.add_argument("--root-dir", default="/content/openai-compatible-local-tts")
     return parser.parse_args()
 

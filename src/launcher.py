@@ -49,7 +49,7 @@ def print_engine_voice_hints(settings: Settings):
         print(f"モデル: {settings.qwen3_hf_model}")
         print(f"language: {settings.qwen3_language}")
         print(f"デフォルト speaker: {settings.qwen3_default_speaker}")
-        print("候補: Chelsie, Aidan, Vivienne, Ryan, Annaliese, Marcus, Elara, Theo, Luna")
+        print("候補: aiden, dylan, eric, ono_anna, ryan, serena, sohee, uncle_fu, vivian")
     elif settings.engine == "Coqui-XTTS":
         print("XTTS v2 は多言語対応のボイスクローン TTS です。")
         print(f"現在の language: {settings.xtts_language}")

@@ -19,7 +19,7 @@ logger = logging.getLogger("uvicorn.error")
 OPENAI_MODEL_ID = os.environ.get("OPENAI_MODEL_ID", "qwen3-tts")
 QWEN3_HF_MODEL = os.environ.get("QWEN3_HF_MODEL", "Qwen/Qwen3-TTS-12Hz-0.6B-CustomVoice")
 QWEN3_LANGUAGE = os.environ.get("QWEN3_LANGUAGE", "Japanese")
-QWEN3_DEFAULT_SPEAKER = os.environ.get("QWEN3_DEFAULT_SPEAKER", "Chelsie")
+QWEN3_DEFAULT_SPEAKER = os.environ.get("QWEN3_DEFAULT_SPEAKER", "ono_anna")
 
 SUPPORTED_LANGUAGES = [
     "Chinese", "English", "Japanese", "Korean",
@@ -27,8 +27,8 @@ SUPPORTED_LANGUAGES = [
 ]
 
 SPEAKERS = [
-    "Chelsie", "Aidan", "Vivienne", "Ryan",
-    "Annaliese", "Marcus", "Elara", "Theo", "Luna",
+    "aiden", "dylan", "eric", "ono_anna", "ryan",
+    "serena", "sohee", "uncle_fu", "vivian",
 ]
 
 app = FastAPI(title="Qwen3-TTS OpenAI Compatible TTS")

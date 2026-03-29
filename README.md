@@ -98,7 +98,7 @@ XTTS_SPEAKER_WAV = ""  #@param {type:"string"}
 #@markdown Qwen3-TTS (GPU required)
 QWEN3_HF_MODEL = "Qwen/Qwen3-TTS-12Hz-0.6B-CustomVoice"  #@param ["Qwen/Qwen3-TTS-12Hz-0.6B-CustomVoice", "Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice"]
 QWEN3_LANGUAGE = "Japanese"  #@param ["Chinese", "English", "Japanese", "Korean", "German", "French", "Russian", "Portuguese", "Spanish", "Italian"]
-QWEN3_DEFAULT_SPEAKER = "Chelsie"  #@param ["Chelsie", "Aidan", "Vivienne", "Ryan", "Annaliese", "Marcus", "Elara", "Theo", "Luna"]
+QWEN3_DEFAULT_SPEAKER = "ono_anna"  #@param ["aiden", "dylan", "eric", "ono_anna", "ryan", "serena", "sohee", "uncle_fu", "vivian"]
 
 import shlex
 import subprocess
