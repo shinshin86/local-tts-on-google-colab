@@ -15,7 +15,7 @@ def install(settings: Settings) -> dict:
         [
             "fastapi",
             "uvicorn",
-            "coqui-tts",
+            "coqui-tts[codec]",
             "transformers>=4.46.0,<5.0.0",
             "torch",
             "torchaudio",
