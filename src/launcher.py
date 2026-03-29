@@ -50,7 +50,9 @@ def print_engine_voice_hints(settings: Settings):
 
 def launch_cloudflared(settings: Settings) -> str | None:
     ensure_cloudflared(settings.cloudflared_path)
-    proc = subprocess.Popen(
+    log_path = settings.log_dir / "cloudflared.log"
+    log_file = open(log_path, "w")  # noqa: SIM115
+    subprocess.Popen(
         [
             str(settings.cloudflared_path),
             "tunnel",
@@ -58,19 +60,23 @@ def launch_cloudflared(settings: Settings) -> str | None:
             f"http://127.0.0.1:{settings.app_port}",
             "--no-autoupdate",
         ],
-        stdout=subprocess.PIPE,
+        stdout=log_file,
         stderr=subprocess.STDOUT,
-        text=True,
         cwd=str(settings.root_dir),
         start_new_session=True,
     )
     public_url = None
+    read_pos = 0
     start = time.time()
     while time.time() - start < 60:
-        line = proc.stdout.readline()
-        if line:
-            print(line, end="")
-            match = re.search(r"https://[-a-zA-Z0-9]+\.trycloudflare\.com", line)
+        time.sleep(0.5)
+        with open(log_path) as f:
+            f.seek(read_pos)
+            new_text = f.read()
+            read_pos = f.tell()
+        if new_text:
+            print(new_text, end="", flush=True)
+            match = re.search(r"https://[-a-zA-Z0-9]+\.trycloudflare\.com", new_text)
             if match:
                 public_url = match.group(0)
                 break
