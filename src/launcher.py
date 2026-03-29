@@ -44,6 +44,10 @@ def print_engine_voice_hints(settings: Settings):
         print("Style-Bert-VITS2 は speaker_id ベースです。起動後の /v1/voices を確認して speaker_id を選んでください。")
     elif settings.engine == "Piper":
         print("Piper は voice 名がそのままモデル指定です。必要なら PIPER_VOICE を変更してください。")
+    elif settings.engine == "Piper-Plus":
+        print("Piper-Plus は日本語対応の軽量 TTS です（MIT ライセンス）。")
+        print(f"モデル: {settings.piper_plus_model}")
+        print("デフォルトは tsukuyomi（日本語女性）。GPU 不要。")
     elif settings.engine == "Qwen3-TTS":
         print("Qwen3-TTS は多言語対応の高品質 TTS です。")
         print(f"モデル: {settings.qwen3_hf_model}")
