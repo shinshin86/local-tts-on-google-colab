@@ -9,24 +9,210 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | Kokoro | 動作OK | 日本語 / 英語 / 中国語 他 |
 | Irodori-TTS | 動作OK | 日本語 |
 | Piper | 動作OK | 英語（デフォルト）/ 多言語 |
+| Piper-Plus | 動作OK | 日本語 / 英語 / 中国語 他 6言語 |
+| Qwen3-TTS | 動作OK (GPU必須) | 日本語 / 英語 / 中国語 他 10言語 |
 | MeloTTS | 動作不可 | - |
 | Style-Bert-VITS2 | 動作不可 | - |
 
-`MeloTTS` と `Style-Bert-VITS2` は Colab の uv + venv 環境で依存解決に問題があり、現時点では動作しません。詳細は [COLAB_TEST_RESULTS.md](COLAB_TEST_RESULTS.md) を参照してください。
+`MeloTTS` と `Style-Bert-VITS2` は Colab の uv + venv 環境で依存解決に問題があり、現時点では動作しません。
 
 `VOICEVOX` は含めていません。
 
 ## 使い方
 
-1. [multi_tts_openai_colab.py](multi_tts_openai_colab.py) の内容を Colab の1つのコードセルに貼り付けます。
-2. フォーム上で `ENGINE` を選びます。
-3. 必要なら各エンジンのパラメータを調整します。
-4. `TEST_VOICE` を空にすると、そのエンジンの既定 voice を使ってテストします。
-5. 起動後に `/v1/voices` の一覧が自動表示されるので、必要ならそれを見て `voice` を選び直します。
-6. セルを実行します。
-7. ローカル URL と、必要なら `trycloudflare` の公開 URL が表示されます。
+### 最短手順
+
+Colab では、以下のコードを 1 つのコードセルにそのまま貼り付けて実行するのを推奨します。
+
+このセルは以下を自動で行います。
+
+- 指定した `REPO_URL` / `REPO_REF` を clone / checkout
+- `colab/bootstrap.py` を呼び出して選択した TTS を起動
+- 必要なら `trycloudflare` の公開 URL も作成
+
+`REPO_REF` には `main`、タグ、commit SHA を指定できます。再現性のため、常用時はタグか commit SHA を推奨します。
+
+要点:
+
+- まずは `ENGINE` と `REPO_REF` だけ触れば十分です
+- 細かい engine 別パラメータは必要になったときだけ変更します
+- 同内容のセルは [multi_tts_openai_colab.py](multi_tts_openai_colab.py) にあります
+
+```python
+#@title Local TTS on Google Colab -> OpenAI Compatible `/v1/audio/speech`
+REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@param {type:"string"}
+REPO_REF = "main"  #@param {type:"string"}
+WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
+
+ENGINE = "Kokoro"  #@param ["Irodori-TTS", "Kokoro", "MeloTTS", "Piper", "Piper-Plus", "Qwen3-TTS", "Style-Bert-VITS2"]
+EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
+TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
+TEST_SPEED = 1.0  #@param {type:"number"}
+TEST_VOICE = ""  #@param {type:"string"}
+OPENAI_MODEL_ID = ""  #@param {type:"string"}
+
+#@markdown ---
+#@markdown Irodori-TTS
+IRODORI_HF_CHECKPOINT = "Aratako/Irodori-TTS-500M"  #@param {type:"string"}
+IRODORI_MODEL_PRECISION = "fp32"  #@param ["fp32", "bf16", "fp16"]
+IRODORI_CODEC_PRECISION = "fp32"  #@param ["fp32", "bf16", "fp16"]
+
+#@markdown ---
+#@markdown Kokoro
+KOKORO_DEFAULT_VOICE = "jf_alpha"  #@param ["jf_alpha", "jf_gongitsune", "jm_kumo", "af_heart", "af_bella", "am_adam", "bf_emma", "bm_george", "zf_xiaobei"]
+KOKORO_DEFAULT_LANG_CODE = "j"  #@param ["j", "a", "b", "e", "f", "h", "i", "p", "z"]
+
+#@markdown ---
+#@markdown MeloTTS
+MELO_LANGUAGE = "JP"  #@param ["JP", "EN", "ZH", "ES", "FR", "KR"]
+MELO_DEFAULT_VOICE = "JP"  #@param ["JP", "EN-Default", "EN-US", "EN-BR", "EN_INDIA", "EN-AU", "ZH", "ES", "FR", "KR"]
+
+#@markdown ---
+#@markdown Style-Bert-VITS2
+STYLE_BERT_MODEL_REPO = "litagin/style_bert_vits2_jvnv"  #@param {type:"string"}
+STYLE_BERT_MODEL_SUBDIR = "jvnv-F2-jp"  #@param {type:"string"}
+STYLE_BERT_MODEL_NAME = "jvnv-F2-jp"  #@param {type:"string"}
+STYLE_BERT_SPEAKER_ID = 0  #@param {type:"integer"}
+STYLE_BERT_STYLE = "Neutral"  #@param {type:"string"}
+
+#@markdown ---
+#@markdown Piper
+PIPER_VOICE = "en_US-lessac-medium"  #@param {type:"string"}
+PIPER_SPEAKER_ID = -1  #@param {type:"integer"}
+
+#@markdown ---
+#@markdown Piper-Plus
+PIPER_PLUS_MODEL = "tsukuyomi"  #@param {type:"string"}
+
+#@markdown ---
+#@markdown Qwen3-TTS (GPU required)
+QWEN3_HF_MODEL = "Qwen/Qwen3-TTS-12Hz-0.6B-CustomVoice"  #@param ["Qwen/Qwen3-TTS-12Hz-0.6B-CustomVoice", "Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice"]
+QWEN3_LANGUAGE = "Japanese"  #@param ["Chinese", "English", "Japanese", "Korean", "German", "French", "Russian", "Portuguese", "Spanish", "Italian"]
+QWEN3_DEFAULT_SPEAKER = "ono_anna"  #@param ["aiden", "dylan", "eric", "ono_anna", "ryan", "serena", "sohee", "uncle_fu", "vivian"]
+
+import shlex
+import subprocess
+from pathlib import Path
+
+
+def run(cmd, *, cwd=None):
+    print("$", shlex.join(cmd))
+    proc = subprocess.Popen(
+        cmd, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True
+    )
+    for line in proc.stdout:
+        print(line, end="", flush=True)
+    ret = proc.wait()
+    if ret != 0:
+        raise subprocess.CalledProcessError(ret, cmd)
+
+
+def ensure_repo(repo_url: str, repo_ref: str, workdir: Path):
+    if not workdir.exists():
+        run(["git", "clone", repo_url, str(workdir)])
+    else:
+        print(f"reuse: {workdir}")
+
+    run(["git", "fetch", "--all", "--tags", "--prune"], cwd=str(workdir))
+    run(["git", "checkout", repo_ref], cwd=str(workdir))
+
+    if repo_ref in {"main", "master"}:
+        run(["git", "pull", "--ff-only", "origin", repo_ref], cwd=str(workdir))
+
+
+def build_bootstrap_command(workdir: Path) -> list[str]:
+    cmd = [
+        "python",
+        "colab/bootstrap.py",
+        "--engine",
+        ENGINE,
+        "--root-dir",
+        "/content/openai-compatible-local-tts",
+        "--test-text",
+        TEST_TEXT,
+        "--test-speed",
+        str(TEST_SPEED),
+        "--test-voice",
+        TEST_VOICE,
+        "--openai-model-id",
+        OPENAI_MODEL_ID,
+        "--irodori-hf-checkpoint",
+        IRODORI_HF_CHECKPOINT,
+        "--irodori-model-precision",
+        IRODORI_MODEL_PRECISION,
+        "--irodori-codec-precision",
+        IRODORI_CODEC_PRECISION,
+        "--kokoro-default-voice",
+        KOKORO_DEFAULT_VOICE,
+        "--kokoro-default-lang-code",
+        KOKORO_DEFAULT_LANG_CODE,
+        "--melo-language",
+        MELO_LANGUAGE,
+        "--melo-default-voice",
+        MELO_DEFAULT_VOICE,
+        "--style-bert-model-repo",
+        STYLE_BERT_MODEL_REPO,
+        "--style-bert-model-subdir",
+        STYLE_BERT_MODEL_SUBDIR,
+        "--style-bert-model-name",
+        STYLE_BERT_MODEL_NAME,
+        "--style-bert-speaker-id",
+        str(STYLE_BERT_SPEAKER_ID),
+        "--style-bert-style",
+        STYLE_BERT_STYLE,
+        "--piper-voice",
+        PIPER_VOICE,
+        "--piper-speaker-id",
+        str(PIPER_SPEAKER_ID),
+        "--piper-plus-model",
+        PIPER_PLUS_MODEL,
+        "--qwen3-hf-model",
+        QWEN3_HF_MODEL,
+        "--qwen3-language",
+        QWEN3_LANGUAGE,
+        "--qwen3-default-speaker",
+        QWEN3_DEFAULT_SPEAKER,
+    ]
+    cmd.append("--expose-public-url" if EXPOSE_PUBLIC_URL else "--no-expose-public-url")
+    return cmd
+
+
+def main():
+    workdir = Path(WORKDIR)
+    ensure_repo(REPO_URL, REPO_REF, workdir)
+    run(build_bootstrap_command(workdir), cwd=str(workdir))
+
+
+main()
+```
+
+### 実行後の確認
+
+成功すると、以下が順に表示されます。
+
+- ローカル URL
+- `/v1/models`
+- `/v1/voices`
+- テスト WAV の出力先
+- 必要なら `trycloudflare` の公開 URL
+
+最初に確認するなら `Kokoro` を推奨します。
 
 この実装は「1ランタイムで1エンジンずつ」の運用を前提にしています。別エンジンを試すときは、ランタイムを再起動してから再実行する想定です。
+
+### 上級者向け
+
+すでに clone 済みのリポジトリ上で直接起動したい場合は `colab/bootstrap.py` を呼べます。
+
+```python
+!python colab/bootstrap.py --engine Kokoro --expose-public-url
+```
+
+依存導入やサーバ起動を行わずに設定だけ確認したい場合は `--dry-run` を使います。
+
+```python
+!python colab/bootstrap.py --engine Kokoro --dry-run
+```
 
 ## OpenAI 互換の範囲
 
@@ -61,6 +247,14 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 
 [piper-tts](https://github.com/OHF-Voice/piper1-gpl) の内蔵 HTTP サーバーをバックエンドとして起動し、その前段に OpenAI 互換ラッパーを載せています。デフォルトは英語の `en_US-lessac-medium` です。依存が軽く、セットアップが安定しています。
 
+### Piper-Plus
+
+[ayutaz/piper-plus](https://github.com/ayutaz/piper-plus) をベースにした日本語対応の軽量 TTS です。元の Piper から日本語品質（OpenJTalk + プロソディ）と GPL フリー（MIT ライセンス）の方向で強化されています。GPU 不要で、CPU でも高速に動作します。デフォルトモデルは `tsukuyomi`（日本語女性）です。
+
+### Qwen3-TTS
+
+[QwenLM/Qwen3-TTS](https://github.com/QwenLM/Qwen3-TTS) を使った多言語高品質 TTS です。9 種類の話者を内蔵し、日本語を含む 10 言語に対応しています。GPU ランタイム（T4 以上）が必要です。デフォルトは 0.6B モデル（軽量）で、フォームから 1.7B モデルも選べます。Apache 2.0 ライセンスです。
+
 ### MeloTTS (現在動作不可)
 
 [myshell-ai/MeloTTS](https://github.com/myshell-ai/MeloTTS) を使う構成ですが、依存パッケージ `tokenizers` のビルドに Rust コンパイラが必要なため、現在の Colab 環境ではインストールに失敗します。
@@ -69,15 +263,27 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 
 [litagin02/Style-Bert-VITS2](https://github.com/litagin02/Style-Bert-VITS2) を使う構成ですが、`setuptools` / `torch` / `scipy` の依存整合性が取れず、現在の Colab 環境では音声合成まで到達できません。
 
+## ライセンス
+
+各エンジンのライセンスは以下の通りです。利用時は各プロジェクトの最新のライセンス条件を必ず確認してください。
+
+| エンジン | コード | モデル重み | 商用利用 | 備考 |
+|---|---|---|---|---|
+| Kokoro | Apache 2.0 | Apache 2.0 | OK | |
+| Irodori-TTS | MIT | MIT | OK | なりすまし・ディープフェイク生成を禁止する倫理規定あり |
+| Piper | GPL-3.0 | MIT | 要注意 | デフォルト音声 `en_US-lessac-medium` の学習データ（Blizzard 2013）は研究目的限定・商用利用不可 |
+| Piper-Plus | MIT | MIT | OK | |
+| Qwen3-TTS | Apache 2.0 | Apache 2.0 | OK | |
+
+**Piper について**: `piper-tts` パッケージは GPL-3.0 です。また、デフォルトの `en_US-lessac-medium` 音声は Lessac Technologies 提供の Blizzard 2013 データセットで学習されており、このデータセットのライセンスは商用利用を禁止しています。商用利用が必要な場合は、許容的なライセンスで学習された別の voice モデルを選択してください。
+
+このリポジトリ自体は短時間の動作確認・技術検証を目的としています。
+
 ## 注意点
 
 - Colab の管理ランタイムでは、外部公開やプロキシ利用は恒常運用向きではありません。このリポジトリは短時間の動作確認用です。
 - エンジンごとに依存が重いため、別エンジンへの切り替えはランタイム再起動前提にしています。
-- `Irodori-TTS` の倫理制限、各音声モデルのライセンスは個別に確認してください。
-
-## Colab 実機テスト結果
-
-詳細は [COLAB_TEST_RESULTS.md](COLAB_TEST_RESULTS.md) を参照してください。
+- 各エンジン・音声モデルのライセンスは上記「ライセンス」セクションおよび各プロジェクトの公式情報を確認してください。
 
 ## 参考
 
@@ -93,3 +299,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
   https://github.com/litagin02/Style-Bert-VITS2
 - Piper
   https://github.com/OHF-Voice/piper1-gpl
+- Piper-Plus
+  https://github.com/ayutaz/piper-plus
+- Qwen3-TTS
+  https://github.com/QwenLM/Qwen3-TTS

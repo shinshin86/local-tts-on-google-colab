@@ -14,3 +14,9 @@ tmp/
 
 # Private notes
 private/
+
+# Internal docs (not for public)
+COLAB_TEST_RESULTS.md
+MCP_SETUP.md
+MCP_TEST_PLAN.md
+REFACTOR_PLAN.md
