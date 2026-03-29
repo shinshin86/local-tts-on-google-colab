@@ -12,7 +12,7 @@ def install(settings: Settings) -> dict:
     python_bin = ensure_venv(engine_dir)
     uv_pip_install(
         python_bin,
-        ["fastapi", "uvicorn", "requests", "piper-tts-plus"],
+        ["fastapi", "uvicorn", "requests", "flask", "piper-tts-plus"],
     )
     run(
         [str(python_bin), "-m", "piper", "--download-model", settings.piper_plus_model],
