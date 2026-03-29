@@ -26,6 +26,7 @@ def install(settings: Settings) -> dict:
         **os.environ,
         "PYTHONUNBUFFERED": "1",
         "IRODORI_HF_CHECKPOINT": settings.irodori_hf_checkpoint,
+        "IRODORI_CODEC_REPO": settings.irodori_codec_repo,
         "IRODORI_MODEL_PRECISION": settings.irodori_model_precision,
         "IRODORI_CODEC_PRECISION": settings.irodori_codec_precision,
         "OPENAI_MODEL_ID": settings.openai_model_id or settings.irodori_hf_checkpoint,

@@ -24,7 +24,10 @@ def parse_args():
     parser.add_argument("--test-speed", type=float, default=1.0)
     parser.add_argument("--test-voice", default="")
     parser.add_argument("--openai-model-id", default="")
-    parser.add_argument("--irodori-hf-checkpoint", default="Aratako/Irodori-TTS-500M")
+    # V1を利用する場合: "Aratako/Irodori-TTS-500M"
+    parser.add_argument("--irodori-hf-checkpoint", default="Aratako/Irodori-TTS-500M-v2")
+    # V1を利用する場合: "facebook/dacvae-watermarked"
+    parser.add_argument("--irodori-codec-repo", default="Aratako/Semantic-DACVAE-Japanese-32dim")
     parser.add_argument("--irodori-model-precision", default="fp32")
     parser.add_argument("--irodori-codec-precision", default="fp32")
     parser.add_argument("--kokoro-default-voice", default="jf_alpha")
@@ -57,6 +60,7 @@ def main():
         test_voice=args.test_voice,
         openai_model_id=args.openai_model_id,
         irodori_hf_checkpoint=args.irodori_hf_checkpoint,
+        irodori_codec_repo=args.irodori_codec_repo,
         irodori_model_precision=args.irodori_model_precision,
         irodori_codec_precision=args.irodori_codec_precision,
         kokoro_default_voice=args.kokoro_default_voice,

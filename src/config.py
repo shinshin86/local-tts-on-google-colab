@@ -43,7 +43,10 @@ class Settings:
     test_speed: float = 1.0
     test_voice: str = ""
     openai_model_id: str = ""
-    irodori_hf_checkpoint: str = "Aratako/Irodori-TTS-500M"
+    # V1を利用する場合: "Aratako/Irodori-TTS-500M"
+    irodori_hf_checkpoint: str = "Aratako/Irodori-TTS-500M-v2"
+    # V1を利用する場合: "facebook/dacvae-watermarked"
+    irodori_codec_repo: str = "Aratako/Semantic-DACVAE-Japanese-32dim"
     irodori_model_precision: str = "fp32"
     irodori_codec_precision: str = "fp32"
     kokoro_default_voice: str = "jf_alpha"

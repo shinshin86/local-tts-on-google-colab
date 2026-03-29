@@ -22,12 +22,13 @@ from irodori_tts.inference_runtime import (
 
 logger = logging.getLogger("uvicorn.error")
 
-HF_CHECKPOINT = os.environ.get("IRODORI_HF_CHECKPOINT", "Aratako/Irodori-TTS-500M")
+# V1を利用する場合: checkpoint="Aratako/Irodori-TTS-500M", codec_repo="facebook/dacvae-watermarked"
+HF_CHECKPOINT = os.environ.get("IRODORI_HF_CHECKPOINT", "Aratako/Irodori-TTS-500M-v2")
 MODEL_DEVICE = os.environ.get("IRODORI_MODEL_DEVICE", default_runtime_device())
 CODEC_DEVICE = os.environ.get("IRODORI_CODEC_DEVICE", default_runtime_device())
 MODEL_PRECISION = os.environ.get("IRODORI_MODEL_PRECISION", "fp32")
 CODEC_PRECISION = os.environ.get("IRODORI_CODEC_PRECISION", "fp32")
-CODEC_REPO = os.environ.get("IRODORI_CODEC_REPO", "facebook/dacvae-watermarked")
+CODEC_REPO = os.environ.get("IRODORI_CODEC_REPO", "Aratako/Semantic-DACVAE-Japanese-32dim")
 OPENAI_MODEL_ID = os.environ.get("OPENAI_MODEL_ID", HF_CHECKPOINT)
 
 app = FastAPI(title="Irodori OpenAI Compatible TTS")

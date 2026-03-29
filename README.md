@@ -53,7 +53,9 @@ OPENAI_MODEL_ID = ""  #@param {type:"string"}
 
 #@markdown ---
 #@markdown Irodori-TTS
-IRODORI_HF_CHECKPOINT = "Aratako/Irodori-TTS-500M"  #@param {type:"string"}
+# V1を利用する場合: checkpoint="Aratako/Irodori-TTS-500M", codec_repo="facebook/dacvae-watermarked"
+IRODORI_HF_CHECKPOINT = "Aratako/Irodori-TTS-500M-v2"  #@param {type:"string"}
+IRODORI_CODEC_REPO = "Aratako/Semantic-DACVAE-Japanese-32dim"  #@param {type:"string"}
 IRODORI_MODEL_PRECISION = "fp32"  #@param ["fp32", "bf16", "fp16"]
 IRODORI_CODEC_PRECISION = "fp32"  #@param ["fp32", "bf16", "fp16"]
 
@@ -241,7 +243,7 @@ main()
 
 ### Irodori-TTS
 
-[Aratako/Irodori-TTS](https://github.com/Aratako/Irodori-TTS) を使った日本語 TTS です。デフォルトで Hugging Face の `Aratako/Irodori-TTS-500M` モデルを使用します。出力は 48kHz で高音質ですが、voice の切り替え機能はありません。
+[Aratako/Irodori-TTS](https://github.com/Aratako/Irodori-TTS) を使った日本語 TTS です。デフォルトで Hugging Face の `Aratako/Irodori-TTS-500M-v2` モデルを使用します（V1 を利用する場合は `Aratako/Irodori-TTS-500M` に変更してください）。出力は 48kHz で高音質ですが、voice の切り替え機能はありません。
 
 ### Piper
 
