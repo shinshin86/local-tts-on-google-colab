@@ -1,3 +1,4 @@
+from .coqui_xtts import install as install_coqui_xtts
 from .irodori import install as install_irodori
 from .kokoro import install as install_kokoro
 from .melo import install as install_melo
@@ -6,6 +7,7 @@ from .style_bert import install as install_style_bert
 
 
 INSTALLERS = {
+    "Coqui-XTTS": install_coqui_xtts,
     "Irodori-TTS": install_irodori,
     "Kokoro": install_kokoro,
     "MeloTTS": install_melo,

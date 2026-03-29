@@ -57,6 +57,8 @@ class Settings:
     style_bert_style: str = "Neutral"
     piper_voice: str = "en_US-lessac-medium"
     piper_speaker_id: int = -1
+    xtts_language: str = "ja"
+    xtts_speaker_wav: str = ""
     root_dir: Path = Path("/content/openai-compatible-local-tts")
     repo_dir: Path = field(default_factory=default_repo_dir)
     app_port: int = 8000

@@ -38,6 +38,8 @@ def parse_args():
     parser.add_argument("--style-bert-style", default="Neutral")
     parser.add_argument("--piper-voice", default="en_US-lessac-medium")
     parser.add_argument("--piper-speaker-id", type=int, default=-1)
+    parser.add_argument("--xtts-language", default="ja")
+    parser.add_argument("--xtts-speaker-wav", default="")
     parser.add_argument("--root-dir", default="/content/openai-compatible-local-tts")
     return parser.parse_args()
 
@@ -66,6 +68,8 @@ def main():
         style_bert_style=args.style_bert_style,
         piper_voice=args.piper_voice,
         piper_speaker_id=args.piper_speaker_id,
+        xtts_language=args.xtts_language,
+        xtts_speaker_wav=args.xtts_speaker_wav,
         root_dir=Path(args.root_dir),
         repo_dir=REPO_DIR,
     )
