@@ -14,22 +14,34 @@ def install(settings: Settings) -> dict:
         python_bin,
         ["fastapi", "uvicorn", "requests", "flask", "piper-tts-plus"],
     )
-    run(
+    download_result = run(
         [
             str(python_bin), "-m", "piper",
             "--download-model", settings.piper_plus_model,
         ],
         cwd=str(engine_dir),
+        capture_output=True,
     )
+    # Extract onnx path from download output (e.g. "Use with:  --model /path/to/model.onnx")
+    onnx_path = None
+    for line in (download_result.stdout or "").splitlines():
+        if "--model" in line and ".onnx" in line:
+            onnx_path = line.split("--model")[-1].strip()
+            break
+    if not onnx_path:
+        # Fallback: find onnx file in engine_dir
+        onnx_files = list(engine_dir.glob("*.onnx"))
+        if onnx_files:
+            onnx_path = str(onnx_files[0])
+        else:
+            raise RuntimeError(f"No .onnx model found after downloading {settings.piper_plus_model}")
     backend_proc = popen(
         [
             str(python_bin),
             "-m",
             "piper.http_server",
-            "-m",
-            settings.piper_plus_model,
-            "--data-dir",
-            str(engine_dir),
+            "--model",
+            onnx_path,
             "--host",
             "127.0.0.1",
             "--port",
