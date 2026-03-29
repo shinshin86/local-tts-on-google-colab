@@ -14,13 +14,10 @@ def install(settings: Settings) -> dict:
         python_bin,
         ["fastapi", "uvicorn", "requests", "flask", "piper-tts-plus"],
     )
-    data_dir = engine_dir / "models"
-    data_dir.mkdir(parents=True, exist_ok=True)
     run(
         [
             str(python_bin), "-m", "piper",
             "--download-model", settings.piper_plus_model,
-            "--data-dir", str(data_dir),
         ],
         cwd=str(engine_dir),
     )
@@ -29,10 +26,10 @@ def install(settings: Settings) -> dict:
             str(python_bin),
             "-m",
             "piper.http_server",
-            "--model",
+            "-m",
             settings.piper_plus_model,
             "--data-dir",
-            str(data_dir),
+            str(engine_dir),
             "--host",
             "127.0.0.1",
             "--port",
