@@ -11,7 +11,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Coqui-XTTS", "Irodori-TTS", "Kokoro", "MeloTTS", "Piper", "Qwen3-TTS", "Style-Bert-VITS2"]
+ENGINE = "Kokoro"  #@param ["Irodori-TTS", "Kokoro", "MeloTTS", "Piper", "Qwen3-TTS", "Style-Bert-VITS2"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -46,11 +46,6 @@ STYLE_BERT_STYLE = "Neutral"  #@param {type:"string"}
 #@markdown Piper
 PIPER_VOICE = "en_US-lessac-medium"  #@param {type:"string"}
 PIPER_SPEAKER_ID = -1  #@param {type:"integer"}
-
-#@markdown ---
-#@markdown Coqui-XTTS (GPU required)
-XTTS_LANGUAGE = "ja"  #@param ["en", "es", "fr", "de", "it", "pt", "pl", "tr", "ru", "nl", "cs", "ar", "zh-cn", "ja", "ko", "hu", "hi"]
-XTTS_SPEAKER_WAV = ""  #@param {type:"string"}
 
 #@markdown ---
 #@markdown Qwen3-TTS (GPU required)
@@ -134,8 +129,6 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         str(PIPER_SPEAKER_ID),
         "--xtts-language",
         XTTS_LANGUAGE,
-        "--xtts-speaker-wav",
-        XTTS_SPEAKER_WAV,
         "--qwen3-hf-model",
         QWEN3_HF_MODEL,
         "--qwen3-language",

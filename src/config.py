@@ -57,8 +57,6 @@ class Settings:
     style_bert_style: str = "Neutral"
     piper_voice: str = "en_US-lessac-medium"
     piper_speaker_id: int = -1
-    xtts_language: str = "ja"
-    xtts_speaker_wav: str = ""
     qwen3_hf_model: str = "Qwen/Qwen3-TTS-12Hz-0.6B-CustomVoice"
     qwen3_language: str = "Japanese"
     qwen3_default_speaker: str = "ono_anna"

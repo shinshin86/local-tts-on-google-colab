@@ -38,8 +38,6 @@ def parse_args():
     parser.add_argument("--style-bert-style", default="Neutral")
     parser.add_argument("--piper-voice", default="en_US-lessac-medium")
     parser.add_argument("--piper-speaker-id", type=int, default=-1)
-    parser.add_argument("--xtts-language", default="ja")
-    parser.add_argument("--xtts-speaker-wav", default="")
     parser.add_argument("--qwen3-hf-model", default="Qwen/Qwen3-TTS-12Hz-0.6B-CustomVoice")
     parser.add_argument("--qwen3-language", default="Japanese")
     parser.add_argument("--qwen3-default-speaker", default="ono_anna")
@@ -71,8 +69,6 @@ def main():
         style_bert_style=args.style_bert_style,
         piper_voice=args.piper_voice,
         piper_speaker_id=args.piper_speaker_id,
-        xtts_language=args.xtts_language,
-        xtts_speaker_wav=args.xtts_speaker_wav,
         qwen3_hf_model=args.qwen3_hf_model,
         qwen3_language=args.qwen3_language,
         qwen3_default_speaker=args.qwen3_default_speaker,

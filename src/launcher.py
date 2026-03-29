@@ -50,14 +50,6 @@ def print_engine_voice_hints(settings: Settings):
         print(f"language: {settings.qwen3_language}")
         print(f"デフォルト speaker: {settings.qwen3_default_speaker}")
         print("候補: aiden, dylan, eric, ono_anna, ryan, serena, sohee, uncle_fu, vivian")
-    elif settings.engine == "Coqui-XTTS":
-        print("XTTS v2 は多言語対応のボイスクローン TTS です。")
-        print(f"現在の language: {settings.xtts_language}")
-        if settings.xtts_speaker_wav:
-            print(f"Speaker WAV: {settings.xtts_speaker_wav}")
-        else:
-            print("speaker_wav 未指定。デフォルト話者で生成します。")
-        print("注意: XTTS v2 モデル重みは非商用ライセンス (Coqui Public Model License 1.0.0) です。")
     else:
         print("Irodori-TTS は現状 voice 切り替えを持たない想定です。")
 
