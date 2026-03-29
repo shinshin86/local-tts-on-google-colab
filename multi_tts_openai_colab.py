@@ -20,7 +20,9 @@ OPENAI_MODEL_ID = ""  #@param {type:"string"}
 
 #@markdown ---
 #@markdown Irodori-TTS
-IRODORI_HF_CHECKPOINT = "Aratako/Irodori-TTS-500M"  #@param {type:"string"}
+# V1を利用する場合: checkpoint="Aratako/Irodori-TTS-500M", codec_repo="facebook/dacvae-watermarked"
+IRODORI_HF_CHECKPOINT = "Aratako/Irodori-TTS-500M-v2"  #@param {type:"string"}
+IRODORI_CODEC_REPO = "Aratako/Semantic-DACVAE-Japanese-32dim"  #@param {type:"string"}
 IRODORI_MODEL_PRECISION = "fp32"  #@param ["fp32", "bf16", "fp16"]
 IRODORI_CODEC_PRECISION = "fp32"  #@param ["fp32", "bf16", "fp16"]
 
@@ -105,6 +107,8 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         OPENAI_MODEL_ID,
         "--irodori-hf-checkpoint",
         IRODORI_HF_CHECKPOINT,
+        "--irodori-codec-repo",
+        IRODORI_CODEC_REPO,
         "--irodori-model-precision",
         IRODORI_MODEL_PRECISION,
         "--irodori-codec-precision",
