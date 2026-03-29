@@ -47,10 +47,25 @@ def get_tts() -> TTS:
     return _tts
 
 
-def _find_speaker_wav() -> str | None:
+def _ensure_default_speaker_wav() -> str:
+    """Generate a short default speaker WAV using a simple sine tone."""
+    default_path = Path(tempfile.gettempdir()) / "xtts_default_speaker.wav"
+    if default_path.exists():
+        return str(default_path)
+    import numpy as np
+    import soundfile as sf
+    sr = 22050
+    duration = 2.0
+    t = np.linspace(0, duration, int(sr * duration), endpoint=False)
+    tone = (0.3 * np.sin(2 * np.pi * 220 * t)).astype(np.float32)
+    sf.write(str(default_path), tone, sr)
+    return str(default_path)
+
+
+def _find_speaker_wav() -> str:
     if SPEAKER_WAV and Path(SPEAKER_WAV).exists():
         return SPEAKER_WAV
-    return None
+    return _ensure_default_speaker_wav()
 
 
 class AudioSpeechRequest(BaseModel):
@@ -115,28 +130,12 @@ async def audio_speech(payload: AudioSpeechRequest):
 
     try:
         speaker_wav = _find_speaker_wav()
-        speaker = payload.voice if payload.voice and not speaker_wav else None
-
-        if speaker_wav:
-            tts.tts_to_file(
-                text=payload.input,
-                file_path=tmp_path,
-                speaker_wav=speaker_wav,
-                language=language,
-            )
-        elif speaker:
-            tts.tts_to_file(
-                text=payload.input,
-                file_path=tmp_path,
-                speaker=speaker,
-                language=language,
-            )
-        else:
-            tts.tts_to_file(
-                text=payload.input,
-                file_path=tmp_path,
-                language=language,
-            )
+        tts.tts_to_file(
+            text=payload.input,
+            file_path=tmp_path,
+            speaker_wav=speaker_wav,
+            language=language,
+        )
 
         audio_bytes = Path(tmp_path).read_bytes()
     finally:
