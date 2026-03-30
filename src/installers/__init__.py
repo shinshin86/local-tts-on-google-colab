@@ -5,6 +5,7 @@ from .melo import install as install_melo
 from .piper import install as install_piper
 from .piper_plus import install as install_piper_plus
 from .style_bert import install as install_style_bert
+from .voxtral import install as install_voxtral
 
 
 INSTALLERS = {
@@ -15,4 +16,5 @@ INSTALLERS = {
     "Piper": install_piper,
     "Piper-Plus": install_piper_plus,
     "Qwen3-TTS": install_qwen3_tts,
+    "Voxtral-TTS": install_voxtral,
 }
