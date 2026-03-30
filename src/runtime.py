@@ -91,6 +91,7 @@ def kill_old_processes(app_port: int, piper_backend_port: int):
         "uvicorn app:app",
         "uvicorn openai_wrapper_app:app",
         "python -m piper.http_server",
+        "vllm.entrypoints.openai.api_server",
         "cloudflared tunnel",
         "server_fastapi.py",
     ]
