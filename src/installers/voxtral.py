@@ -3,24 +3,50 @@ from __future__ import annotations
 import os
 
 from src.config import Settings
-from src.runtime import ensure_venv, popen, tail_log, uv_pip_install, wait_http, write_text
+from src.runtime import ensure_venv, popen, run, tail_log, uv_pip_install, wait_http, write_text
+
+
+def _find_stage_configs(engine_dir):
+    """Locate voxtral_tts.yaml inside the vllm_omni package."""
+    python_bin = str(engine_dir / ".venv" / "bin" / "python")
+    result = run(
+        [
+            python_bin,
+            "-c",
+            (
+                "import vllm_omni, pathlib; "
+                "p = pathlib.Path(vllm_omni.__path__[0]) / 'model_executor' / 'stage_configs' / 'voxtral_tts.yaml'; "
+                "print(p)"
+            ),
+        ],
+        capture_output=True,
+    )
+    return result.stdout.strip()
 
 
 def install(settings: Settings) -> dict:
     engine_dir = settings.engines_dir / "voxtral-openai"
     engine_dir.mkdir(parents=True, exist_ok=True)
     python_bin = ensure_venv(engine_dir)
+    # Install vllm first, then vllm-omni (which extends/shadows vllm CLI)
     uv_pip_install(
         python_bin,
         [
             "fastapi",
             "uvicorn",
             "httpx",
-            "vllm>=0.18.0",
+            "vllm==0.18.0",
+        ],
+    )
+    uv_pip_install(
+        python_bin,
+        [
             "vllm-omni @ git+https://github.com/vllm-project/vllm-omni.git",
         ],
     )
-    # Start vLLM backend server
+    # Find the stage config YAML path inside vllm_omni package
+    stage_configs_path = _find_stage_configs(engine_dir)
+    # Start vllm-omni backend server with --omni flag
     backend_env = {
         **os.environ,
         "PYTHONUNBUFFERED": "1",
@@ -30,10 +56,15 @@ def install(settings: Settings) -> dict:
             str(engine_dir / ".venv" / "bin" / "vllm"),
             "serve",
             settings.voxtral_hf_model,
+            "--omni",
+            "--stage-configs-path",
+            stage_configs_path,
             "--host",
             "127.0.0.1",
             "--port",
             str(settings.voxtral_backend_port),
+            "--trust-remote-code",
+            "--enforce-eager",
         ],
         cwd=str(engine_dir),
         env=backend_env,
