@@ -14,13 +14,14 @@ logger = logging.getLogger("uvicorn.error")
 VLLM_BACKEND_URL = os.environ.get("VLLM_BACKEND_URL", "http://127.0.0.1:5001")
 OPENAI_MODEL_ID = os.environ.get("OPENAI_MODEL_ID", "voxtral-tts")
 VOXTRAL_HF_MODEL = os.environ.get("VOXTRAL_HF_MODEL", "mistralai/Voxtral-4B-TTS-2603")
-VOXTRAL_DEFAULT_VOICE = os.environ.get("VOXTRAL_DEFAULT_VOICE", "jessica")
+VOXTRAL_DEFAULT_VOICE = os.environ.get("VOXTRAL_DEFAULT_VOICE", "neutral_female")
 
 VOICES = [
-    "allison", "aoede", "chloe", "coral", "echo",
-    "fable", "jessica", "lucy", "maisie", "nova",
-    "onyx", "orbit", "quinn", "river", "sarah",
-    "shimmer", "stella", "vale", "victoria", "zephyr",
+    "ar_male", "casual_female", "casual_male", "cheerful_female",
+    "de_female", "de_male", "es_female", "es_male",
+    "fr_female", "fr_male", "hi_female", "hi_male",
+    "it_female", "it_male", "neutral_female", "neutral_male",
+    "nl_female", "nl_male", "pt_female", "pt_male",
 ]
 
 SUPPORTED_FORMATS = ["wav", "pcm", "flac", "mp3", "aac", "opus"]

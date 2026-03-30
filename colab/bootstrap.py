@@ -46,7 +46,7 @@ def parse_args():
     parser.add_argument("--qwen3-language", default="Japanese")
     parser.add_argument("--qwen3-default-speaker", default="ono_anna")
     parser.add_argument("--voxtral-hf-model", default="mistralai/Voxtral-4B-TTS-2603")
-    parser.add_argument("--voxtral-default-voice", default="jessica")
+    parser.add_argument("--voxtral-default-voice", default="neutral_female")
     parser.add_argument("--voxtral-backend-port", type=int, default=5001)
     parser.add_argument("--root-dir", default="/content/openai-compatible-local-tts")
     return parser.parse_args()

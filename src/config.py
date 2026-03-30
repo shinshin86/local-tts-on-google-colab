@@ -65,7 +65,7 @@ class Settings:
     qwen3_language: str = "Japanese"
     qwen3_default_speaker: str = "ono_anna"
     voxtral_hf_model: str = "mistralai/Voxtral-4B-TTS-2603"
-    voxtral_default_voice: str = "jessica"
+    voxtral_default_voice: str = "neutral_female"
     voxtral_backend_port: int = 5001
     root_dir: Path = Path("/content/openai-compatible-local-tts")
     repo_dir: Path = field(default_factory=default_repo_dir)

@@ -58,8 +58,9 @@ def print_engine_voice_hints(settings: Settings):
         print("Voxtral-TTS は Mistral AI の高品質 TTS です（vLLM バックエンド）。")
         print(f"モデル: {settings.voxtral_hf_model}")
         print(f"デフォルト voice: {settings.voxtral_default_voice}")
-        print("候補: allison, aoede, chloe, coral, echo, fable, jessica, lucy, maisie, nova,")
-        print("      onyx, orbit, quinn, river, sarah, shimmer, stella, vale, victoria, zephyr")
+        print("候補: ar_male, casual_female, casual_male, cheerful_female, de_female, de_male,")
+        print("      es_female, es_male, fr_female, fr_male, hi_female, hi_male, it_female,")
+        print("      it_male, neutral_female, neutral_male, nl_female, nl_male, pt_female, pt_male")
         print("対応言語: en, fr, es, pt, it, nl, de, ar, hi")
         print("注意: A100 GPU 推奨（T4 では VRAM 不足の可能性あり）。ライセンス: CC BY-NC 4.0")
     else:

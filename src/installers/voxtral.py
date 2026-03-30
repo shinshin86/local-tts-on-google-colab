@@ -82,7 +82,7 @@ def install(settings: Settings) -> dict:
         "OPENAI_MODEL_ID": settings.openai_model_id or "voxtral-tts",
         "VLLM_BACKEND_URL": f"http://127.0.0.1:{settings.voxtral_backend_port}",
         "VOXTRAL_HF_MODEL": settings.voxtral_hf_model,
-        "VOXTRAL_DEFAULT_VOICE": settings.voxtral_default_voice,
+        "VOXTRAL_DEFAULT_VOICE": settings.voxtral_default_voice or "neutral_female",
     }
     proc = popen(
         [
