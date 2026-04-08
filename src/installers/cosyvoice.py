@@ -34,6 +34,7 @@ def install(settings: Settings) -> dict:
     python_bin = _ensure_venv_py310(engine_dir)
     # Use pip for requirements.txt (openai-whisper needs pkg_resources at
     # build time and uv's build isolation doesn't carry it over)
+    run(["uv", "pip", "install", "--python", str(python_bin), "pip", "setuptools"])
     run([str(python_bin), "-m", "pip", "install", "-q",
          "-r", str(repo_dir / "requirements.txt")])
     run(
