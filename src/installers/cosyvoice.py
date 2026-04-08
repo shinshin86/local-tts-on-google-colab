@@ -32,13 +32,10 @@ def install(settings: Settings) -> dict:
 
     # Create Python 3.10 venv (onnxruntime-gpu requires <=3.12)
     python_bin = _ensure_venv_py310(engine_dir)
-    # setuptools is needed as build dep for openai-whisper
-    run(["uv", "pip", "install", "--python", str(python_bin), "setuptools"])
-    run(
-        ["uv", "pip", "install", "--python", str(python_bin),
-         "--index-strategy", "unsafe-best-match",
-         "-r", str(repo_dir / "requirements.txt")],
-    )
+    # Use pip for requirements.txt (openai-whisper needs pkg_resources at
+    # build time and uv's build isolation doesn't carry it over)
+    run([str(python_bin), "-m", "pip", "install", "-q",
+         "-r", str(repo_dir / "requirements.txt")])
     run(
         ["uv", "pip", "install", "--python", str(python_bin),
          "fastapi", "uvicorn", "requests", "soundfile", "numpy"],
