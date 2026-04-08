@@ -54,12 +54,14 @@ def install(settings: Settings) -> dict:
     # Install system dependencies
     run(["apt-get", "install", "-y", "-qq", "sox", "libsox-dev"], check=False)
 
-    # Create venv and install dependencies
-    # Note: openai-whisper is excluded because it has build issues on
-    # Python 3.12+. This means automatic transcription of reference audio
-    # for zero-shot voice cloning is not available. Provide ref_text
-    # manually if using zero-shot cloning features directly.
-    python_bin = ensure_venv(engine_dir)
+    # Create Python 3.12 venv (CosyVoice pins torch==2.3.1 etc. which
+    # lack Python 3.13 wheels). openai-whisper is excluded because it has
+    # build issues on Python 3.12+. This means automatic transcription of
+    # reference audio for zero-shot voice cloning is not available.
+    venv_dir = engine_dir / ".venv"
+    if not venv_dir.exists():
+        run(["uv", "venv", "--python", "3.12", str(venv_dir)])
+    python_bin = venv_dir / "bin" / "python"
     filtered_req = _filter_requirements(repo_dir / "requirements.txt")
     uv_pip_install(
         python_bin,
