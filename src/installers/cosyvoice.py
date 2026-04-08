@@ -9,10 +9,6 @@ from src.runtime import ensure_git_clone, popen, run, tail_log, wait_http, write
 COSYVOICE_REPO_URL = "https://github.com/FunAudioLLM/CosyVoice.git"
 COSYVOICE_BACKEND_PORT = 50000
 
-# Python 3.10 on Colab (openai-whisper==20231117 requires <=3.10)
-SYSTEM_PYTHON = "/usr/bin/python3.10"
-
-
 def install(settings: Settings) -> dict:
     engine_dir = settings.engines_dir / "cosyvoice"
     engine_dir.mkdir(parents=True, exist_ok=True)
@@ -22,17 +18,21 @@ def install(settings: Settings) -> dict:
     ensure_git_clone(COSYVOICE_REPO_URL, repo_dir)
     run(["git", "submodule", "update", "--init", "--recursive"], cwd=str(repo_dir))
 
-    # Install system dependencies
-    run(["apt-get", "install", "-y", "-qq", "sox", "libsox-dev"], check=False)
+    # Install system dependencies (python3.10-venv needed for full python3.10)
+    run(["apt-get", "install", "-y", "-qq", "sox", "libsox-dev",
+         "python3.10-venv", "python3.10-dev"], check=False)
 
-    # Install into Python 3.10 (CosyVoice has heavy deps that are
-    # difficult to install in an isolated venv due to openai-whisper
-    # build issues and onnxruntime index conflicts)
-    run([SYSTEM_PYTHON, "-m", "ensurepip", "--upgrade"], check=False)
-    run([SYSTEM_PYTHON, "-m", "pip", "install", "-q", "--upgrade", "pip", "setuptools"])
-    run([SYSTEM_PYTHON, "-m", "pip", "install", "-q",
+    # Create Python 3.10 venv with pip (openai-whisper needs Python <=3.10)
+    venv_dir = engine_dir / ".venv"
+    if not venv_dir.exists():
+        run(["/usr/bin/python3.10", "-m", "venv", str(venv_dir)])
+    python_bin = venv_dir / "bin" / "python"
+
+    # Install CosyVoice requirements
+    run([str(python_bin), "-m", "pip", "install", "-q", "--upgrade", "pip", "setuptools"])
+    run([str(python_bin), "-m", "pip", "install", "-q",
          "-r", str(repo_dir / "requirements.txt")])
-    run([SYSTEM_PYTHON, "-m", "pip", "install", "-q",
+    run([str(python_bin), "-m", "pip", "install", "-q",
          "fastapi", "uvicorn", "requests", "soundfile", "numpy"])
 
     # Start CosyVoice backend server
@@ -43,7 +43,7 @@ def install(settings: Settings) -> dict:
     }
     backend_proc = popen(
         [
-            SYSTEM_PYTHON,
+            str(python_bin),
             str(repo_dir / "runtime" / "python" / "fastapi" / "server.py"),
             "--port",
             str(COSYVOICE_BACKEND_PORT),
@@ -69,7 +69,7 @@ def install(settings: Settings) -> dict:
     }
     proc = popen(
         [
-            SYSTEM_PYTHON, "-m", "uvicorn",
+            str(python_bin), "-m", "uvicorn",
             "app:app",
             "--host",
             "0.0.0.0",
