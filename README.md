@@ -12,14 +12,14 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | Piper-Plus | 動作OK | 日本語 / 英語 / 中国語 他 6言語 |
 | Qwen3-TTS | 動作OK (GPU必須) | 日本語 / 英語 / 中国語 他 10言語 |
 | F5-TTS | 動作OK (GPU必須) | 英語 / 中国語（日本語は別モデル） |
-| Fish-Speech | 未検証 (A100/L4 GPU必須) | 日本語 / 英語 / 中国語 他 80言語以上 |
+| Fish-Speech | 動作不可 | 日本語 / 英語 / 中国語 他 80言語以上 |
 | MeloTTS | 動作不可 | - |
 | Style-Bert-VITS2 | 動作不可 | - |
 | CosyVoice2 | 動作不可 | - |
 
 `MeloTTS`、`Style-Bert-VITS2`、`CosyVoice2` は Colab の uv + venv 環境で依存解決に問題があり、現時点では動作しません。
 
-`Fish-Speech` は VRAM 24GB 以上が必要なため、A100 や L4 GPU での利用を想定しています（T4 では動作しません）。
+`Fish-Speech` は VRAM 24GB 以上が必要で A100/L4 GPU を想定していますが、Colab 環境ではモデルロード時に OOM（メモリ不足）でランタイムがクラッシュするため、現時点では動作しません。
 
 `VOICEVOX` は含めていません。
 
@@ -266,9 +266,9 @@ main()
 
 [SWivid/F5-TTS](https://github.com/SWivid/F5-TTS) を使ったゼロショット音声クローニング TTS です。参照音声の声質を模倣して音声を生成します。パッケージ同梱のデフォルト参照音声（英語女性）を使用します。日本語モデルを使う場合は `--f5tts-ckpt-file` / `--f5tts-vocab-file` でコミュニティ提供の日本語チェックポイントを指定してください。GPU ランタイム（T4 以上）が必要です。ライセンス: コード MIT / モデル CC-BY-NC。
 
-### Fish-Speech
+### Fish-Speech (現在動作不可)
 
-[fishaudio/fish-speech](https://github.com/fishaudio/fish-speech) を使った高品質 TTS です。日本語は Tier 1 サポート（最高品質）で、80 言語以上に対応しています。VRAM 24GB 以上が必要なため、A100 や L4 GPU での利用を想定しています。T4 では動作しません。ライセンス: Apache 2.0。
+[fishaudio/fish-speech](https://github.com/fishaudio/fish-speech) を使った高品質 TTS です。日本語は Tier 1 サポート（最高品質）で、80 言語以上に対応しています。VRAM 24GB 以上が必要で A100/L4 GPU を想定していますが、Colab 環境ではモデルロード時に OOM（メモリ不足）でランタイムがクラッシュするため、現時点では動作しません。ライセンス: Apache 2.0。
 
 ### CosyVoice2 (現在動作不可)
 
