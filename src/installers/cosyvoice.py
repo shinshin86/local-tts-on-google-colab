@@ -19,12 +19,20 @@ from src.runtime import (
 COSYVOICE_REPO_URL = "https://github.com/FunAudioLLM/CosyVoice.git"
 COSYVOICE_BACKEND_PORT = 50000
 
-# Packages excluded from CosyVoice requirements.txt:
-# - openai-whisper: build issues on Python 3.12+, only used for reference
-#   audio transcription (zero-shot cloning), not needed for TTS inference.
-# - onnxruntime-gpu: pinned to 1.18.0 which lacks Python 3.13 wheels.
-#   CosyVoice inference uses PyTorch, not ONNX Runtime.
-EXCLUDED_PACKAGES = {"openai-whisper", "onnxruntime-gpu"}
+# Packages excluded from CosyVoice requirements.txt due to build issues
+# on Python 3.12+ or because they are not needed for TTS inference:
+# - openai-whisper: only used for reference audio transcription
+# - onnxruntime-gpu/onnxruntime: inference uses PyTorch, not ONNX
+# - grpcio/grpcio-tools: v1.57.0 lacks 3.12 wheels; only for gRPC serving
+# - tensorboard: pulls in incompatible grpcio; not needed for inference
+# - tensorrt-*: optional optimization; not needed for basic inference
+EXCLUDED_PACKAGES = {
+    "openai-whisper",
+    "onnxruntime-gpu", "onnxruntime",
+    "grpcio", "grpcio-tools",
+    "tensorboard",
+    "tensorrt-cu12", "tensorrt-cu12-bindings", "tensorrt-cu12-libs",
+}
 
 
 def _filter_requirements(requirements_path):
