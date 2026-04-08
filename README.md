@@ -11,6 +11,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | Piper | 動作OK | 英語（デフォルト）/ 多言語 |
 | Piper-Plus | 動作OK | 日本語 / 英語 / 中国語 他 6言語 |
 | Qwen3-TTS | 動作OK (GPU必須) | 日本語 / 英語 / 中国語 他 10言語 |
+| VoxCPM2 | 動作OK (GPU必須) | 日本語 / 英語 / 中国語 他 30言語 |
 | F5-TTS | 動作OK (GPU必須) | 英語 / 中国語（日本語は別モデル） |
 | Fish-Speech | 動作不可 | 日本語 / 英語 / 中国語 他 80言語以上 |
 | MeloTTS | 動作不可 | - |
@@ -262,6 +263,10 @@ main()
 
 [QwenLM/Qwen3-TTS](https://github.com/QwenLM/Qwen3-TTS) を使った多言語高品質 TTS です。9 種類の話者を内蔵し、日本語を含む 10 言語に対応しています。GPU ランタイム（T4 以上）が必要です。デフォルトは 0.6B モデル（軽量）で、フォームから 1.7B モデルも選べます。Apache 2.0 ライセンスです。
 
+### VoxCPM2
+
+[OpenBMB/VoxCPM](https://github.com/OpenBMB/VoxCPM) を使った高品質 TTS です。2B パラメータのモデルで、日本語を含む 30 言語に対応しており、言語を自動検出します。ゼロショット TTS、声デザイン（テキスト記述から声生成）、音声クローニングなどの機能を持ちます。GPU ランタイム（T4 以上、VRAM ~8GB）が必要です。ライセンス: Apache 2.0。
+
 ### F5-TTS
 
 [SWivid/F5-TTS](https://github.com/SWivid/F5-TTS) を使ったゼロショット音声クローニング TTS です。参照音声の声質を模倣して音声を生成します。パッケージ同梱のデフォルト参照音声（英語女性）を使用します。日本語モデルを使う場合は `--f5tts-ckpt-file` / `--f5tts-vocab-file` でコミュニティ提供の日本語チェックポイントを指定してください。GPU ランタイム（T4 以上）が必要です。ライセンス: コード MIT / モデル CC-BY-NC。
@@ -293,6 +298,7 @@ main()
 | Piper | GPL-3.0 | MIT | 要注意 | デフォルト音声 `en_US-lessac-medium` の学習データ（Blizzard 2013）は研究目的限定・商用利用不可 |
 | Piper-Plus | MIT | MIT | OK | |
 | Qwen3-TTS | Apache 2.0 | Apache 2.0 | OK | |
+| VoxCPM2 | Apache 2.0 | Apache 2.0 | OK | |
 | F5-TTS | MIT | CC-BY-NC | 不可（モデル） | モデル重みは Emilia データセットの制約により非商用 |
 | Fish-Speech | Apache 2.0 | Apache 2.0 | OK | A100/L4 GPU 必須（VRAM 24GB+） |
 
@@ -324,6 +330,8 @@ main()
   https://github.com/ayutaz/piper-plus
 - Qwen3-TTS
   https://github.com/QwenLM/Qwen3-TTS
+- VoxCPM2
+  https://github.com/OpenBMB/VoxCPM
 - F5-TTS
   https://github.com/SWivid/F5-TTS
 - Fish Speech
