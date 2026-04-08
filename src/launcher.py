@@ -33,7 +33,25 @@ def resolve_selected_voice(settings: Settings) -> str:
 
 def print_engine_voice_hints(settings: Settings):
     print("\n=== Voice Selection Hint ===")
-    if settings.engine == "Kokoro":
+    if settings.engine == "CosyVoice2":
+        print("CosyVoice2 は FunAudioLLM の高品質 TTS です（9言語対応）。")
+        print(f"モデル: {settings.cosyvoice_model_dir}")
+        print("voice パラメータは現在 'default' のみ対応です（ゼロショットクローニング）。")
+        print("対応言語: 中国語, 英語, 日本語, 韓国語, ドイツ語, スペイン語, フランス語, イタリア語, ロシア語")
+        print("注意: GPU 推奨（VRAM ~4-6GB）。ライセンス: Apache-2.0")
+    elif settings.engine == "Fish-Speech":
+        print("Fish Speech は fishaudio の高品質 TTS です（80言語以上対応）。")
+        print(f"モデル: {settings.fish_speech_model}")
+        print("voice パラメータは現在 'default'（ランダム音声）のみ対応です。")
+        print("日本語は Tier 1 サポート（最高品質）。")
+        print("注意: A100/L4 GPU 推奨（VRAM 24GB以上必要）。ライセンス: Apache-2.0")
+    elif settings.engine == "F5-TTS":
+        print("F5-TTS はゼロショット音声クローニング TTS です（英語・中国語）。")
+        print(f"モデル: {settings.f5tts_model}")
+        print("デフォルトの参照音声（英語女性）を使用します。")
+        print("日本語モデルを使う場合は --f5tts-ckpt-file / --f5tts-vocab-file を指定してください。")
+        print("注意: GPU 推奨（VRAM ~2-4GB）。ライセンス: CC-BY-NC（モデル）")
+    elif settings.engine == "Kokoro":
         print("Kokoro はフォームで音声を選択できます。")
         print("候補:", ", ".join(KOKORO_VOICE_PRESETS))
     elif settings.engine == "MeloTTS":

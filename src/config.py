@@ -43,6 +43,11 @@ class Settings:
     test_speed: float = 1.0
     test_voice: str = ""
     openai_model_id: str = ""
+    cosyvoice_model_dir: str = "iic/CosyVoice2-0.5B"
+    f5tts_model: str = "F5TTS_v1_Base"
+    fish_speech_model: str = "fishaudio/s2-pro"
+    f5tts_ckpt_file: str = ""
+    f5tts_vocab_file: str = ""
     # V1を利用する場合: "Aratako/Irodori-TTS-500M"
     irodori_hf_checkpoint: str = "Aratako/Irodori-TTS-500M-v2"
     # V1を利用する場合: "facebook/dacvae-watermarked"
