@@ -109,7 +109,7 @@ def install(settings: Settings) -> dict:
         log_path=settings.log_dir / "cosyvoice-backend.log",
     )
 
-    if not wait_http(f"http://127.0.0.1:{COSYVOICE_BACKEND_PORT}/inference_cross_lingual", timeout=300):
+    if not wait_http(f"http://127.0.0.1:{COSYVOICE_BACKEND_PORT}/inference_cross_lingual", timeout=600):
         tail_log(settings.log_dir / "cosyvoice-backend.log")
         raise RuntimeError("CosyVoice backend did not become ready.")
 
