@@ -78,11 +78,15 @@ def install(settings: Settings) -> dict:
         ["--index-strategy", "unsafe-best-match", "-r", filtered_req],
     )
     os.unlink(filtered_req)
-    # onnxruntime-gpu was excluded (no 3.12 wheels) but the frontend
-    # needs onnxruntime at runtime, so install the CPU version
+    # Install packages that were excluded from requirements.txt but are
+    # needed at runtime. Use newer versions compatible with Python 3.12:
+    # - onnxruntime: frontend.py imports it (GPU version excluded, CPU works)
+    # - openai-whisper: frontend.py imports it (old pinned version excluded,
+    #   newer version supports Python 3.12)
     uv_pip_install(
         python_bin,
-        ["fastapi", "uvicorn", "requests", "soundfile", "numpy", "onnxruntime"],
+        ["fastapi", "uvicorn", "requests", "soundfile", "numpy",
+         "onnxruntime", "openai-whisper"],
     )
 
     # Start CosyVoice backend server
