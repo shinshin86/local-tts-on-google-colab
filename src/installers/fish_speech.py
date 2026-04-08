@@ -39,6 +39,9 @@ def install(settings: Settings) -> dict:
             ],
         )
 
+    # Free the backend port before starting
+    run(["bash", "-lc", f"fuser -k {FISH_SPEECH_BACKEND_PORT}/tcp || true"], check=False)
+
     # Start Fish Speech backend API server
     backend_env = {
         **os.environ,
