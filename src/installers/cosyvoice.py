@@ -36,6 +36,7 @@ def install(settings: Settings) -> dict:
     # build time and uv's build isolation doesn't carry it over)
     run(["uv", "pip", "install", "--python", str(python_bin), "pip", "setuptools"])
     run([str(python_bin), "-m", "pip", "install", "-q",
+         "--no-build-isolation",
          "-r", str(repo_dir / "requirements.txt")])
     run(
         ["uv", "pip", "install", "--python", str(python_bin),
