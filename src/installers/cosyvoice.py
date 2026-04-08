@@ -3,11 +3,19 @@ from __future__ import annotations
 import os
 
 from src.config import Settings
-from src.runtime import ensure_git_clone, ensure_venv, popen, run, tail_log, uv_pip_install, wait_http, write_text
+from src.runtime import ensure_git_clone, popen, run, tail_log, wait_http, write_text
 
 
 COSYVOICE_REPO_URL = "https://github.com/FunAudioLLM/CosyVoice.git"
 COSYVOICE_BACKEND_PORT = 50000
+
+
+def _ensure_venv_py310(engine_dir):
+    """Create a Python 3.10 venv (CosyVoice requires it for onnxruntime-gpu)."""
+    venv_dir = engine_dir / ".venv"
+    if not venv_dir.exists():
+        run(["uv", "venv", "--python", "3.10", str(venv_dir)])
+    return venv_dir / "bin" / "python"
 
 
 def install(settings: Settings) -> dict:
@@ -22,15 +30,15 @@ def install(settings: Settings) -> dict:
     # Install system dependencies
     run(["apt-get", "install", "-y", "-qq", "sox", "libsox-dev"], check=False)
 
-    # Create venv and install dependencies
-    python_bin = ensure_venv(engine_dir)
-    uv_pip_install(
-        python_bin,
-        ["-r", str(repo_dir / "requirements.txt")],
+    # Create Python 3.10 venv (onnxruntime-gpu requires <=3.12)
+    python_bin = _ensure_venv_py310(engine_dir)
+    run(
+        ["uv", "pip", "install", "--python", str(python_bin),
+         "-r", str(repo_dir / "requirements.txt")],
     )
-    uv_pip_install(
-        python_bin,
-        ["fastapi", "uvicorn", "requests", "soundfile", "numpy"],
+    run(
+        ["uv", "pip", "install", "--python", str(python_bin),
+         "fastapi", "uvicorn", "requests", "soundfile", "numpy"],
     )
 
     # Start CosyVoice backend server
