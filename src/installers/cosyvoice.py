@@ -34,6 +34,7 @@ def install(settings: Settings) -> dict:
     python_bin = _ensure_venv_py310(engine_dir)
     run(
         ["uv", "pip", "install", "--python", str(python_bin),
+         "--index-strategy", "unsafe-best-match",
          "-r", str(repo_dir / "requirements.txt")],
     )
     run(
