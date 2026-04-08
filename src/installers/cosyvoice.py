@@ -25,9 +25,11 @@ def install(settings: Settings) -> dict:
     # Install system dependencies
     run(["apt-get", "install", "-y", "-qq", "sox", "libsox-dev"], check=False)
 
-    # Install into system Python (CosyVoice has heavy deps that are
+    # Install into Python 3.10 (CosyVoice has heavy deps that are
     # difficult to install in an isolated venv due to openai-whisper
     # build issues and onnxruntime index conflicts)
+    run([SYSTEM_PYTHON, "-m", "ensurepip", "--upgrade"], check=False)
+    run([SYSTEM_PYTHON, "-m", "pip", "install", "-q", "--upgrade", "pip", "setuptools"])
     run([SYSTEM_PYTHON, "-m", "pip", "install", "-q",
          "-r", str(repo_dir / "requirements.txt")])
     run([SYSTEM_PYTHON, "-m", "pip", "install", "-q",
