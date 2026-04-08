@@ -29,7 +29,7 @@ COSYVOICE_BACKEND_PORT = 50000
 # - tensorrt-*: optional optimization; not needed for basic inference
 EXCLUDED_PACKAGES = {
     "openai-whisper",
-    "onnxruntime-gpu", "onnxruntime",
+    "onnxruntime-gpu",
     "grpcio", "grpcio-tools",
     "deepspeed",
     "tensorboard",
