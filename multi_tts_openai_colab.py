@@ -11,12 +11,22 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Irodori-TTS", "Kokoro", "MeloTTS", "Piper", "Piper-Plus", "Qwen3-TTS", "Style-Bert-VITS2", "VoxCPM2", "Voxtral-TTS"]
+ENGINE = "Kokoro"  #@param ["F5-TTS", "Fish-Speech", "Irodori-TTS", "Kokoro", "MeloTTS", "Piper", "Piper-Plus", "Qwen3-TTS", "Style-Bert-VITS2", "VoxCPM2", "Voxtral-TTS"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
 TEST_VOICE = ""  #@param {type:"string"}
 OPENAI_MODEL_ID = ""  #@param {type:"string"}
+
+#@markdown ---
+#@markdown F5-TTS (GPU required)
+F5TTS_MODEL = "F5TTS_v1_Base"  #@param {type:"string"}
+F5TTS_CKPT_FILE = ""  #@param {type:"string"}
+F5TTS_VOCAB_FILE = ""  #@param {type:"string"}
+
+#@markdown ---
+#@markdown Fish-Speech (A100/L4 GPU required, VRAM 24GB+)
+FISH_SPEECH_MODEL = "fishaudio/s2-pro"  #@param {type:"string"}
 
 #@markdown ---
 #@markdown Irodori-TTS
@@ -111,6 +121,14 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         TEST_VOICE,
         "--openai-model-id",
         OPENAI_MODEL_ID,
+        "--f5tts-model",
+        F5TTS_MODEL,
+        "--f5tts-ckpt-file",
+        F5TTS_CKPT_FILE,
+        "--f5tts-vocab-file",
+        F5TTS_VOCAB_FILE,
+        "--fish-speech-model",
+        FISH_SPEECH_MODEL,
         "--irodori-hf-checkpoint",
         IRODORI_HF_CHECKPOINT,
         "--irodori-codec-repo",

@@ -24,6 +24,10 @@ def parse_args():
     parser.add_argument("--test-speed", type=float, default=1.0)
     parser.add_argument("--test-voice", default="")
     parser.add_argument("--openai-model-id", default="")
+    parser.add_argument("--f5tts-model", default="F5TTS_v1_Base")
+    parser.add_argument("--fish-speech-model", default="fishaudio/s2-pro")
+    parser.add_argument("--f5tts-ckpt-file", default="")
+    parser.add_argument("--f5tts-vocab-file", default="")
     # V1を利用する場合: "Aratako/Irodori-TTS-500M"
     parser.add_argument("--irodori-hf-checkpoint", default="Aratako/Irodori-TTS-500M-v2")
     # V1を利用する場合: "facebook/dacvae-watermarked"
@@ -65,6 +69,10 @@ def main():
         test_speed=args.test_speed,
         test_voice=args.test_voice,
         openai_model_id=args.openai_model_id,
+        f5tts_model=args.f5tts_model,
+        f5tts_ckpt_file=args.f5tts_ckpt_file,
+        f5tts_vocab_file=args.f5tts_vocab_file,
+        fish_speech_model=args.fish_speech_model,
         irodori_hf_checkpoint=args.irodori_hf_checkpoint,
         irodori_codec_repo=args.irodori_codec_repo,
         irodori_model_precision=args.irodori_model_precision,
