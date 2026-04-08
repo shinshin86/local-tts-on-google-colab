@@ -24,12 +24,14 @@ COSYVOICE_BACKEND_PORT = 50000
 # - openai-whisper: only used for reference audio transcription
 # - onnxruntime-gpu/onnxruntime: inference uses PyTorch, not ONNX
 # - grpcio/grpcio-tools: v1.57.0 lacks 3.12 wheels; only for gRPC serving
+# - deepspeed: uses distutils (removed in Python 3.12); not needed for inference
 # - tensorboard: pulls in incompatible grpcio; not needed for inference
 # - tensorrt-*: optional optimization; not needed for basic inference
 EXCLUDED_PACKAGES = {
     "openai-whisper",
     "onnxruntime-gpu", "onnxruntime",
     "grpcio", "grpcio-tools",
+    "deepspeed",
     "tensorboard",
     "tensorrt-cu12", "tensorrt-cu12-bindings", "tensorrt-cu12-libs",
 }
