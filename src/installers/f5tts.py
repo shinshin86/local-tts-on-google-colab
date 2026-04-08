@@ -24,6 +24,7 @@ def install(settings: Settings) -> dict:
     env = {
         **os.environ,
         "PYTHONUNBUFFERED": "1",
+        "MPLBACKEND": "agg",
         "OPENAI_MODEL_ID": settings.openai_model_id or "f5-tts",
         "F5TTS_MODEL": settings.f5tts_model,
         "F5TTS_CKPT_FILE": settings.f5tts_ckpt_file,
