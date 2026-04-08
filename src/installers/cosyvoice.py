@@ -19,9 +19,12 @@ from src.runtime import (
 COSYVOICE_REPO_URL = "https://github.com/FunAudioLLM/CosyVoice.git"
 COSYVOICE_BACKEND_PORT = 50000
 
-# openai-whisper has build issues on Python 3.12+ and is only used for
-# reference audio transcription (zero-shot cloning), not for TTS inference.
-EXCLUDED_PACKAGES = {"openai-whisper"}
+# Packages excluded from CosyVoice requirements.txt:
+# - openai-whisper: build issues on Python 3.12+, only used for reference
+#   audio transcription (zero-shot cloning), not needed for TTS inference.
+# - onnxruntime-gpu: pinned to 1.18.0 which lacks Python 3.13 wheels.
+#   CosyVoice inference uses PyTorch, not ONNX Runtime.
+EXCLUDED_PACKAGES = {"openai-whisper", "onnxruntime-gpu"}
 
 
 def _filter_requirements(requirements_path):
