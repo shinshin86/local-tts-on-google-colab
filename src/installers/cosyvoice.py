@@ -86,8 +86,20 @@ def install(settings: Settings) -> dict:
     uv_pip_install(
         python_bin,
         ["fastapi", "uvicorn", "requests", "soundfile", "numpy",
-         "onnxruntime", "openai-whisper"],
+         "onnxruntime", "openai-whisper", "huggingface_hub"],
     )
+
+    # Download model from HuggingFace (modelscope's snapshot_download
+    # only checks ModelScope servers, so we pre-download via huggingface_hub
+    # and pass the local path to the backend)
+    model_local_dir = engine_dir / "model"
+    if not model_local_dir.exists():
+        run([
+            str(python_bin), "-c",
+            f"from huggingface_hub import snapshot_download; "
+            f"snapshot_download('{settings.cosyvoice_model_dir}', "
+            f"local_dir='{model_local_dir}')",
+        ])
 
     # Start CosyVoice backend server
     backend_env = {
@@ -102,7 +114,7 @@ def install(settings: Settings) -> dict:
             "--port",
             str(COSYVOICE_BACKEND_PORT),
             "--model_dir",
-            settings.cosyvoice_model_dir,
+            str(model_local_dir),
         ],
         cwd=str(repo_dir),
         env=backend_env,
