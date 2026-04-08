@@ -31,9 +31,7 @@ def install(settings: Settings) -> dict:
     if not checkpoint_dir.exists():
         run(
             [
-                str(python_bin),
-                "-m",
-                "huggingface_hub.cli",
+                str(engine_dir / ".venv" / "bin" / "huggingface-cli"),
                 "download",
                 settings.fish_speech_model,
                 "--local-dir",
