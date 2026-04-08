@@ -20,7 +20,7 @@ OPENAI_MODEL_ID = ""  #@param {type:"string"}
 
 #@markdown ---
 #@markdown CosyVoice2 (GPU required)
-COSYVOICE_MODEL_DIR = "iic/CosyVoice2-0.5B"  #@param ["iic/CosyVoice2-0.5B", "FunAudioLLM/CosyVoice-300M-SFT"]
+COSYVOICE_MODEL_DIR = "FunAudioLLM/CosyVoice2-0.5B"  #@param ["FunAudioLLM/CosyVoice2-0.5B", "FunAudioLLM/CosyVoice-300M-SFT"]
 
 #@markdown ---
 #@markdown F5-TTS (GPU required)
