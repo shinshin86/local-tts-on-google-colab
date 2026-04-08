@@ -11,7 +11,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Irodori-TTS", "Kokoro", "MeloTTS", "Piper", "Piper-Plus", "Qwen3-TTS", "Style-Bert-VITS2"]
+ENGINE = "Kokoro"  #@param ["Irodori-TTS", "Kokoro", "MeloTTS", "Piper", "Piper-Plus", "Qwen3-TTS", "Style-Bert-VITS2", "VoxCPM2", "Voxtral-TTS"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -58,6 +58,12 @@ PIPER_PLUS_MODEL = "tsukuyomi"  #@param {type:"string"}
 QWEN3_HF_MODEL = "Qwen/Qwen3-TTS-12Hz-0.6B-CustomVoice"  #@param ["Qwen/Qwen3-TTS-12Hz-0.6B-CustomVoice", "Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice"]
 QWEN3_LANGUAGE = "Japanese"  #@param ["Chinese", "English", "Japanese", "Korean", "German", "French", "Russian", "Portuguese", "Spanish", "Italian"]
 QWEN3_DEFAULT_SPEAKER = "ono_anna"  #@param ["aiden", "dylan", "eric", "ono_anna", "ryan", "serena", "sohee", "uncle_fu", "vivian"]
+
+#@markdown ---
+#@markdown VoxCPM2 (GPU required)
+VOXCPM_HF_MODEL = "openbmb/VoxCPM2"  #@param {type:"string"}
+VOXCPM_CFG_VALUE = 2.0  #@param {type:"number"}
+VOXCPM_INFERENCE_TIMESTEPS = 10  #@param {type:"integer"}
 
 import shlex
 import subprocess
@@ -143,6 +149,12 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         QWEN3_LANGUAGE,
         "--qwen3-default-speaker",
         QWEN3_DEFAULT_SPEAKER,
+        "--voxcpm-hf-model",
+        VOXCPM_HF_MODEL,
+        "--voxcpm-cfg-value",
+        str(VOXCPM_CFG_VALUE),
+        "--voxcpm-inference-timesteps",
+        str(VOXCPM_INFERENCE_TIMESTEPS),
     ]
     cmd.append("--expose-public-url" if EXPOSE_PUBLIC_URL else "--no-expose-public-url")
     return cmd
