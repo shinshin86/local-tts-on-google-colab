@@ -9,8 +9,8 @@ from src.runtime import ensure_git_clone, popen, run, tail_log, wait_http, write
 COSYVOICE_REPO_URL = "https://github.com/FunAudioLLM/CosyVoice.git"
 COSYVOICE_BACKEND_PORT = 50000
 
-# System Python 3.10 on Colab
-SYSTEM_PYTHON = "/usr/bin/python3"
+# Python 3.10 on Colab (openai-whisper==20231117 requires <=3.10)
+SYSTEM_PYTHON = "/usr/bin/python3.10"
 
 
 def install(settings: Settings) -> dict:
