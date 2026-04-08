@@ -36,8 +36,9 @@ def print_engine_voice_hints(settings: Settings):
     if settings.engine == "CosyVoice2":
         print("CosyVoice2 は FunAudioLLM の高品質 TTS です（9言語対応）。")
         print(f"モデル: {settings.cosyvoice_model_dir}")
-        print("voice パラメータは現在 'default' のみ対応です（ゼロショットクローニング）。")
+        print("voice パラメータは現在 'default' のみ対応です。")
         print("対応言語: 中国語, 英語, 日本語, 韓国語, ドイツ語, スペイン語, フランス語, イタリア語, ロシア語")
+        print("注意: openai-whisper は除外されているため、参照音声の自動書き起こしは利用できません。")
         print("注意: GPU 推奨（VRAM ~4-6GB）。ライセンス: Apache-2.0")
     elif settings.engine == "Fish-Speech":
         print("Fish Speech は fishaudio の高品質 TTS です（80言語以上対応）。")

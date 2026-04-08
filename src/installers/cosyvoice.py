@@ -1,13 +1,43 @@
 from __future__ import annotations
 
 import os
+import tempfile
 
 from src.config import Settings
-from src.runtime import ensure_git_clone, popen, run, tail_log, wait_http, write_text
+from src.runtime import (
+    ensure_git_clone,
+    ensure_venv,
+    popen,
+    run,
+    tail_log,
+    uv_pip_install,
+    wait_http,
+    write_text,
+)
 
 
 COSYVOICE_REPO_URL = "https://github.com/FunAudioLLM/CosyVoice.git"
 COSYVOICE_BACKEND_PORT = 50000
+
+# openai-whisper has build issues on Python 3.12+ and is only used for
+# reference audio transcription (zero-shot cloning), not for TTS inference.
+EXCLUDED_PACKAGES = {"openai-whisper"}
+
+
+def _filter_requirements(requirements_path):
+    """Filter out problematic packages from requirements.txt."""
+    filtered = tempfile.NamedTemporaryFile(
+        mode="w", suffix=".txt", delete=False, encoding="utf-8",
+    )
+    with open(requirements_path, encoding="utf-8") as f:
+        for line in f:
+            pkg_name = line.split("==")[0].split(">=")[0].split("<=")[0].strip().lower()
+            if pkg_name in EXCLUDED_PACKAGES:
+                continue
+            filtered.write(line)
+    filtered.close()
+    return filtered.name
+
 
 def install(settings: Settings) -> dict:
     engine_dir = settings.engines_dir / "cosyvoice"
@@ -18,22 +48,25 @@ def install(settings: Settings) -> dict:
     ensure_git_clone(COSYVOICE_REPO_URL, repo_dir)
     run(["git", "submodule", "update", "--init", "--recursive"], cwd=str(repo_dir))
 
-    # Install system dependencies (python3.10-venv needed for full python3.10)
-    run(["apt-get", "install", "-y", "-qq", "sox", "libsox-dev",
-         "python3.10-venv", "python3.10-dev"], check=False)
+    # Install system dependencies
+    run(["apt-get", "install", "-y", "-qq", "sox", "libsox-dev"], check=False)
 
-    # Create Python 3.10 venv with pip (openai-whisper needs Python <=3.10)
-    venv_dir = engine_dir / ".venv"
-    if not venv_dir.exists():
-        run(["/usr/bin/python3.10", "-m", "venv", str(venv_dir)])
-    python_bin = venv_dir / "bin" / "python"
-
-    # Install CosyVoice requirements
-    run([str(python_bin), "-m", "pip", "install", "-q", "--upgrade", "pip", "setuptools"])
-    run([str(python_bin), "-m", "pip", "install", "-q",
-         "-r", str(repo_dir / "requirements.txt")])
-    run([str(python_bin), "-m", "pip", "install", "-q",
-         "fastapi", "uvicorn", "requests", "soundfile", "numpy"])
+    # Create venv and install dependencies
+    # Note: openai-whisper is excluded because it has build issues on
+    # Python 3.12+. This means automatic transcription of reference audio
+    # for zero-shot voice cloning is not available. Provide ref_text
+    # manually if using zero-shot cloning features directly.
+    python_bin = ensure_venv(engine_dir)
+    filtered_req = _filter_requirements(repo_dir / "requirements.txt")
+    uv_pip_install(
+        python_bin,
+        ["--index-strategy", "unsafe-best-match", "-r", filtered_req],
+    )
+    os.unlink(filtered_req)
+    uv_pip_install(
+        python_bin,
+        ["fastapi", "uvicorn", "requests", "soundfile", "numpy"],
+    )
 
     # Start CosyVoice backend server
     backend_env = {
@@ -69,7 +102,7 @@ def install(settings: Settings) -> dict:
     }
     proc = popen(
         [
-            str(python_bin), "-m", "uvicorn",
+            str(engine_dir / ".venv" / "bin" / "uvicorn"),
             "app:app",
             "--host",
             "0.0.0.0",
