@@ -64,6 +64,9 @@ class Settings:
     qwen3_hf_model: str = "Qwen/Qwen3-TTS-12Hz-0.6B-CustomVoice"
     qwen3_language: str = "Japanese"
     qwen3_default_speaker: str = "ono_anna"
+    voxcpm_hf_model: str = "openbmb/VoxCPM2"
+    voxcpm_cfg_value: float = 2.0
+    voxcpm_inference_timesteps: int = 10
     voxtral_hf_model: str = "mistralai/Voxtral-4B-TTS-2603"
     voxtral_default_voice: str = "neutral_female"
     voxtral_backend_port: int = 5001

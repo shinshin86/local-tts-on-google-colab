@@ -54,6 +54,11 @@ def print_engine_voice_hints(settings: Settings):
         print(f"language: {settings.qwen3_language}")
         print(f"デフォルト speaker: {settings.qwen3_default_speaker}")
         print("候補: aiden, dylan, eric, ono_anna, ryan, serena, sohee, uncle_fu, vivian")
+    elif settings.engine == "VoxCPM2":
+        print("VoxCPM2 は OpenBMB の高品質 TTS です（30言語対応、言語自動検出）。")
+        print(f"モデル: {settings.voxcpm_hf_model}")
+        print("voice パラメータは現在 'default' のみ対応です。")
+        print("注意: GPU 推奨（VRAM ~8GB）。ライセンス: Apache-2.0")
     elif settings.engine == "Voxtral-TTS":
         print("Voxtral-TTS は Mistral AI の高品質 TTS です（vLLM バックエンド）。")
         print(f"モデル: {settings.voxtral_hf_model}")

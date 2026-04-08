@@ -45,6 +45,9 @@ def parse_args():
     parser.add_argument("--qwen3-hf-model", default="Qwen/Qwen3-TTS-12Hz-0.6B-CustomVoice")
     parser.add_argument("--qwen3-language", default="Japanese")
     parser.add_argument("--qwen3-default-speaker", default="ono_anna")
+    parser.add_argument("--voxcpm-hf-model", default="openbmb/VoxCPM2")
+    parser.add_argument("--voxcpm-cfg-value", type=float, default=2.0)
+    parser.add_argument("--voxcpm-inference-timesteps", type=int, default=10)
     parser.add_argument("--voxtral-hf-model", default="mistralai/Voxtral-4B-TTS-2603")
     parser.add_argument("--voxtral-default-voice", default="neutral_female")
     parser.add_argument("--voxtral-backend-port", type=int, default=5001)
@@ -81,6 +84,9 @@ def main():
         qwen3_hf_model=args.qwen3_hf_model,
         qwen3_language=args.qwen3_language,
         qwen3_default_speaker=args.qwen3_default_speaker,
+        voxcpm_hf_model=args.voxcpm_hf_model,
+        voxcpm_cfg_value=args.voxcpm_cfg_value,
+        voxcpm_inference_timesteps=args.voxcpm_inference_timesteps,
         voxtral_hf_model=args.voxtral_hf_model,
         voxtral_default_voice=args.voxtral_default_voice,
         voxtral_backend_port=args.voxtral_backend_port,
