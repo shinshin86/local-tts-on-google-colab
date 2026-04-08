@@ -43,7 +43,6 @@ class Settings:
     test_speed: float = 1.0
     test_voice: str = ""
     openai_model_id: str = ""
-    cosyvoice_model_dir: str = "FunAudioLLM/CosyVoice2-0.5B"
     f5tts_model: str = "F5TTS_v1_Base"
     fish_speech_model: str = "fishaudio/s2-pro"
     f5tts_ckpt_file: str = ""

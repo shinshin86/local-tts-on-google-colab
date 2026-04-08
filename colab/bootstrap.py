@@ -24,7 +24,6 @@ def parse_args():
     parser.add_argument("--test-speed", type=float, default=1.0)
     parser.add_argument("--test-voice", default="")
     parser.add_argument("--openai-model-id", default="")
-    parser.add_argument("--cosyvoice-model-dir", default="FunAudioLLM/CosyVoice2-0.5B")
     parser.add_argument("--f5tts-model", default="F5TTS_v1_Base")
     parser.add_argument("--fish-speech-model", default="fishaudio/s2-pro")
     parser.add_argument("--f5tts-ckpt-file", default="")
@@ -70,7 +69,6 @@ def main():
         test_speed=args.test_speed,
         test_voice=args.test_voice,
         openai_model_id=args.openai_model_id,
-        cosyvoice_model_dir=args.cosyvoice_model_dir,
         f5tts_model=args.f5tts_model,
         f5tts_ckpt_file=args.f5tts_ckpt_file,
         f5tts_vocab_file=args.f5tts_vocab_file,

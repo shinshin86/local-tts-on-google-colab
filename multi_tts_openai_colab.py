@@ -11,16 +11,12 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["CosyVoice2", "F5-TTS", "Fish-Speech", "Irodori-TTS", "Kokoro", "MeloTTS", "Piper", "Piper-Plus", "Qwen3-TTS", "Style-Bert-VITS2", "VoxCPM2", "Voxtral-TTS"]
+ENGINE = "Kokoro"  #@param ["F5-TTS", "Fish-Speech", "Irodori-TTS", "Kokoro", "MeloTTS", "Piper", "Piper-Plus", "Qwen3-TTS", "Style-Bert-VITS2", "VoxCPM2", "Voxtral-TTS"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
 TEST_VOICE = ""  #@param {type:"string"}
 OPENAI_MODEL_ID = ""  #@param {type:"string"}
-
-#@markdown ---
-#@markdown CosyVoice2 (GPU required)
-COSYVOICE_MODEL_DIR = "FunAudioLLM/CosyVoice2-0.5B"  #@param ["FunAudioLLM/CosyVoice2-0.5B", "FunAudioLLM/CosyVoice-300M-SFT"]
 
 #@markdown ---
 #@markdown F5-TTS (GPU required)
@@ -125,8 +121,6 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         TEST_VOICE,
         "--openai-model-id",
         OPENAI_MODEL_ID,
-        "--cosyvoice-model-dir",
-        COSYVOICE_MODEL_DIR,
         "--f5tts-model",
         F5TTS_MODEL,
         "--f5tts-ckpt-file",

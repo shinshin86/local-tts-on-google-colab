@@ -1,4 +1,3 @@
-from .cosyvoice import install as install_cosyvoice
 from .f5tts import install as install_f5tts
 from .fish_speech import install as install_fish_speech
 from .irodori import install as install_irodori
@@ -13,7 +12,6 @@ from .voxtral import install as install_voxtral
 
 
 INSTALLERS = {
-    "CosyVoice2": install_cosyvoice,
     "F5-TTS": install_f5tts,
     "Fish-Speech": install_fish_speech,
     "Irodori-TTS": install_irodori,
