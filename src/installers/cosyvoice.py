@@ -78,9 +78,11 @@ def install(settings: Settings) -> dict:
         ["--index-strategy", "unsafe-best-match", "-r", filtered_req],
     )
     os.unlink(filtered_req)
+    # onnxruntime-gpu was excluded (no 3.12 wheels) but the frontend
+    # needs onnxruntime at runtime, so install the CPU version
     uv_pip_install(
         python_bin,
-        ["fastapi", "uvicorn", "requests", "soundfile", "numpy"],
+        ["fastapi", "uvicorn", "requests", "soundfile", "numpy", "onnxruntime"],
     )
 
     # Start CosyVoice backend server
