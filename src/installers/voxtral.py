@@ -41,7 +41,7 @@ def install(settings: Settings) -> dict:
     uv_pip_install(
         python_bin,
         [
-            "vllm-omni @ git+https://github.com/vllm-project/vllm-omni.git",
+            "vllm-omni @ git+https://github.com/vllm-project/vllm-omni.git@4c031580cffa99ac8b96ba14055ba78678362436",
         ],
     )
     # Find the stage config YAML path inside vllm_omni package
