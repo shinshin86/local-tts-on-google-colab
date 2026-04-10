@@ -12,6 +12,8 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | Piper-Plus | 動作OK | 日本語 / 英語 / 中国語 他 6言語 |
 | Qwen3-TTS | 動作OK (GPU必須) | 日本語 / 英語 / 中国語 他 10言語 |
 | VoxCPM2 | 動作OK (GPU必須) | 日本語 / 英語 / 中国語 他 30言語 |
+| TinyTTS | 動作OK | 英語 |
+| Voxtral-TTS | 未確認 (GPU必須・VRAM 16GB+) | 英語 / フランス語 / スペイン語 他 9言語 |
 | F5-TTS | 動作OK (GPU必須) | 英語 / 中国語（日本語は別モデル） |
 | Fish-Speech | 動作不可 | 日本語 / 英語 / 中国語 他 80言語以上 |
 | MeloTTS | 動作不可 | - |
@@ -50,7 +52,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Irodori-TTS", "Kokoro", "MeloTTS", "Piper", "Piper-Plus", "Qwen3-TTS", "Style-Bert-VITS2"]
+ENGINE = "Kokoro"  #@param ["Irodori-TTS", "Kokoro", "MeloTTS", "Piper", "Piper-Plus", "Qwen3-TTS", "Style-Bert-VITS2", "TinyTTS", "Voxtral-TTS"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -267,6 +269,14 @@ main()
 
 [OpenBMB/VoxCPM](https://github.com/OpenBMB/VoxCPM) を使った高品質 TTS です。2B パラメータのモデルで、日本語を含む 30 言語に対応しており、言語を自動検出します。ゼロショット TTS、声デザイン（テキスト記述から声生成）、音声クローニングなどの機能を持ちます。GPU ランタイム（T4 以上、VRAM ~8GB）が必要です。ライセンス: Apache 2.0。
 
+### TinyTTS
+
+[ecyht2/tiny-tts](https://github.com/ecyht2/tiny-tts) を使った超軽量の英語 TTS です。モデルはわずか 1.6M パラメータ（約 3.4MB）で、GPU 不要・CPU のみで 53 倍速のリアルタイム合成が可能です。音声は 44.1kHz で出力されます。voice の切り替え機能はありません。ライセンス: Apache 2.0。
+
+### Voxtral-TTS
+
+[mistralai/Voxtral-4B-TTS-2603](https://huggingface.co/mistralai/Voxtral-4B-TTS-2603) を使った多言語 TTS です。4B パラメータのモデルで、英語・フランス語・スペイン語・ドイツ語・イタリア語・ポルトガル語・オランダ語・アラビア語・ヒンディー語の 9 言語に対応しています。20 種類のプリセットボイスを内蔵し、wav / mp3 / flac / aac / opus など複数フォーマットに対応しています。バックエンドに vLLM + vllm-omni を使用します。GPU ランタイム（VRAM 16GB 以上）が必要で、Colab 無料枠の T4（15GB）では動作しない可能性があります。ライセンス: CC BY-NC 4.0（非商用のみ）。
+
 ### F5-TTS
 
 [SWivid/F5-TTS](https://github.com/SWivid/F5-TTS) を使ったゼロショット音声クローニング TTS です。参照音声の声質を模倣して音声を生成します。パッケージ同梱のデフォルト参照音声（英語女性）を使用します。日本語モデルを使う場合は `--f5tts-ckpt-file` / `--f5tts-vocab-file` でコミュニティ提供の日本語チェックポイントを指定してください。GPU ランタイム（T4 以上）が必要です。ライセンス: コード MIT / モデル CC-BY-NC。
@@ -299,6 +309,8 @@ main()
 | Piper-Plus | MIT | MIT | OK | |
 | Qwen3-TTS | Apache 2.0 | Apache 2.0 | OK | |
 | VoxCPM2 | Apache 2.0 | Apache 2.0 | OK | |
+| TinyTTS | Apache 2.0 | Apache 2.0 | OK | |
+| Voxtral-TTS | — | CC BY-NC 4.0 | 不可 | vLLM + vllm-omni 経由。音声データセットのライセンス制約により非商用 |
 | F5-TTS | MIT | CC-BY-NC | 不可（モデル） | モデル重みは Emilia データセットの制約により非商用 |
 | Fish-Speech | Apache 2.0 | Apache 2.0 | OK | A100/L4 GPU 必須（VRAM 24GB+） |
 
@@ -332,6 +344,10 @@ main()
   https://github.com/QwenLM/Qwen3-TTS
 - VoxCPM2
   https://github.com/OpenBMB/VoxCPM
+- TinyTTS
+  https://github.com/ecyht2/tiny-tts
+- Voxtral-TTS
+  https://huggingface.co/mistralai/Voxtral-4B-TTS-2603
 - F5-TTS
   https://github.com/SWivid/F5-TTS
 - Fish Speech
