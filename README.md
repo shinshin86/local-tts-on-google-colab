@@ -15,7 +15,7 @@ Supported engines:
 | Qwen3-TTS | Works (GPU required) | Japanese / English / Chinese and 10 languages |
 | VoxCPM2 | Works (GPU required) | Japanese / English / Chinese and 30 languages |
 | TinyTTS | Works | English |
-| Voxtral-TTS | Unverified (GPU required, VRAM 16GB+) | English / French / Spanish and 9 languages |
+| Voxtral-TTS | Works (GPU required, VRAM 16GB+) | English / French / Spanish and 9 languages |
 | F5-TTS | Works (GPU required) | English / Chinese (Japanese via separate model) |
 | Fish-Speech | Not working | Japanese / English / Chinese and 80+ languages |
 | MeloTTS | Not working | - |
@@ -277,7 +277,7 @@ An ultra-lightweight English TTS using [ecyht2/tiny-tts](https://github.com/ecyh
 
 ### Voxtral-TTS
 
-A multilingual TTS using [mistralai/Voxtral-4B-TTS-2603](https://huggingface.co/mistralai/Voxtral-4B-TTS-2603). A 4B-parameter model supporting 9 languages: English, French, Spanish, German, Italian, Portuguese, Dutch, Arabic, and Hindi. It includes 20 preset voices and supports multiple formats such as wav / mp3 / flac / aac / opus. The backend uses vLLM + vllm-omni. A GPU runtime (VRAM 16GB or more) is required, and it may not work on Colab's free-tier T4 (15GB). License: CC BY-NC 4.0 (non-commercial only).
+A multilingual TTS using [mistralai/Voxtral-4B-TTS-2603](https://huggingface.co/mistralai/Voxtral-4B-TTS-2603). A 4B-parameter model supporting 9 languages: English, French, Spanish, German, Italian, Portuguese, Dutch, Arabic, and Hindi. It includes 20 preset voices and supports multiple formats such as wav / mp3 / flac / aac / opus. The backend uses vLLM + vllm-omni. A GPU runtime (VRAM 16GB or more) is required. Verified working on Colab A100 (40GB VRAM); may not work on the free-tier T4 (15GB) due to VRAM requirements. License: CC BY-NC 4.0 (non-commercial only).
 
 ### F5-TTS
 
