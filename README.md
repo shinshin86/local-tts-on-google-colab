@@ -1,50 +1,52 @@
 # local-tts-on-google-colab
 
-Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/v1/audio/speech` として起動し、動作確認できるようにするためのサンプルです。
+**English** | [日本語](README.ja.md)
 
-対象エンジン:
+A sample project that temporarily launches a selected local TTS engine on Google Colab as an OpenAI-compatible `/v1/audio/speech` endpoint for quick evaluation.
 
-| エンジン | Colab 動作確認 | 言語 |
+Supported engines:
+
+| Engine | Colab Status | Languages |
 |---|---|---|
-| Kokoro | 動作OK | 日本語 / 英語 / 中国語 他 |
-| Irodori-TTS | 動作OK | 日本語 |
-| Piper | 動作OK | 英語（デフォルト）/ 多言語 |
-| Piper-Plus | 動作OK | 日本語 / 英語 / 中国語 他 6言語 |
-| Qwen3-TTS | 動作OK (GPU必須) | 日本語 / 英語 / 中国語 他 10言語 |
-| VoxCPM2 | 動作OK (GPU必須) | 日本語 / 英語 / 中国語 他 30言語 |
-| TinyTTS | 動作OK | 英語 |
-| Voxtral-TTS | 未確認 (GPU必須・VRAM 16GB+) | 英語 / フランス語 / スペイン語 他 9言語 |
-| F5-TTS | 動作OK (GPU必須) | 英語 / 中国語（日本語は別モデル） |
-| Fish-Speech | 動作不可 | 日本語 / 英語 / 中国語 他 80言語以上 |
-| MeloTTS | 動作不可 | - |
-| Style-Bert-VITS2 | 動作不可 | - |
-| CosyVoice2 | 動作不可 | - |
+| Kokoro | Works | Japanese / English / Chinese and more |
+| Irodori-TTS | Works | Japanese |
+| Piper | Works | English (default) / multilingual |
+| Piper-Plus | Works | Japanese / English / Chinese and 6 languages |
+| Qwen3-TTS | Works (GPU required) | Japanese / English / Chinese and 10 languages |
+| VoxCPM2 | Works (GPU required) | Japanese / English / Chinese and 30 languages |
+| TinyTTS | Works | English |
+| Voxtral-TTS | Unverified (GPU required, VRAM 16GB+) | English / French / Spanish and 9 languages |
+| F5-TTS | Works (GPU required) | English / Chinese (Japanese via separate model) |
+| Fish-Speech | Not working | Japanese / English / Chinese and 80+ languages |
+| MeloTTS | Not working | - |
+| Style-Bert-VITS2 | Not working | - |
+| CosyVoice2 | Not working | - |
 
-`MeloTTS`、`Style-Bert-VITS2`、`CosyVoice2` は Colab の uv + venv 環境で依存解決に問題があり、現時点では動作しません。
+`MeloTTS`, `Style-Bert-VITS2`, and `CosyVoice2` currently have dependency resolution issues under Colab's uv + venv environment and do not work.
 
-`Fish-Speech` は VRAM 24GB 以上が必要で A100/L4 GPU を想定していますが、Colab 環境ではモデルロード時に OOM（メモリ不足）でランタイムがクラッシュするため、現時点では動作しません。
+`Fish-Speech` requires 24GB+ VRAM and targets A100/L4 GPUs. On Colab, the runtime crashes with OOM (out of memory) during model loading, so it currently does not work.
 
-`VOICEVOX` は含めていません。
+`VOICEVOX` is not included.
 
-## 使い方
+## Usage
 
-### 最短手順
+### Quickest path
 
-Colab では、以下のコードを 1 つのコードセルにそのまま貼り付けて実行するのを推奨します。
+On Colab, it is recommended to paste the following code into a single cell and run it.
 
-このセルは以下を自動で行います。
+The cell automatically does the following:
 
-- 指定した `REPO_URL` / `REPO_REF` を clone / checkout
-- `colab/bootstrap.py` を呼び出して選択した TTS を起動
-- 必要なら `trycloudflare` の公開 URL も作成
+- Clones/checks out the specified `REPO_URL` / `REPO_REF`
+- Calls `colab/bootstrap.py` to start the selected TTS
+- Optionally creates a `trycloudflare` public URL
 
-`REPO_REF` には `main`、タグ、commit SHA を指定できます。再現性のため、常用時はタグか commit SHA を推奨します。
+`REPO_REF` accepts `main`, a tag, or a commit SHA. For reproducibility, a tag or commit SHA is recommended for normal use.
 
-要点:
+Key points:
 
-- まずは `ENGINE` と `REPO_REF` だけ触れば十分です
-- 細かい engine 別パラメータは必要になったときだけ変更します
-- 同内容のセルは [multi_tts_openai_colab.py](multi_tts_openai_colab.py) にあります
+- Start by only touching `ENGINE` and `REPO_REF`
+- Only adjust engine-specific parameters when you actually need to
+- The same cell contents are available in [multi_tts_openai_colab.py](multi_tts_openai_colab.py)
 
 ```python
 #@title Local TTS on Google Colab -> OpenAI Compatible `/v1/audio/speech`
@@ -61,7 +63,7 @@ OPENAI_MODEL_ID = ""  #@param {type:"string"}
 
 #@markdown ---
 #@markdown Irodori-TTS
-# V1を利用する場合: checkpoint="Aratako/Irodori-TTS-500M", codec_repo="facebook/dacvae-watermarked"
+# To use V1: checkpoint="Aratako/Irodori-TTS-500M", codec_repo="facebook/dacvae-watermarked"
 IRODORI_HF_CHECKPOINT = "Aratako/Irodori-TTS-500M-v2"  #@param {type:"string"}
 IRODORI_CODEC_REPO = "Aratako/Semantic-DACVAE-Japanese-32dim"  #@param {type:"string"}
 IRODORI_MODEL_PRECISION = "fp32"  #@param ["fp32", "bf16", "fp16"]
@@ -196,44 +198,44 @@ def main():
 main()
 ```
 
-### 実行後の確認
+### After running
 
-成功すると、以下が順に表示されます。
+On success, you will see the following in order:
 
-- ローカル URL
+- The local URL
 - `/v1/models`
 - `/v1/voices`
-- テスト WAV の出力先
-- 必要なら `trycloudflare` の公開 URL
+- The output path of the test WAV
+- Optionally, the `trycloudflare` public URL
 
-最初に確認するなら `Kokoro` を推奨します。
+For your first try, `Kokoro` is recommended.
 
-この実装は「1ランタイムで1エンジンずつ」の運用を前提にしています。別エンジンを試すときは、ランタイムを再起動してから再実行する想定です。
+This setup assumes "one engine per runtime". To try a different engine, restart the runtime before re-running.
 
-### 上級者向け
+### For advanced users
 
-すでに clone 済みのリポジトリ上で直接起動したい場合は `colab/bootstrap.py` を呼べます。
+If you want to launch directly from an already-cloned repository, you can call `colab/bootstrap.py`.
 
 ```python
 !python colab/bootstrap.py --engine Kokoro --expose-public-url
 ```
 
-依存導入やサーバ起動を行わずに設定だけ確認したい場合は `--dry-run` を使います。
+If you just want to check the configuration without installing dependencies or starting the server, use `--dry-run`.
 
 ```python
 !python colab/bootstrap.py --engine Kokoro --dry-run
 ```
 
-## OpenAI 互換の範囲
+## OpenAI Compatibility Scope
 
-対応エンドポイント:
+Supported endpoints:
 
 - `GET /`
 - `GET /v1/models`
 - `GET /v1/voices`
 - `POST /v1/audio/speech`
 
-互換対象の主な入力:
+Main compatible inputs:
 
 - `model`
 - `input`
@@ -241,90 +243,90 @@ main()
 - `speed`
 - `response_format`
 
-このサンプルは `wav` 固定です。`mp3` などへの変換は行っていません。
+This sample is fixed to `wav`. Conversion to formats like `mp3` is not performed.
 
-## エンジンごとの補足
+## Engine-specific notes
 
 ### Kokoro
 
-[hexgrad/kokoro](https://github.com/hexgrad/kokoro) を使った日本語・英語・中国語対応の軽量 TTS です。デフォルト voice は日本語の `jf_alpha` で、フォームから 9 種類の voice を選べます。
+A lightweight TTS using [hexgrad/kokoro](https://github.com/hexgrad/kokoro), supporting Japanese, English, and Chinese. The default voice is the Japanese `jf_alpha`, and 9 voices can be selected from the form.
 
 ### Irodori-TTS
 
-[Aratako/Irodori-TTS](https://github.com/Aratako/Irodori-TTS) を使った日本語 TTS です。デフォルトで Hugging Face の `Aratako/Irodori-TTS-500M-v2` モデルを使用します（V1 を利用する場合は `Aratako/Irodori-TTS-500M` に変更してください）。出力は 48kHz で高音質ですが、voice の切り替え機能はありません。
+A Japanese TTS using [Aratako/Irodori-TTS](https://github.com/Aratako/Irodori-TTS). By default it uses the Hugging Face model `Aratako/Irodori-TTS-500M-v2` (to use V1, change it to `Aratako/Irodori-TTS-500M`). Output is high-quality 48 kHz, but there is no voice switching.
 
 ### Piper
 
-[piper-tts](https://github.com/OHF-Voice/piper1-gpl) の内蔵 HTTP サーバーをバックエンドとして起動し、その前段に OpenAI 互換ラッパーを載せています。デフォルトは英語の `en_US-lessac-medium` です。依存が軽く、セットアップが安定しています。
+Launches the [piper-tts](https://github.com/OHF-Voice/piper1-gpl) built-in HTTP server as a backend and puts an OpenAI-compatible wrapper in front of it. The default is the English `en_US-lessac-medium`. Dependencies are light and setup is stable.
 
 ### Piper-Plus
 
-[ayutaz/piper-plus](https://github.com/ayutaz/piper-plus) をベースにした日本語対応の軽量 TTS です。元の Piper から日本語品質（OpenJTalk + プロソディ）と GPL フリー（MIT ライセンス）の方向で強化されています。GPU 不要で、CPU でも高速に動作します。デフォルトモデルは `tsukuyomi`（日本語女性）です。
+A lightweight, Japanese-capable TTS based on [ayutaz/piper-plus](https://github.com/ayutaz/piper-plus). It enhances the original Piper with better Japanese quality (OpenJTalk + prosody) and a GPL-free (MIT) license. No GPU required, runs quickly on CPU. The default model is `tsukuyomi` (Japanese female).
 
 ### Qwen3-TTS
 
-[QwenLM/Qwen3-TTS](https://github.com/QwenLM/Qwen3-TTS) を使った多言語高品質 TTS です。9 種類の話者を内蔵し、日本語を含む 10 言語に対応しています。GPU ランタイム（T4 以上）が必要です。デフォルトは 0.6B モデル（軽量）で、フォームから 1.7B モデルも選べます。Apache 2.0 ライセンスです。
+A high-quality multilingual TTS using [QwenLM/Qwen3-TTS](https://github.com/QwenLM/Qwen3-TTS). It includes 9 speakers and supports 10 languages including Japanese. A GPU runtime (T4 or higher) is required. The default is the 0.6B model (lightweight), and the 1.7B model can also be selected from the form. Apache 2.0 licensed.
 
 ### VoxCPM2
 
-[OpenBMB/VoxCPM](https://github.com/OpenBMB/VoxCPM) を使った高品質 TTS です。2B パラメータのモデルで、日本語を含む 30 言語に対応しており、言語を自動検出します。ゼロショット TTS、声デザイン（テキスト記述から声生成）、音声クローニングなどの機能を持ちます。GPU ランタイム（T4 以上、VRAM ~8GB）が必要です。ライセンス: Apache 2.0。
+A high-quality TTS using [OpenBMB/VoxCPM](https://github.com/OpenBMB/VoxCPM). A 2B-parameter model that supports 30 languages including Japanese, with automatic language detection. Features include zero-shot TTS, voice design (generate voice from text description), and voice cloning. A GPU runtime (T4 or higher, ~8GB VRAM) is required. License: Apache 2.0.
 
 ### TinyTTS
 
-[ecyht2/tiny-tts](https://github.com/ecyht2/tiny-tts) を使った超軽量の英語 TTS です。モデルはわずか 1.6M パラメータ（約 3.4MB）で、GPU 不要・CPU のみで 53 倍速のリアルタイム合成が可能です。音声は 44.1kHz で出力されます。voice の切り替え機能はありません。ライセンス: Apache 2.0。
+An ultra-lightweight English TTS using [ecyht2/tiny-tts](https://github.com/ecyht2/tiny-tts). The model has only 1.6M parameters (~3.4 MB), no GPU required, and can synthesize speech at 53× real-time on CPU alone. Audio is output at 44.1 kHz. There is no voice switching. License: Apache 2.0.
 
 ### Voxtral-TTS
 
-[mistralai/Voxtral-4B-TTS-2603](https://huggingface.co/mistralai/Voxtral-4B-TTS-2603) を使った多言語 TTS です。4B パラメータのモデルで、英語・フランス語・スペイン語・ドイツ語・イタリア語・ポルトガル語・オランダ語・アラビア語・ヒンディー語の 9 言語に対応しています。20 種類のプリセットボイスを内蔵し、wav / mp3 / flac / aac / opus など複数フォーマットに対応しています。バックエンドに vLLM + vllm-omni を使用します。GPU ランタイム（VRAM 16GB 以上）が必要で、Colab 無料枠の T4（15GB）では動作しない可能性があります。ライセンス: CC BY-NC 4.0（非商用のみ）。
+A multilingual TTS using [mistralai/Voxtral-4B-TTS-2603](https://huggingface.co/mistralai/Voxtral-4B-TTS-2603). A 4B-parameter model supporting 9 languages: English, French, Spanish, German, Italian, Portuguese, Dutch, Arabic, and Hindi. It includes 20 preset voices and supports multiple formats such as wav / mp3 / flac / aac / opus. The backend uses vLLM + vllm-omni. A GPU runtime (VRAM 16GB or more) is required, and it may not work on Colab's free-tier T4 (15GB). License: CC BY-NC 4.0 (non-commercial only).
 
 ### F5-TTS
 
-[SWivid/F5-TTS](https://github.com/SWivid/F5-TTS) を使ったゼロショット音声クローニング TTS です。参照音声の声質を模倣して音声を生成します。パッケージ同梱のデフォルト参照音声（英語女性）を使用します。日本語モデルを使う場合は `--f5tts-ckpt-file` / `--f5tts-vocab-file` でコミュニティ提供の日本語チェックポイントを指定してください。GPU ランタイム（T4 以上）が必要です。ライセンス: コード MIT / モデル CC-BY-NC。
+A zero-shot voice cloning TTS using [SWivid/F5-TTS](https://github.com/SWivid/F5-TTS). It mimics the voice quality of a reference audio to generate speech. Uses the default reference audio bundled with the package (English female). To use a Japanese model, specify a community-provided Japanese checkpoint with `--f5tts-ckpt-file` / `--f5tts-vocab-file`. A GPU runtime (T4 or higher) is required. License: code MIT / model CC-BY-NC.
 
-### Fish-Speech (現在動作不可)
+### Fish-Speech (currently not working)
 
-[fishaudio/fish-speech](https://github.com/fishaudio/fish-speech) を使った高品質 TTS です。日本語は Tier 1 サポート（最高品質）で、80 言語以上に対応しています。VRAM 24GB 以上が必要で A100/L4 GPU を想定していますが、Colab 環境ではモデルロード時に OOM（メモリ不足）でランタイムがクラッシュするため、現時点では動作しません。ライセンス: Apache 2.0。
+A high-quality TTS using [fishaudio/fish-speech](https://github.com/fishaudio/fish-speech). Japanese is Tier 1 supported (highest quality) and it supports 80+ languages. It requires 24GB+ VRAM and targets A100/L4 GPUs, but on Colab the runtime crashes with OOM during model loading, so it currently does not work. License: Apache 2.0.
 
-### CosyVoice2 (現在動作不可)
+### CosyVoice2 (currently not working)
 
-[FunAudioLLM/CosyVoice](https://github.com/FunAudioLLM/CosyVoice) を使う構成ですが、依存パッケージ（openai-whisper、onnxruntime-gpu、grpcio、deepspeed、lightning 等）が Python 3.12+ に対応しておらず、Colab の uv + venv 環境ではセットアップが完了しません。
+Intended to use [FunAudioLLM/CosyVoice](https://github.com/FunAudioLLM/CosyVoice), but dependent packages (openai-whisper, onnxruntime-gpu, grpcio, deepspeed, lightning, etc.) do not support Python 3.12+, so setup does not complete in Colab's uv + venv environment.
 
-### MeloTTS (現在動作不可)
+### MeloTTS (currently not working)
 
-[myshell-ai/MeloTTS](https://github.com/myshell-ai/MeloTTS) を使う構成ですが、依存パッケージ `tokenizers` のビルドに Rust コンパイラが必要なため、現在の Colab 環境ではインストールに失敗します。
+Intended to use [myshell-ai/MeloTTS](https://github.com/myshell-ai/MeloTTS), but the dependency `tokenizers` requires a Rust compiler to build, so installation fails in the current Colab environment.
 
-### Style-Bert-VITS2 (現在動作不可)
+### Style-Bert-VITS2 (currently not working)
 
-[litagin02/Style-Bert-VITS2](https://github.com/litagin02/Style-Bert-VITS2) を使う構成ですが、`setuptools` / `torch` / `scipy` の依存整合性が取れず、現在の Colab 環境では音声合成まで到達できません。
+Intended to use [litagin02/Style-Bert-VITS2](https://github.com/litagin02/Style-Bert-VITS2), but `setuptools` / `torch` / `scipy` dependency conflicts cannot be resolved, and speech synthesis is not reachable in the current Colab environment.
 
-## ライセンス
+## License
 
-各エンジンのライセンスは以下の通りです。利用時は各プロジェクトの最新のライセンス条件を必ず確認してください。
+The license for each engine is as follows. When using them, always check each project's latest license terms.
 
-| エンジン | コード | モデル重み | 商用利用 | 備考 |
+| Engine | Code | Model Weights | Commercial Use | Notes |
 |---|---|---|---|---|
 | Kokoro | Apache 2.0 | Apache 2.0 | OK | |
-| Irodori-TTS | MIT | MIT | OK | なりすまし・ディープフェイク生成を禁止する倫理規定あり |
-| Piper | GPL-3.0 | MIT | 要注意 | デフォルト音声 `en_US-lessac-medium` の学習データ（Blizzard 2013）は研究目的限定・商用利用不可 |
+| Irodori-TTS | MIT | MIT | OK | Ethical policy prohibits impersonation / deepfake generation |
+| Piper | GPL-3.0 | MIT | Caution | The default voice `en_US-lessac-medium` is trained on the Blizzard 2013 dataset (Lessac Technologies), which is research-only and prohibits commercial use |
 | Piper-Plus | MIT | MIT | OK | |
 | Qwen3-TTS | Apache 2.0 | Apache 2.0 | OK | |
 | VoxCPM2 | Apache 2.0 | Apache 2.0 | OK | |
 | TinyTTS | Apache 2.0 | Apache 2.0 | OK | |
-| Voxtral-TTS | — | CC BY-NC 4.0 | 不可 | vLLM + vllm-omni 経由。音声データセットのライセンス制約により非商用 |
-| F5-TTS | MIT | CC-BY-NC | 不可（モデル） | モデル重みは Emilia データセットの制約により非商用 |
-| Fish-Speech | Apache 2.0 | Apache 2.0 | OK | A100/L4 GPU 必須（VRAM 24GB+） |
+| Voxtral-TTS | — | CC BY-NC 4.0 | Not allowed | Via vLLM + vllm-omni. Non-commercial due to voice dataset license constraints |
+| F5-TTS | MIT | CC-BY-NC | Not allowed (model) | Model weights are non-commercial due to Emilia dataset constraints |
+| Fish-Speech | Apache 2.0 | Apache 2.0 | OK | Requires A100/L4 GPU (VRAM 24GB+) |
 
-**Piper について**: `piper-tts` パッケージは GPL-3.0 です。また、デフォルトの `en_US-lessac-medium` 音声は Lessac Technologies 提供の Blizzard 2013 データセットで学習されており、このデータセットのライセンスは商用利用を禁止しています。商用利用が必要な場合は、許容的なライセンスで学習された別の voice モデルを選択してください。
+**About Piper**: The `piper-tts` package is GPL-3.0. Also, the default `en_US-lessac-medium` voice is trained on the Blizzard 2013 dataset provided by Lessac Technologies, and its license prohibits commercial use. If you need commercial use, choose another voice model trained with a permissive license.
 
-このリポジトリ自体は短時間の動作確認・技術検証を目的としています。
+This repository itself is intended for short-term operational verification and technical evaluation.
 
-## 注意点
+## Notes
 
-- Colab の管理ランタイムでは、外部公開やプロキシ利用は恒常運用向きではありません。このリポジトリは短時間の動作確認用です。
-- エンジンごとに依存が重いため、別エンジンへの切り替えはランタイム再起動前提にしています。
-- 各エンジン・音声モデルのライセンスは上記「ライセンス」セクションおよび各プロジェクトの公式情報を確認してください。
+- On Colab's managed runtime, external exposure and proxy usage are not suitable for continuous operation. This repository is for short-term verification only.
+- Because each engine has heavy dependencies, switching between engines assumes a runtime restart.
+- For the license of each engine and voice model, please check the "License" section above and each project's official information.
 
-## 参考
+## References
 
 - OpenAI Audio Speech API
   https://developers.openai.com/api/reference/resources/audio/subresources/speech/methods/create
