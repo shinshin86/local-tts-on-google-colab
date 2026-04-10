@@ -15,7 +15,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | Qwen3-TTS | 動作OK (GPU必須) | 日本語 / 英語 / 中国語 他 10言語 |
 | VoxCPM2 | 動作OK (GPU必須) | 日本語 / 英語 / 中国語 他 30言語 |
 | TinyTTS | 動作OK | 英語 |
-| Voxtral-TTS | 未確認 (GPU必須・VRAM 16GB+) | 英語 / フランス語 / スペイン語 他 9言語 |
+| Voxtral-TTS | 動作OK (GPU必須・VRAM 16GB+) | 英語 / フランス語 / スペイン語 他 9言語 |
 | F5-TTS | 動作OK (GPU必須) | 英語 / 中国語（日本語は別モデル） |
 | Fish-Speech | 動作不可 | 日本語 / 英語 / 中国語 他 80言語以上 |
 | MeloTTS | 動作不可 | - |
@@ -277,7 +277,7 @@ main()
 
 ### Voxtral-TTS
 
-[mistralai/Voxtral-4B-TTS-2603](https://huggingface.co/mistralai/Voxtral-4B-TTS-2603) を使った多言語 TTS です。4B パラメータのモデルで、英語・フランス語・スペイン語・ドイツ語・イタリア語・ポルトガル語・オランダ語・アラビア語・ヒンディー語の 9 言語に対応しています。20 種類のプリセットボイスを内蔵し、wav / mp3 / flac / aac / opus など複数フォーマットに対応しています。バックエンドに vLLM + vllm-omni を使用します。GPU ランタイム（VRAM 16GB 以上）が必要で、Colab 無料枠の T4（15GB）では動作しない可能性があります。ライセンス: CC BY-NC 4.0（非商用のみ）。
+[mistralai/Voxtral-4B-TTS-2603](https://huggingface.co/mistralai/Voxtral-4B-TTS-2603) を使った多言語 TTS です。4B パラメータのモデルで、英語・フランス語・スペイン語・ドイツ語・イタリア語・ポルトガル語・オランダ語・アラビア語・ヒンディー語の 9 言語に対応しています。20 種類のプリセットボイスを内蔵し、wav / mp3 / flac / aac / opus など複数フォーマットに対応しています。バックエンドに vLLM + vllm-omni を使用します。GPU ランタイム（VRAM 16GB 以上）が必要です。Colab A100（VRAM 40GB）で動作確認済みですが、無料枠の T4（15GB）では VRAM 不足のため動作しない可能性があります。ライセンス: CC BY-NC 4.0（非商用のみ）。
 
 ### F5-TTS
 
