@@ -5,6 +5,8 @@
       "args": [
         "--python",
         "3.13",
+        "--with",
+        "fakeredis==2.34.1",
         "git+https://github.com/googlecolab/colab-mcp"
       ],
       "timeout": 30000
