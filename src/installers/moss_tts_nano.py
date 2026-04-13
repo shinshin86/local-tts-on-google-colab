@@ -14,6 +14,8 @@ def install(settings: Settings) -> dict:
 
     python_bin = ensure_venv(engine_dir)
 
+    # Pin torch / transformers to the versions MOSS-TTS-Nano was tested with;
+    # newer transformers (5.x) produces NaN logits during generation.
     uv_pip_install(
         python_bin,
         [
@@ -21,9 +23,9 @@ def install(settings: Settings) -> dict:
             "uvicorn",
             "soundfile",
             "numpy",
-            "transformers",
-            "torch",
-            "torchaudio",
+            "transformers==4.57.1",
+            "torch==2.7.0",
+            "torchaudio==2.7.0",
             "huggingface_hub",
             "librosa",
             "einops",
