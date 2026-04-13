@@ -10,13 +10,14 @@ from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-from transformers import AutoModelForCausalLM
+from transformers import AutoConfig, AutoModelForCausalLM
 
 logger = logging.getLogger("uvicorn.error")
 
 OPENAI_MODEL_ID = os.environ.get("OPENAI_MODEL_ID", "moss-tts-nano")
 MOSS_HF_MODEL = os.environ.get("MOSS_TTS_NANO_HF_MODEL", "OpenMOSS-Team/MOSS-TTS-Nano-100M")
 MOSS_MODE = os.environ.get("MOSS_TTS_NANO_MODE", "continuation")
+MOSS_ATTN_IMPL = os.environ.get("MOSS_TTS_NANO_ATTN_IMPL", "sdpa")
 
 app = FastAPI(title="MOSS-TTS-Nano OpenAI Compatible TTS")
 
@@ -49,8 +50,27 @@ def get_model():
     if _model is None:
         _device = "cuda" if torch.cuda.is_available() else "cpu"
         _dtype = torch.bfloat16 if _device == "cuda" else torch.float32
-        logger.info("Loading MOSS-TTS-Nano model: %s (device=%s, dtype=%s)", MOSS_HF_MODEL, _device, _dtype)
-        model = AutoModelForCausalLM.from_pretrained(MOSS_HF_MODEL, trust_remote_code=True)
+        logger.info("Loading MOSS-TTS-Nano model: %s (device=%s, dtype=%s, attn=%s)", MOSS_HF_MODEL, _device, _dtype, MOSS_ATTN_IMPL)
+        cfg = AutoConfig.from_pretrained(MOSS_HF_MODEL, trust_remote_code=True)
+        cfg.attn_implementation = MOSS_ATTN_IMPL
+        if hasattr(cfg, "local_transformer_attn_implementation"):
+            cfg.local_transformer_attn_implementation = MOSS_ATTN_IMPL
+        gpt2_cfg = getattr(cfg, "gpt2_config", None)
+        if isinstance(gpt2_cfg, dict):
+            gpt2_cfg["attn_implementation"] = MOSS_ATTN_IMPL
+            gpt2_cfg["_attn_implementation"] = MOSS_ATTN_IMPL
+        elif gpt2_cfg is not None:
+            try:
+                gpt2_cfg._attn_implementation = MOSS_ATTN_IMPL
+                gpt2_cfg.attn_implementation = MOSS_ATTN_IMPL
+            except Exception:
+                pass
+        model = AutoModelForCausalLM.from_pretrained(MOSS_HF_MODEL, config=cfg, trust_remote_code=True)
+        if hasattr(model, "set_attention_implementation"):
+            try:
+                model.set_attention_implementation(MOSS_ATTN_IMPL, local_attn_implementation=MOSS_ATTN_IMPL)
+            except Exception:
+                pass
         model.to(device=_device, dtype=_dtype)
         model.eval()
         _model = model

@@ -27,6 +27,7 @@ def install(settings: Settings) -> dict:
             "huggingface_hub",
             "librosa",
             "einops",
+            "sentencepiece",
         ],
     )
     # Install the MOSS-TTS-Nano package itself. Use --no-deps to avoid the pynini /
