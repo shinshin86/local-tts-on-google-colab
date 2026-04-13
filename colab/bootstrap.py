@@ -49,6 +49,8 @@ def parse_args():
     parser.add_argument("--qwen3-hf-model", default="Qwen/Qwen3-TTS-12Hz-0.6B-CustomVoice")
     parser.add_argument("--qwen3-language", default="Japanese")
     parser.add_argument("--qwen3-default-speaker", default="ono_anna")
+    parser.add_argument("--moss-tts-nano-hf-model", default="OpenMOSS-Team/MOSS-TTS-Nano-100M")
+    parser.add_argument("--moss-tts-nano-mode", default="continuation")
     parser.add_argument("--voxcpm-hf-model", default="openbmb/VoxCPM2")
     parser.add_argument("--voxcpm-cfg-value", type=float, default=2.0)
     parser.add_argument("--voxcpm-inference-timesteps", type=int, default=10)
@@ -92,6 +94,8 @@ def main():
         qwen3_hf_model=args.qwen3_hf_model,
         qwen3_language=args.qwen3_language,
         qwen3_default_speaker=args.qwen3_default_speaker,
+        moss_tts_nano_hf_model=args.moss_tts_nano_hf_model,
+        moss_tts_nano_mode=args.moss_tts_nano_mode,
         voxcpm_hf_model=args.voxcpm_hf_model,
         voxcpm_cfg_value=args.voxcpm_cfg_value,
         voxcpm_inference_timesteps=args.voxcpm_inference_timesteps,

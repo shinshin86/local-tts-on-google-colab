@@ -80,6 +80,12 @@ def print_engine_voice_hints(settings: Settings):
         print("      it_male, neutral_female, neutral_male, nl_female, nl_male, pt_female, pt_male")
         print("対応言語: en, fr, es, pt, it, nl, de, ar, hi")
         print("注意: A100 GPU 推奨（T4 では VRAM 不足の可能性あり）。ライセンス: CC BY-NC 4.0")
+    elif settings.engine == "MOSS-TTS-Nano":
+        print("MOSS-TTS-Nano は OpenMOSS の軽量 TTS です（100M パラメータ、20言語対応、CPU 動作）。")
+        print(f"モデル: {settings.moss_tts_nano_hf_model}")
+        print(f"mode: {settings.moss_tts_nano_mode}")
+        print("voice パラメータは現在 'default'（プロンプトなしの plain TTS）のみ対応です。")
+        print("注意: GPU 不要。ライセンス: Apache-2.0")
     elif settings.engine == "TinyTTS":
         print("TinyTTS は超軽量（~3.4MB）の英語専用 TTS です（CPU 動作、GPU 不要）。")
         print("voice パラメータは現在 'default' のみ対応です。")
