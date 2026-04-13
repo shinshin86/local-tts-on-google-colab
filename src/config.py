@@ -68,6 +68,8 @@ class Settings:
     qwen3_hf_model: str = "Qwen/Qwen3-TTS-12Hz-0.6B-CustomVoice"
     qwen3_language: str = "Japanese"
     qwen3_default_speaker: str = "ono_anna"
+    moss_tts_nano_hf_model: str = "OpenMOSS-Team/MOSS-TTS-Nano-100M"
+    moss_tts_nano_mode: str = "continuation"
     voxcpm_hf_model: str = "openbmb/VoxCPM2"
     voxcpm_cfg_value: float = 2.0
     voxcpm_inference_timesteps: int = 10

@@ -11,7 +11,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["F5-TTS", "Fish-Speech", "Irodori-TTS", "Kokoro", "MeloTTS", "Piper", "Piper-Plus", "Qwen3-TTS", "Style-Bert-VITS2", "TinyTTS", "VoxCPM2", "Voxtral-TTS"]
+ENGINE = "Kokoro"  #@param ["F5-TTS", "Fish-Speech", "Irodori-TTS", "Kokoro", "MeloTTS", "MOSS-TTS-Nano", "Piper", "Piper-Plus", "Qwen3-TTS", "Style-Bert-VITS2", "TinyTTS", "VoxCPM2", "Voxtral-TTS"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -74,6 +74,11 @@ QWEN3_DEFAULT_SPEAKER = "ono_anna"  #@param ["aiden", "dylan", "eric", "ono_anna
 VOXCPM_HF_MODEL = "openbmb/VoxCPM2"  #@param {type:"string"}
 VOXCPM_CFG_VALUE = 2.0  #@param {type:"number"}
 VOXCPM_INFERENCE_TIMESTEPS = 10  #@param {type:"integer"}
+
+#@markdown ---
+#@markdown MOSS-TTS-Nano (CPU OK)
+MOSS_TTS_NANO_HF_MODEL = "OpenMOSS-Team/MOSS-TTS-Nano-100M"  #@param {type:"string"}
+MOSS_TTS_NANO_MODE = "continuation"  #@param ["continuation", "voice_clone"]
 
 import shlex
 import subprocess
@@ -173,6 +178,10 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         str(VOXCPM_CFG_VALUE),
         "--voxcpm-inference-timesteps",
         str(VOXCPM_INFERENCE_TIMESTEPS),
+        "--moss-tts-nano-hf-model",
+        MOSS_TTS_NANO_HF_MODEL,
+        "--moss-tts-nano-mode",
+        MOSS_TTS_NANO_MODE,
     ]
     cmd.append("--expose-public-url" if EXPOSE_PUBLIC_URL else "--no-expose-public-url")
     return cmd
