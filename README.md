@@ -14,7 +14,7 @@ Supported engines:
 | Piper-Plus | Works | Japanese / English / Chinese and 6 languages |
 | Qwen3-TTS | Works (GPU required) | Japanese / English / Chinese and 10 languages |
 | VoxCPM2 | Works (GPU required) | Japanese / English / Chinese and 30 languages |
-| MOSS-TTS-Nano | Untested | Japanese / English / Chinese and 20 languages |
+| MOSS-TTS-Nano | Works (output truncated to ~2s) | Japanese / English / Chinese and 20 languages |
 | TinyTTS | Works | English |
 | Voxtral-TTS | Works (GPU required, VRAM 16GB+) | English / French / Spanish and 9 languages |
 | F5-TTS | Works (GPU required) | English / Chinese (Japanese via separate model) |
@@ -274,7 +274,7 @@ A high-quality TTS using [OpenBMB/VoxCPM](https://github.com/OpenBMB/VoxCPM). A 
 
 ### MOSS-TTS-Nano
 
-A lightweight multilingual TTS using [OpenMOSS/MOSS-TTS-Nano](https://github.com/OpenMOSS/MOSS-TTS-Nano). Only 0.1B (100M) parameters, supports 20 languages including Japanese / English / Chinese, and runs on CPU without a GPU. Default Hugging Face model: `OpenMOSS-Team/MOSS-TTS-Nano-100M`. Launched in `continuation` mode (plain TTS without a prompt audio). Output is 48 kHz stereo. License: Apache-2.0.
+A lightweight multilingual TTS using [OpenMOSS/MOSS-TTS-Nano](https://github.com/OpenMOSS/MOSS-TTS-Nano). Only 0.1B (100M) parameters, supports 20 languages including Japanese / English / Chinese, and runs on CPU without a GPU. Default Hugging Face model: `OpenMOSS-Team/MOSS-TTS-Nano-100M`. Launched in `continuation` mode (plain TTS without a prompt audio). Output is 48 kHz stereo. License: Apache-2.0. Note: audio is generated successfully, but output is currently truncated to roughly the first ~2 seconds regardless of input length. The wrapper delegates generation to MOSS-TTS-Nano's `model.inference()`; exposing a length parameter on the upstream `inference()` API is likely needed to fix this.
 
 ### TinyTTS
 

@@ -14,7 +14,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | Piper-Plus | 動作OK | 日本語 / 英語 / 中国語 他 6言語 |
 | Qwen3-TTS | 動作OK (GPU必須) | 日本語 / 英語 / 中国語 他 10言語 |
 | VoxCPM2 | 動作OK (GPU必須) | 日本語 / 英語 / 中国語 他 30言語 |
-| MOSS-TTS-Nano | 未検証 | 日本語 / 英語 / 中国語 他 20言語 |
+| MOSS-TTS-Nano | 動作（出力が約2秒で切れる） | 日本語 / 英語 / 中国語 他 20言語 |
 | TinyTTS | 動作OK | 英語 |
 | Voxtral-TTS | 動作OK (GPU必須・VRAM 16GB+) | 英語 / フランス語 / スペイン語 他 9言語 |
 | F5-TTS | 動作OK (GPU必須) | 英語 / 中国語（日本語は別モデル） |
@@ -274,7 +274,7 @@ main()
 
 ### MOSS-TTS-Nano
 
-[OpenMOSS/MOSS-TTS-Nano](https://github.com/OpenMOSS/MOSS-TTS-Nano) を使った軽量多言語 TTS です。わずか 0.1B（100M）パラメータで、日本語・英語・中国語を含む 20 言語に対応し、GPU 不要・CPU のみで動作します。デフォルトの Hugging Face モデルは `OpenMOSS-Team/MOSS-TTS-Nano-100M`。`continuation` モード（プロンプト音声なしの plain TTS）で起動します。出力は 48 kHz ステレオ。ライセンス: Apache-2.0。
+[OpenMOSS/MOSS-TTS-Nano](https://github.com/OpenMOSS/MOSS-TTS-Nano) を使った軽量多言語 TTS です。わずか 0.1B（100M）パラメータで、日本語・英語・中国語を含む 20 言語に対応し、GPU 不要・CPU のみで動作します。デフォルトの Hugging Face モデルは `OpenMOSS-Team/MOSS-TTS-Nano-100M`。`continuation` モード（プロンプト音声なしの plain TTS）で起動します。出力は 48 kHz ステレオ。ライセンス: Apache-2.0。注意: 音声自体は正常に生成されますが、現状では入力テキストの長さに関わらず出力が先頭 2 秒程度で切れてしまいます。ラッパーは MOSS-TTS-Nano の `model.inference()` に生成を委譲しているだけなので、修正には上流 `inference()` API 側で生成長パラメータを露出させる必要がありそうです。
 
 ### TinyTTS
 
