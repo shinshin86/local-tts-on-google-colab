@@ -15,6 +15,7 @@ Supported engines:
 | Qwen3-TTS | Works (GPU required) | Japanese / English / Chinese and 10 languages |
 | VoxCPM2 | Works (GPU required) | Japanese / English / Chinese and 30 languages |
 | MOSS-TTS-Nano | Works (output truncated to ~2s) | Japanese / English / Chinese and 20 languages |
+| NeuTTS | Works (CPU OK, voice cloning) | English / Spanish / German / French |
 | TinyTTS | Works | English |
 | Voxtral-TTS | Works (GPU required, VRAM 16GB+) | English / French / Spanish and 9 languages |
 | F5-TTS | Works (GPU required) | English / Chinese (Japanese via separate model) |
@@ -55,7 +56,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Irodori-TTS", "Kokoro", "MeloTTS", "MOSS-TTS-Nano", "Piper", "Piper-Plus", "Qwen3-TTS", "Style-Bert-VITS2", "TinyTTS", "Voxtral-TTS"]
+ENGINE = "Kokoro"  #@param ["Irodori-TTS", "Kokoro", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "Piper", "Piper-Plus", "Qwen3-TTS", "Style-Bert-VITS2", "TinyTTS", "Voxtral-TTS"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -276,6 +277,20 @@ A high-quality TTS using [OpenBMB/VoxCPM](https://github.com/OpenBMB/VoxCPM). A 
 
 A lightweight multilingual TTS using [OpenMOSS/MOSS-TTS-Nano](https://github.com/OpenMOSS/MOSS-TTS-Nano). Only 0.1B (100M) parameters, supports 20 languages including Japanese / English / Chinese, and runs on CPU without a GPU. Default Hugging Face model: `OpenMOSS-Team/MOSS-TTS-Nano-100M`. Launched in `continuation` mode (plain TTS without a prompt audio). Output is 48 kHz stereo. License: Apache-2.0. Note: audio is generated successfully, but output is currently truncated to roughly the first ~2 seconds regardless of input length. The wrapper delegates generation to MOSS-TTS-Nano's `model.inference()`; exposing a length parameter on the upstream `inference()` API is likely needed to fix this.
 
+### NeuTTS
+
+An on-device TTS using [neuphonic/neutts](https://github.com/neuphonic/neutts). Uses **instant voice cloning** — every request is rendered in the voice of a reference audio file, so there is no preset speaker concept. Five reference voices bundled in the upstream repo are exposed via the OpenAI `voice` parameter:
+
+| voice | language | sex |
+|---|---|---|
+| `dave`     | English | male   |
+| `jo`       | English | female |
+| `mateo`    | Spanish | male   |
+| `greta`    | German  | female |
+| `juliette` | French  | female |
+
+Default backbone: `neuphonic/neutts-air` (~360M params, English only, Apache 2.0). Other languages have separate Nano backbones (`neuphonic/neutts-nano-french` / `-german` / `-spanish`, NeuTTS Open License 1.0). **Use a reference voice whose language matches the backbone** — mixing languages produces accented or garbled output. The wrapper lazy-encodes each reference on first use and caches it in memory. Japanese is **not** supported. License: code Apache-2.0; weights vary per backbone (see Licenses below). Adding your own reference voice is technically possible but should only be done with audio you have rights to (consent of the speaker).
+
 ### TinyTTS
 
 An ultra-lightweight English TTS using [ecyht2/tiny-tts](https://github.com/ecyht2/tiny-tts). The model has only 1.6M parameters (~3.4 MB), no GPU required, and can synthesize speech at 53× real-time on CPU alone. Audio is output at 44.1 kHz. There is no voice switching. License: Apache 2.0.
@@ -317,6 +332,7 @@ The license for each engine is as follows. When using them, always check each pr
 | Qwen3-TTS | Apache 2.0 | Apache 2.0 | OK | |
 | VoxCPM2 | Apache 2.0 | Apache 2.0 | OK | |
 | MOSS-TTS-Nano | Apache 2.0 | Apache 2.0 | OK | 100M params, CPU OK |
+| NeuTTS | Apache 2.0 | Apache 2.0 (Air) / NeuTTS Open License 1.0 (Nano) | OK (Air) / Check terms (Nano) | Voice cloning. EN / ES / DE / FR |
 | TinyTTS | Apache 2.0 | Apache 2.0 | OK | |
 | Voxtral-TTS | — | CC BY-NC 4.0 | Not allowed | Via vLLM + vllm-omni. Non-commercial due to voice dataset license constraints |
 | F5-TTS | MIT | CC-BY-NC | Not allowed (model) | Model weights are non-commercial due to Emilia dataset constraints |
@@ -356,6 +372,8 @@ This repository itself is intended for short-term operational verification and t
   https://github.com/ecyht2/tiny-tts
 - MOSS-TTS-Nano
   https://github.com/OpenMOSS/MOSS-TTS-Nano
+- NeuTTS
+  https://github.com/neuphonic/neutts
 - Voxtral-TTS
   https://huggingface.co/mistralai/Voxtral-4B-TTS-2603
 - F5-TTS

@@ -8,7 +8,7 @@ import subprocess
 import sys
 import time
 
-from src.config import KOKORO_VOICE_PRESETS, MELO_VOICE_PRESETS, Settings
+from src.config import KOKORO_VOICE_PRESETS, MELO_VOICE_PRESETS, NEUTTS_VOICE_PRESETS, Settings
 from src.installers import INSTALLERS
 from src.runtime import (
     ensure_cloudflared,
@@ -28,6 +28,8 @@ def resolve_selected_voice(settings: Settings) -> str:
         return settings.kokoro_default_voice
     if settings.engine == "MeloTTS":
         return settings.melo_default_voice
+    if settings.engine == "NeuTTS":
+        return settings.neutts_default_voice
     return ""
 
 
@@ -80,6 +82,15 @@ def print_engine_voice_hints(settings: Settings):
         print("      it_male, neutral_female, neutral_male, nl_female, nl_male, pt_female, pt_male")
         print("対応言語: en, fr, es, pt, it, nl, de, ar, hi")
         print("注意: A100 GPU 推奨（T4 では VRAM 不足の可能性あり）。ライセンス: CC BY-NC 4.0")
+    elif settings.engine == "NeuTTS":
+        print("NeuTTS は Neuphonic のオンデバイス TTS です（インスタント voice cloning、CPU 動作可）。")
+        print(f"backbone: {settings.neutts_backbone_repo}")
+        print(f"codec   : {settings.neutts_codec_repo}")
+        print(f"デフォルト voice: {settings.neutts_default_voice}")
+        print("候補:", ", ".join(NEUTTS_VOICE_PRESETS), "(dave/jo=英語, mateo=西語, greta=独語, juliette=仏語)")
+        print("対応言語: 英語 / 西語 / 独語 / 仏語（日本語非対応）。")
+        print("注意: 非英語の voice を使う場合は、対応言語の Nano backbone を指定してください。")
+        print("ライセンス: neutts-air=Apache-2.0 / neutts-nano=NeuTTS Open License 1.0")
     elif settings.engine == "MOSS-TTS-Nano":
         print("MOSS-TTS-Nano は OpenMOSS の軽量 TTS です（100M パラメータ、20言語対応、CPU 動作）。")
         print(f"モデル: {settings.moss_tts_nano_hf_model}")

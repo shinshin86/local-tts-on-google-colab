@@ -16,6 +16,8 @@ KOKORO_VOICE_PRESETS = [
     "zf_xiaobei",
 ]
 
+NEUTTS_VOICE_PRESETS = ["dave", "jo", "greta", "juliette", "mateo"]
+
 MELO_VOICE_PRESETS = [
     "JP",
     "EN-Default",
@@ -70,6 +72,9 @@ class Settings:
     qwen3_default_speaker: str = "ono_anna"
     moss_tts_nano_hf_model: str = "OpenMOSS-Team/MOSS-TTS-Nano-100M"
     moss_tts_nano_mode: str = "continuation"
+    neutts_backbone_repo: str = "neuphonic/neutts-air"
+    neutts_codec_repo: str = "neuphonic/neucodec"
+    neutts_default_voice: str = "jo"
     voxcpm_hf_model: str = "openbmb/VoxCPM2"
     voxcpm_cfg_value: float = 2.0
     voxcpm_inference_timesteps: int = 10
