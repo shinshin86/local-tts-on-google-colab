@@ -11,7 +11,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["F5-TTS", "Fish-Speech", "Irodori-TTS", "Kokoro", "MeloTTS", "MOSS-TTS-Nano", "Piper", "Piper-Plus", "Qwen3-TTS", "Style-Bert-VITS2", "TinyTTS", "VoxCPM2", "Voxtral-TTS"]
+ENGINE = "Kokoro"  #@param ["F5-TTS", "Fish-Speech", "Irodori-TTS", "Kokoro", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "Piper", "Piper-Plus", "Qwen3-TTS", "Style-Bert-VITS2", "TinyTTS", "VoxCPM2", "Voxtral-TTS"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -79,6 +79,12 @@ VOXCPM_INFERENCE_TIMESTEPS = 10  #@param {type:"integer"}
 #@markdown MOSS-TTS-Nano (CPU OK)
 MOSS_TTS_NANO_HF_MODEL = "OpenMOSS-Team/MOSS-TTS-Nano-100M"  #@param {type:"string"}
 MOSS_TTS_NANO_MODE = "continuation"  #@param ["continuation", "voice_clone"]
+
+#@markdown ---
+#@markdown NeuTTS (CPU OK, EN/ES/DE/FR, voice cloning)
+NEUTTS_BACKBONE_REPO = "neuphonic/neutts-air"  #@param ["neuphonic/neutts-air", "neuphonic/neutts-nano", "neuphonic/neutts-nano-french", "neuphonic/neutts-nano-german", "neuphonic/neutts-nano-spanish"]
+NEUTTS_CODEC_REPO = "neuphonic/neucodec"  #@param {type:"string"}
+NEUTTS_DEFAULT_VOICE = "jo"  #@param ["dave", "jo", "greta", "juliette", "mateo"]
 
 import shlex
 import subprocess
@@ -182,6 +188,12 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         MOSS_TTS_NANO_HF_MODEL,
         "--moss-tts-nano-mode",
         MOSS_TTS_NANO_MODE,
+        "--neutts-backbone-repo",
+        NEUTTS_BACKBONE_REPO,
+        "--neutts-codec-repo",
+        NEUTTS_CODEC_REPO,
+        "--neutts-default-voice",
+        NEUTTS_DEFAULT_VOICE,
     ]
     cmd.append("--expose-public-url" if EXPOSE_PUBLIC_URL else "--no-expose-public-url")
     return cmd
