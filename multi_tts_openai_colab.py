@@ -11,7 +11,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["F5-TTS", "Fish-Speech", "Irodori-TTS", "Kokoro", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "Piper", "Piper-Plus", "Qwen3-TTS", "Style-Bert-VITS2", "TinyTTS", "VoxCPM2", "Voxtral-TTS"]
+ENGINE = "Kokoro"  #@param ["F5-TTS", "Fish-Speech", "Irodori-TTS", "Kokoro", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "Piper", "Piper-Plus", "Qwen3-TTS", "Sarashina-TTS", "Style-Bert-VITS2", "TinyTTS", "VoxCPM2", "Voxtral-TTS"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -85,6 +85,14 @@ MOSS_TTS_NANO_MODE = "continuation"  #@param ["continuation", "voice_clone"]
 NEUTTS_BACKBONE_REPO = "neuphonic/neutts-air"  #@param ["neuphonic/neutts-air", "neuphonic/neutts-nano", "neuphonic/neutts-nano-french", "neuphonic/neutts-nano-german", "neuphonic/neutts-nano-spanish"]
 NEUTTS_CODEC_REPO = "neuphonic/neucodec"  #@param {type:"string"}
 NEUTTS_DEFAULT_VOICE = "jo"  #@param ["dave", "jo", "greta", "juliette", "mateo"]
+
+#@markdown ---
+#@markdown Sarashina-TTS (GPU required, ~6GB VRAM, JP/EN, NonCommercial)
+SARASHINA_HF_MODEL = "sbintuitions/sarashina2.2-tts"  #@param {type:"string"}
+SARASHINA_USE_VLLM = False  #@param {type:"boolean"}
+SARASHINA_PROMPT_WAV = ""  #@param {type:"string"}
+SARASHINA_PROMPT_TEXT = ""  #@param {type:"string"}
+SARASHINA_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
 
 import shlex
 import subprocess
@@ -194,7 +202,17 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         NEUTTS_CODEC_REPO,
         "--neutts-default-voice",
         NEUTTS_DEFAULT_VOICE,
+        "--sarashina-hf-model",
+        SARASHINA_HF_MODEL,
+        "--sarashina-prompt-wav",
+        SARASHINA_PROMPT_WAV,
+        "--sarashina-prompt-text",
+        SARASHINA_PROMPT_TEXT,
+        "--sarashina-default-voice",
+        SARASHINA_DEFAULT_VOICE,
     ]
+    if SARASHINA_USE_VLLM:
+        cmd.append("--sarashina-use-vllm")
     cmd.append("--expose-public-url" if EXPOSE_PUBLIC_URL else "--no-expose-public-url")
     return cmd
 

@@ -81,6 +81,11 @@ class Settings:
     voxtral_hf_model: str = "mistralai/Voxtral-4B-TTS-2603"
     voxtral_default_voice: str = "neutral_female"
     voxtral_backend_port: int = 5001
+    sarashina_hf_model: str = "sbintuitions/sarashina2.2-tts"
+    sarashina_use_vllm: bool = False
+    sarashina_prompt_wav: str = ""
+    sarashina_prompt_text: str = ""
+    sarashina_default_voice: str = "default"
     root_dir: Path = Path("/content/openai-compatible-local-tts")
     repo_dir: Path = field(default_factory=default_repo_dir)
     app_port: int = 8000

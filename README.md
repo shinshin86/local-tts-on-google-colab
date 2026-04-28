@@ -18,6 +18,7 @@ Supported engines:
 | NeuTTS | Works (CPU OK, voice cloning) | English / Spanish / German / French |
 | TinyTTS | Works | English |
 | Voxtral-TTS | Works (GPU required, VRAM 16GB+) | English / French / Spanish and 9 languages |
+| Sarashina-TTS | Works (GPU required, ~6GB VRAM) | Japanese / English |
 | F5-TTS | Works (GPU required) | English / Chinese (Japanese via separate model) |
 | Fish-Speech | Not working | Japanese / English / Chinese and 80+ languages |
 | MeloTTS | Not working | - |
@@ -56,7 +57,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Irodori-TTS", "Kokoro", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "Piper", "Piper-Plus", "Qwen3-TTS", "Style-Bert-VITS2", "TinyTTS", "Voxtral-TTS"]
+ENGINE = "Kokoro"  #@param ["Irodori-TTS", "Kokoro", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "Piper", "Piper-Plus", "Qwen3-TTS", "Sarashina-TTS", "Style-Bert-VITS2", "TinyTTS", "Voxtral-TTS"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -299,6 +300,19 @@ An ultra-lightweight English TTS using [ecyht2/tiny-tts](https://github.com/ecyh
 
 A multilingual TTS using [mistralai/Voxtral-4B-TTS-2603](https://huggingface.co/mistralai/Voxtral-4B-TTS-2603). A 4B-parameter model supporting 9 languages: English, French, Spanish, German, Italian, Portuguese, Dutch, Arabic, and Hindi. It includes 20 preset voices and supports multiple formats such as wav / mp3 / flac / aac / opus. The backend uses vLLM + vllm-omni. A GPU runtime (VRAM 16GB or more) is required. Verified working on Colab A100 (40GB VRAM); may not work on the free-tier T4 (15GB) due to VRAM requirements. License: CC BY-NC 4.0 (non-commercial only).
 
+### Sarashina-TTS
+
+A Japanese-centric TTS using [sbintuitions/sarashina2.2-tts](https://huggingface.co/sbintuitions/sarashina2.2-tts) by SB Intuitions. An 0.8B-parameter LLM-based TTS supporting Japanese (primary) and English, with zero-shot voice cloning support. Default Hugging Face model: `sbintuitions/sarashina2.2-tts`. The HuggingFace transformers backend needs ~6GB VRAM (a Colab T4 fits); the optional vLLM backend (`--sarashina-use-vllm`) needs more VRAM but is faster. Generated audio is 24 kHz and contains an inaudible SilentCipher watermark by default — per the upstream model terms, do not remove it. **License: Sarashina Model NonCommercial License Agreement (commercial use prohibited).**
+
+The `voice` parameter exposes:
+
+| voice | description |
+|---|---|
+| `default` | Plain TTS without any reference audio (no zero-shot cloning). |
+| `clone` | Zero-shot voice cloning. Only available when both `--sarashina-prompt-wav` and `--sarashina-prompt-text` are configured. The transcript must match the reference audio. |
+
+For voice cloning, only use reference audio you have rights to (consent of the speaker).
+
 ### F5-TTS
 
 A zero-shot voice cloning TTS using [SWivid/F5-TTS](https://github.com/SWivid/F5-TTS). It mimics the voice quality of a reference audio to generate speech. Uses the default reference audio bundled with the package (English female). To use a Japanese model, specify a community-provided Japanese checkpoint with `--f5tts-ckpt-file` / `--f5tts-vocab-file`. A GPU runtime (T4 or higher) is required. License: code MIT / model CC-BY-NC.
@@ -335,6 +349,7 @@ The license for each engine is as follows. When using them, always check each pr
 | NeuTTS | Apache 2.0 | Apache 2.0 (Air) / NeuTTS Open License 1.0 (Nano) | OK (Air) / Check terms (Nano) | Voice cloning. EN / ES / DE / FR |
 | TinyTTS | Apache 2.0 | Apache 2.0 | OK | |
 | Voxtral-TTS | — | CC BY-NC 4.0 | Not allowed | Via vLLM + vllm-omni. Non-commercial due to voice dataset license constraints |
+| Sarashina-TTS | — | Sarashina Model NonCommercial License | Not allowed | Japanese / English. Zero-shot voice cloning. Output contains a SilentCipher watermark (do not remove) |
 | F5-TTS | MIT | CC-BY-NC | Not allowed (model) | Model weights are non-commercial due to Emilia dataset constraints |
 | Fish-Speech | Apache 2.0 | Apache 2.0 | OK | Requires A100/L4 GPU (VRAM 24GB+) |
 
@@ -376,6 +391,8 @@ This repository itself is intended for short-term operational verification and t
   https://github.com/neuphonic/neutts
 - Voxtral-TTS
   https://huggingface.co/mistralai/Voxtral-4B-TTS-2603
+- Sarashina-TTS
+  https://github.com/sbintuitions/sarashina2.2-tts
 - F5-TTS
   https://github.com/SWivid/F5-TTS
 - Fish Speech
