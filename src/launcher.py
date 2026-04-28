@@ -30,6 +30,8 @@ def resolve_selected_voice(settings: Settings) -> str:
         return settings.melo_default_voice
     if settings.engine == "NeuTTS":
         return settings.neutts_default_voice
+    if settings.engine == "Sarashina-TTS":
+        return settings.sarashina_default_voice
     return ""
 
 
@@ -91,6 +93,19 @@ def print_engine_voice_hints(settings: Settings):
         print("対応言語: 英語 / 西語 / 独語 / 仏語（日本語非対応）。")
         print("注意: 非英語の voice を使う場合は、対応言語の Nano backbone を指定してください。")
         print("ライセンス: neutts-air=Apache-2.0 / neutts-nano=NeuTTS Open License 1.0")
+    elif settings.engine == "Sarashina-TTS":
+        print("Sarashina-TTS は SB Intuitions の日本語中心 TTS です（日本語＋英語、ゼロショット音声クローン対応）。")
+        print(f"モデル: {settings.sarashina_hf_model}")
+        print(f"vLLM backend: {'有効' if settings.sarashina_use_vllm else '無効（HuggingFace transformers）'}")
+        print(f"デフォルト voice: {settings.sarashina_default_voice}")
+        print("voice 候補: default（プロンプトなしの plain TTS）")
+        if settings.sarashina_prompt_wav and settings.sarashina_prompt_text:
+            print(f"             clone（参照音声: {settings.sarashina_prompt_wav}）")
+        else:
+            print("             clone は --sarashina-prompt-wav / --sarashina-prompt-text を指定すると有効になります")
+        print("注意: GPU 推奨（VRAM ~6GB / vLLM はさらに必要）。日本語は MOS が高い tier 1 サポート。")
+        print("ライセンス: Sarashina Model NonCommercial License Agreement（商用利用不可）")
+        print("生成音声には SilentCipher による不可聴ウォーターマークが埋め込まれます（モデル規約により除去禁止）。")
     elif settings.engine == "MOSS-TTS-Nano":
         print("MOSS-TTS-Nano は OpenMOSS の軽量 TTS です（100M パラメータ、20言語対応、CPU 動作）。")
         print(f"モデル: {settings.moss_tts_nano_hf_model}")

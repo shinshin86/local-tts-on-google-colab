@@ -17,6 +17,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | MOSS-TTS-Nano | 動作（出力が約2秒で切れる） | 日本語 / 英語 / 中国語 他 20言語 |
 | TinyTTS | 動作OK | 英語 |
 | Voxtral-TTS | 動作OK (GPU必須・VRAM 16GB+) | 英語 / フランス語 / スペイン語 他 9言語 |
+| Sarashina-TTS | 動作OK (GPU必須・VRAM ~6GB) | 日本語 / 英語 |
 | F5-TTS | 動作OK (GPU必須) | 英語 / 中国語（日本語は別モデル） |
 | Fish-Speech | 動作不可 | 日本語 / 英語 / 中国語 他 80言語以上 |
 | MeloTTS | 動作不可 | - |
@@ -55,7 +56,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Irodori-TTS", "Kokoro", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "Piper", "Piper-Plus", "Qwen3-TTS", "Style-Bert-VITS2", "TinyTTS", "Voxtral-TTS"]
+ENGINE = "Kokoro"  #@param ["Irodori-TTS", "Kokoro", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "Piper", "Piper-Plus", "Qwen3-TTS", "Sarashina-TTS", "Style-Bert-VITS2", "TinyTTS", "Voxtral-TTS"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -298,6 +299,19 @@ main()
 
 [mistralai/Voxtral-4B-TTS-2603](https://huggingface.co/mistralai/Voxtral-4B-TTS-2603) を使った多言語 TTS です。4B パラメータのモデルで、英語・フランス語・スペイン語・ドイツ語・イタリア語・ポルトガル語・オランダ語・アラビア語・ヒンディー語の 9 言語に対応しています。20 種類のプリセットボイスを内蔵し、wav / mp3 / flac / aac / opus など複数フォーマットに対応しています。バックエンドに vLLM + vllm-omni を使用します。GPU ランタイム（VRAM 16GB 以上）が必要です。Colab A100（VRAM 40GB）で動作確認済みですが、無料枠の T4（15GB）では VRAM 不足のため動作しない可能性があります。ライセンス: CC BY-NC 4.0（非商用のみ）。
 
+### Sarashina-TTS
+
+SB Intuitions の [sbintuitions/sarashina2.2-tts](https://huggingface.co/sbintuitions/sarashina2.2-tts) を使った日本語中心の TTS です。0.8B パラメータの LLM ベース TTS で、日本語（メイン）と英語に対応し、ゼロショット音声クローン機能を備えています。デフォルトの Hugging Face モデルは `sbintuitions/sarashina2.2-tts`。HuggingFace transformers バックエンドで VRAM ~6GB（Colab T4 で動作可能）、`--sarashina-use-vllm` を有効にすると vLLM バックエンドが使われ、より多くの VRAM を消費する代わりに高速になります。出力は 24kHz で、デフォルトでは SilentCipher の不可聴ウォーターマークが埋め込まれます — 上流モデル規約により除去・無効化は禁止されているのでそのまま利用してください。**ライセンス: Sarashina Model NonCommercial License Agreement（商用利用不可）。**
+
+`voice` パラメータには次の値を指定できます。
+
+| voice | 説明 |
+|---|---|
+| `default` | 参照音声なしの plain TTS（ゼロショットクローンなし） |
+| `clone` | ゼロショット音声クローン。`--sarashina-prompt-wav` と `--sarashina-prompt-text` の両方を指定したときのみ有効。テキストは参照音声の書き起こしを正確に渡してください |
+
+音声クローンを使う場合は、必ず権利を持っている音声（本人の同意がある音声）でのみ行ってください。
+
 ### F5-TTS
 
 [SWivid/F5-TTS](https://github.com/SWivid/F5-TTS) を使ったゼロショット音声クローニング TTS です。参照音声の声質を模倣して音声を生成します。パッケージ同梱のデフォルト参照音声（英語女性）を使用します。日本語モデルを使う場合は `--f5tts-ckpt-file` / `--f5tts-vocab-file` でコミュニティ提供の日本語チェックポイントを指定してください。GPU ランタイム（T4 以上）が必要です。ライセンス: コード MIT / モデル CC-BY-NC。
@@ -334,6 +348,7 @@ main()
 | NeuTTS | Apache 2.0 | Apache 2.0 (Air) / NeuTTS Open License 1.0 (Nano) | OK (Air) / 規約要確認 (Nano) | ボイスクローン。英 / 西 / 独 / 仏 |
 | TinyTTS | Apache 2.0 | Apache 2.0 | OK | |
 | Voxtral-TTS | — | CC BY-NC 4.0 | 不可 | vLLM + vllm-omni 経由。音声データセットのライセンス制約により非商用 |
+| Sarashina-TTS | — | Sarashina Model NonCommercial License | 不可 | 日本語 / 英語。ゼロショット音声クローン対応。出力には SilentCipher のウォーターマークが付与される（除去禁止） |
 | F5-TTS | MIT | CC-BY-NC | 不可（モデル） | モデル重みは Emilia データセットの制約により非商用 |
 | Fish-Speech | Apache 2.0 | Apache 2.0 | OK | A100/L4 GPU 必須（VRAM 24GB+） |
 
@@ -375,6 +390,8 @@ main()
   https://github.com/neuphonic/neutts
 - Voxtral-TTS
   https://huggingface.co/mistralai/Voxtral-4B-TTS-2603
+- Sarashina-TTS
+  https://github.com/sbintuitions/sarashina2.2-tts
 - F5-TTS
   https://github.com/SWivid/F5-TTS
 - Fish Speech

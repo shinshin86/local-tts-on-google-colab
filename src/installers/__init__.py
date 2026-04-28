@@ -8,6 +8,7 @@ from .moss_tts_nano import install as install_moss_tts_nano
 from .neutts import install as install_neutts
 from .piper import install as install_piper
 from .piper_plus import install as install_piper_plus
+from .sarashina_tts import install as install_sarashina_tts
 from .style_bert import install as install_style_bert
 from .voxcpm import install as install_voxcpm
 from .tiny_tts import install as install_tiny_tts
@@ -26,6 +27,7 @@ INSTALLERS = {
     "Piper": install_piper,
     "Piper-Plus": install_piper_plus,
     "Qwen3-TTS": install_qwen3_tts,
+    "Sarashina-TTS": install_sarashina_tts,
     "TinyTTS": install_tiny_tts,
     "VoxCPM2": install_voxcpm,
     "Voxtral-TTS": install_voxtral,

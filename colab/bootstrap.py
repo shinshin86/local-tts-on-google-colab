@@ -60,6 +60,11 @@ def parse_args():
     parser.add_argument("--voxtral-hf-model", default="mistralai/Voxtral-4B-TTS-2603")
     parser.add_argument("--voxtral-default-voice", default="neutral_female")
     parser.add_argument("--voxtral-backend-port", type=int, default=5001)
+    parser.add_argument("--sarashina-hf-model", default="sbintuitions/sarashina2.2-tts")
+    parser.add_argument("--sarashina-use-vllm", action="store_true")
+    parser.add_argument("--sarashina-prompt-wav", default="")
+    parser.add_argument("--sarashina-prompt-text", default="")
+    parser.add_argument("--sarashina-default-voice", default="default")
     parser.add_argument("--root-dir", default="/content/openai-compatible-local-tts")
     return parser.parse_args()
 
@@ -108,6 +113,11 @@ def main():
         voxtral_hf_model=args.voxtral_hf_model,
         voxtral_default_voice=args.voxtral_default_voice,
         voxtral_backend_port=args.voxtral_backend_port,
+        sarashina_hf_model=args.sarashina_hf_model,
+        sarashina_use_vllm=args.sarashina_use_vllm,
+        sarashina_prompt_wav=args.sarashina_prompt_wav,
+        sarashina_prompt_text=args.sarashina_prompt_text,
+        sarashina_default_voice=args.sarashina_default_voice,
         root_dir=Path(args.root_dir),
         repo_dir=REPO_DIR,
     )
