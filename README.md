@@ -369,6 +369,19 @@ The `voice` parameter exposes:
 
 For voice cloning, only use reference audio you have rights to (consent of the speaker).
 
+### Dia
+
+A dialogue-oriented TTS using [nari-labs/dia](https://github.com/nari-labs/dia). The 1.6B-parameter model generates multi-speaker conversations in a single pass via `[S1]` / `[S2]` speaker tags directly in the prompt. English-only at the moment. The wrapper automatically prepends `[S1]` if your input has no speaker tag, so plain text still works for single-speaker TTS. Default model: `nari-labs/Dia-1.6B-0626`. With `--dia-prompt-wav` and `--dia-prompt-text`, the `clone` voice becomes available and conditions on a reference clip. A GPU runtime is recommended (VRAM ~4.4GB at float16/bfloat16, ~7.9GB at float32). License: Apache 2.0 (code and weights).
+
+The `voice` parameter exposes:
+
+| voice | description |
+|---|---|
+| `default` | Plain TTS without any reference. Use `[S1]` / `[S2]` tags in `input` for multi-speaker dialogue. |
+| `clone` | Voice cloning. Only available when both `--dia-prompt-wav` and `--dia-prompt-text` are configured. |
+
+For voice cloning, only use reference audio you have rights to (consent of the speaker).
+
 ### Fish-Speech (currently not working)
 
 A high-quality TTS using [fishaudio/fish-speech](https://github.com/fishaudio/fish-speech). Japanese is Tier 1 supported (highest quality) and it supports 80+ languages. It requires 24GB+ VRAM and targets A100/L4 GPUs, but on Colab the runtime crashes with OOM during model loading, so it currently does not work. License: Apache 2.0.

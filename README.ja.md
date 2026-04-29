@@ -368,6 +368,19 @@ Resemble AI の [resemble-ai/chatterbox](https://github.com/resemble-ai/chatterb
 
 音声クローンを使う場合は、必ず権利を持っている音声（本人の同意がある音声）でのみ行ってください。
 
+### Dia
+
+[nari-labs/dia](https://github.com/nari-labs/dia) を使った対話特化 TTS です。1.6B パラメータのモデルで、`[S1]` / `[S2]` 話者タグをプロンプトに含めることで、マルチスピーカー対話を 1 パスで生成します。現状は英語のみ対応。入力に話者タグが無い場合はラッパーが先頭に `[S1]` を自動挿入するので、シングルスピーカーの平文 TTS としても利用できます。デフォルトモデル: `nari-labs/Dia-1.6B-0626`。`--dia-prompt-wav` と `--dia-prompt-text` の両方を指定すると `clone` voice が有効になり、参照音声で声色を条件付けられます。GPU 推奨（VRAM ~4.4GB at float16/bfloat16、~7.9GB at float32）。ライセンス: Apache 2.0（コードと重み）。
+
+`voice` パラメータには次の値を指定できます。
+
+| voice | 説明 |
+|---|---|
+| `default` | 参照音声なしの plain TTS。`input` に `[S1]` / `[S2]` を含めるとマルチスピーカー対話になります |
+| `clone` | 音声クローン。`--dia-prompt-wav` と `--dia-prompt-text` の両方が必要 |
+
+音声クローンを使う場合は、必ず権利を持っている音声（本人の同意がある音声）でのみ行ってください。
+
 ### Fish-Speech (現在動作不可)
 
 [fishaudio/fish-speech](https://github.com/fishaudio/fish-speech) を使った高品質 TTS です。日本語は Tier 1 サポート（最高品質）で、80 言語以上に対応しています。VRAM 24GB 以上が必要で A100/L4 GPU を想定していますが、Colab 環境ではモデルロード時に OOM（メモリ不足）でランタイムがクラッシュするため、現時点では動作しません。ライセンス: Apache 2.0。
