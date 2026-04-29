@@ -24,6 +24,7 @@ Supported engines:
 | Zonos | Works (GPU required, ~6GB VRAM) | Japanese / English / Chinese / French / German |
 | OuteTTS | Works (CPU OK) | Japanese / English / Chinese and many languages |
 | Dia | Works (GPU recommended) | English (multi-speaker dialogue) |
+| OpenVoice-V2 | At your own risk (MeloTTS deps) | Japanese / English / Spanish / French / Chinese / Korean |
 | Fish-Speech | Not working | Japanese / English / Chinese and 80+ languages |
 | MeloTTS | Not working | - |
 | Style-Bert-VITS2 | Not working | - |
@@ -382,6 +383,21 @@ The `voice` parameter exposes:
 
 For voice cloning, only use reference audio you have rights to (consent of the speaker).
 
+### OpenVoice-V2
+
+A two-stage voice cloning TTS using [myshell-ai/OpenVoice](https://github.com/myshell-ai/OpenVoice) V2. The pipeline first synthesizes base speech with MeloTTS in the chosen language (EN / ES / FR / ZH / JP / KR), then applies a ToneColorConverter (V2 checkpoints) to match the timbre of a reference clip. Default language: `JP` (Japanese). The wrapper uses `resources/example_reference.mp3` from the upstream repo as the default reference; supplying `--openvoice-prompt-wav` enables a `clone` voice with your own reference audio. License: MIT (both code and weights, since April 2024) — commercial use is allowed.
+
+**Caveat:** OpenVoice V2 depends on MeloTTS as the base TTS, which is what currently breaks the standalone `MeloTTS` engine in this repo (the `tokenizers` build needs a Rust toolchain that Colab's `uv + venv` setup does not always provide). OpenVoice V2 may fail at install time for the same reason. If MeloTTS install succeeds in your runtime, OpenVoice V2 should work.
+
+The `voice` parameter exposes:
+
+| voice | description |
+|---|---|
+| `default` | Uses `resources/example_reference.mp3` shipped in the OpenVoice repo as the timbre reference. |
+| `clone` | Uses `--openvoice-prompt-wav` as the timbre reference. Only available when configured. |
+
+For voice cloning, only use reference audio you have rights to (consent of the speaker).
+
 ### Fish-Speech (currently not working)
 
 A high-quality TTS using [fishaudio/fish-speech](https://github.com/fishaudio/fish-speech). Japanese is Tier 1 supported (highest quality) and it supports 80+ languages. It requires 24GB+ VRAM and targets A100/L4 GPUs, but on Colab the runtime crashes with OOM during model loading, so it currently does not work. License: Apache 2.0.
@@ -421,6 +437,7 @@ The license for each engine is as follows. When using them, always check each pr
 | OuteTTS (0.6B) | Apache 2.0 | Apache 2.0 | OK | Multilingual incl JP. CPU OK. Voice cloning |
 | OuteTTS (1B)   | Apache 2.0 | CC-BY-NC-SA-4.0 + Llama 3.2 Community License | Not allowed | Llama-3.2-based; non-commercial weights |
 | Dia | Apache 2.0 | Apache 2.0 | OK | EN only. Multi-speaker `[S1]`/`[S2]` dialogue TTS |
+| OpenVoice-V2 | MIT | MIT | OK | Multilingual (incl JP). Voice cloning. Depends on MeloTTS (may not install) |
 | Fish-Speech | Apache 2.0 | Apache 2.0 | OK | Requires A100/L4 GPU (VRAM 24GB+) |
 
 **About Piper**: The `piper-tts` package is GPL-3.0. Also, the default `en_US-lessac-medium` voice is trained on the Blizzard 2013 dataset provided by Lessac Technologies, and its license prohibits commercial use. If you need commercial use, choose another voice model trained with a permissive license.
@@ -473,6 +490,8 @@ This repository itself is intended for short-term operational verification and t
   https://github.com/edwko/OuteTTS
 - Dia
   https://github.com/nari-labs/dia
+- OpenVoice
+  https://github.com/myshell-ai/OpenVoice
 - Fish Speech
   https://github.com/fishaudio/fish-speech
 - CosyVoice

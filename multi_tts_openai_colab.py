@@ -11,7 +11,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Chatterbox", "Dia", "F5-TTS", "Fish-Speech", "Irodori-TTS", "Kokoro", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "OuteTTS", "Piper", "Piper-Plus", "Qwen3-TTS", "Sarashina-TTS", "Style-Bert-VITS2", "TinyTTS", "VoxCPM2", "Voxtral-TTS", "Zonos"]
+ENGINE = "Kokoro"  #@param ["Chatterbox", "Dia", "F5-TTS", "Fish-Speech", "Irodori-TTS", "Kokoro", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "OpenVoice-V2", "OuteTTS", "Piper", "Piper-Plus", "Qwen3-TTS", "Sarashina-TTS", "Style-Bert-VITS2", "TinyTTS", "VoxCPM2", "Voxtral-TTS", "Zonos"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -125,6 +125,14 @@ DIA_COMPUTE_DTYPE = "float16"  #@param ["float16", "bfloat16", "float32"]
 DIA_PROMPT_WAV = ""  #@param {type:"string"}
 DIA_PROMPT_TEXT = ""  #@param {type:"string"}
 DIA_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+
+#@markdown ---
+#@markdown OpenVoice V2 (GPU recommended, multilingual incl JP, voice cloning, MIT)
+#@markdown - Pipeline: MeloTTS base TTS -> ToneColorConverter (V2 checkpoints).
+#@markdown - May hit the same MeloTTS dependency issue that breaks the standalone MeloTTS engine.
+OPENVOICE_LANGUAGE = "JP"  #@param ["EN", "ES", "FR", "ZH", "JP", "KR"]
+OPENVOICE_PROMPT_WAV = ""  #@param {type:"string"}
+OPENVOICE_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
 
 import shlex
 import subprocess
@@ -278,6 +286,12 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         DIA_PROMPT_TEXT,
         "--dia-default-voice",
         DIA_DEFAULT_VOICE,
+        "--openvoice-language",
+        OPENVOICE_LANGUAGE,
+        "--openvoice-prompt-wav",
+        OPENVOICE_PROMPT_WAV,
+        "--openvoice-default-voice",
+        OPENVOICE_DEFAULT_VOICE,
     ]
     if SARASHINA_USE_VLLM:
         cmd.append("--sarashina-use-vllm")

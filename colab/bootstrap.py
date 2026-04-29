@@ -83,6 +83,9 @@ def parse_args():
     parser.add_argument("--dia-prompt-wav", default="")
     parser.add_argument("--dia-prompt-text", default="")
     parser.add_argument("--dia-default-voice", default="default")
+    parser.add_argument("--openvoice-language", default="JP")
+    parser.add_argument("--openvoice-prompt-wav", default="")
+    parser.add_argument("--openvoice-default-voice", default="default")
     parser.add_argument("--root-dir", default="/content/openai-compatible-local-tts")
     return parser.parse_args()
 
@@ -154,6 +157,9 @@ def main():
         dia_prompt_wav=args.dia_prompt_wav,
         dia_prompt_text=args.dia_prompt_text,
         dia_default_voice=args.dia_default_voice,
+        openvoice_language=args.openvoice_language,
+        openvoice_prompt_wav=args.openvoice_prompt_wav,
+        openvoice_default_voice=args.openvoice_default_voice,
         root_dir=Path(args.root_dir),
         repo_dir=REPO_DIR,
     )

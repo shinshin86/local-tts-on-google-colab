@@ -40,6 +40,8 @@ def resolve_selected_voice(settings: Settings) -> str:
         return settings.outetts_default_voice
     if settings.engine == "Dia":
         return settings.dia_default_voice
+    if settings.engine == "OpenVoice-V2":
+        return settings.openvoice_default_voice
     return ""
 
 
@@ -175,6 +177,18 @@ def print_engine_voice_hints(settings: Settings):
             print("             clone は --dia-prompt-wav と --dia-prompt-text の両方を指定すると有効になります")
         print("対応言語: 英語のみ。日本語テキストは正しく発音されません。")
         print("注意: GPU 推奨（bf16/float16 で VRAM ~4.4GB / float32 で ~7.9GB）。ライセンス: Apache 2.0（コードと重み）")
+    elif settings.engine == "OpenVoice-V2":
+        print("OpenVoice V2 は MyShell の voice cloning TTS です（MeloTTS をベースに ToneColorConverter で声色変換）。")
+        print(f"language: {settings.openvoice_language}")
+        print(f"デフォルト voice: {settings.openvoice_default_voice}")
+        print("voice 候補: default（OpenVoice 同梱の resources/example_reference.mp3 を参照音声として使用）")
+        if settings.openvoice_prompt_wav:
+            print(f"             clone（参照音声: {settings.openvoice_prompt_wav}）")
+        else:
+            print("             clone は --openvoice-prompt-wav を指定すると有効になります")
+        print("対応言語: EN / ES / FR / ZH / JP / KR")
+        print("注意: ベース TTS は MeloTTS のため、本リポの MeloTTS 単体エンジンと同じ依存解決問題（tokenizers Rust ビルド失敗）に当たる可能性があります。")
+        print("ライセンス: コードと重みとも MIT（2024-04 以降、商用 OK）")
     else:
         print("Irodori-TTS は現状 voice 切り替えを持たない想定です。")
 

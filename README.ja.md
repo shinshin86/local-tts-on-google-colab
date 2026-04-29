@@ -23,6 +23,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | Zonos | 動作OK (GPU必須・VRAM ~6GB) | 日本語 / 英語 / 中国語 / フランス語 / ドイツ語 |
 | OuteTTS | 動作OK (CPU可) | 日本語 / 英語 / 中国語 他 多言語 |
 | Dia | 動作OK (GPU推奨) | 英語（マルチスピーカー対話） |
+| OpenVoice-V2 | 動作要注意（MeloTTS 依存） | 日本語 / 英語 / 西 / 仏 / 中 / 韓 |
 | Fish-Speech | 動作不可 | 日本語 / 英語 / 中国語 他 80言語以上 |
 | MeloTTS | 動作不可 | - |
 | Style-Bert-VITS2 | 動作不可 | - |
@@ -381,6 +382,21 @@ Resemble AI の [resemble-ai/chatterbox](https://github.com/resemble-ai/chatterb
 
 音声クローンを使う場合は、必ず権利を持っている音声（本人の同意がある音声）でのみ行ってください。
 
+### OpenVoice-V2
+
+[myshell-ai/OpenVoice](https://github.com/myshell-ai/OpenVoice) V2 を使った 2 段階構成の voice cloning TTS です。まず MeloTTS で目的言語（EN / ES / FR / ZH / JP / KR）のベース音声を生成し、その後 ToneColorConverter（V2 checkpoints）で参照音声の声色に変換します。デフォルト言語は `JP`。`--openvoice-prompt-wav` を指定するまでは upstream に同梱の `resources/example_reference.mp3` を参照音声として使用し、指定すると `clone` voice が独自参照に切り替わります。ライセンス: コードと重みの両方が MIT（2024-04 以降）— 商用利用 OK。
+
+**注意:** OpenVoice V2 はベース TTS に MeloTTS を使用するため、現状本リポの MeloTTS 単体エンジンを動作不可にしている依存解決問題（`tokenizers` のビルドに Rust ツールチェーンが必要）と同じ理由でインストールに失敗する可能性があります。MeloTTS のインストールが成功するランタイムでは動作する想定です。
+
+`voice` パラメータには次の値を指定できます。
+
+| voice | 説明 |
+|---|---|
+| `default` | upstream に同梱の `resources/example_reference.mp3` を参照音声として使用 |
+| `clone` | `--openvoice-prompt-wav` を参照音声として使用（指定時のみ有効） |
+
+音声クローンを使う場合は、必ず権利を持っている音声（本人の同意がある音声）でのみ行ってください。
+
 ### Fish-Speech (現在動作不可)
 
 [fishaudio/fish-speech](https://github.com/fishaudio/fish-speech) を使った高品質 TTS です。日本語は Tier 1 サポート（最高品質）で、80 言語以上に対応しています。VRAM 24GB 以上が必要で A100/L4 GPU を想定していますが、Colab 環境ではモデルロード時に OOM（メモリ不足）でランタイムがクラッシュするため、現時点では動作しません。ライセンス: Apache 2.0。
@@ -420,6 +436,7 @@ Resemble AI の [resemble-ai/chatterbox](https://github.com/resemble-ai/chatterb
 | OuteTTS (0.6B) | Apache 2.0 | Apache 2.0 | OK | 日本語含む多言語、CPU 動作可、voice cloning |
 | OuteTTS (1B)   | Apache 2.0 | CC-BY-NC-SA-4.0 + Llama 3.2 Community License | 不可 | Llama-3.2 ベース。重みは非商用 |
 | Dia | Apache 2.0 | Apache 2.0 | OK | 英語のみ。`[S1]`/`[S2]` でマルチスピーカー対話 TTS |
+| OpenVoice-V2 | MIT | MIT | OK | 多言語（日本語含む）。voice cloning。MeloTTS 依存（環境次第で導入不可） |
 | Fish-Speech | Apache 2.0 | Apache 2.0 | OK | A100/L4 GPU 必須（VRAM 24GB+） |
 
 **Piper について**: `piper-tts` パッケージは GPL-3.0 です。また、デフォルトの `en_US-lessac-medium` 音声は Lessac Technologies 提供の Blizzard 2013 データセットで学習されており、このデータセットのライセンスは商用利用を禁止しています。商用利用が必要な場合は、許容的なライセンスで学習された別の voice モデルを選択してください。
@@ -472,6 +489,8 @@ Resemble AI の [resemble-ai/chatterbox](https://github.com/resemble-ai/chatterb
   https://github.com/edwko/OuteTTS
 - Dia
   https://github.com/nari-labs/dia
+- OpenVoice
+  https://github.com/myshell-ai/OpenVoice
 - Fish Speech
   https://github.com/fishaudio/fish-speech
 - CosyVoice

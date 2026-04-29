@@ -104,6 +104,9 @@ class Settings:
     dia_prompt_wav: str = ""
     dia_prompt_text: str = ""
     dia_default_voice: str = "default"
+    openvoice_language: str = "JP"
+    openvoice_prompt_wav: str = ""
+    openvoice_default_voice: str = "default"
     root_dir: Path = Path("/content/openai-compatible-local-tts")
     repo_dir: Path = field(default_factory=default_repo_dir)
     app_port: int = 8000
