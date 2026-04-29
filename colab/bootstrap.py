@@ -65,6 +65,9 @@ def parse_args():
     parser.add_argument("--sarashina-prompt-wav", default="")
     parser.add_argument("--sarashina-prompt-text", default="")
     parser.add_argument("--sarashina-default-voice", default="default")
+    parser.add_argument("--chatterbox-language", default="ja")
+    parser.add_argument("--chatterbox-prompt-wav", default="")
+    parser.add_argument("--chatterbox-default-voice", default="default")
     parser.add_argument("--root-dir", default="/content/openai-compatible-local-tts")
     return parser.parse_args()
 
@@ -118,6 +121,9 @@ def main():
         sarashina_prompt_wav=args.sarashina_prompt_wav,
         sarashina_prompt_text=args.sarashina_prompt_text,
         sarashina_default_voice=args.sarashina_default_voice,
+        chatterbox_language=args.chatterbox_language,
+        chatterbox_prompt_wav=args.chatterbox_prompt_wav,
+        chatterbox_default_voice=args.chatterbox_default_voice,
         root_dir=Path(args.root_dir),
         repo_dir=REPO_DIR,
     )

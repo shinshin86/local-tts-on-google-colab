@@ -1,3 +1,4 @@
+from .chatterbox import install as install_chatterbox
 from .f5tts import install as install_f5tts
 from .fish_speech import install as install_fish_speech
 from .irodori import install as install_irodori
@@ -16,6 +17,7 @@ from .voxtral import install as install_voxtral
 
 
 INSTALLERS = {
+    "Chatterbox": install_chatterbox,
     "F5-TTS": install_f5tts,
     "Fish-Speech": install_fish_speech,
     "Irodori-TTS": install_irodori,

@@ -32,6 +32,8 @@ def resolve_selected_voice(settings: Settings) -> str:
         return settings.neutts_default_voice
     if settings.engine == "Sarashina-TTS":
         return settings.sarashina_default_voice
+    if settings.engine == "Chatterbox":
+        return settings.chatterbox_default_voice
     return ""
 
 
@@ -116,6 +118,17 @@ def print_engine_voice_hints(settings: Settings):
         print("TinyTTS は超軽量（~3.4MB）の英語専用 TTS です（CPU 動作、GPU 不要）。")
         print("voice パラメータは現在 'default' のみ対応です。")
         print("注意: 英語のみ対応。日本語テキストは正しく発音されません。ライセンス: Apache-2.0")
+    elif settings.engine == "Chatterbox":
+        print("Chatterbox は Resemble AI の多言語 TTS です（23言語対応、ゼロショット voice cloning 対応）。")
+        print(f"language: {settings.chatterbox_language}")
+        print(f"デフォルト voice: {settings.chatterbox_default_voice}")
+        print("voice 候補: default（プロンプトなしの plain TTS）")
+        if settings.chatterbox_prompt_wav:
+            print(f"             clone（参照音声: {settings.chatterbox_prompt_wav}）")
+        else:
+            print("             clone は --chatterbox-prompt-wav を指定すると有効になります")
+        print("対応言語: ar, da, de, el, en, es, fi, fr, he, hi, it, ja, ko, ms, nl, no, pl, pt, ru, sv, sw, tr, zh")
+        print("注意: GPU 推奨（VRAM ~2-4GB）。ライセンス: MIT（コードと重み）")
     else:
         print("Irodori-TTS は現状 voice 切り替えを持たない想定です。")
 

@@ -11,7 +11,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["F5-TTS", "Fish-Speech", "Irodori-TTS", "Kokoro", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "Piper", "Piper-Plus", "Qwen3-TTS", "Sarashina-TTS", "Style-Bert-VITS2", "TinyTTS", "VoxCPM2", "Voxtral-TTS"]
+ENGINE = "Kokoro"  #@param ["Chatterbox", "F5-TTS", "Fish-Speech", "Irodori-TTS", "Kokoro", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "Piper", "Piper-Plus", "Qwen3-TTS", "Sarashina-TTS", "Style-Bert-VITS2", "TinyTTS", "VoxCPM2", "Voxtral-TTS"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -93,6 +93,12 @@ SARASHINA_USE_VLLM = False  #@param {type:"boolean"}
 SARASHINA_PROMPT_WAV = ""  #@param {type:"string"}
 SARASHINA_PROMPT_TEXT = ""  #@param {type:"string"}
 SARASHINA_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+
+#@markdown ---
+#@markdown Chatterbox (GPU recommended, multilingual incl JP, voice cloning)
+CHATTERBOX_LANGUAGE = "ja"  #@param ["ar", "da", "de", "el", "en", "es", "fi", "fr", "he", "hi", "it", "ja", "ko", "ms", "nl", "no", "pl", "pt", "ru", "sv", "sw", "tr", "zh"]
+CHATTERBOX_PROMPT_WAV = ""  #@param {type:"string"}
+CHATTERBOX_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
 
 import shlex
 import subprocess
@@ -210,6 +216,12 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         SARASHINA_PROMPT_TEXT,
         "--sarashina-default-voice",
         SARASHINA_DEFAULT_VOICE,
+        "--chatterbox-language",
+        CHATTERBOX_LANGUAGE,
+        "--chatterbox-prompt-wav",
+        CHATTERBOX_PROMPT_WAV,
+        "--chatterbox-default-voice",
+        CHATTERBOX_DEFAULT_VOICE,
     ]
     if SARASHINA_USE_VLLM:
         cmd.append("--sarashina-use-vllm")

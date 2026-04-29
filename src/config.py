@@ -86,6 +86,9 @@ class Settings:
     sarashina_prompt_wav: str = ""
     sarashina_prompt_text: str = ""
     sarashina_default_voice: str = "default"
+    chatterbox_language: str = "ja"
+    chatterbox_prompt_wav: str = ""
+    chatterbox_default_voice: str = "default"
     root_dir: Path = Path("/content/openai-compatible-local-tts")
     repo_dir: Path = field(default_factory=default_repo_dir)
     app_port: int = 8000
