@@ -22,6 +22,7 @@ Supported engines:
 | F5-TTS | Works (GPU required) | English / Chinese (Japanese via separate model) |
 | Chatterbox | Works (GPU recommended) | Japanese / English / Chinese and 23 languages |
 | Zonos | Works (GPU required, ~6GB VRAM) | Japanese / English / Chinese / French / German |
+| OuteTTS | Works (CPU OK) | Japanese / English / Chinese and many languages |
 | Fish-Speech | Not working | Japanese / English / Chinese and 80+ languages |
 | MeloTTS | Not working | - |
 | Style-Bert-VITS2 | Not working | - |
@@ -345,6 +346,19 @@ The `voice` parameter exposes:
 
 For voice cloning, only use reference audio you have rights to (consent of the speaker).
 
+### OuteTTS
+
+A lightweight multilingual TTS using [edwko/OuteTTS](https://github.com/edwko/OuteTTS). Supports many languages including Japanese, with two model sizes (`0.6B` and `1B`) and multiple backends (`HF` for transformers, `LLAMACPP` for GGUF). Voice cloning is exposed via `--outetts-prompt-wav` (and an optional `--outetts-prompt-text` transcript). The default voice uses one of the bundled built-in speaker profiles, configurable via `--outetts-default-speaker` (e.g., `EN-FEMALE-1-NEUTRAL`). For best Japanese results, create a Japanese speaker profile from a reference clip with `clone`. Runs on CPU or GPU. License: Apache 2.0 (code and weights).
+
+The `voice` parameter exposes:
+
+| voice | description |
+|---|---|
+| `default` | Plain TTS using the built-in speaker profile selected by `--outetts-default-speaker`. |
+| `clone` | Voice cloning. Only available when `--outetts-prompt-wav` is configured. |
+
+For voice cloning, only use reference audio you have rights to (consent of the speaker).
+
 ### Fish-Speech (currently not working)
 
 A high-quality TTS using [fishaudio/fish-speech](https://github.com/fishaudio/fish-speech). Japanese is Tier 1 supported (highest quality) and it supports 80+ languages. It requires 24GB+ VRAM and targets A100/L4 GPUs, but on Colab the runtime crashes with OOM during model loading, so it currently does not work. License: Apache 2.0.
@@ -381,6 +395,7 @@ The license for each engine is as follows. When using them, always check each pr
 | F5-TTS | MIT | CC-BY-NC | Not allowed (model) | Model weights are non-commercial due to Emilia dataset constraints |
 | Chatterbox | MIT | MIT | OK | Multilingual (23 languages incl JP). Zero-shot voice cloning |
 | Zonos | Apache 2.0 | Apache 2.0 | OK | EN/JA/ZH/FR/DE. Zero-shot voice cloning. Requires `espeak-ng` |
+| OuteTTS | Apache 2.0 | Apache 2.0 | OK | 0.6B / 1B. Multilingual incl JP. CPU OK. Voice cloning |
 | Fish-Speech | Apache 2.0 | Apache 2.0 | OK | Requires A100/L4 GPU (VRAM 24GB+) |
 
 **About Piper**: The `piper-tts` package is GPL-3.0. Also, the default `en_US-lessac-medium` voice is trained on the Blizzard 2013 dataset provided by Lessac Technologies, and its license prohibits commercial use. If you need commercial use, choose another voice model trained with a permissive license.
@@ -429,6 +444,8 @@ This repository itself is intended for short-term operational verification and t
   https://github.com/resemble-ai/chatterbox
 - Zonos
   https://github.com/Zyphra/Zonos
+- OuteTTS
+  https://github.com/edwko/OuteTTS
 - Fish Speech
   https://github.com/fishaudio/fish-speech
 - CosyVoice

@@ -93,6 +93,12 @@ class Settings:
     zonos_language: str = "ja"
     zonos_prompt_wav: str = ""
     zonos_default_voice: str = "default"
+    outetts_model_size: str = "0.6B"
+    outetts_backend: str = "HF"
+    outetts_default_speaker: str = "EN-FEMALE-1-NEUTRAL"
+    outetts_prompt_wav: str = ""
+    outetts_prompt_text: str = ""
+    outetts_default_voice: str = "default"
     root_dir: Path = Path("/content/openai-compatible-local-tts")
     repo_dir: Path = field(default_factory=default_repo_dir)
     app_port: int = 8000

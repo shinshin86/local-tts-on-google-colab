@@ -36,6 +36,8 @@ def resolve_selected_voice(settings: Settings) -> str:
         return settings.chatterbox_default_voice
     if settings.engine == "Zonos":
         return settings.zonos_default_voice
+    if settings.engine == "OuteTTS":
+        return settings.outetts_default_voice
     return ""
 
 
@@ -143,6 +145,17 @@ def print_engine_voice_hints(settings: Settings):
             print("             clone は --zonos-prompt-wav を指定すると有効になります")
         print("対応言語: en, ja, zh, fr, de（espeak-ng で音素化）")
         print("注意: GPU 推奨（VRAM 6GB+）。ライセンス: Apache-2.0（コードと重み）")
+    elif settings.engine == "OuteTTS":
+        print("OuteTTS は OuteAI の軽量多言語 TTS です（日本語含む多言語対応、voice cloning 対応）。")
+        print(f"モデルサイズ: {settings.outetts_model_size} / backend: {settings.outetts_backend}")
+        print(f"デフォルト speaker: {settings.outetts_default_speaker}")
+        print(f"デフォルト voice: {settings.outetts_default_voice}")
+        print("voice 候補: default（OUTETTS_DEFAULT_SPEAKER に該当する内蔵プロファイルを使用）")
+        if settings.outetts_prompt_wav:
+            print(f"             clone（参照音声: {settings.outetts_prompt_wav}）")
+        else:
+            print("             clone は --outetts-prompt-wav を指定すると有効になります（必要なら --outetts-prompt-text も併用）")
+        print("注意: 日本語を話させる場合は日本語話者プロファイルの作成（clone）を推奨します。CPU/GPU 両対応。ライセンス: Apache-2.0")
     else:
         print("Irodori-TTS は現状 voice 切り替えを持たない想定です。")
 

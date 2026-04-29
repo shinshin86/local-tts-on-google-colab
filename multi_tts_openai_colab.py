@@ -11,7 +11,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Chatterbox", "F5-TTS", "Fish-Speech", "Irodori-TTS", "Kokoro", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "Piper", "Piper-Plus", "Qwen3-TTS", "Sarashina-TTS", "Style-Bert-VITS2", "TinyTTS", "VoxCPM2", "Voxtral-TTS", "Zonos"]
+ENGINE = "Kokoro"  #@param ["Chatterbox", "F5-TTS", "Fish-Speech", "Irodori-TTS", "Kokoro", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "OuteTTS", "Piper", "Piper-Plus", "Qwen3-TTS", "Sarashina-TTS", "Style-Bert-VITS2", "TinyTTS", "VoxCPM2", "Voxtral-TTS", "Zonos"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -106,6 +106,15 @@ ZONOS_HF_MODEL = "Zyphra/Zonos-v0.1-transformer"  #@param {type:"string"}
 ZONOS_LANGUAGE = "ja"  #@param ["en", "ja", "zh", "fr", "de"]
 ZONOS_PROMPT_WAV = ""  #@param {type:"string"}
 ZONOS_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+
+#@markdown ---
+#@markdown OuteTTS (CPU OK, multilingual incl JP, voice cloning, Apache 2.0)
+OUTETTS_MODEL_SIZE = "0.6B"  #@param ["0.6B", "1B"]
+OUTETTS_BACKEND = "HF"  #@param ["HF", "LLAMACPP"]
+OUTETTS_DEFAULT_SPEAKER = "EN-FEMALE-1-NEUTRAL"  #@param {type:"string"}
+OUTETTS_PROMPT_WAV = ""  #@param {type:"string"}
+OUTETTS_PROMPT_TEXT = ""  #@param {type:"string"}
+OUTETTS_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
 
 import shlex
 import subprocess
@@ -237,6 +246,18 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         ZONOS_PROMPT_WAV,
         "--zonos-default-voice",
         ZONOS_DEFAULT_VOICE,
+        "--outetts-model-size",
+        OUTETTS_MODEL_SIZE,
+        "--outetts-backend",
+        OUTETTS_BACKEND,
+        "--outetts-default-speaker",
+        OUTETTS_DEFAULT_SPEAKER,
+        "--outetts-prompt-wav",
+        OUTETTS_PROMPT_WAV,
+        "--outetts-prompt-text",
+        OUTETTS_PROMPT_TEXT,
+        "--outetts-default-voice",
+        OUTETTS_DEFAULT_VOICE,
     ]
     if SARASHINA_USE_VLLM:
         cmd.append("--sarashina-use-vllm")

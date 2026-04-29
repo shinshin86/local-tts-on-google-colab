@@ -72,6 +72,12 @@ def parse_args():
     parser.add_argument("--zonos-language", default="ja")
     parser.add_argument("--zonos-prompt-wav", default="")
     parser.add_argument("--zonos-default-voice", default="default")
+    parser.add_argument("--outetts-model-size", default="0.6B")
+    parser.add_argument("--outetts-backend", default="HF")
+    parser.add_argument("--outetts-default-speaker", default="EN-FEMALE-1-NEUTRAL")
+    parser.add_argument("--outetts-prompt-wav", default="")
+    parser.add_argument("--outetts-prompt-text", default="")
+    parser.add_argument("--outetts-default-voice", default="default")
     parser.add_argument("--root-dir", default="/content/openai-compatible-local-tts")
     return parser.parse_args()
 
@@ -132,6 +138,12 @@ def main():
         zonos_language=args.zonos_language,
         zonos_prompt_wav=args.zonos_prompt_wav,
         zonos_default_voice=args.zonos_default_voice,
+        outetts_model_size=args.outetts_model_size,
+        outetts_backend=args.outetts_backend,
+        outetts_default_speaker=args.outetts_default_speaker,
+        outetts_prompt_wav=args.outetts_prompt_wav,
+        outetts_prompt_text=args.outetts_prompt_text,
+        outetts_default_voice=args.outetts_default_voice,
         root_dir=Path(args.root_dir),
         repo_dir=REPO_DIR,
     )

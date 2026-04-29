@@ -21,6 +21,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | F5-TTS | 動作OK (GPU必須) | 英語 / 中国語（日本語は別モデル） |
 | Chatterbox | 動作OK (GPU推奨) | 日本語 / 英語 / 中国語 他 23言語 |
 | Zonos | 動作OK (GPU必須・VRAM ~6GB) | 日本語 / 英語 / 中国語 / フランス語 / ドイツ語 |
+| OuteTTS | 動作OK (CPU可) | 日本語 / 英語 / 中国語 他 多言語 |
 | Fish-Speech | 動作不可 | 日本語 / 英語 / 中国語 他 80言語以上 |
 | MeloTTS | 動作不可 | - |
 | Style-Bert-VITS2 | 動作不可 | - |
@@ -344,6 +345,19 @@ Resemble AI の [resemble-ai/chatterbox](https://github.com/resemble-ai/chatterb
 
 音声クローンを使う場合は、必ず権利を持っている音声（本人の同意がある音声）でのみ行ってください。
 
+### OuteTTS
+
+[edwko/OuteTTS](https://github.com/edwko/OuteTTS) を使った軽量多言語 TTS です。日本語を含む多言語に対応し、モデルサイズ（`0.6B` / `1B`）と backend（`HF` = transformers / `LLAMACPP` = GGUF）を選択できます。`--outetts-prompt-wav`（必要なら `--outetts-prompt-text` も）で voice cloning を有効にできます。デフォルト voice は `--outetts-default-speaker`（例: `EN-FEMALE-1-NEUTRAL`）で内蔵 speaker プロファイルを切り替えられます。日本語を発話させる場合は、日本語の参照音声から `clone` で speaker プロファイルを作るのが推奨です。CPU / GPU の両方で動作します。ライセンス: Apache 2.0（コードと重み）。
+
+`voice` パラメータには次の値を指定できます。
+
+| voice | 説明 |
+|---|---|
+| `default` | `--outetts-default-speaker` で選んだ内蔵 speaker プロファイルで合成 |
+| `clone` | 音声クローン。`--outetts-prompt-wav` を指定したときのみ有効 |
+
+音声クローンを使う場合は、必ず権利を持っている音声（本人の同意がある音声）でのみ行ってください。
+
 ### Fish-Speech (現在動作不可)
 
 [fishaudio/fish-speech](https://github.com/fishaudio/fish-speech) を使った高品質 TTS です。日本語は Tier 1 サポート（最高品質）で、80 言語以上に対応しています。VRAM 24GB 以上が必要で A100/L4 GPU を想定していますが、Colab 環境ではモデルロード時に OOM（メモリ不足）でランタイムがクラッシュするため、現時点では動作しません。ライセンス: Apache 2.0。
@@ -380,6 +394,7 @@ Resemble AI の [resemble-ai/chatterbox](https://github.com/resemble-ai/chatterb
 | F5-TTS | MIT | CC-BY-NC | 不可（モデル） | モデル重みは Emilia データセットの制約により非商用 |
 | Chatterbox | MIT | MIT | OK | 多言語（23言語、日本語含む）。ゼロショット voice cloning |
 | Zonos | Apache 2.0 | Apache 2.0 | OK | 英 / 日 / 中 / 仏 / 独。ゼロショット voice cloning。`espeak-ng` 必須 |
+| OuteTTS | Apache 2.0 | Apache 2.0 | OK | 0.6B / 1B。日本語含む多言語、CPU 動作可、voice cloning |
 | Fish-Speech | Apache 2.0 | Apache 2.0 | OK | A100/L4 GPU 必須（VRAM 24GB+） |
 
 **Piper について**: `piper-tts` パッケージは GPL-3.0 です。また、デフォルトの `en_US-lessac-medium` 音声は Lessac Technologies 提供の Blizzard 2013 データセットで学習されており、このデータセットのライセンスは商用利用を禁止しています。商用利用が必要な場合は、許容的なライセンスで学習された別の voice モデルを選択してください。
@@ -428,6 +443,8 @@ Resemble AI の [resemble-ai/chatterbox](https://github.com/resemble-ai/chatterb
   https://github.com/resemble-ai/chatterbox
 - Zonos
   https://github.com/Zyphra/Zonos
+- OuteTTS
+  https://github.com/edwko/OuteTTS
 - Fish Speech
   https://github.com/fishaudio/fish-speech
 - CosyVoice
