@@ -86,6 +86,12 @@ def parse_args():
     parser.add_argument("--openvoice-language", default="JP")
     parser.add_argument("--openvoice-prompt-wav", default="")
     parser.add_argument("--openvoice-default-voice", default="default")
+    parser.add_argument("--vibevoice-hf-model", default="microsoft/VibeVoice-1.5B")
+    parser.add_argument("--vibevoice-default-speaker", default="en-Alice_woman")
+    parser.add_argument("--vibevoice-prompt-wav", default="")
+    parser.add_argument("--vibevoice-default-voice", default="default")
+    parser.add_argument("--vibevoice-ddpm-steps", type=int, default=10)
+    parser.add_argument("--vibevoice-cfg-scale", type=float, default=1.3)
     parser.add_argument("--root-dir", default="/content/openai-compatible-local-tts")
     return parser.parse_args()
 
@@ -160,6 +166,12 @@ def main():
         openvoice_language=args.openvoice_language,
         openvoice_prompt_wav=args.openvoice_prompt_wav,
         openvoice_default_voice=args.openvoice_default_voice,
+        vibevoice_hf_model=args.vibevoice_hf_model,
+        vibevoice_default_speaker=args.vibevoice_default_speaker,
+        vibevoice_prompt_wav=args.vibevoice_prompt_wav,
+        vibevoice_default_voice=args.vibevoice_default_voice,
+        vibevoice_ddpm_steps=args.vibevoice_ddpm_steps,
+        vibevoice_cfg_scale=args.vibevoice_cfg_scale,
         root_dir=Path(args.root_dir),
         repo_dir=REPO_DIR,
     )

@@ -42,6 +42,8 @@ def resolve_selected_voice(settings: Settings) -> str:
         return settings.dia_default_voice
     if settings.engine == "OpenVoice-V2":
         return settings.openvoice_default_voice
+    if settings.engine == "VibeVoice":
+        return settings.vibevoice_default_voice
     return ""
 
 
@@ -189,6 +191,20 @@ def print_engine_voice_hints(settings: Settings):
         print("対応言語: EN / ES / FR / ZH / JP / KR")
         print("注意: ベース TTS は MeloTTS のため、本リポの MeloTTS 単体エンジンと同じ依存解決問題（tokenizers Rust ビルド失敗）に当たる可能性があります。")
         print("ライセンス: コードと重みとも MIT（2024-04 以降、商用 OK）")
+    elif settings.engine == "VibeVoice":
+        print("VibeVoice は Microsoft の長尺マルチスピーカー TTS です（最大 90 分・4 話者の一括生成）。")
+        print(f"モデル: {settings.vibevoice_hf_model}")
+        print(f"デフォルト speaker: {settings.vibevoice_default_speaker}（demo/voices/<speaker>.wav）")
+        print(f"デフォルト voice: {settings.vibevoice_default_voice}")
+        print(f"DDPM steps: {settings.vibevoice_ddpm_steps} / cfg_scale: {settings.vibevoice_cfg_scale}")
+        print("voice 候補: default（VIBEVOICE_DEFAULT_SPEAKER 名で demo/voices から参照音声を選択）")
+        if settings.vibevoice_prompt_wav:
+            print(f"             clone（参照音声: {settings.vibevoice_prompt_wav}）")
+        else:
+            print("             clone は --vibevoice-prompt-wav を指定すると有効になります")
+        print("対応言語: 英語 / 中国語のみ（モデル規約上、それ以外の言語は禁止）")
+        print("注意: ライセンスは MIT ですが、Microsoft 公式に「research purpose only」と明記されており、")
+        print("      なりすまし・ディスインフォ・実時間音声変換などは禁止です。商用 / 実運用での利用は推奨されていません。")
     else:
         print("Irodori-TTS は現状 voice 切り替えを持たない想定です。")
 

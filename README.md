@@ -25,6 +25,7 @@ Supported engines:
 | OuteTTS | Works (CPU OK) | Japanese / English / Chinese and many languages |
 | Dia | Works (GPU recommended) | English (multi-speaker dialogue) |
 | OpenVoice-V2 | At your own risk (MeloTTS deps) | Japanese / English / Spanish / French / Chinese / Korean |
+| VibeVoice | Works (GPU required) - research-only license | English / Chinese (long-form, up to 4 speakers) |
 | Fish-Speech | Not working | Japanese / English / Chinese and 80+ languages |
 | MeloTTS | Not working | - |
 | Style-Bert-VITS2 | Not working | - |
@@ -398,6 +399,21 @@ The `voice` parameter exposes:
 
 For voice cloning, only use reference audio you have rights to (consent of the speaker).
 
+### VibeVoice
+
+A long-form multi-speaker TTS using [microsoft/VibeVoice](https://github.com/microsoft/VibeVoice). The 1.5B-parameter model can generate up to ~90 minutes of audio with up to 4 distinct speakers in a single pass — useful for podcasts and long dialogues. Each speaker conditions on a short reference clip. The wrapper resolves the default reference from `demo/voices/<VIBEVOICE_DEFAULT_SPEAKER>.wav` shipped in the upstream repo (e.g., `en-Alice_woman`); supplying `--vibevoice-prompt-wav` enables a `clone` voice. Use `Speaker 1: ... \n Speaker 2: ...` formatting in `input` for multi-speaker dialogues; the wrapper auto-prepends `Speaker 1:` for plain text. A GPU runtime is required (bf16). Tunable: `--vibevoice-ddpm-steps` (default 10) and `--vibevoice-cfg-scale` (default 1.3).
+
+**License caveat:** the code and weights are nominally MIT, **but** Microsoft tags VibeVoice as **"research purpose only"** on the model card and explicitly prohibits non-EN/ZH languages, voice impersonation, disinformation, and real-time voice conversion. Treat this engine as research / evaluation only — do not ship into commercial or real-world products.
+
+The `voice` parameter exposes:
+
+| voice | description |
+|---|---|
+| `default` | Uses the bundled `demo/voices/<--vibevoice-default-speaker>.wav` reference. |
+| `clone` | Uses `--vibevoice-prompt-wav` as the reference. Only available when configured. |
+
+For voice cloning, only use reference audio you have rights to (consent of the speaker).
+
 ### Fish-Speech (currently not working)
 
 A high-quality TTS using [fishaudio/fish-speech](https://github.com/fishaudio/fish-speech). Japanese is Tier 1 supported (highest quality) and it supports 80+ languages. It requires 24GB+ VRAM and targets A100/L4 GPUs, but on Colab the runtime crashes with OOM during model loading, so it currently does not work. License: Apache 2.0.
@@ -438,6 +454,7 @@ The license for each engine is as follows. When using them, always check each pr
 | OuteTTS (1B)   | Apache 2.0 | CC-BY-NC-SA-4.0 + Llama 3.2 Community License | Not allowed | Llama-3.2-based; non-commercial weights |
 | Dia | Apache 2.0 | Apache 2.0 | OK | EN only. Multi-speaker `[S1]`/`[S2]` dialogue TTS |
 | OpenVoice-V2 | MIT | MIT | OK | Multilingual (incl JP). Voice cloning. Depends on MeloTTS (may not install) |
+| VibeVoice | MIT | MIT | Caution (research-only) | EN/ZH only per model card. Microsoft tags this "research purpose only" |
 | Fish-Speech | Apache 2.0 | Apache 2.0 | OK | Requires A100/L4 GPU (VRAM 24GB+) |
 
 **About Piper**: The `piper-tts` package is GPL-3.0. Also, the default `en_US-lessac-medium` voice is trained on the Blizzard 2013 dataset provided by Lessac Technologies, and its license prohibits commercial use. If you need commercial use, choose another voice model trained with a permissive license.
@@ -492,6 +509,8 @@ This repository itself is intended for short-term operational verification and t
   https://github.com/nari-labs/dia
 - OpenVoice
   https://github.com/myshell-ai/OpenVoice
+- VibeVoice
+  https://github.com/microsoft/VibeVoice
 - Fish Speech
   https://github.com/fishaudio/fish-speech
 - CosyVoice

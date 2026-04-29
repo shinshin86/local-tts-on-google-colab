@@ -24,6 +24,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | OuteTTS | 動作OK (CPU可) | 日本語 / 英語 / 中国語 他 多言語 |
 | Dia | 動作OK (GPU推奨) | 英語（マルチスピーカー対話） |
 | OpenVoice-V2 | 動作要注意（MeloTTS 依存） | 日本語 / 英語 / 西 / 仏 / 中 / 韓 |
+| VibeVoice | 動作OK (GPU必須・research-only ライセンス) | 英語 / 中国語（長尺・最大 4 話者） |
 | Fish-Speech | 動作不可 | 日本語 / 英語 / 中国語 他 80言語以上 |
 | MeloTTS | 動作不可 | - |
 | Style-Bert-VITS2 | 動作不可 | - |
@@ -397,6 +398,21 @@ Resemble AI の [resemble-ai/chatterbox](https://github.com/resemble-ai/chatterb
 
 音声クローンを使う場合は、必ず権利を持っている音声（本人の同意がある音声）でのみ行ってください。
 
+### VibeVoice
+
+[microsoft/VibeVoice](https://github.com/microsoft/VibeVoice) を使った長尺・マルチスピーカー対応 TTS です。1.5B パラメータのモデルで、最大 4 話者・約 90 分の音声を 1 パスで生成できます（ポッドキャストや長尺対話向け）。各話者は短い参照音声で条件付けされます。デフォルト voice は upstream に同梱の `demo/voices/<VIBEVOICE_DEFAULT_SPEAKER>.wav`（例: `en-Alice_woman`）を参照として使用し、`--vibevoice-prompt-wav` を指定すると `clone` voice が独自参照に切り替わります。マルチスピーカー対話を使う場合は `input` を `Speaker 1: ...\nSpeaker 2: ...` 形式にしてください（平文の場合はラッパーが自動で `Speaker 1:` を先頭に追加）。GPU 必須（bf16）。チューニング項目: `--vibevoice-ddpm-steps`（デフォルト 10）、`--vibevoice-cfg-scale`（デフォルト 1.3）。
+
+**ライセンス注意:** コード / 重みとも MIT ですが、Microsoft 公式モデルカードに **「research purpose only」** と明記されており、英語・中国語以外の言語、なりすまし、ディスインフォメーション、リアルタイム音声変換などは禁止されています。本エンジンは研究 / 評価目的の利用のみに留めてください。
+
+`voice` パラメータには次の値を指定できます。
+
+| voice | 説明 |
+|---|---|
+| `default` | upstream に同梱の `demo/voices/<--vibevoice-default-speaker>.wav` を参照音声として使用 |
+| `clone` | `--vibevoice-prompt-wav` を参照音声として使用（指定時のみ有効） |
+
+音声クローンを使う場合は、必ず権利を持っている音声（本人の同意がある音声）でのみ行ってください。
+
 ### Fish-Speech (現在動作不可)
 
 [fishaudio/fish-speech](https://github.com/fishaudio/fish-speech) を使った高品質 TTS です。日本語は Tier 1 サポート（最高品質）で、80 言語以上に対応しています。VRAM 24GB 以上が必要で A100/L4 GPU を想定していますが、Colab 環境ではモデルロード時に OOM（メモリ不足）でランタイムがクラッシュするため、現時点では動作しません。ライセンス: Apache 2.0。
@@ -437,6 +453,7 @@ Resemble AI の [resemble-ai/chatterbox](https://github.com/resemble-ai/chatterb
 | OuteTTS (1B)   | Apache 2.0 | CC-BY-NC-SA-4.0 + Llama 3.2 Community License | 不可 | Llama-3.2 ベース。重みは非商用 |
 | Dia | Apache 2.0 | Apache 2.0 | OK | 英語のみ。`[S1]`/`[S2]` でマルチスピーカー対話 TTS |
 | OpenVoice-V2 | MIT | MIT | OK | 多言語（日本語含む）。voice cloning。MeloTTS 依存（環境次第で導入不可） |
+| VibeVoice | MIT | MIT | 要注意（research-only） | 英 / 中のみ。Microsoft 公式に「research purpose only」と明記 |
 | Fish-Speech | Apache 2.0 | Apache 2.0 | OK | A100/L4 GPU 必須（VRAM 24GB+） |
 
 **Piper について**: `piper-tts` パッケージは GPL-3.0 です。また、デフォルトの `en_US-lessac-medium` 音声は Lessac Technologies 提供の Blizzard 2013 データセットで学習されており、このデータセットのライセンスは商用利用を禁止しています。商用利用が必要な場合は、許容的なライセンスで学習された別の voice モデルを選択してください。
@@ -491,6 +508,8 @@ Resemble AI の [resemble-ai/chatterbox](https://github.com/resemble-ai/chatterb
   https://github.com/nari-labs/dia
 - OpenVoice
   https://github.com/myshell-ai/OpenVoice
+- VibeVoice
+  https://github.com/microsoft/VibeVoice
 - Fish Speech
   https://github.com/fishaudio/fish-speech
 - CosyVoice

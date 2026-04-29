@@ -11,7 +11,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Chatterbox", "Dia", "F5-TTS", "Fish-Speech", "Irodori-TTS", "Kokoro", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "OpenVoice-V2", "OuteTTS", "Piper", "Piper-Plus", "Qwen3-TTS", "Sarashina-TTS", "Style-Bert-VITS2", "TinyTTS", "VoxCPM2", "Voxtral-TTS", "Zonos"]
+ENGINE = "Kokoro"  #@param ["Chatterbox", "Dia", "F5-TTS", "Fish-Speech", "Irodori-TTS", "Kokoro", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "OpenVoice-V2", "OuteTTS", "Piper", "Piper-Plus", "Qwen3-TTS", "Sarashina-TTS", "Style-Bert-VITS2", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -133,6 +133,17 @@ DIA_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
 OPENVOICE_LANGUAGE = "JP"  #@param ["EN", "ES", "FR", "ZH", "JP", "KR"]
 OPENVOICE_PROMPT_WAV = ""  #@param {type:"string"}
 OPENVOICE_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+
+#@markdown ---
+#@markdown VibeVoice (GPU required, English/Chinese, long-form multi-speaker)
+#@markdown - License: MIT, but Microsoft tags this as "research purpose only".
+#@markdown - Non-EN/ZH languages, voice impersonation, and disinformation use are prohibited.
+VIBEVOICE_HF_MODEL = "microsoft/VibeVoice-1.5B"  #@param {type:"string"}
+VIBEVOICE_DEFAULT_SPEAKER = "en-Alice_woman"  #@param {type:"string"}
+VIBEVOICE_PROMPT_WAV = ""  #@param {type:"string"}
+VIBEVOICE_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+VIBEVOICE_DDPM_STEPS = 10  #@param {type:"integer"}
+VIBEVOICE_CFG_SCALE = 1.3  #@param {type:"number"}
 
 import shlex
 import subprocess
@@ -292,6 +303,18 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         OPENVOICE_PROMPT_WAV,
         "--openvoice-default-voice",
         OPENVOICE_DEFAULT_VOICE,
+        "--vibevoice-hf-model",
+        VIBEVOICE_HF_MODEL,
+        "--vibevoice-default-speaker",
+        VIBEVOICE_DEFAULT_SPEAKER,
+        "--vibevoice-prompt-wav",
+        VIBEVOICE_PROMPT_WAV,
+        "--vibevoice-default-voice",
+        VIBEVOICE_DEFAULT_VOICE,
+        "--vibevoice-ddpm-steps",
+        str(VIBEVOICE_DDPM_STEPS),
+        "--vibevoice-cfg-scale",
+        str(VIBEVOICE_CFG_SCALE),
     ]
     if SARASHINA_USE_VLLM:
         cmd.append("--sarashina-use-vllm")

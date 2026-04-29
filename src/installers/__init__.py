@@ -14,6 +14,7 @@ from .piper import install as install_piper
 from .piper_plus import install as install_piper_plus
 from .sarashina_tts import install as install_sarashina_tts
 from .style_bert import install as install_style_bert
+from .vibevoice import install as install_vibevoice
 from .voxcpm import install as install_voxcpm
 from .tiny_tts import install as install_tiny_tts
 from .voxtral import install as install_voxtral
@@ -38,6 +39,7 @@ INSTALLERS = {
     "Qwen3-TTS": install_qwen3_tts,
     "Sarashina-TTS": install_sarashina_tts,
     "TinyTTS": install_tiny_tts,
+    "VibeVoice": install_vibevoice,
     "VoxCPM2": install_voxcpm,
     "Voxtral-TTS": install_voxtral,
     "Zonos": install_zonos,

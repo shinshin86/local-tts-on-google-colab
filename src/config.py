@@ -107,6 +107,12 @@ class Settings:
     openvoice_language: str = "JP"
     openvoice_prompt_wav: str = ""
     openvoice_default_voice: str = "default"
+    vibevoice_hf_model: str = "microsoft/VibeVoice-1.5B"
+    vibevoice_default_speaker: str = "en-Alice_woman"
+    vibevoice_prompt_wav: str = ""
+    vibevoice_default_voice: str = "default"
+    vibevoice_ddpm_steps: int = 10
+    vibevoice_cfg_scale: float = 1.3
     root_dir: Path = Path("/content/openai-compatible-local-tts")
     repo_dir: Path = field(default_factory=default_repo_dir)
     app_port: int = 8000
