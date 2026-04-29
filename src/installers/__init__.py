@@ -14,6 +14,7 @@ from .style_bert import install as install_style_bert
 from .voxcpm import install as install_voxcpm
 from .tiny_tts import install as install_tiny_tts
 from .voxtral import install as install_voxtral
+from .zonos import install as install_zonos
 
 
 INSTALLERS = {
@@ -33,4 +34,5 @@ INSTALLERS = {
     "TinyTTS": install_tiny_tts,
     "VoxCPM2": install_voxcpm,
     "Voxtral-TTS": install_voxtral,
+    "Zonos": install_zonos,
 }

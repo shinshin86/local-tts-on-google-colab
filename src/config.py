@@ -89,6 +89,10 @@ class Settings:
     chatterbox_language: str = "ja"
     chatterbox_prompt_wav: str = ""
     chatterbox_default_voice: str = "default"
+    zonos_hf_model: str = "Zyphra/Zonos-v0.1-transformer"
+    zonos_language: str = "ja"
+    zonos_prompt_wav: str = ""
+    zonos_default_voice: str = "default"
     root_dir: Path = Path("/content/openai-compatible-local-tts")
     repo_dir: Path = field(default_factory=default_repo_dir)
     app_port: int = 8000

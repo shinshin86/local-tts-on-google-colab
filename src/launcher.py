@@ -34,6 +34,8 @@ def resolve_selected_voice(settings: Settings) -> str:
         return settings.sarashina_default_voice
     if settings.engine == "Chatterbox":
         return settings.chatterbox_default_voice
+    if settings.engine == "Zonos":
+        return settings.zonos_default_voice
     return ""
 
 
@@ -129,6 +131,18 @@ def print_engine_voice_hints(settings: Settings):
             print("             clone は --chatterbox-prompt-wav を指定すると有効になります")
         print("対応言語: ar, da, de, el, en, es, fi, fr, he, hi, it, ja, ko, ms, nl, no, pl, pt, ru, sv, sw, tr, zh")
         print("注意: GPU 推奨（VRAM ~2-4GB）。ライセンス: MIT（コードと重み）")
+    elif settings.engine == "Zonos":
+        print("Zonos は Zyphra の多言語 TTS です（5言語対応・日本語含む、ゼロショット voice cloning 対応）。")
+        print(f"モデル: {settings.zonos_hf_model}")
+        print(f"language: {settings.zonos_language}")
+        print(f"デフォルト voice: {settings.zonos_default_voice}")
+        print("voice 候補: default（同梱の参照音声 assets/exampleaudio.mp3 を使用）")
+        if settings.zonos_prompt_wav:
+            print(f"             clone（参照音声: {settings.zonos_prompt_wav}）")
+        else:
+            print("             clone は --zonos-prompt-wav を指定すると有効になります")
+        print("対応言語: en, ja, zh, fr, de（espeak-ng で音素化）")
+        print("注意: GPU 推奨（VRAM 6GB+）。ライセンス: Apache-2.0（コードと重み）")
     else:
         print("Irodori-TTS は現状 voice 切り替えを持たない想定です。")
 

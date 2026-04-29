@@ -21,6 +21,7 @@ Supported engines:
 | Sarashina-TTS | Works (GPU required, ~6GB VRAM) | Japanese / English |
 | F5-TTS | Works (GPU required) | English / Chinese (Japanese via separate model) |
 | Chatterbox | Works (GPU recommended) | Japanese / English / Chinese and 23 languages |
+| Zonos | Works (GPU required, ~6GB VRAM) | Japanese / English / Chinese / French / German |
 | Fish-Speech | Not working | Japanese / English / Chinese and 80+ languages |
 | MeloTTS | Not working | - |
 | Style-Bert-VITS2 | Not working | - |
@@ -331,6 +332,19 @@ The `voice` parameter exposes:
 
 For voice cloning, only use reference audio you have rights to (consent of the speaker).
 
+### Zonos
+
+A multilingual TTS using [Zyphra/Zonos](https://github.com/Zyphra/Zonos). Supports English, Japanese, Chinese, French, and German with zero-shot voice cloning. Default model: `Zyphra/Zonos-v0.1-transformer` (Apache 2.0). Phonemization is done by `espeak-ng`, which is installed automatically. The wrapper uses the bundled `assets/exampleaudio.mp3` as the default speaker reference; supplying `--zonos-prompt-wav` enables a `clone` voice with your own reference audio. A GPU runtime is required (VRAM 6GB+, T4 OK). The optional Hybrid backbone needs an Ampere or newer GPU and additional `mamba-ssm` deps; the Transformer backbone is used by default for portability. License: Apache 2.0 (code and weights).
+
+The `voice` parameter exposes:
+
+| voice | description |
+|---|---|
+| `default` | Uses the bundled reference audio shipped in the upstream repo. |
+| `clone` | Zero-shot voice cloning. Only available when `--zonos-prompt-wav` is configured. |
+
+For voice cloning, only use reference audio you have rights to (consent of the speaker).
+
 ### Fish-Speech (currently not working)
 
 A high-quality TTS using [fishaudio/fish-speech](https://github.com/fishaudio/fish-speech). Japanese is Tier 1 supported (highest quality) and it supports 80+ languages. It requires 24GB+ VRAM and targets A100/L4 GPUs, but on Colab the runtime crashes with OOM during model loading, so it currently does not work. License: Apache 2.0.
@@ -366,6 +380,7 @@ The license for each engine is as follows. When using them, always check each pr
 | Sarashina-TTS | — | Sarashina Model NonCommercial License | Not allowed | Japanese / English. Zero-shot voice cloning. Output contains a SilentCipher watermark (do not remove) |
 | F5-TTS | MIT | CC-BY-NC | Not allowed (model) | Model weights are non-commercial due to Emilia dataset constraints |
 | Chatterbox | MIT | MIT | OK | Multilingual (23 languages incl JP). Zero-shot voice cloning |
+| Zonos | Apache 2.0 | Apache 2.0 | OK | EN/JA/ZH/FR/DE. Zero-shot voice cloning. Requires `espeak-ng` |
 | Fish-Speech | Apache 2.0 | Apache 2.0 | OK | Requires A100/L4 GPU (VRAM 24GB+) |
 
 **About Piper**: The `piper-tts` package is GPL-3.0. Also, the default `en_US-lessac-medium` voice is trained on the Blizzard 2013 dataset provided by Lessac Technologies, and its license prohibits commercial use. If you need commercial use, choose another voice model trained with a permissive license.
@@ -412,6 +427,8 @@ This repository itself is intended for short-term operational verification and t
   https://github.com/SWivid/F5-TTS
 - Chatterbox
   https://github.com/resemble-ai/chatterbox
+- Zonos
+  https://github.com/Zyphra/Zonos
 - Fish Speech
   https://github.com/fishaudio/fish-speech
 - CosyVoice

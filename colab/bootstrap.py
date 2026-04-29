@@ -68,6 +68,10 @@ def parse_args():
     parser.add_argument("--chatterbox-language", default="ja")
     parser.add_argument("--chatterbox-prompt-wav", default="")
     parser.add_argument("--chatterbox-default-voice", default="default")
+    parser.add_argument("--zonos-hf-model", default="Zyphra/Zonos-v0.1-transformer")
+    parser.add_argument("--zonos-language", default="ja")
+    parser.add_argument("--zonos-prompt-wav", default="")
+    parser.add_argument("--zonos-default-voice", default="default")
     parser.add_argument("--root-dir", default="/content/openai-compatible-local-tts")
     return parser.parse_args()
 
@@ -124,6 +128,10 @@ def main():
         chatterbox_language=args.chatterbox_language,
         chatterbox_prompt_wav=args.chatterbox_prompt_wav,
         chatterbox_default_voice=args.chatterbox_default_voice,
+        zonos_hf_model=args.zonos_hf_model,
+        zonos_language=args.zonos_language,
+        zonos_prompt_wav=args.zonos_prompt_wav,
+        zonos_default_voice=args.zonos_default_voice,
         root_dir=Path(args.root_dir),
         repo_dir=REPO_DIR,
     )

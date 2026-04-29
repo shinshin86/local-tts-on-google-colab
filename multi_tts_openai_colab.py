@@ -11,7 +11,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Chatterbox", "F5-TTS", "Fish-Speech", "Irodori-TTS", "Kokoro", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "Piper", "Piper-Plus", "Qwen3-TTS", "Sarashina-TTS", "Style-Bert-VITS2", "TinyTTS", "VoxCPM2", "Voxtral-TTS"]
+ENGINE = "Kokoro"  #@param ["Chatterbox", "F5-TTS", "Fish-Speech", "Irodori-TTS", "Kokoro", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "Piper", "Piper-Plus", "Qwen3-TTS", "Sarashina-TTS", "Style-Bert-VITS2", "TinyTTS", "VoxCPM2", "Voxtral-TTS", "Zonos"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -99,6 +99,13 @@ SARASHINA_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
 CHATTERBOX_LANGUAGE = "ja"  #@param ["ar", "da", "de", "el", "en", "es", "fi", "fr", "he", "hi", "it", "ja", "ko", "ms", "nl", "no", "pl", "pt", "ru", "sv", "sw", "tr", "zh"]
 CHATTERBOX_PROMPT_WAV = ""  #@param {type:"string"}
 CHATTERBOX_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+
+#@markdown ---
+#@markdown Zonos (GPU recommended, JP/EN/ZH/FR/DE, voice cloning, Apache 2.0)
+ZONOS_HF_MODEL = "Zyphra/Zonos-v0.1-transformer"  #@param {type:"string"}
+ZONOS_LANGUAGE = "ja"  #@param ["en", "ja", "zh", "fr", "de"]
+ZONOS_PROMPT_WAV = ""  #@param {type:"string"}
+ZONOS_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
 
 import shlex
 import subprocess
@@ -222,6 +229,14 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         CHATTERBOX_PROMPT_WAV,
         "--chatterbox-default-voice",
         CHATTERBOX_DEFAULT_VOICE,
+        "--zonos-hf-model",
+        ZONOS_HF_MODEL,
+        "--zonos-language",
+        ZONOS_LANGUAGE,
+        "--zonos-prompt-wav",
+        ZONOS_PROMPT_WAV,
+        "--zonos-default-voice",
+        ZONOS_DEFAULT_VOICE,
     ]
     if SARASHINA_USE_VLLM:
         cmd.append("--sarashina-use-vllm")
