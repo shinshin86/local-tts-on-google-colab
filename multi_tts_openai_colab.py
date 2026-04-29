@@ -108,7 +108,9 @@ ZONOS_PROMPT_WAV = ""  #@param {type:"string"}
 ZONOS_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
 
 #@markdown ---
-#@markdown OuteTTS (CPU OK, multilingual incl JP, voice cloning, Apache 2.0)
+#@markdown OuteTTS (CPU OK, multilingual incl JP, voice cloning)
+#@markdown - 0.6B: code/weights both Apache 2.0 (commercial use OK).
+#@markdown - 1B: weights are CC-BY-NC-SA-4.0 + Llama 3.2 Community License (non-commercial only).
 OUTETTS_MODEL_SIZE = "0.6B"  #@param ["0.6B", "1B"]
 OUTETTS_BACKEND = "HF"  #@param ["HF", "LLAMACPP"]
 OUTETTS_DEFAULT_SPEAKER = "EN-FEMALE-1-NEUTRAL"  #@param {type:"string"}

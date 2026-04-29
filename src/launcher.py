@@ -155,7 +155,12 @@ def print_engine_voice_hints(settings: Settings):
             print(f"             clone（参照音声: {settings.outetts_prompt_wav}）")
         else:
             print("             clone は --outetts-prompt-wav を指定すると有効になります（必要なら --outetts-prompt-text も併用）")
-        print("注意: 日本語を話させる場合は日本語話者プロファイルの作成（clone）を推奨します。CPU/GPU 両対応。ライセンス: Apache-2.0")
+        print("注意: 日本語を話させる場合は日本語話者プロファイルの作成（clone）を推奨します。CPU/GPU 両対応。")
+        if settings.outetts_model_size.upper() == "1B":
+            print("ライセンス警告: 1B (Llama-OuteTTS-1.0-1B) の重みは CC-BY-NC-SA-4.0 + Llama 3.2 Community License で、商用利用は不可です。")
+            print("                商用利用したい場合は 0.6B (OuteTTS-1.0-0.6B, Apache-2.0) を選択してください。")
+        else:
+            print("ライセンス: 0.6B はコード / 重みとも Apache-2.0（商用 OK）。1B に切り替えると重みは CC-BY-NC-SA-4.0 で非商用となります。")
     else:
         print("Irodori-TTS は現状 voice 切り替えを持たない想定です。")
 
