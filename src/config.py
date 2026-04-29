@@ -99,6 +99,11 @@ class Settings:
     outetts_prompt_wav: str = ""
     outetts_prompt_text: str = ""
     outetts_default_voice: str = "default"
+    dia_hf_model: str = "nari-labs/Dia-1.6B-0626"
+    dia_compute_dtype: str = "float16"
+    dia_prompt_wav: str = ""
+    dia_prompt_text: str = ""
+    dia_default_voice: str = "default"
     root_dir: Path = Path("/content/openai-compatible-local-tts")
     repo_dir: Path = field(default_factory=default_repo_dir)
     app_port: int = 8000

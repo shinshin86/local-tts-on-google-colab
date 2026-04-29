@@ -11,7 +11,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Chatterbox", "F5-TTS", "Fish-Speech", "Irodori-TTS", "Kokoro", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "OuteTTS", "Piper", "Piper-Plus", "Qwen3-TTS", "Sarashina-TTS", "Style-Bert-VITS2", "TinyTTS", "VoxCPM2", "Voxtral-TTS", "Zonos"]
+ENGINE = "Kokoro"  #@param ["Chatterbox", "Dia", "F5-TTS", "Fish-Speech", "Irodori-TTS", "Kokoro", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "OuteTTS", "Piper", "Piper-Plus", "Qwen3-TTS", "Sarashina-TTS", "Style-Bert-VITS2", "TinyTTS", "VoxCPM2", "Voxtral-TTS", "Zonos"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -117,6 +117,14 @@ OUTETTS_DEFAULT_SPEAKER = "EN-FEMALE-1-NEUTRAL"  #@param {type:"string"}
 OUTETTS_PROMPT_WAV = ""  #@param {type:"string"}
 OUTETTS_PROMPT_TEXT = ""  #@param {type:"string"}
 OUTETTS_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+
+#@markdown ---
+#@markdown Dia (GPU recommended, English-only, [S1]/[S2] dialogue, Apache 2.0)
+DIA_HF_MODEL = "nari-labs/Dia-1.6B-0626"  #@param {type:"string"}
+DIA_COMPUTE_DTYPE = "float16"  #@param ["float16", "bfloat16", "float32"]
+DIA_PROMPT_WAV = ""  #@param {type:"string"}
+DIA_PROMPT_TEXT = ""  #@param {type:"string"}
+DIA_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
 
 import shlex
 import subprocess
@@ -260,6 +268,16 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         OUTETTS_PROMPT_TEXT,
         "--outetts-default-voice",
         OUTETTS_DEFAULT_VOICE,
+        "--dia-hf-model",
+        DIA_HF_MODEL,
+        "--dia-compute-dtype",
+        DIA_COMPUTE_DTYPE,
+        "--dia-prompt-wav",
+        DIA_PROMPT_WAV,
+        "--dia-prompt-text",
+        DIA_PROMPT_TEXT,
+        "--dia-default-voice",
+        DIA_DEFAULT_VOICE,
     ]
     if SARASHINA_USE_VLLM:
         cmd.append("--sarashina-use-vllm")

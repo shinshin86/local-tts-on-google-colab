@@ -38,6 +38,8 @@ def resolve_selected_voice(settings: Settings) -> str:
         return settings.zonos_default_voice
     if settings.engine == "OuteTTS":
         return settings.outetts_default_voice
+    if settings.engine == "Dia":
+        return settings.dia_default_voice
     return ""
 
 
@@ -161,6 +163,18 @@ def print_engine_voice_hints(settings: Settings):
             print("                商用利用したい場合は 0.6B (OuteTTS-1.0-0.6B, Apache-2.0) を選択してください。")
         else:
             print("ライセンス: 0.6B はコード / 重みとも Apache-2.0（商用 OK）。1B に切り替えると重みは CC-BY-NC-SA-4.0 で非商用となります。")
+    elif settings.engine == "Dia":
+        print("Dia は Nari Labs の対話 TTS です（[S1]/[S2] 話者タグでマルチスピーカー一括生成、英語のみ）。")
+        print(f"モデル: {settings.dia_hf_model}")
+        print(f"compute_dtype: {settings.dia_compute_dtype}")
+        print(f"デフォルト voice: {settings.dia_default_voice}")
+        print("voice 候補: default（プロンプトなし。入力に [S1]/[S2] タグが無い場合は先頭に [S1] を自動挿入）")
+        if settings.dia_prompt_wav and settings.dia_prompt_text:
+            print(f"             clone（参照音声: {settings.dia_prompt_wav}, 書き起こし: {settings.dia_prompt_text}）")
+        else:
+            print("             clone は --dia-prompt-wav と --dia-prompt-text の両方を指定すると有効になります")
+        print("対応言語: 英語のみ。日本語テキストは正しく発音されません。")
+        print("注意: GPU 推奨（bf16/float16 で VRAM ~4.4GB / float32 で ~7.9GB）。ライセンス: Apache 2.0（コードと重み）")
     else:
         print("Irodori-TTS は現状 voice 切り替えを持たない想定です。")
 

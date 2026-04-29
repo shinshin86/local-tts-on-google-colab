@@ -78,6 +78,11 @@ def parse_args():
     parser.add_argument("--outetts-prompt-wav", default="")
     parser.add_argument("--outetts-prompt-text", default="")
     parser.add_argument("--outetts-default-voice", default="default")
+    parser.add_argument("--dia-hf-model", default="nari-labs/Dia-1.6B-0626")
+    parser.add_argument("--dia-compute-dtype", default="float16")
+    parser.add_argument("--dia-prompt-wav", default="")
+    parser.add_argument("--dia-prompt-text", default="")
+    parser.add_argument("--dia-default-voice", default="default")
     parser.add_argument("--root-dir", default="/content/openai-compatible-local-tts")
     return parser.parse_args()
 
@@ -144,6 +149,11 @@ def main():
         outetts_prompt_wav=args.outetts_prompt_wav,
         outetts_prompt_text=args.outetts_prompt_text,
         outetts_default_voice=args.outetts_default_voice,
+        dia_hf_model=args.dia_hf_model,
+        dia_compute_dtype=args.dia_compute_dtype,
+        dia_prompt_wav=args.dia_prompt_wav,
+        dia_prompt_text=args.dia_prompt_text,
+        dia_default_voice=args.dia_default_voice,
         root_dir=Path(args.root_dir),
         repo_dir=REPO_DIR,
     )

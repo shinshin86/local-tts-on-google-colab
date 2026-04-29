@@ -22,6 +22,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | Chatterbox | 動作OK (GPU推奨) | 日本語 / 英語 / 中国語 他 23言語 |
 | Zonos | 動作OK (GPU必須・VRAM ~6GB) | 日本語 / 英語 / 中国語 / フランス語 / ドイツ語 |
 | OuteTTS | 動作OK (CPU可) | 日本語 / 英語 / 中国語 他 多言語 |
+| Dia | 動作OK (GPU推奨) | 英語（マルチスピーカー対話） |
 | Fish-Speech | 動作不可 | 日本語 / 英語 / 中国語 他 80言語以上 |
 | MeloTTS | 動作不可 | - |
 | Style-Bert-VITS2 | 動作不可 | - |
@@ -405,6 +406,7 @@ Resemble AI の [resemble-ai/chatterbox](https://github.com/resemble-ai/chatterb
 | Zonos | Apache 2.0 | Apache 2.0 | OK | 英 / 日 / 中 / 仏 / 独。ゼロショット voice cloning。`espeak-ng` 必須 |
 | OuteTTS (0.6B) | Apache 2.0 | Apache 2.0 | OK | 日本語含む多言語、CPU 動作可、voice cloning |
 | OuteTTS (1B)   | Apache 2.0 | CC-BY-NC-SA-4.0 + Llama 3.2 Community License | 不可 | Llama-3.2 ベース。重みは非商用 |
+| Dia | Apache 2.0 | Apache 2.0 | OK | 英語のみ。`[S1]`/`[S2]` でマルチスピーカー対話 TTS |
 | Fish-Speech | Apache 2.0 | Apache 2.0 | OK | A100/L4 GPU 必須（VRAM 24GB+） |
 
 **Piper について**: `piper-tts` パッケージは GPL-3.0 です。また、デフォルトの `en_US-lessac-medium` 音声は Lessac Technologies 提供の Blizzard 2013 データセットで学習されており、このデータセットのライセンスは商用利用を禁止しています。商用利用が必要な場合は、許容的なライセンスで学習された別の voice モデルを選択してください。
@@ -455,6 +457,8 @@ Resemble AI の [resemble-ai/chatterbox](https://github.com/resemble-ai/chatterb
   https://github.com/Zyphra/Zonos
 - OuteTTS
   https://github.com/edwko/OuteTTS
+- Dia
+  https://github.com/nari-labs/dia
 - Fish Speech
   https://github.com/fishaudio/fish-speech
 - CosyVoice

@@ -23,6 +23,7 @@ Supported engines:
 | Chatterbox | Works (GPU recommended) | Japanese / English / Chinese and 23 languages |
 | Zonos | Works (GPU required, ~6GB VRAM) | Japanese / English / Chinese / French / German |
 | OuteTTS | Works (CPU OK) | Japanese / English / Chinese and many languages |
+| Dia | Works (GPU recommended) | English (multi-speaker dialogue) |
 | Fish-Speech | Not working | Japanese / English / Chinese and 80+ languages |
 | MeloTTS | Not working | - |
 | Style-Bert-VITS2 | Not working | - |
@@ -406,6 +407,7 @@ The license for each engine is as follows. When using them, always check each pr
 | Zonos | Apache 2.0 | Apache 2.0 | OK | EN/JA/ZH/FR/DE. Zero-shot voice cloning. Requires `espeak-ng` |
 | OuteTTS (0.6B) | Apache 2.0 | Apache 2.0 | OK | Multilingual incl JP. CPU OK. Voice cloning |
 | OuteTTS (1B)   | Apache 2.0 | CC-BY-NC-SA-4.0 + Llama 3.2 Community License | Not allowed | Llama-3.2-based; non-commercial weights |
+| Dia | Apache 2.0 | Apache 2.0 | OK | EN only. Multi-speaker `[S1]`/`[S2]` dialogue TTS |
 | Fish-Speech | Apache 2.0 | Apache 2.0 | OK | Requires A100/L4 GPU (VRAM 24GB+) |
 
 **About Piper**: The `piper-tts` package is GPL-3.0. Also, the default `en_US-lessac-medium` voice is trained on the Blizzard 2013 dataset provided by Lessac Technologies, and its license prohibits commercial use. If you need commercial use, choose another voice model trained with a permissive license.
@@ -456,6 +458,8 @@ This repository itself is intended for short-term operational verification and t
   https://github.com/Zyphra/Zonos
 - OuteTTS
   https://github.com/edwko/OuteTTS
+- Dia
+  https://github.com/nari-labs/dia
 - Fish Speech
   https://github.com/fishaudio/fish-speech
 - CosyVoice
