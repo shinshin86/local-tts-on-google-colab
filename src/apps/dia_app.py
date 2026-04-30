@@ -122,15 +122,27 @@ async def audio_speech(payload: AudioSpeechRequest):
 
     model = get_model()
 
+    # Without explicit guidance / sampling parameters, Dia tends to produce
+    # near-silent output -- the WAV is generated at the right duration but
+    # max_abs hovers around 0.01 (~ -40 dB), so it sounds empty. The values
+    # below match the upstream `generate.py` defaults that the Dia README
+    # walks through, and reliably produce intelligible speech on L4.
+    gen_kwargs = dict(
+        use_torch_compile=False,
+        cfg_scale=3.0,
+        temperature=1.3,
+        top_p=0.95,
+        cfg_filter_top_k=35,
+    )
     if voice == "clone":
         # Per Dia docs, prepend the prompt transcript so the model conditions on it.
         clone_text = _ensure_speaker_tags(DIA_PROMPT_TEXT)
         new_text = _ensure_speaker_tags(payload.input)
         text = f"{clone_text} {new_text}"
-        output = model.generate(text, audio_prompt=DIA_PROMPT_WAV, use_torch_compile=False)
+        output = model.generate(text, audio_prompt=DIA_PROMPT_WAV, **gen_kwargs)
     else:
         text = _ensure_speaker_tags(payload.input)
-        output = model.generate(text, use_torch_compile=False)
+        output = model.generate(text, **gen_kwargs)
 
     with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp:
         tmp_path = tmp.name
