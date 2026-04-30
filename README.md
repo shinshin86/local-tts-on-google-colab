@@ -560,20 +560,20 @@ The `voice` parameter exposes:
 
 For voice cloning, only use reference audio you have rights to (consent of the speaker).
 
-### OpenVoice-V2
+### OpenVoice-V2 (currently not working)
 
-A two-stage voice cloning TTS using [myshell-ai/OpenVoice](https://github.com/myshell-ai/OpenVoice) V2. The pipeline first synthesizes base speech with MeloTTS in the chosen language (EN / ES / FR / ZH / JP / KR), then applies a ToneColorConverter (V2 checkpoints) to match the timbre of a reference clip. Default language: `JP` (Japanese). The wrapper uses `resources/example_reference.mp3` from the upstream repo as the default reference; supplying `--openvoice-prompt-wav` enables a `clone` voice with your own reference audio. License: MIT (both code and weights, since April 2024) — commercial use is allowed.
+Intended to use [myshell-ai/OpenVoice](https://github.com/myshell-ai/OpenVoice) V2 — a two-stage voice cloning TTS that first synthesises base speech with MeloTTS, then runs a ToneColorConverter (V2 checkpoints) to match the timbre of a reference clip. Both the code and the weights are MIT, so commercial use is allowed.
 
-**Caveat:** OpenVoice V2 depends on MeloTTS as the base TTS, which is what currently breaks the standalone `MeloTTS` engine in this repo (the `tokenizers` build needs a Rust toolchain that Colab's `uv + venv` setup does not always provide). OpenVoice V2 may fail at install time for the same reason. If MeloTTS install succeeds in your runtime, OpenVoice V2 should work.
+**Why it fails on Colab today**: OpenVoice's `pyproject.toml` hard-pins `faster-whisper==0.9.0`, which transitively pins `av>=10.dev0,<11.dev0`. The 10.x line of `av` does not have wheels for Python 3.13 (Colab's current default) and its Cython source no longer compiles against Cython 3.x:
 
-The `voice` parameter exposes:
+```
+av/logging.pyx:216:22: Cannot assign type 'const char *(void *) except?
+NULL nogil' to 'const char *(*)(void *) noexcept nogil'.
+```
 
-| voice | description |
-|---|---|
-| `default` | Uses `resources/example_reference.mp3` shipped in the OpenVoice repo as the timbre reference. |
-| `clone` | Uses `--openvoice-prompt-wav` as the timbre reference. Only available when configured. |
+Pre-installing `faster-whisper>=1.0` (which has `av==17.x` with py3.13 wheels) does not help — uv respects OpenVoice's pin and downgrades back to 0.9.0. Working around it would require `--no-deps` plus reconstructing the entire OpenVoice + MeloTTS dependency tree by hand, which sweeps in the standalone `MeloTTS` engine's own Rust-toolchain breakage as well.
 
-For voice cloning, only use reference audio you have rights to (consent of the speaker).
+The wrapper code is kept in tree so OpenVoice V2 can be reactivated once upstream relaxes its pins. **License (when working):** MIT for both code and weights (since April 2024).
 
 ### VibeVoice (currently not working)
 
