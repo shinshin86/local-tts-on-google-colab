@@ -63,7 +63,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Chatterbox", "Irodori-TTS", "Kokoro", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "Piper", "Piper-Plus", "Qwen3-TTS", "Sarashina-TTS", "Style-Bert-VITS2", "TinyTTS", "Voxtral-TTS"]
+ENGINE = "Kokoro"  #@param ["Chatterbox", "Dia", "F5-TTS", "Fish-Speech", "Irodori-TTS", "Kokoro", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "OpenVoice-V2", "OuteTTS", "Piper", "Piper-Plus", "Qwen3-TTS", "Sarashina-TTS", "Style-Bert-VITS2", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -71,8 +71,18 @@ TEST_VOICE = ""  #@param {type:"string"}
 OPENAI_MODEL_ID = ""  #@param {type:"string"}
 
 #@markdown ---
+#@markdown F5-TTS (GPU required)
+F5TTS_MODEL = "F5TTS_v1_Base"  #@param {type:"string"}
+F5TTS_CKPT_FILE = ""  #@param {type:"string"}
+F5TTS_VOCAB_FILE = ""  #@param {type:"string"}
+
+#@markdown ---
+#@markdown Fish-Speech (A100/L4 GPU required, VRAM 24GB+)
+FISH_SPEECH_MODEL = "fishaudio/s2-pro"  #@param {type:"string"}
+
+#@markdown ---
 #@markdown Irodori-TTS
-# To use V1: checkpoint="Aratako/Irodori-TTS-500M", codec_repo="facebook/dacvae-watermarked"
+# V1を利用する場合: checkpoint="Aratako/Irodori-TTS-500M", codec_repo="facebook/dacvae-watermarked"
 IRODORI_HF_CHECKPOINT = "Aratako/Irodori-TTS-500M-v2"  #@param {type:"string"}
 IRODORI_CODEC_REPO = "Aratako/Semantic-DACVAE-Japanese-32dim"  #@param {type:"string"}
 IRODORI_MODEL_PRECISION = "fp32"  #@param ["fp32", "bf16", "fp16"]
@@ -110,6 +120,82 @@ PIPER_PLUS_MODEL = "tsukuyomi"  #@param {type:"string"}
 QWEN3_HF_MODEL = "Qwen/Qwen3-TTS-12Hz-0.6B-CustomVoice"  #@param ["Qwen/Qwen3-TTS-12Hz-0.6B-CustomVoice", "Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice"]
 QWEN3_LANGUAGE = "Japanese"  #@param ["Chinese", "English", "Japanese", "Korean", "German", "French", "Russian", "Portuguese", "Spanish", "Italian"]
 QWEN3_DEFAULT_SPEAKER = "ono_anna"  #@param ["aiden", "dylan", "eric", "ono_anna", "ryan", "serena", "sohee", "uncle_fu", "vivian"]
+
+#@markdown ---
+#@markdown VoxCPM2 (GPU required)
+VOXCPM_HF_MODEL = "openbmb/VoxCPM2"  #@param {type:"string"}
+VOXCPM_CFG_VALUE = 2.0  #@param {type:"number"}
+VOXCPM_INFERENCE_TIMESTEPS = 10  #@param {type:"integer"}
+
+#@markdown ---
+#@markdown MOSS-TTS-Nano (CPU OK)
+MOSS_TTS_NANO_HF_MODEL = "OpenMOSS-Team/MOSS-TTS-Nano-100M"  #@param {type:"string"}
+MOSS_TTS_NANO_MODE = "continuation"  #@param ["continuation", "voice_clone"]
+
+#@markdown ---
+#@markdown NeuTTS (CPU OK, EN/ES/DE/FR, voice cloning)
+NEUTTS_BACKBONE_REPO = "neuphonic/neutts-air"  #@param ["neuphonic/neutts-air", "neuphonic/neutts-nano", "neuphonic/neutts-nano-french", "neuphonic/neutts-nano-german", "neuphonic/neutts-nano-spanish"]
+NEUTTS_CODEC_REPO = "neuphonic/neucodec"  #@param {type:"string"}
+NEUTTS_DEFAULT_VOICE = "jo"  #@param ["dave", "jo", "greta", "juliette", "mateo"]
+
+#@markdown ---
+#@markdown Sarashina-TTS (GPU required, ~6GB VRAM, JP/EN, NonCommercial)
+SARASHINA_HF_MODEL = "sbintuitions/sarashina2.2-tts"  #@param {type:"string"}
+SARASHINA_USE_VLLM = False  #@param {type:"boolean"}
+SARASHINA_PROMPT_WAV = ""  #@param {type:"string"}
+SARASHINA_PROMPT_TEXT = ""  #@param {type:"string"}
+SARASHINA_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+
+#@markdown ---
+#@markdown Chatterbox (GPU recommended, multilingual incl JP, voice cloning)
+CHATTERBOX_LANGUAGE = "ja"  #@param ["ar", "da", "de", "el", "en", "es", "fi", "fr", "he", "hi", "it", "ja", "ko", "ms", "nl", "no", "pl", "pt", "ru", "sv", "sw", "tr", "zh"]
+CHATTERBOX_PROMPT_WAV = ""  #@param {type:"string"}
+CHATTERBOX_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+
+#@markdown ---
+#@markdown Zonos (GPU recommended, JP/EN/ZH/FR/DE, voice cloning, Apache 2.0)
+ZONOS_HF_MODEL = "Zyphra/Zonos-v0.1-transformer"  #@param {type:"string"}
+ZONOS_LANGUAGE = "ja"  #@param ["en", "ja", "zh", "fr", "de"]
+ZONOS_PROMPT_WAV = ""  #@param {type:"string"}
+ZONOS_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+
+#@markdown ---
+#@markdown OuteTTS (CPU OK, multilingual incl JP, voice cloning)
+#@markdown - 0.6B: code/weights both Apache 2.0 (commercial use OK).
+#@markdown - 1B: weights are CC-BY-NC-SA-4.0 + Llama 3.2 Community License (non-commercial only).
+OUTETTS_MODEL_SIZE = "0.6B"  #@param ["0.6B", "1B"]
+OUTETTS_BACKEND = "HF"  #@param ["HF", "LLAMACPP"]
+OUTETTS_DEFAULT_SPEAKER = "EN-FEMALE-1-NEUTRAL"  #@param {type:"string"}
+OUTETTS_PROMPT_WAV = ""  #@param {type:"string"}
+OUTETTS_PROMPT_TEXT = ""  #@param {type:"string"}
+OUTETTS_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+
+#@markdown ---
+#@markdown Dia (GPU recommended, English-only, [S1]/[S2] dialogue, Apache 2.0)
+DIA_HF_MODEL = "nari-labs/Dia-1.6B-0626"  #@param {type:"string"}
+DIA_COMPUTE_DTYPE = "float16"  #@param ["float16", "bfloat16", "float32"]
+DIA_PROMPT_WAV = ""  #@param {type:"string"}
+DIA_PROMPT_TEXT = ""  #@param {type:"string"}
+DIA_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+
+#@markdown ---
+#@markdown OpenVoice V2 (GPU recommended, multilingual incl JP, voice cloning, MIT)
+#@markdown - Pipeline: MeloTTS base TTS -> ToneColorConverter (V2 checkpoints).
+#@markdown - May hit the same MeloTTS dependency issue that breaks the standalone MeloTTS engine.
+OPENVOICE_LANGUAGE = "JP"  #@param ["EN", "ES", "FR", "ZH", "JP", "KR"]
+OPENVOICE_PROMPT_WAV = ""  #@param {type:"string"}
+OPENVOICE_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+
+#@markdown ---
+#@markdown VibeVoice (GPU required, English/Chinese, long-form multi-speaker)
+#@markdown - License: MIT, but Microsoft tags this as "research purpose only".
+#@markdown - Non-EN/ZH languages, voice impersonation, and disinformation use are prohibited.
+VIBEVOICE_HF_MODEL = "microsoft/VibeVoice-1.5B"  #@param {type:"string"}
+VIBEVOICE_DEFAULT_SPEAKER = "en-Alice_woman"  #@param {type:"string"}
+VIBEVOICE_PROMPT_WAV = ""  #@param {type:"string"}
+VIBEVOICE_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+VIBEVOICE_DDPM_STEPS = 10  #@param {type:"integer"}
+VIBEVOICE_CFG_SCALE = 1.3  #@param {type:"number"}
 
 import shlex
 import subprocess
@@ -157,8 +243,18 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         TEST_VOICE,
         "--openai-model-id",
         OPENAI_MODEL_ID,
+        "--f5tts-model",
+        F5TTS_MODEL,
+        "--f5tts-ckpt-file",
+        F5TTS_CKPT_FILE,
+        "--f5tts-vocab-file",
+        F5TTS_VOCAB_FILE,
+        "--fish-speech-model",
+        FISH_SPEECH_MODEL,
         "--irodori-hf-checkpoint",
         IRODORI_HF_CHECKPOINT,
+        "--irodori-codec-repo",
+        IRODORI_CODEC_REPO,
         "--irodori-model-precision",
         IRODORI_MODEL_PRECISION,
         "--irodori-codec-precision",
@@ -193,7 +289,87 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         QWEN3_LANGUAGE,
         "--qwen3-default-speaker",
         QWEN3_DEFAULT_SPEAKER,
+        "--voxcpm-hf-model",
+        VOXCPM_HF_MODEL,
+        "--voxcpm-cfg-value",
+        str(VOXCPM_CFG_VALUE),
+        "--voxcpm-inference-timesteps",
+        str(VOXCPM_INFERENCE_TIMESTEPS),
+        "--moss-tts-nano-hf-model",
+        MOSS_TTS_NANO_HF_MODEL,
+        "--moss-tts-nano-mode",
+        MOSS_TTS_NANO_MODE,
+        "--neutts-backbone-repo",
+        NEUTTS_BACKBONE_REPO,
+        "--neutts-codec-repo",
+        NEUTTS_CODEC_REPO,
+        "--neutts-default-voice",
+        NEUTTS_DEFAULT_VOICE,
+        "--sarashina-hf-model",
+        SARASHINA_HF_MODEL,
+        "--sarashina-prompt-wav",
+        SARASHINA_PROMPT_WAV,
+        "--sarashina-prompt-text",
+        SARASHINA_PROMPT_TEXT,
+        "--sarashina-default-voice",
+        SARASHINA_DEFAULT_VOICE,
+        "--chatterbox-language",
+        CHATTERBOX_LANGUAGE,
+        "--chatterbox-prompt-wav",
+        CHATTERBOX_PROMPT_WAV,
+        "--chatterbox-default-voice",
+        CHATTERBOX_DEFAULT_VOICE,
+        "--zonos-hf-model",
+        ZONOS_HF_MODEL,
+        "--zonos-language",
+        ZONOS_LANGUAGE,
+        "--zonos-prompt-wav",
+        ZONOS_PROMPT_WAV,
+        "--zonos-default-voice",
+        ZONOS_DEFAULT_VOICE,
+        "--outetts-model-size",
+        OUTETTS_MODEL_SIZE,
+        "--outetts-backend",
+        OUTETTS_BACKEND,
+        "--outetts-default-speaker",
+        OUTETTS_DEFAULT_SPEAKER,
+        "--outetts-prompt-wav",
+        OUTETTS_PROMPT_WAV,
+        "--outetts-prompt-text",
+        OUTETTS_PROMPT_TEXT,
+        "--outetts-default-voice",
+        OUTETTS_DEFAULT_VOICE,
+        "--dia-hf-model",
+        DIA_HF_MODEL,
+        "--dia-compute-dtype",
+        DIA_COMPUTE_DTYPE,
+        "--dia-prompt-wav",
+        DIA_PROMPT_WAV,
+        "--dia-prompt-text",
+        DIA_PROMPT_TEXT,
+        "--dia-default-voice",
+        DIA_DEFAULT_VOICE,
+        "--openvoice-language",
+        OPENVOICE_LANGUAGE,
+        "--openvoice-prompt-wav",
+        OPENVOICE_PROMPT_WAV,
+        "--openvoice-default-voice",
+        OPENVOICE_DEFAULT_VOICE,
+        "--vibevoice-hf-model",
+        VIBEVOICE_HF_MODEL,
+        "--vibevoice-default-speaker",
+        VIBEVOICE_DEFAULT_SPEAKER,
+        "--vibevoice-prompt-wav",
+        VIBEVOICE_PROMPT_WAV,
+        "--vibevoice-default-voice",
+        VIBEVOICE_DEFAULT_VOICE,
+        "--vibevoice-ddpm-steps",
+        str(VIBEVOICE_DDPM_STEPS),
+        "--vibevoice-cfg-scale",
+        str(VIBEVOICE_CFG_SCALE),
     ]
+    if SARASHINA_USE_VLLM:
+        cmd.append("--sarashina-use-vllm")
     cmd.append("--expose-public-url" if EXPOSE_PUBLIC_URL else "--no-expose-public-url")
     return cmd
 
