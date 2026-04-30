@@ -8,6 +8,17 @@ from pathlib import Path
 import soundfile as sf
 import torch
 import torchaudio
+
+# Force the global default device to CPU. Zonos.from_pretrained(..., device="cuda")
+# flips the default device to cuda during model loading, after which the
+# lazily-built `torchaudio.transforms.MelSpectrogram` filterbank inside
+# `SpeakerEmbeddingLDA` ends up with some tensors on cuda and `torch.zeros(1)`
+# (no explicit device) on cpu, raising "Expected all tensors to be on the same
+# device" during the first /v1/audio/speech call. Pinning the default to CPU
+# at module init keeps the filterbank consistent; we still move the model and
+# speaker embedding to cuda explicitly below.
+torch.set_default_device("cpu")
+
 from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse

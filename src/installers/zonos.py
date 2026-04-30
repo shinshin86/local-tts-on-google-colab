@@ -24,6 +24,11 @@ def install(settings: Settings) -> dict:
     # additionally needs mamba-ssm + causal_conv1d, which require a 30xx-series GPU
     # or newer; we stick with the transformer to keep T4 / L4 compatibility.
     uv_pip_install(python_bin, ["-e", str(repo_dir)])
+    # Pin torch / torchaudio to 2.6 -- newer torchaudio (2.11) requires the
+    # separate `torchcodec` package for `torchaudio.load`, and Zonos does not
+    # depend on either explicitly, so uv resolves to whatever happens to be
+    # latest. 2.6 ships its own audio backend and avoids the torchcodec hop.
+    uv_pip_install(python_bin, ["torch==2.6.0", "torchaudio==2.6.0"])
     uv_pip_install(python_bin, ["fastapi", "uvicorn", "soundfile", "numpy"])
 
     write_text(engine_dir / "app.py", settings.read_repo_text("src/apps/zonos_app.py"))
