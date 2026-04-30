@@ -12,6 +12,12 @@ def install(settings: Settings) -> dict:
 
     python_bin = ensure_venv(engine_dir)
     # chatterbox-tts pulls in torch, torchaudio, transformers, librosa, etc.
+    # The transitive dependency `resemble-perth==1.0.1` imports `pkg_resources`
+    # at module load time. setuptools >= 81 dropped `pkg_resources`, so on a
+    # default uv venv (which gets the latest setuptools) perth's
+    # `PerthImplicitWatermarker` silently resolves to None and synthesis fails
+    # with `TypeError: 'NoneType' object is not callable`. Pin setuptools<81
+    # to keep `pkg_resources` available.
     uv_pip_install(
         python_bin,
         [
@@ -19,6 +25,7 @@ def install(settings: Settings) -> dict:
             "uvicorn",
             "soundfile",
             "numpy",
+            "setuptools<81",
             "chatterbox-tts",
         ],
     )
