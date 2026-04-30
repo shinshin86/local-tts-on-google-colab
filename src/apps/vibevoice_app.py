@@ -60,12 +60,21 @@ def get_model() -> tuple[VibeVoiceProcessor, VibeVoiceForConditionalGeneration]:
         dtype = torch.bfloat16 if device == "cuda" else torch.float32
         logger.info("Loading VibeVoice processor + model: %s on %s (%s)", VIBEVOICE_HF_MODEL, device, dtype)
         _processor = VibeVoiceProcessor.from_pretrained(VIBEVOICE_HF_MODEL)
+        # transformers deprecated `torch_dtype` in favor of `dtype`; pass both
+        # via `dtype` so we work on current versions.
         _model = VibeVoiceForConditionalGeneration.from_pretrained(
             VIBEVOICE_HF_MODEL,
-            torch_dtype=dtype,
+            dtype=dtype,
             device_map=device,
         )
-        _model.set_ddpm_inference_steps(num_steps=VIBEVOICE_DDPM_STEPS)
+        # Upstream `model.set_ddpm_inference_steps(...)` was removed when the
+        # class was renamed; configure the diffusion scheduler directly.
+        if hasattr(_model, "set_ddpm_inference_steps"):
+            _model.set_ddpm_inference_steps(num_steps=VIBEVOICE_DDPM_STEPS)
+        else:
+            _model.model.noise_scheduler.set_timesteps(
+                num_inference_steps=VIBEVOICE_DDPM_STEPS
+            )
         logger.info("VibeVoice ready (ddpm_steps=%s, cfg_scale=%s)", VIBEVOICE_DDPM_STEPS, VIBEVOICE_CFG_SCALE)
     return _processor, _model
 
