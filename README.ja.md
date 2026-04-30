@@ -25,7 +25,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | OuteTTS | 動作OK (CPU可) | 日本語 / 英語 / 中国語 他 多言語 |
 | Dia | 動作OK (GPU推奨) | 英語（マルチスピーカー対話） |
 | OpenVoice-V2 | 動作要注意（MeloTTS 依存） | 日本語 / 英語 / 西 / 仏 / 中 / 韓 |
-| VibeVoice | 動作OK (GPU必須・research-only ライセンス) | 英語 / 中国語（長尺・最大 4 話者） |
+| VibeVoice | 動作不可（upstream API 移行中） | 英語 / 中国語（長尺・最大 4 話者） |
 | Fish-Speech | 動作不可 | 日本語 / 英語 / 中国語 他 80言語以上 |
 | MeloTTS | 動作不可 | - |
 | Style-Bert-VITS2 | 動作不可 | - |
@@ -575,20 +575,15 @@ Resemble AI の [resemble-ai/chatterbox](https://github.com/resemble-ai/chatterb
 
 音声クローンを使う場合は、必ず権利を持っている音声（本人の同意がある音声）でのみ行ってください。
 
-### VibeVoice
+### VibeVoice (現在動作不可)
 
-[microsoft/VibeVoice](https://github.com/microsoft/VibeVoice) を使った長尺・マルチスピーカー対応 TTS です。1.5B パラメータのモデルで、最大 4 話者・約 90 分の音声を 1 パスで生成できます（ポッドキャストや長尺対話向け）。各話者は短い参照音声で条件付けされます。デフォルト voice は upstream に同梱の `demo/voices/<VIBEVOICE_DEFAULT_SPEAKER>.wav`（例: `en-Alice_woman`）を参照として使用し、`--vibevoice-prompt-wav` を指定すると `clone` voice が独自参照に切り替わります。マルチスピーカー対話を使う場合は `input` を `Speaker 1: ...\nSpeaker 2: ...` 形式にしてください（平文の場合はラッパーが自動で `Speaker 1:` を先頭に追加）。GPU 必須（bf16）。チューニング項目: `--vibevoice-ddpm-steps`（デフォルト 10）、`--vibevoice-cfg-scale`（デフォルト 1.3）。
+[microsoft/VibeVoice](https://github.com/microsoft/VibeVoice) を使う構成で、1.5B パラメータの長尺・マルチスピーカー TTS（最大 4 話者・約 90 分を 1 パスで生成）として実装しています。Colab L4 GPU 上でモデルロードまでは到達しますが、upstream Microsoft リポジトリが現在 **破壊的な API 移行中** で、合成リクエストが完了しません:
 
-**ライセンス注意:** コード / 重みとも MIT ですが、Microsoft 公式モデルカードに **「research purpose only」** と明記されており、英語・中国語以外の言語、なりすまし、ディスインフォメーション、リアルタイム音声変換などは禁止されています。本エンジンは研究 / 評価目的の利用のみに留めてください。
+- 推論クラスが `VibeVoiceForConditionalGenerationInference` → `VibeVoiceForConditionalGeneration` にリネーム（ラッパーで吸収済み）
+- `model.set_ddpm_inference_steps(...)` が削除され、DDPM ステップは `model.model.noise_scheduler.set_timesteps(...)` 経由で設定する形に変更（ラッパーで吸収済み）
+- 致命的なのが reference 配布形式の変更: upstream は **`.wav` 参照音声ファイルを `demo/voices/` から取り下げ**、代わりに事前計算済みの **`.pt` (prompt cache)** を `demo/voices/streaming_model/` で配布する形になりました（例: `en-Carter_man.pt` / `jp-Spk1_woman.pt`）。推奨パスも `processor.process_input_with_cached_prompt(cached_prompt=torch.load(...))` に変わっており、本ラッパーが使っている `processor(text=..., voice_samples=[wav_path])` API では使い物になる参照音声が無くなっています。
 
-`voice` パラメータには次の値を指定できます。
-
-| voice | 説明 |
-|---|---|
-| `default` | upstream に同梱の `demo/voices/<--vibevoice-default-speaker>.wav` を参照音声として使用 |
-| `clone` | `--vibevoice-prompt-wav` を参照音声として使用（指定時のみ有効） |
-
-音声クローンを使う場合は、必ず権利を持っている音声（本人の同意がある音声）でのみ行ってください。
+upstream の API が落ち着いた段階で再アクティベートできるよう、ラッパー側の実装はそのままツリーに残しています。**ライセンス注意（仮に動いた場合でも）:** モデルカードに **「research purpose only」** と明記されており、英語・中国語以外の言語、なりすまし、ディスインフォメーション、リアルタイム音声変換などは禁止です。動くようになっても商用 / 実運用には使わないでください。
 
 ### Fish-Speech (現在動作不可)
 
@@ -630,7 +625,7 @@ Resemble AI の [resemble-ai/chatterbox](https://github.com/resemble-ai/chatterb
 | OuteTTS (1B)   | Apache 2.0 | CC-BY-NC-SA-4.0 + Llama 3.2 Community License | 不可 | Llama-3.2 ベース。重みは非商用 |
 | Dia | Apache 2.0 | Apache 2.0 | OK | 英語のみ。`[S1]`/`[S2]` でマルチスピーカー対話 TTS |
 | OpenVoice-V2 | MIT | MIT | OK | 多言語（日本語含む）。voice cloning。MeloTTS 依存（環境次第で導入不可） |
-| VibeVoice | MIT | MIT | 要注意（research-only） | 英 / 中のみ。Microsoft 公式に「research purpose only」と明記 |
+| VibeVoice | MIT | MIT | 要注意（research-only） | 英 / 中のみ。現在は動作不可: upstream API 移行中（.wav speaker ファイル → .pt prompt cache へ移行） |
 | Fish-Speech | Apache 2.0 | Apache 2.0 | OK | A100/L4 GPU 必須（VRAM 24GB+） |
 
 **Piper について**: `piper-tts` パッケージは GPL-3.0 です。また、デフォルトの `en_US-lessac-medium` 音声は Lessac Technologies 提供の Blizzard 2013 データセットで学習されており、このデータセットのライセンスは商用利用を禁止しています。商用利用が必要な場合は、許容的なライセンスで学習された別の voice モデルを選択してください。
