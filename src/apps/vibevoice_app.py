@@ -10,9 +10,7 @@ from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-from vibevoice.modular.modeling_vibevoice_inference import (
-    VibeVoiceForConditionalGenerationInference,
-)
+from vibevoice.modular.modeling_vibevoice import VibeVoiceForConditionalGeneration
 from vibevoice.processor.vibevoice_processor import VibeVoiceProcessor
 
 logger = logging.getLogger("uvicorn.error")
@@ -48,21 +46,21 @@ class AudioSpeechRequest(BaseModel):
 
 
 _processor: VibeVoiceProcessor | None = None
-_model: VibeVoiceForConditionalGenerationInference | None = None
+_model: VibeVoiceForConditionalGeneration | None = None
 
 
 def _device() -> str:
     return "cuda" if torch.cuda.is_available() else "cpu"
 
 
-def get_model() -> tuple[VibeVoiceProcessor, VibeVoiceForConditionalGenerationInference]:
+def get_model() -> tuple[VibeVoiceProcessor, VibeVoiceForConditionalGeneration]:
     global _processor, _model
     if _processor is None or _model is None:
         device = _device()
         dtype = torch.bfloat16 if device == "cuda" else torch.float32
         logger.info("Loading VibeVoice processor + model: %s on %s (%s)", VIBEVOICE_HF_MODEL, device, dtype)
         _processor = VibeVoiceProcessor.from_pretrained(VIBEVOICE_HF_MODEL)
-        _model = VibeVoiceForConditionalGenerationInference.from_pretrained(
+        _model = VibeVoiceForConditionalGeneration.from_pretrained(
             VIBEVOICE_HF_MODEL,
             torch_dtype=dtype,
             device_map=device,
