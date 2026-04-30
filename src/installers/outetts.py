@@ -11,6 +11,11 @@ def install(settings: Settings) -> dict:
     engine_dir.mkdir(parents=True, exist_ok=True)
 
     python_bin = ensure_venv(engine_dir)
+    # `outetts.Interface.generate(...).save(path)` writes the wav via
+    # `torchaudio.save()`. From torchaudio 2.11 onward that delegates to the
+    # separate `torchcodec` package, which is not pulled in by either outetts
+    # or torchaudio's metadata. Without it, the first /v1/audio/speech call
+    # raises `ImportError: TorchCodec is required for save_with_torchcodec`.
     uv_pip_install(
         python_bin,
         [
@@ -18,6 +23,7 @@ def install(settings: Settings) -> dict:
             "uvicorn",
             "soundfile",
             "numpy",
+            "torchcodec",
             "outetts",
         ],
     )
