@@ -20,6 +20,12 @@ Supported engines:
 | Voxtral-TTS | Works (GPU required, VRAM 16GB+) | English / French / Spanish and 9 languages |
 | Sarashina-TTS | Works (GPU required, ~6GB VRAM) | Japanese / English |
 | F5-TTS | Works (GPU required) | English / Chinese (Japanese via separate model) |
+| Chatterbox | Works (GPU recommended) | Japanese / English / Chinese and 23 languages |
+| Zonos | Works (GPU required, ~6GB VRAM) | Japanese / English / Chinese / French / German |
+| OuteTTS | Works (CPU OK) | Japanese / English / Chinese and many languages |
+| Dia | Works (GPU recommended) | English (multi-speaker dialogue) |
+| OpenVoice-V2 | Not working (Python 3.13 / `av==10` build failure) | Japanese / English / Spanish / French / Chinese / Korean |
+| VibeVoice | Not working (upstream API churn) | English / Chinese (long-form, up to 4 speakers) |
 | Fish-Speech | Not working | Japanese / English / Chinese and 80+ languages |
 | MeloTTS | Not working | - |
 | Style-Bert-VITS2 | Not working | - |
@@ -57,7 +63,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Irodori-TTS", "Kokoro", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "Piper", "Piper-Plus", "Qwen3-TTS", "Sarashina-TTS", "Style-Bert-VITS2", "TinyTTS", "Voxtral-TTS"]
+ENGINE = "Kokoro"  #@param ["Chatterbox", "Dia", "F5-TTS", "Fish-Speech", "Irodori-TTS", "Kokoro", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "OpenVoice-V2", "OuteTTS", "Piper", "Piper-Plus", "Qwen3-TTS", "Sarashina-TTS", "Style-Bert-VITS2", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -65,8 +71,18 @@ TEST_VOICE = ""  #@param {type:"string"}
 OPENAI_MODEL_ID = ""  #@param {type:"string"}
 
 #@markdown ---
+#@markdown F5-TTS (GPU required)
+F5TTS_MODEL = "F5TTS_v1_Base"  #@param {type:"string"}
+F5TTS_CKPT_FILE = ""  #@param {type:"string"}
+F5TTS_VOCAB_FILE = ""  #@param {type:"string"}
+
+#@markdown ---
+#@markdown Fish-Speech (A100/L4 GPU required, VRAM 24GB+)
+FISH_SPEECH_MODEL = "fishaudio/s2-pro"  #@param {type:"string"}
+
+#@markdown ---
 #@markdown Irodori-TTS
-# To use V1: checkpoint="Aratako/Irodori-TTS-500M", codec_repo="facebook/dacvae-watermarked"
+# V1を利用する場合: checkpoint="Aratako/Irodori-TTS-500M", codec_repo="facebook/dacvae-watermarked"
 IRODORI_HF_CHECKPOINT = "Aratako/Irodori-TTS-500M-v2"  #@param {type:"string"}
 IRODORI_CODEC_REPO = "Aratako/Semantic-DACVAE-Japanese-32dim"  #@param {type:"string"}
 IRODORI_MODEL_PRECISION = "fp32"  #@param ["fp32", "bf16", "fp16"]
@@ -104,6 +120,82 @@ PIPER_PLUS_MODEL = "tsukuyomi"  #@param {type:"string"}
 QWEN3_HF_MODEL = "Qwen/Qwen3-TTS-12Hz-0.6B-CustomVoice"  #@param ["Qwen/Qwen3-TTS-12Hz-0.6B-CustomVoice", "Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice"]
 QWEN3_LANGUAGE = "Japanese"  #@param ["Chinese", "English", "Japanese", "Korean", "German", "French", "Russian", "Portuguese", "Spanish", "Italian"]
 QWEN3_DEFAULT_SPEAKER = "ono_anna"  #@param ["aiden", "dylan", "eric", "ono_anna", "ryan", "serena", "sohee", "uncle_fu", "vivian"]
+
+#@markdown ---
+#@markdown VoxCPM2 (GPU required)
+VOXCPM_HF_MODEL = "openbmb/VoxCPM2"  #@param {type:"string"}
+VOXCPM_CFG_VALUE = 2.0  #@param {type:"number"}
+VOXCPM_INFERENCE_TIMESTEPS = 10  #@param {type:"integer"}
+
+#@markdown ---
+#@markdown MOSS-TTS-Nano (CPU OK)
+MOSS_TTS_NANO_HF_MODEL = "OpenMOSS-Team/MOSS-TTS-Nano-100M"  #@param {type:"string"}
+MOSS_TTS_NANO_MODE = "continuation"  #@param ["continuation", "voice_clone"]
+
+#@markdown ---
+#@markdown NeuTTS (CPU OK, EN/ES/DE/FR, voice cloning)
+NEUTTS_BACKBONE_REPO = "neuphonic/neutts-air"  #@param ["neuphonic/neutts-air", "neuphonic/neutts-nano", "neuphonic/neutts-nano-french", "neuphonic/neutts-nano-german", "neuphonic/neutts-nano-spanish"]
+NEUTTS_CODEC_REPO = "neuphonic/neucodec"  #@param {type:"string"}
+NEUTTS_DEFAULT_VOICE = "jo"  #@param ["dave", "jo", "greta", "juliette", "mateo"]
+
+#@markdown ---
+#@markdown Sarashina-TTS (GPU required, ~6GB VRAM, JP/EN, NonCommercial)
+SARASHINA_HF_MODEL = "sbintuitions/sarashina2.2-tts"  #@param {type:"string"}
+SARASHINA_USE_VLLM = False  #@param {type:"boolean"}
+SARASHINA_PROMPT_WAV = ""  #@param {type:"string"}
+SARASHINA_PROMPT_TEXT = ""  #@param {type:"string"}
+SARASHINA_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+
+#@markdown ---
+#@markdown Chatterbox (GPU recommended, multilingual incl JP, voice cloning)
+CHATTERBOX_LANGUAGE = "ja"  #@param ["ar", "da", "de", "el", "en", "es", "fi", "fr", "he", "hi", "it", "ja", "ko", "ms", "nl", "no", "pl", "pt", "ru", "sv", "sw", "tr", "zh"]
+CHATTERBOX_PROMPT_WAV = ""  #@param {type:"string"}
+CHATTERBOX_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+
+#@markdown ---
+#@markdown Zonos (GPU recommended, JP/EN/ZH/FR/DE, voice cloning, Apache 2.0)
+ZONOS_HF_MODEL = "Zyphra/Zonos-v0.1-transformer"  #@param {type:"string"}
+ZONOS_LANGUAGE = "ja"  #@param ["en", "ja", "zh", "fr", "de"]
+ZONOS_PROMPT_WAV = ""  #@param {type:"string"}
+ZONOS_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+
+#@markdown ---
+#@markdown OuteTTS (CPU OK, multilingual incl JP, voice cloning)
+#@markdown - 0.6B: code/weights both Apache 2.0 (commercial use OK).
+#@markdown - 1B: weights are CC-BY-NC-SA-4.0 + Llama 3.2 Community License (non-commercial only).
+OUTETTS_MODEL_SIZE = "0.6B"  #@param ["0.6B", "1B"]
+OUTETTS_BACKEND = "HF"  #@param ["HF", "LLAMACPP"]
+OUTETTS_DEFAULT_SPEAKER = "EN-FEMALE-1-NEUTRAL"  #@param {type:"string"}
+OUTETTS_PROMPT_WAV = ""  #@param {type:"string"}
+OUTETTS_PROMPT_TEXT = ""  #@param {type:"string"}
+OUTETTS_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+
+#@markdown ---
+#@markdown Dia (GPU recommended, English-only, [S1]/[S2] dialogue, Apache 2.0)
+DIA_HF_MODEL = "nari-labs/Dia-1.6B-0626"  #@param {type:"string"}
+DIA_COMPUTE_DTYPE = "float16"  #@param ["float16", "bfloat16", "float32"]
+DIA_PROMPT_WAV = ""  #@param {type:"string"}
+DIA_PROMPT_TEXT = ""  #@param {type:"string"}
+DIA_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+
+#@markdown ---
+#@markdown OpenVoice V2 (GPU recommended, multilingual incl JP, voice cloning, MIT)
+#@markdown - Pipeline: MeloTTS base TTS -> ToneColorConverter (V2 checkpoints).
+#@markdown - May hit the same MeloTTS dependency issue that breaks the standalone MeloTTS engine.
+OPENVOICE_LANGUAGE = "JP"  #@param ["EN", "ES", "FR", "ZH", "JP", "KR"]
+OPENVOICE_PROMPT_WAV = ""  #@param {type:"string"}
+OPENVOICE_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+
+#@markdown ---
+#@markdown VibeVoice (GPU required, English/Chinese, long-form multi-speaker)
+#@markdown - License: MIT, but Microsoft tags this as "research purpose only".
+#@markdown - Non-EN/ZH languages, voice impersonation, and disinformation use are prohibited.
+VIBEVOICE_HF_MODEL = "microsoft/VibeVoice-1.5B"  #@param {type:"string"}
+VIBEVOICE_DEFAULT_SPEAKER = "en-Alice_woman"  #@param {type:"string"}
+VIBEVOICE_PROMPT_WAV = ""  #@param {type:"string"}
+VIBEVOICE_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+VIBEVOICE_DDPM_STEPS = 10  #@param {type:"integer"}
+VIBEVOICE_CFG_SCALE = 1.3  #@param {type:"number"}
 
 import shlex
 import subprocess
@@ -151,8 +243,18 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         TEST_VOICE,
         "--openai-model-id",
         OPENAI_MODEL_ID,
+        "--f5tts-model",
+        F5TTS_MODEL,
+        "--f5tts-ckpt-file",
+        F5TTS_CKPT_FILE,
+        "--f5tts-vocab-file",
+        F5TTS_VOCAB_FILE,
+        "--fish-speech-model",
+        FISH_SPEECH_MODEL,
         "--irodori-hf-checkpoint",
         IRODORI_HF_CHECKPOINT,
+        "--irodori-codec-repo",
+        IRODORI_CODEC_REPO,
         "--irodori-model-precision",
         IRODORI_MODEL_PRECISION,
         "--irodori-codec-precision",
@@ -187,7 +289,87 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         QWEN3_LANGUAGE,
         "--qwen3-default-speaker",
         QWEN3_DEFAULT_SPEAKER,
+        "--voxcpm-hf-model",
+        VOXCPM_HF_MODEL,
+        "--voxcpm-cfg-value",
+        str(VOXCPM_CFG_VALUE),
+        "--voxcpm-inference-timesteps",
+        str(VOXCPM_INFERENCE_TIMESTEPS),
+        "--moss-tts-nano-hf-model",
+        MOSS_TTS_NANO_HF_MODEL,
+        "--moss-tts-nano-mode",
+        MOSS_TTS_NANO_MODE,
+        "--neutts-backbone-repo",
+        NEUTTS_BACKBONE_REPO,
+        "--neutts-codec-repo",
+        NEUTTS_CODEC_REPO,
+        "--neutts-default-voice",
+        NEUTTS_DEFAULT_VOICE,
+        "--sarashina-hf-model",
+        SARASHINA_HF_MODEL,
+        "--sarashina-prompt-wav",
+        SARASHINA_PROMPT_WAV,
+        "--sarashina-prompt-text",
+        SARASHINA_PROMPT_TEXT,
+        "--sarashina-default-voice",
+        SARASHINA_DEFAULT_VOICE,
+        "--chatterbox-language",
+        CHATTERBOX_LANGUAGE,
+        "--chatterbox-prompt-wav",
+        CHATTERBOX_PROMPT_WAV,
+        "--chatterbox-default-voice",
+        CHATTERBOX_DEFAULT_VOICE,
+        "--zonos-hf-model",
+        ZONOS_HF_MODEL,
+        "--zonos-language",
+        ZONOS_LANGUAGE,
+        "--zonos-prompt-wav",
+        ZONOS_PROMPT_WAV,
+        "--zonos-default-voice",
+        ZONOS_DEFAULT_VOICE,
+        "--outetts-model-size",
+        OUTETTS_MODEL_SIZE,
+        "--outetts-backend",
+        OUTETTS_BACKEND,
+        "--outetts-default-speaker",
+        OUTETTS_DEFAULT_SPEAKER,
+        "--outetts-prompt-wav",
+        OUTETTS_PROMPT_WAV,
+        "--outetts-prompt-text",
+        OUTETTS_PROMPT_TEXT,
+        "--outetts-default-voice",
+        OUTETTS_DEFAULT_VOICE,
+        "--dia-hf-model",
+        DIA_HF_MODEL,
+        "--dia-compute-dtype",
+        DIA_COMPUTE_DTYPE,
+        "--dia-prompt-wav",
+        DIA_PROMPT_WAV,
+        "--dia-prompt-text",
+        DIA_PROMPT_TEXT,
+        "--dia-default-voice",
+        DIA_DEFAULT_VOICE,
+        "--openvoice-language",
+        OPENVOICE_LANGUAGE,
+        "--openvoice-prompt-wav",
+        OPENVOICE_PROMPT_WAV,
+        "--openvoice-default-voice",
+        OPENVOICE_DEFAULT_VOICE,
+        "--vibevoice-hf-model",
+        VIBEVOICE_HF_MODEL,
+        "--vibevoice-default-speaker",
+        VIBEVOICE_DEFAULT_SPEAKER,
+        "--vibevoice-prompt-wav",
+        VIBEVOICE_PROMPT_WAV,
+        "--vibevoice-default-voice",
+        VIBEVOICE_DEFAULT_VOICE,
+        "--vibevoice-ddpm-steps",
+        str(VIBEVOICE_DDPM_STEPS),
+        "--vibevoice-cfg-scale",
+        str(VIBEVOICE_CFG_SCALE),
     ]
+    if SARASHINA_USE_VLLM:
+        cmd.append("--sarashina-use-vllm")
     cmd.append("--expose-public-url" if EXPOSE_PUBLIC_URL else "--no-expose-public-url")
     return cmd
 
@@ -317,6 +499,92 @@ For voice cloning, only use reference audio you have rights to (consent of the s
 
 A zero-shot voice cloning TTS using [SWivid/F5-TTS](https://github.com/SWivid/F5-TTS). It mimics the voice quality of a reference audio to generate speech. Uses the default reference audio bundled with the package (English female). To use a Japanese model, specify a community-provided Japanese checkpoint with `--f5tts-ckpt-file` / `--f5tts-vocab-file`. A GPU runtime (T4 or higher) is required. License: code MIT / model CC-BY-NC.
 
+### Chatterbox
+
+A multilingual TTS using [resemble-ai/chatterbox](https://github.com/resemble-ai/chatterbox) by Resemble AI. The Chatterbox Multilingual model supports 23 languages including Japanese, English, Chinese, French, German, Spanish, Korean, etc., and supports zero-shot voice cloning. Default language is `ja` (Japanese). When `--chatterbox-prompt-wav` is provided, the `clone` voice becomes available and uses the reference audio. A GPU runtime is recommended (VRAM ~2-4GB). License: MIT (both code and weights).
+
+The `voice` parameter exposes:
+
+| voice | description |
+|---|---|
+| `default` | Plain TTS without any reference audio. |
+| `clone` | Zero-shot voice cloning. Only available when `--chatterbox-prompt-wav` is configured. |
+
+For voice cloning, only use reference audio you have rights to (consent of the speaker).
+
+### Zonos
+
+A multilingual TTS using [Zyphra/Zonos](https://github.com/Zyphra/Zonos). Supports English, Japanese, Chinese, French, and German with zero-shot voice cloning. Default model: `Zyphra/Zonos-v0.1-transformer` (Apache 2.0). Phonemization is done by `espeak-ng`, which is installed automatically. The wrapper uses the bundled `assets/exampleaudio.mp3` as the default speaker reference; supplying `--zonos-prompt-wav` enables a `clone` voice with your own reference audio. A GPU runtime is required (VRAM 6GB+, T4 OK). The optional Hybrid backbone needs an Ampere or newer GPU and additional `mamba-ssm` deps; the Transformer backbone is used by default for portability. License: Apache 2.0 (code and weights).
+
+The `voice` parameter exposes:
+
+| voice | description |
+|---|---|
+| `default` | Uses the bundled reference audio shipped in the upstream repo. |
+| `clone` | Zero-shot voice cloning. Only available when `--zonos-prompt-wav` is configured. |
+
+For voice cloning, only use reference audio you have rights to (consent of the speaker).
+
+### OuteTTS
+
+A lightweight multilingual TTS using [edwko/OuteTTS](https://github.com/edwko/OuteTTS). Supports many languages including Japanese, with two model sizes (`0.6B` and `1B`) and multiple backends (`HF` for transformers, `LLAMACPP` for GGUF). Voice cloning is exposed via `--outetts-prompt-wav` (and an optional `--outetts-prompt-text` transcript). The default voice uses one of the bundled built-in speaker profiles, configurable via `--outetts-default-speaker` (e.g., `EN-FEMALE-1-NEUTRAL`). For best Japanese results, create a Japanese speaker profile from a reference clip with `clone`. Runs on CPU or GPU.
+
+**License (depends on model size):**
+
+| Model | Code | Weights | Commercial use |
+|---|---|---|---|
+| `OuteAI/OuteTTS-1.0-0.6B` | Apache 2.0 | Apache 2.0 | OK |
+| `OuteAI/Llama-OuteTTS-1.0-1B` | Apache 2.0 | CC-BY-NC-SA-4.0 + Llama 3.2 Community License | **Not allowed** |
+
+The default model size in this wrapper is `0.6B` (Apache 2.0). If you switch to `1B`, the weights become non-commercial.
+
+The `voice` parameter exposes:
+
+| voice | description |
+|---|---|
+| `default` | Plain TTS using the built-in speaker profile selected by `--outetts-default-speaker`. |
+| `clone` | Voice cloning. Only available when `--outetts-prompt-wav` is configured. |
+
+For voice cloning, only use reference audio you have rights to (consent of the speaker).
+
+### Dia
+
+A dialogue-oriented TTS using [nari-labs/dia](https://github.com/nari-labs/dia). The 1.6B-parameter model generates multi-speaker conversations in a single pass via `[S1]` / `[S2]` speaker tags directly in the prompt. English-only at the moment. The wrapper automatically prepends `[S1]` if your input has no speaker tag, so plain text still works for single-speaker TTS. Default model: `nari-labs/Dia-1.6B-0626`. With `--dia-prompt-wav` and `--dia-prompt-text`, the `clone` voice becomes available and conditions on a reference clip. A GPU runtime is recommended (VRAM ~4.4GB at float16/bfloat16, ~7.9GB at float32). License: Apache 2.0 (code and weights).
+
+The `voice` parameter exposes:
+
+| voice | description |
+|---|---|
+| `default` | Plain TTS without any reference. Use `[S1]` / `[S2]` tags in `input` for multi-speaker dialogue. |
+| `clone` | Voice cloning. Only available when both `--dia-prompt-wav` and `--dia-prompt-text` are configured. |
+
+For voice cloning, only use reference audio you have rights to (consent of the speaker).
+
+### OpenVoice-V2 (currently not working)
+
+Intended to use [myshell-ai/OpenVoice](https://github.com/myshell-ai/OpenVoice) V2 — a two-stage voice cloning TTS that first synthesises base speech with MeloTTS, then runs a ToneColorConverter (V2 checkpoints) to match the timbre of a reference clip. Both the code and the weights are MIT, so commercial use is allowed.
+
+**Why it fails on Colab today**: OpenVoice's `pyproject.toml` hard-pins `faster-whisper==0.9.0`, which transitively pins `av>=10.dev0,<11.dev0`. The 10.x line of `av` does not have wheels for Python 3.13 (Colab's current default) and its Cython source no longer compiles against Cython 3.x:
+
+```
+av/logging.pyx:216:22: Cannot assign type 'const char *(void *) except?
+NULL nogil' to 'const char *(*)(void *) noexcept nogil'.
+```
+
+Pre-installing `faster-whisper>=1.0` (which has `av==17.x` with py3.13 wheels) does not help — uv respects OpenVoice's pin and downgrades back to 0.9.0. Working around it would require `--no-deps` plus reconstructing the entire OpenVoice + MeloTTS dependency tree by hand, which sweeps in the standalone `MeloTTS` engine's own Rust-toolchain breakage as well.
+
+The wrapper code is kept in tree so OpenVoice V2 can be reactivated once upstream relaxes its pins. **License (when working):** MIT for both code and weights (since April 2024).
+
+### VibeVoice (currently not working)
+
+Intended to use [microsoft/VibeVoice](https://github.com/microsoft/VibeVoice) — a 1.5B-parameter long-form multi-speaker TTS that can generate up to ~90 minutes of audio with up to 4 speakers in a single pass. The wrapper has been verified end-to-end up to model load on a Colab L4 GPU, but the upstream Microsoft repository is in the middle of a breaking API migration and synthesis cannot complete cleanly today:
+
+- The reference inference class was renamed: `VibeVoiceForConditionalGenerationInference` → `VibeVoiceForConditionalGeneration` (this part the wrapper now handles).
+- `model.set_ddpm_inference_steps(...)` has been removed; DDPM steps must now be set via `model.model.noise_scheduler.set_timesteps(...)` (handled).
+- The bigger break: upstream **stopped shipping reference `.wav` speaker files** in `demo/voices/`. They now ship pre-extracted `.pt` prompt caches (e.g. `en-Carter_man.pt`, `jp-Spk1_woman.pt`) and the recommended path is `processor.process_input_with_cached_prompt(cached_prompt=torch.load(...))` rather than `processor(text=..., voice_samples=[wav_path])`. The non-streaming `voice_samples`-based path the wrapper currently uses no longer has working defaults.
+
+The wrapper code is kept in tree so it can be rebuilt against the upstream API once it stabilises. **License caveat:** even when working, the model card tags VibeVoice as **"research purpose only"**: non-EN/ZH languages, voice impersonation, disinformation, and real-time voice conversion are prohibited. Don't ship into commercial / real-world products regardless of how the API ends up.
+
 ### Fish-Speech (currently not working)
 
 A high-quality TTS using [fishaudio/fish-speech](https://github.com/fishaudio/fish-speech). Japanese is Tier 1 supported (highest quality) and it supports 80+ languages. It requires 24GB+ VRAM and targets A100/L4 GPUs, but on Colab the runtime crashes with OOM during model loading, so it currently does not work. License: Apache 2.0.
@@ -351,6 +619,13 @@ The license for each engine is as follows. When using them, always check each pr
 | Voxtral-TTS | — | CC BY-NC 4.0 | Not allowed | Via vLLM + vllm-omni. Non-commercial due to voice dataset license constraints |
 | Sarashina-TTS | — | Sarashina Model NonCommercial License | Not allowed | Japanese / English. Zero-shot voice cloning. Output contains a SilentCipher watermark (do not remove) |
 | F5-TTS | MIT | CC-BY-NC | Not allowed (model) | Model weights are non-commercial due to Emilia dataset constraints |
+| Chatterbox | MIT | MIT | OK | Multilingual (23 languages incl JP). Zero-shot voice cloning |
+| Zonos | Apache 2.0 | Apache 2.0 | OK | EN/JA/ZH/FR/DE. Zero-shot voice cloning. Requires `espeak-ng` |
+| OuteTTS (0.6B) | Apache 2.0 | Apache 2.0 | OK | Multilingual incl JP. CPU OK. Voice cloning |
+| OuteTTS (1B)   | Apache 2.0 | CC-BY-NC-SA-4.0 + Llama 3.2 Community License | Not allowed | Llama-3.2-based; non-commercial weights |
+| Dia | Apache 2.0 | Apache 2.0 | OK | EN only. Multi-speaker `[S1]`/`[S2]` dialogue TTS |
+| OpenVoice-V2 | MIT | MIT | OK | Multilingual (incl JP). Voice cloning. Currently not working: `av==10` (via `faster-whisper==0.9.0` pin) won't build on Python 3.13 |
+| VibeVoice | MIT | MIT | Caution (research-only) | EN/ZH only per model card. Currently not working: upstream is mid-API migration (.wav speakers replaced with .pt caches) |
 | Fish-Speech | Apache 2.0 | Apache 2.0 | OK | Requires A100/L4 GPU (VRAM 24GB+) |
 
 **About Piper**: The `piper-tts` package is GPL-3.0. Also, the default `en_US-lessac-medium` voice is trained on the Blizzard 2013 dataset provided by Lessac Technologies, and its license prohibits commercial use. If you need commercial use, choose another voice model trained with a permissive license.
@@ -395,6 +670,18 @@ This repository itself is intended for short-term operational verification and t
   https://github.com/sbintuitions/sarashina2.2-tts
 - F5-TTS
   https://github.com/SWivid/F5-TTS
+- Chatterbox
+  https://github.com/resemble-ai/chatterbox
+- Zonos
+  https://github.com/Zyphra/Zonos
+- OuteTTS
+  https://github.com/edwko/OuteTTS
+- Dia
+  https://github.com/nari-labs/dia
+- OpenVoice
+  https://github.com/myshell-ai/OpenVoice
+- VibeVoice
+  https://github.com/microsoft/VibeVoice
 - Fish Speech
   https://github.com/fishaudio/fish-speech
 - CosyVoice

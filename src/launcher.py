@@ -32,6 +32,18 @@ def resolve_selected_voice(settings: Settings) -> str:
         return settings.neutts_default_voice
     if settings.engine == "Sarashina-TTS":
         return settings.sarashina_default_voice
+    if settings.engine == "Chatterbox":
+        return settings.chatterbox_default_voice
+    if settings.engine == "Zonos":
+        return settings.zonos_default_voice
+    if settings.engine == "OuteTTS":
+        return settings.outetts_default_voice
+    if settings.engine == "Dia":
+        return settings.dia_default_voice
+    if settings.engine == "OpenVoice-V2":
+        return settings.openvoice_default_voice
+    if settings.engine == "VibeVoice":
+        return settings.vibevoice_default_voice
     return ""
 
 
@@ -116,6 +128,83 @@ def print_engine_voice_hints(settings: Settings):
         print("TinyTTS は超軽量（~3.4MB）の英語専用 TTS です（CPU 動作、GPU 不要）。")
         print("voice パラメータは現在 'default' のみ対応です。")
         print("注意: 英語のみ対応。日本語テキストは正しく発音されません。ライセンス: Apache-2.0")
+    elif settings.engine == "Chatterbox":
+        print("Chatterbox は Resemble AI の多言語 TTS です（23言語対応、ゼロショット voice cloning 対応）。")
+        print(f"language: {settings.chatterbox_language}")
+        print(f"デフォルト voice: {settings.chatterbox_default_voice}")
+        print("voice 候補: default（プロンプトなしの plain TTS）")
+        if settings.chatterbox_prompt_wav:
+            print(f"             clone（参照音声: {settings.chatterbox_prompt_wav}）")
+        else:
+            print("             clone は --chatterbox-prompt-wav を指定すると有効になります")
+        print("対応言語: ar, da, de, el, en, es, fi, fr, he, hi, it, ja, ko, ms, nl, no, pl, pt, ru, sv, sw, tr, zh")
+        print("注意: GPU 推奨（VRAM ~2-4GB）。ライセンス: MIT（コードと重み）")
+    elif settings.engine == "Zonos":
+        print("Zonos は Zyphra の多言語 TTS です（5言語対応・日本語含む、ゼロショット voice cloning 対応）。")
+        print(f"モデル: {settings.zonos_hf_model}")
+        print(f"language: {settings.zonos_language}")
+        print(f"デフォルト voice: {settings.zonos_default_voice}")
+        print("voice 候補: default（同梱の参照音声 assets/exampleaudio.mp3 を使用）")
+        if settings.zonos_prompt_wav:
+            print(f"             clone（参照音声: {settings.zonos_prompt_wav}）")
+        else:
+            print("             clone は --zonos-prompt-wav を指定すると有効になります")
+        print("対応言語: en, ja, zh, fr, de（espeak-ng で音素化）")
+        print("注意: GPU 推奨（VRAM 6GB+）。ライセンス: Apache-2.0（コードと重み）")
+    elif settings.engine == "OuteTTS":
+        print("OuteTTS は OuteAI の軽量多言語 TTS です（日本語含む多言語対応、voice cloning 対応）。")
+        print(f"モデルサイズ: {settings.outetts_model_size} / backend: {settings.outetts_backend}")
+        print(f"デフォルト speaker: {settings.outetts_default_speaker}")
+        print(f"デフォルト voice: {settings.outetts_default_voice}")
+        print("voice 候補: default（OUTETTS_DEFAULT_SPEAKER に該当する内蔵プロファイルを使用）")
+        if settings.outetts_prompt_wav:
+            print(f"             clone（参照音声: {settings.outetts_prompt_wav}）")
+        else:
+            print("             clone は --outetts-prompt-wav を指定すると有効になります（必要なら --outetts-prompt-text も併用）")
+        print("注意: 日本語を話させる場合は日本語話者プロファイルの作成（clone）を推奨します。CPU/GPU 両対応。")
+        if settings.outetts_model_size.upper() == "1B":
+            print("ライセンス警告: 1B (Llama-OuteTTS-1.0-1B) の重みは CC-BY-NC-SA-4.0 + Llama 3.2 Community License で、商用利用は不可です。")
+            print("                商用利用したい場合は 0.6B (OuteTTS-1.0-0.6B, Apache-2.0) を選択してください。")
+        else:
+            print("ライセンス: 0.6B はコード / 重みとも Apache-2.0（商用 OK）。1B に切り替えると重みは CC-BY-NC-SA-4.0 で非商用となります。")
+    elif settings.engine == "Dia":
+        print("Dia は Nari Labs の対話 TTS です（[S1]/[S2] 話者タグでマルチスピーカー一括生成、英語のみ）。")
+        print(f"モデル: {settings.dia_hf_model}")
+        print(f"compute_dtype: {settings.dia_compute_dtype}")
+        print(f"デフォルト voice: {settings.dia_default_voice}")
+        print("voice 候補: default（プロンプトなし。入力に [S1]/[S2] タグが無い場合は先頭に [S1] を自動挿入）")
+        if settings.dia_prompt_wav and settings.dia_prompt_text:
+            print(f"             clone（参照音声: {settings.dia_prompt_wav}, 書き起こし: {settings.dia_prompt_text}）")
+        else:
+            print("             clone は --dia-prompt-wav と --dia-prompt-text の両方を指定すると有効になります")
+        print("対応言語: 英語のみ。日本語テキストは正しく発音されません。")
+        print("注意: GPU 推奨（bf16/float16 で VRAM ~4.4GB / float32 で ~7.9GB）。ライセンス: Apache 2.0（コードと重み）")
+    elif settings.engine == "OpenVoice-V2":
+        print("OpenVoice V2 は MyShell の voice cloning TTS です（MeloTTS をベースに ToneColorConverter で声色変換）。")
+        print(f"language: {settings.openvoice_language}")
+        print(f"デフォルト voice: {settings.openvoice_default_voice}")
+        print("voice 候補: default（OpenVoice 同梱の resources/example_reference.mp3 を参照音声として使用）")
+        if settings.openvoice_prompt_wav:
+            print(f"             clone（参照音声: {settings.openvoice_prompt_wav}）")
+        else:
+            print("             clone は --openvoice-prompt-wav を指定すると有効になります")
+        print("対応言語: EN / ES / FR / ZH / JP / KR")
+        print("注意: ベース TTS は MeloTTS のため、本リポの MeloTTS 単体エンジンと同じ依存解決問題（tokenizers Rust ビルド失敗）に当たる可能性があります。")
+        print("ライセンス: コードと重みとも MIT（2024-04 以降、商用 OK）")
+    elif settings.engine == "VibeVoice":
+        print("VibeVoice は Microsoft の長尺マルチスピーカー TTS です（最大 90 分・4 話者の一括生成）。")
+        print(f"モデル: {settings.vibevoice_hf_model}")
+        print(f"デフォルト speaker: {settings.vibevoice_default_speaker}（demo/voices/<speaker>.wav）")
+        print(f"デフォルト voice: {settings.vibevoice_default_voice}")
+        print(f"DDPM steps: {settings.vibevoice_ddpm_steps} / cfg_scale: {settings.vibevoice_cfg_scale}")
+        print("voice 候補: default（VIBEVOICE_DEFAULT_SPEAKER 名で demo/voices から参照音声を選択）")
+        if settings.vibevoice_prompt_wav:
+            print(f"             clone（参照音声: {settings.vibevoice_prompt_wav}）")
+        else:
+            print("             clone は --vibevoice-prompt-wav を指定すると有効になります")
+        print("対応言語: 英語 / 中国語のみ（モデル規約上、それ以外の言語は禁止）")
+        print("注意: ライセンスは MIT ですが、Microsoft 公式に「research purpose only」と明記されており、")
+        print("      なりすまし・ディスインフォ・実時間音声変換などは禁止です。商用 / 実運用での利用は推奨されていません。")
     else:
         print("Irodori-TTS は現状 voice 切り替えを持たない想定です。")
 

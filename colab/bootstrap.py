@@ -65,6 +65,33 @@ def parse_args():
     parser.add_argument("--sarashina-prompt-wav", default="")
     parser.add_argument("--sarashina-prompt-text", default="")
     parser.add_argument("--sarashina-default-voice", default="default")
+    parser.add_argument("--chatterbox-language", default="ja")
+    parser.add_argument("--chatterbox-prompt-wav", default="")
+    parser.add_argument("--chatterbox-default-voice", default="default")
+    parser.add_argument("--zonos-hf-model", default="Zyphra/Zonos-v0.1-transformer")
+    parser.add_argument("--zonos-language", default="ja")
+    parser.add_argument("--zonos-prompt-wav", default="")
+    parser.add_argument("--zonos-default-voice", default="default")
+    parser.add_argument("--outetts-model-size", default="0.6B")
+    parser.add_argument("--outetts-backend", default="HF")
+    parser.add_argument("--outetts-default-speaker", default="EN-FEMALE-1-NEUTRAL")
+    parser.add_argument("--outetts-prompt-wav", default="")
+    parser.add_argument("--outetts-prompt-text", default="")
+    parser.add_argument("--outetts-default-voice", default="default")
+    parser.add_argument("--dia-hf-model", default="nari-labs/Dia-1.6B-0626")
+    parser.add_argument("--dia-compute-dtype", default="float16")
+    parser.add_argument("--dia-prompt-wav", default="")
+    parser.add_argument("--dia-prompt-text", default="")
+    parser.add_argument("--dia-default-voice", default="default")
+    parser.add_argument("--openvoice-language", default="JP")
+    parser.add_argument("--openvoice-prompt-wav", default="")
+    parser.add_argument("--openvoice-default-voice", default="default")
+    parser.add_argument("--vibevoice-hf-model", default="microsoft/VibeVoice-1.5B")
+    parser.add_argument("--vibevoice-default-speaker", default="en-Alice_woman")
+    parser.add_argument("--vibevoice-prompt-wav", default="")
+    parser.add_argument("--vibevoice-default-voice", default="default")
+    parser.add_argument("--vibevoice-ddpm-steps", type=int, default=10)
+    parser.add_argument("--vibevoice-cfg-scale", type=float, default=1.3)
     parser.add_argument("--root-dir", default="/content/openai-compatible-local-tts")
     return parser.parse_args()
 
@@ -118,6 +145,33 @@ def main():
         sarashina_prompt_wav=args.sarashina_prompt_wav,
         sarashina_prompt_text=args.sarashina_prompt_text,
         sarashina_default_voice=args.sarashina_default_voice,
+        chatterbox_language=args.chatterbox_language,
+        chatterbox_prompt_wav=args.chatterbox_prompt_wav,
+        chatterbox_default_voice=args.chatterbox_default_voice,
+        zonos_hf_model=args.zonos_hf_model,
+        zonos_language=args.zonos_language,
+        zonos_prompt_wav=args.zonos_prompt_wav,
+        zonos_default_voice=args.zonos_default_voice,
+        outetts_model_size=args.outetts_model_size,
+        outetts_backend=args.outetts_backend,
+        outetts_default_speaker=args.outetts_default_speaker,
+        outetts_prompt_wav=args.outetts_prompt_wav,
+        outetts_prompt_text=args.outetts_prompt_text,
+        outetts_default_voice=args.outetts_default_voice,
+        dia_hf_model=args.dia_hf_model,
+        dia_compute_dtype=args.dia_compute_dtype,
+        dia_prompt_wav=args.dia_prompt_wav,
+        dia_prompt_text=args.dia_prompt_text,
+        dia_default_voice=args.dia_default_voice,
+        openvoice_language=args.openvoice_language,
+        openvoice_prompt_wav=args.openvoice_prompt_wav,
+        openvoice_default_voice=args.openvoice_default_voice,
+        vibevoice_hf_model=args.vibevoice_hf_model,
+        vibevoice_default_speaker=args.vibevoice_default_speaker,
+        vibevoice_prompt_wav=args.vibevoice_prompt_wav,
+        vibevoice_default_voice=args.vibevoice_default_voice,
+        vibevoice_ddpm_steps=args.vibevoice_ddpm_steps,
+        vibevoice_cfg_scale=args.vibevoice_cfg_scale,
         root_dir=Path(args.root_dir),
         repo_dir=REPO_DIR,
     )

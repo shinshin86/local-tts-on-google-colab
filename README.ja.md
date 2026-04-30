@@ -15,10 +15,17 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | Qwen3-TTS | 動作OK (GPU必須) | 日本語 / 英語 / 中国語 他 10言語 |
 | VoxCPM2 | 動作OK (GPU必須) | 日本語 / 英語 / 中国語 他 30言語 |
 | MOSS-TTS-Nano | 動作（出力が約2秒で切れる） | 日本語 / 英語 / 中国語 他 20言語 |
+| NeuTTS | 動作OK (CPU可・voice cloning) | 英語 / スペイン語 / ドイツ語 / フランス語 |
 | TinyTTS | 動作OK | 英語 |
 | Voxtral-TTS | 動作OK (GPU必須・VRAM 16GB+) | 英語 / フランス語 / スペイン語 他 9言語 |
 | Sarashina-TTS | 動作OK (GPU必須・VRAM ~6GB) | 日本語 / 英語 |
 | F5-TTS | 動作OK (GPU必須) | 英語 / 中国語（日本語は別モデル） |
+| Chatterbox | 動作OK (GPU推奨) | 日本語 / 英語 / 中国語 他 23言語 |
+| Zonos | 動作OK (GPU必須・VRAM ~6GB) | 日本語 / 英語 / 中国語 / フランス語 / ドイツ語 |
+| OuteTTS | 動作OK (CPU可) | 日本語 / 英語 / 中国語 他 多言語 |
+| Dia | 動作OK (GPU推奨) | 英語（マルチスピーカー対話） |
+| OpenVoice-V2 | 動作不可（Python 3.13 で `av==10` がビルドできない） | 日本語 / 英語 / 西 / 仏 / 中 / 韓 |
+| VibeVoice | 動作不可（upstream API 移行中） | 英語 / 中国語（長尺・最大 4 話者） |
 | Fish-Speech | 動作不可 | 日本語 / 英語 / 中国語 他 80言語以上 |
 | MeloTTS | 動作不可 | - |
 | Style-Bert-VITS2 | 動作不可 | - |
@@ -56,12 +63,22 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Irodori-TTS", "Kokoro", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "Piper", "Piper-Plus", "Qwen3-TTS", "Sarashina-TTS", "Style-Bert-VITS2", "TinyTTS", "Voxtral-TTS"]
+ENGINE = "Kokoro"  #@param ["Chatterbox", "Dia", "F5-TTS", "Fish-Speech", "Irodori-TTS", "Kokoro", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "OpenVoice-V2", "OuteTTS", "Piper", "Piper-Plus", "Qwen3-TTS", "Sarashina-TTS", "Style-Bert-VITS2", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
 TEST_VOICE = ""  #@param {type:"string"}
 OPENAI_MODEL_ID = ""  #@param {type:"string"}
+
+#@markdown ---
+#@markdown F5-TTS (GPU required)
+F5TTS_MODEL = "F5TTS_v1_Base"  #@param {type:"string"}
+F5TTS_CKPT_FILE = ""  #@param {type:"string"}
+F5TTS_VOCAB_FILE = ""  #@param {type:"string"}
+
+#@markdown ---
+#@markdown Fish-Speech (A100/L4 GPU required, VRAM 24GB+)
+FISH_SPEECH_MODEL = "fishaudio/s2-pro"  #@param {type:"string"}
 
 #@markdown ---
 #@markdown Irodori-TTS
@@ -103,6 +120,82 @@ PIPER_PLUS_MODEL = "tsukuyomi"  #@param {type:"string"}
 QWEN3_HF_MODEL = "Qwen/Qwen3-TTS-12Hz-0.6B-CustomVoice"  #@param ["Qwen/Qwen3-TTS-12Hz-0.6B-CustomVoice", "Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice"]
 QWEN3_LANGUAGE = "Japanese"  #@param ["Chinese", "English", "Japanese", "Korean", "German", "French", "Russian", "Portuguese", "Spanish", "Italian"]
 QWEN3_DEFAULT_SPEAKER = "ono_anna"  #@param ["aiden", "dylan", "eric", "ono_anna", "ryan", "serena", "sohee", "uncle_fu", "vivian"]
+
+#@markdown ---
+#@markdown VoxCPM2 (GPU required)
+VOXCPM_HF_MODEL = "openbmb/VoxCPM2"  #@param {type:"string"}
+VOXCPM_CFG_VALUE = 2.0  #@param {type:"number"}
+VOXCPM_INFERENCE_TIMESTEPS = 10  #@param {type:"integer"}
+
+#@markdown ---
+#@markdown MOSS-TTS-Nano (CPU OK)
+MOSS_TTS_NANO_HF_MODEL = "OpenMOSS-Team/MOSS-TTS-Nano-100M"  #@param {type:"string"}
+MOSS_TTS_NANO_MODE = "continuation"  #@param ["continuation", "voice_clone"]
+
+#@markdown ---
+#@markdown NeuTTS (CPU OK, EN/ES/DE/FR, voice cloning)
+NEUTTS_BACKBONE_REPO = "neuphonic/neutts-air"  #@param ["neuphonic/neutts-air", "neuphonic/neutts-nano", "neuphonic/neutts-nano-french", "neuphonic/neutts-nano-german", "neuphonic/neutts-nano-spanish"]
+NEUTTS_CODEC_REPO = "neuphonic/neucodec"  #@param {type:"string"}
+NEUTTS_DEFAULT_VOICE = "jo"  #@param ["dave", "jo", "greta", "juliette", "mateo"]
+
+#@markdown ---
+#@markdown Sarashina-TTS (GPU required, ~6GB VRAM, JP/EN, NonCommercial)
+SARASHINA_HF_MODEL = "sbintuitions/sarashina2.2-tts"  #@param {type:"string"}
+SARASHINA_USE_VLLM = False  #@param {type:"boolean"}
+SARASHINA_PROMPT_WAV = ""  #@param {type:"string"}
+SARASHINA_PROMPT_TEXT = ""  #@param {type:"string"}
+SARASHINA_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+
+#@markdown ---
+#@markdown Chatterbox (GPU recommended, multilingual incl JP, voice cloning)
+CHATTERBOX_LANGUAGE = "ja"  #@param ["ar", "da", "de", "el", "en", "es", "fi", "fr", "he", "hi", "it", "ja", "ko", "ms", "nl", "no", "pl", "pt", "ru", "sv", "sw", "tr", "zh"]
+CHATTERBOX_PROMPT_WAV = ""  #@param {type:"string"}
+CHATTERBOX_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+
+#@markdown ---
+#@markdown Zonos (GPU recommended, JP/EN/ZH/FR/DE, voice cloning, Apache 2.0)
+ZONOS_HF_MODEL = "Zyphra/Zonos-v0.1-transformer"  #@param {type:"string"}
+ZONOS_LANGUAGE = "ja"  #@param ["en", "ja", "zh", "fr", "de"]
+ZONOS_PROMPT_WAV = ""  #@param {type:"string"}
+ZONOS_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+
+#@markdown ---
+#@markdown OuteTTS (CPU OK, multilingual incl JP, voice cloning)
+#@markdown - 0.6B: code/weights both Apache 2.0 (commercial use OK).
+#@markdown - 1B: weights are CC-BY-NC-SA-4.0 + Llama 3.2 Community License (non-commercial only).
+OUTETTS_MODEL_SIZE = "0.6B"  #@param ["0.6B", "1B"]
+OUTETTS_BACKEND = "HF"  #@param ["HF", "LLAMACPP"]
+OUTETTS_DEFAULT_SPEAKER = "EN-FEMALE-1-NEUTRAL"  #@param {type:"string"}
+OUTETTS_PROMPT_WAV = ""  #@param {type:"string"}
+OUTETTS_PROMPT_TEXT = ""  #@param {type:"string"}
+OUTETTS_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+
+#@markdown ---
+#@markdown Dia (GPU recommended, English-only, [S1]/[S2] dialogue, Apache 2.0)
+DIA_HF_MODEL = "nari-labs/Dia-1.6B-0626"  #@param {type:"string"}
+DIA_COMPUTE_DTYPE = "float16"  #@param ["float16", "bfloat16", "float32"]
+DIA_PROMPT_WAV = ""  #@param {type:"string"}
+DIA_PROMPT_TEXT = ""  #@param {type:"string"}
+DIA_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+
+#@markdown ---
+#@markdown OpenVoice V2 (GPU recommended, multilingual incl JP, voice cloning, MIT)
+#@markdown - Pipeline: MeloTTS base TTS -> ToneColorConverter (V2 checkpoints).
+#@markdown - May hit the same MeloTTS dependency issue that breaks the standalone MeloTTS engine.
+OPENVOICE_LANGUAGE = "JP"  #@param ["EN", "ES", "FR", "ZH", "JP", "KR"]
+OPENVOICE_PROMPT_WAV = ""  #@param {type:"string"}
+OPENVOICE_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+
+#@markdown ---
+#@markdown VibeVoice (GPU required, English/Chinese, long-form multi-speaker)
+#@markdown - License: MIT, but Microsoft tags this as "research purpose only".
+#@markdown - Non-EN/ZH languages, voice impersonation, and disinformation use are prohibited.
+VIBEVOICE_HF_MODEL = "microsoft/VibeVoice-1.5B"  #@param {type:"string"}
+VIBEVOICE_DEFAULT_SPEAKER = "en-Alice_woman"  #@param {type:"string"}
+VIBEVOICE_PROMPT_WAV = ""  #@param {type:"string"}
+VIBEVOICE_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+VIBEVOICE_DDPM_STEPS = 10  #@param {type:"integer"}
+VIBEVOICE_CFG_SCALE = 1.3  #@param {type:"number"}
 
 import shlex
 import subprocess
@@ -150,8 +243,18 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         TEST_VOICE,
         "--openai-model-id",
         OPENAI_MODEL_ID,
+        "--f5tts-model",
+        F5TTS_MODEL,
+        "--f5tts-ckpt-file",
+        F5TTS_CKPT_FILE,
+        "--f5tts-vocab-file",
+        F5TTS_VOCAB_FILE,
+        "--fish-speech-model",
+        FISH_SPEECH_MODEL,
         "--irodori-hf-checkpoint",
         IRODORI_HF_CHECKPOINT,
+        "--irodori-codec-repo",
+        IRODORI_CODEC_REPO,
         "--irodori-model-precision",
         IRODORI_MODEL_PRECISION,
         "--irodori-codec-precision",
@@ -186,7 +289,87 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         QWEN3_LANGUAGE,
         "--qwen3-default-speaker",
         QWEN3_DEFAULT_SPEAKER,
+        "--voxcpm-hf-model",
+        VOXCPM_HF_MODEL,
+        "--voxcpm-cfg-value",
+        str(VOXCPM_CFG_VALUE),
+        "--voxcpm-inference-timesteps",
+        str(VOXCPM_INFERENCE_TIMESTEPS),
+        "--moss-tts-nano-hf-model",
+        MOSS_TTS_NANO_HF_MODEL,
+        "--moss-tts-nano-mode",
+        MOSS_TTS_NANO_MODE,
+        "--neutts-backbone-repo",
+        NEUTTS_BACKBONE_REPO,
+        "--neutts-codec-repo",
+        NEUTTS_CODEC_REPO,
+        "--neutts-default-voice",
+        NEUTTS_DEFAULT_VOICE,
+        "--sarashina-hf-model",
+        SARASHINA_HF_MODEL,
+        "--sarashina-prompt-wav",
+        SARASHINA_PROMPT_WAV,
+        "--sarashina-prompt-text",
+        SARASHINA_PROMPT_TEXT,
+        "--sarashina-default-voice",
+        SARASHINA_DEFAULT_VOICE,
+        "--chatterbox-language",
+        CHATTERBOX_LANGUAGE,
+        "--chatterbox-prompt-wav",
+        CHATTERBOX_PROMPT_WAV,
+        "--chatterbox-default-voice",
+        CHATTERBOX_DEFAULT_VOICE,
+        "--zonos-hf-model",
+        ZONOS_HF_MODEL,
+        "--zonos-language",
+        ZONOS_LANGUAGE,
+        "--zonos-prompt-wav",
+        ZONOS_PROMPT_WAV,
+        "--zonos-default-voice",
+        ZONOS_DEFAULT_VOICE,
+        "--outetts-model-size",
+        OUTETTS_MODEL_SIZE,
+        "--outetts-backend",
+        OUTETTS_BACKEND,
+        "--outetts-default-speaker",
+        OUTETTS_DEFAULT_SPEAKER,
+        "--outetts-prompt-wav",
+        OUTETTS_PROMPT_WAV,
+        "--outetts-prompt-text",
+        OUTETTS_PROMPT_TEXT,
+        "--outetts-default-voice",
+        OUTETTS_DEFAULT_VOICE,
+        "--dia-hf-model",
+        DIA_HF_MODEL,
+        "--dia-compute-dtype",
+        DIA_COMPUTE_DTYPE,
+        "--dia-prompt-wav",
+        DIA_PROMPT_WAV,
+        "--dia-prompt-text",
+        DIA_PROMPT_TEXT,
+        "--dia-default-voice",
+        DIA_DEFAULT_VOICE,
+        "--openvoice-language",
+        OPENVOICE_LANGUAGE,
+        "--openvoice-prompt-wav",
+        OPENVOICE_PROMPT_WAV,
+        "--openvoice-default-voice",
+        OPENVOICE_DEFAULT_VOICE,
+        "--vibevoice-hf-model",
+        VIBEVOICE_HF_MODEL,
+        "--vibevoice-default-speaker",
+        VIBEVOICE_DEFAULT_SPEAKER,
+        "--vibevoice-prompt-wav",
+        VIBEVOICE_PROMPT_WAV,
+        "--vibevoice-default-voice",
+        VIBEVOICE_DEFAULT_VOICE,
+        "--vibevoice-ddpm-steps",
+        str(VIBEVOICE_DDPM_STEPS),
+        "--vibevoice-cfg-scale",
+        str(VIBEVOICE_CFG_SCALE),
     ]
+    if SARASHINA_USE_VLLM:
+        cmd.append("--sarashina-use-vllm")
     cmd.append("--expose-public-url" if EXPOSE_PUBLIC_URL else "--no-expose-public-url")
     return cmd
 
@@ -316,6 +499,92 @@ SB Intuitions の [sbintuitions/sarashina2.2-tts](https://huggingface.co/sbintui
 
 [SWivid/F5-TTS](https://github.com/SWivid/F5-TTS) を使ったゼロショット音声クローニング TTS です。参照音声の声質を模倣して音声を生成します。パッケージ同梱のデフォルト参照音声（英語女性）を使用します。日本語モデルを使う場合は `--f5tts-ckpt-file` / `--f5tts-vocab-file` でコミュニティ提供の日本語チェックポイントを指定してください。GPU ランタイム（T4 以上）が必要です。ライセンス: コード MIT / モデル CC-BY-NC。
 
+### Chatterbox
+
+Resemble AI の [resemble-ai/chatterbox](https://github.com/resemble-ai/chatterbox) を使った多言語 TTS です。Chatterbox Multilingual モデルは日本語・英語・中国語・フランス語・ドイツ語・スペイン語・韓国語など 23 言語に対応し、ゼロショット音声クローンを備えています。デフォルト言語は `ja`（日本語）。`--chatterbox-prompt-wav` を指定すると `clone` voice が有効になり、参照音声の声色で合成されます。GPU 推奨（VRAM ~2-4GB）。ライセンス: MIT（コードと重みの両方）。
+
+`voice` パラメータには次の値を指定できます。
+
+| voice | 説明 |
+|---|---|
+| `default` | 参照音声なしの plain TTS |
+| `clone` | ゼロショット音声クローン。`--chatterbox-prompt-wav` を指定したときのみ有効 |
+
+音声クローンを使う場合は、必ず権利を持っている音声（本人の同意がある音声）でのみ行ってください。
+
+### Zonos
+
+[Zyphra/Zonos](https://github.com/Zyphra/Zonos) を使った多言語 TTS です。英語・日本語・中国語・フランス語・ドイツ語に対応し、ゼロショット音声クローニングを備えています。デフォルトモデルは `Zyphra/Zonos-v0.1-transformer`（Apache 2.0）。音素化に `espeak-ng` を利用するため、インストーラが自動で `apt-get install espeak-ng` を実行します。デフォルト voice では upstream に同梱の `assets/exampleaudio.mp3` を参照音声として使用し、`--zonos-prompt-wav` を指定すると独自参照の `clone` voice が有効になります。GPU 必須（VRAM 6GB+、T4 動作可）。Hybrid backbone は Ampere 世代以降の GPU と `mamba-ssm` 依存を要求するため、ポータビリティのためデフォルトでは Transformer backbone を使用します。ライセンス: Apache 2.0（コードと重み）。
+
+`voice` パラメータには次の値を指定できます。
+
+| voice | 説明 |
+|---|---|
+| `default` | upstream に同梱の参照音声をそのまま使用 |
+| `clone` | ゼロショット音声クローン。`--zonos-prompt-wav` を指定したときのみ有効 |
+
+音声クローンを使う場合は、必ず権利を持っている音声（本人の同意がある音声）でのみ行ってください。
+
+### OuteTTS
+
+[edwko/OuteTTS](https://github.com/edwko/OuteTTS) を使った軽量多言語 TTS です。日本語を含む多言語に対応し、モデルサイズ（`0.6B` / `1B`）と backend（`HF` = transformers / `LLAMACPP` = GGUF）を選択できます。`--outetts-prompt-wav`（必要なら `--outetts-prompt-text` も）で voice cloning を有効にできます。デフォルト voice は `--outetts-default-speaker`（例: `EN-FEMALE-1-NEUTRAL`）で内蔵 speaker プロファイルを切り替えられます。日本語を発話させる場合は、日本語の参照音声から `clone` で speaker プロファイルを作るのが推奨です。CPU / GPU の両方で動作します。
+
+**ライセンス（モデルサイズで異なります）:**
+
+| モデル | コード | モデル重み | 商用利用 |
+|---|---|---|---|
+| `OuteAI/OuteTTS-1.0-0.6B` | Apache 2.0 | Apache 2.0 | OK |
+| `OuteAI/Llama-OuteTTS-1.0-1B` | Apache 2.0 | CC-BY-NC-SA-4.0 + Llama 3.2 Community License | **不可** |
+
+このラッパーのデフォルトサイズは `0.6B`（Apache 2.0）です。`1B` に切り替えると重みが非商用ライセンスになります。
+
+`voice` パラメータには次の値を指定できます。
+
+| voice | 説明 |
+|---|---|
+| `default` | `--outetts-default-speaker` で選んだ内蔵 speaker プロファイルで合成 |
+| `clone` | 音声クローン。`--outetts-prompt-wav` を指定したときのみ有効 |
+
+音声クローンを使う場合は、必ず権利を持っている音声（本人の同意がある音声）でのみ行ってください。
+
+### Dia
+
+[nari-labs/dia](https://github.com/nari-labs/dia) を使った対話特化 TTS です。1.6B パラメータのモデルで、`[S1]` / `[S2]` 話者タグをプロンプトに含めることで、マルチスピーカー対話を 1 パスで生成します。現状は英語のみ対応。入力に話者タグが無い場合はラッパーが先頭に `[S1]` を自動挿入するので、シングルスピーカーの平文 TTS としても利用できます。デフォルトモデル: `nari-labs/Dia-1.6B-0626`。`--dia-prompt-wav` と `--dia-prompt-text` の両方を指定すると `clone` voice が有効になり、参照音声で声色を条件付けられます。GPU 推奨（VRAM ~4.4GB at float16/bfloat16、~7.9GB at float32）。ライセンス: Apache 2.0（コードと重み）。
+
+`voice` パラメータには次の値を指定できます。
+
+| voice | 説明 |
+|---|---|
+| `default` | 参照音声なしの plain TTS。`input` に `[S1]` / `[S2]` を含めるとマルチスピーカー対話になります |
+| `clone` | 音声クローン。`--dia-prompt-wav` と `--dia-prompt-text` の両方が必要 |
+
+音声クローンを使う場合は、必ず権利を持っている音声（本人の同意がある音声）でのみ行ってください。
+
+### OpenVoice-V2 (現在動作不可)
+
+[myshell-ai/OpenVoice](https://github.com/myshell-ai/OpenVoice) V2 を使う構成で、2 段階の voice cloning TTS（MeloTTS でベース合成 → ToneColorConverter で声色変換）として実装しています。コード・重みともに MIT で商用利用可。
+
+**Colab で動かない理由**: OpenVoice の `pyproject.toml` が `faster-whisper==0.9.0` をハードピンしており、その推移依存で `av>=10.dev0,<11.dev0` も固定されます。`av` の 10.x 系列は Python 3.13（現在の Colab の既定）向けに wheel が無く、Cython 3.x ではソースのビルドにも失敗します:
+
+```
+av/logging.pyx:216:22: Cannot assign type 'const char *(void *) except?
+NULL nogil' to 'const char *(*)(void *) noexcept nogil'.
+```
+
+`faster-whisper>=1.0`（`av==17.x` で py3.13 wheel あり）を先に入れても、uv が OpenVoice 側のピンを優先して 0.9.0 に巻き戻すため改善しません。回避するには `--no-deps` で入れて OpenVoice + MeloTTS の依存ツリーを手動で再構成する必要があり、その過程で本リポの MeloTTS 単体エンジンも壊している Rust ツールチェーン問題まで巻き込みます。
+
+upstream がピンを緩めた段階で再アクティベートできるよう、ラッパー側のコードはそのまま残しています。**ライセンス（仮に動いた場合）:** コード・重みとも MIT（2024-04 以降）。
+
+### VibeVoice (現在動作不可)
+
+[microsoft/VibeVoice](https://github.com/microsoft/VibeVoice) を使う構成で、1.5B パラメータの長尺・マルチスピーカー TTS（最大 4 話者・約 90 分を 1 パスで生成）として実装しています。Colab L4 GPU 上でモデルロードまでは到達しますが、upstream Microsoft リポジトリが現在 **破壊的な API 移行中** で、合成リクエストが完了しません:
+
+- 推論クラスが `VibeVoiceForConditionalGenerationInference` → `VibeVoiceForConditionalGeneration` にリネーム（ラッパーで吸収済み）
+- `model.set_ddpm_inference_steps(...)` が削除され、DDPM ステップは `model.model.noise_scheduler.set_timesteps(...)` 経由で設定する形に変更（ラッパーで吸収済み）
+- 致命的なのが reference 配布形式の変更: upstream は **`.wav` 参照音声ファイルを `demo/voices/` から取り下げ**、代わりに事前計算済みの **`.pt` (prompt cache)** を `demo/voices/streaming_model/` で配布する形になりました（例: `en-Carter_man.pt` / `jp-Spk1_woman.pt`）。推奨パスも `processor.process_input_with_cached_prompt(cached_prompt=torch.load(...))` に変わっており、本ラッパーが使っている `processor(text=..., voice_samples=[wav_path])` API では使い物になる参照音声が無くなっています。
+
+upstream の API が落ち着いた段階で再アクティベートできるよう、ラッパー側の実装はそのままツリーに残しています。**ライセンス注意（仮に動いた場合でも）:** モデルカードに **「research purpose only」** と明記されており、英語・中国語以外の言語、なりすまし、ディスインフォメーション、リアルタイム音声変換などは禁止です。動くようになっても商用 / 実運用には使わないでください。
+
 ### Fish-Speech (現在動作不可)
 
 [fishaudio/fish-speech](https://github.com/fishaudio/fish-speech) を使った高品質 TTS です。日本語は Tier 1 サポート（最高品質）で、80 言語以上に対応しています。VRAM 24GB 以上が必要で A100/L4 GPU を想定していますが、Colab 環境ではモデルロード時に OOM（メモリ不足）でランタイムがクラッシュするため、現時点では動作しません。ライセンス: Apache 2.0。
@@ -350,6 +619,13 @@ SB Intuitions の [sbintuitions/sarashina2.2-tts](https://huggingface.co/sbintui
 | Voxtral-TTS | — | CC BY-NC 4.0 | 不可 | vLLM + vllm-omni 経由。音声データセットのライセンス制約により非商用 |
 | Sarashina-TTS | — | Sarashina Model NonCommercial License | 不可 | 日本語 / 英語。ゼロショット音声クローン対応。出力には SilentCipher のウォーターマークが付与される（除去禁止） |
 | F5-TTS | MIT | CC-BY-NC | 不可（モデル） | モデル重みは Emilia データセットの制約により非商用 |
+| Chatterbox | MIT | MIT | OK | 多言語（23言語、日本語含む）。ゼロショット voice cloning |
+| Zonos | Apache 2.0 | Apache 2.0 | OK | 英 / 日 / 中 / 仏 / 独。ゼロショット voice cloning。`espeak-ng` 必須 |
+| OuteTTS (0.6B) | Apache 2.0 | Apache 2.0 | OK | 日本語含む多言語、CPU 動作可、voice cloning |
+| OuteTTS (1B)   | Apache 2.0 | CC-BY-NC-SA-4.0 + Llama 3.2 Community License | 不可 | Llama-3.2 ベース。重みは非商用 |
+| Dia | Apache 2.0 | Apache 2.0 | OK | 英語のみ。`[S1]`/`[S2]` でマルチスピーカー対話 TTS |
+| OpenVoice-V2 | MIT | MIT | OK | 多言語（日本語含む）。voice cloning。現在動作不可: `faster-whisper==0.9.0` 経由の `av==10` が Python 3.13 でビルドできない |
+| VibeVoice | MIT | MIT | 要注意（research-only） | 英 / 中のみ。現在は動作不可: upstream API 移行中（.wav speaker ファイル → .pt prompt cache へ移行） |
 | Fish-Speech | Apache 2.0 | Apache 2.0 | OK | A100/L4 GPU 必須（VRAM 24GB+） |
 
 **Piper について**: `piper-tts` パッケージは GPL-3.0 です。また、デフォルトの `en_US-lessac-medium` 音声は Lessac Technologies 提供の Blizzard 2013 データセットで学習されており、このデータセットのライセンスは商用利用を禁止しています。商用利用が必要な場合は、許容的なライセンスで学習された別の voice モデルを選択してください。
@@ -394,6 +670,18 @@ SB Intuitions の [sbintuitions/sarashina2.2-tts](https://huggingface.co/sbintui
   https://github.com/sbintuitions/sarashina2.2-tts
 - F5-TTS
   https://github.com/SWivid/F5-TTS
+- Chatterbox
+  https://github.com/resemble-ai/chatterbox
+- Zonos
+  https://github.com/Zyphra/Zonos
+- OuteTTS
+  https://github.com/edwko/OuteTTS
+- Dia
+  https://github.com/nari-labs/dia
+- OpenVoice
+  https://github.com/myshell-ai/OpenVoice
+- VibeVoice
+  https://github.com/microsoft/VibeVoice
 - Fish Speech
   https://github.com/fishaudio/fish-speech
 - CosyVoice
