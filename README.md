@@ -24,7 +24,7 @@ Supported engines:
 | Zonos | Works (GPU required, ~6GB VRAM) | Japanese / English / Chinese / French / German |
 | OuteTTS | Works (CPU OK) | Japanese / English / Chinese and many languages |
 | Dia | Works (GPU recommended) | English (multi-speaker dialogue) |
-| OpenVoice-V2 | At your own risk (MeloTTS deps) | Japanese / English / Spanish / French / Chinese / Korean |
+| OpenVoice-V2 | Not working (Python 3.13 / `av==10` build failure) | Japanese / English / Spanish / French / Chinese / Korean |
 | VibeVoice | Not working (upstream API churn) | English / Chinese (long-form, up to 4 speakers) |
 | Fish-Speech | Not working | Japanese / English / Chinese and 80+ languages |
 | MeloTTS | Not working | - |
@@ -624,7 +624,7 @@ The license for each engine is as follows. When using them, always check each pr
 | OuteTTS (0.6B) | Apache 2.0 | Apache 2.0 | OK | Multilingual incl JP. CPU OK. Voice cloning |
 | OuteTTS (1B)   | Apache 2.0 | CC-BY-NC-SA-4.0 + Llama 3.2 Community License | Not allowed | Llama-3.2-based; non-commercial weights |
 | Dia | Apache 2.0 | Apache 2.0 | OK | EN only. Multi-speaker `[S1]`/`[S2]` dialogue TTS |
-| OpenVoice-V2 | MIT | MIT | OK | Multilingual (incl JP). Voice cloning. Depends on MeloTTS (may not install) |
+| OpenVoice-V2 | MIT | MIT | OK | Multilingual (incl JP). Voice cloning. Currently not working: `av==10` (via `faster-whisper==0.9.0` pin) won't build on Python 3.13 |
 | VibeVoice | MIT | MIT | Caution (research-only) | EN/ZH only per model card. Currently not working: upstream is mid-API migration (.wav speakers replaced with .pt caches) |
 | Fish-Speech | Apache 2.0 | Apache 2.0 | OK | Requires A100/L4 GPU (VRAM 24GB+) |
 

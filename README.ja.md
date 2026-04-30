@@ -24,7 +24,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | Zonos | 動作OK (GPU必須・VRAM ~6GB) | 日本語 / 英語 / 中国語 / フランス語 / ドイツ語 |
 | OuteTTS | 動作OK (CPU可) | 日本語 / 英語 / 中国語 他 多言語 |
 | Dia | 動作OK (GPU推奨) | 英語（マルチスピーカー対話） |
-| OpenVoice-V2 | 動作要注意（MeloTTS 依存） | 日本語 / 英語 / 西 / 仏 / 中 / 韓 |
+| OpenVoice-V2 | 動作不可（Python 3.13 で `av==10` がビルドできない） | 日本語 / 英語 / 西 / 仏 / 中 / 韓 |
 | VibeVoice | 動作不可（upstream API 移行中） | 英語 / 中国語（長尺・最大 4 話者） |
 | Fish-Speech | 動作不可 | 日本語 / 英語 / 中国語 他 80言語以上 |
 | MeloTTS | 動作不可 | - |
@@ -560,20 +560,20 @@ Resemble AI の [resemble-ai/chatterbox](https://github.com/resemble-ai/chatterb
 
 音声クローンを使う場合は、必ず権利を持っている音声（本人の同意がある音声）でのみ行ってください。
 
-### OpenVoice-V2
+### OpenVoice-V2 (現在動作不可)
 
-[myshell-ai/OpenVoice](https://github.com/myshell-ai/OpenVoice) V2 を使った 2 段階構成の voice cloning TTS です。まず MeloTTS で目的言語（EN / ES / FR / ZH / JP / KR）のベース音声を生成し、その後 ToneColorConverter（V2 checkpoints）で参照音声の声色に変換します。デフォルト言語は `JP`。`--openvoice-prompt-wav` を指定するまでは upstream に同梱の `resources/example_reference.mp3` を参照音声として使用し、指定すると `clone` voice が独自参照に切り替わります。ライセンス: コードと重みの両方が MIT（2024-04 以降）— 商用利用 OK。
+[myshell-ai/OpenVoice](https://github.com/myshell-ai/OpenVoice) V2 を使う構成で、2 段階の voice cloning TTS（MeloTTS でベース合成 → ToneColorConverter で声色変換）として実装しています。コード・重みともに MIT で商用利用可。
 
-**注意:** OpenVoice V2 はベース TTS に MeloTTS を使用するため、現状本リポの MeloTTS 単体エンジンを動作不可にしている依存解決問題（`tokenizers` のビルドに Rust ツールチェーンが必要）と同じ理由でインストールに失敗する可能性があります。MeloTTS のインストールが成功するランタイムでは動作する想定です。
+**Colab で動かない理由**: OpenVoice の `pyproject.toml` が `faster-whisper==0.9.0` をハードピンしており、その推移依存で `av>=10.dev0,<11.dev0` も固定されます。`av` の 10.x 系列は Python 3.13（現在の Colab の既定）向けに wheel が無く、Cython 3.x ではソースのビルドにも失敗します:
 
-`voice` パラメータには次の値を指定できます。
+```
+av/logging.pyx:216:22: Cannot assign type 'const char *(void *) except?
+NULL nogil' to 'const char *(*)(void *) noexcept nogil'.
+```
 
-| voice | 説明 |
-|---|---|
-| `default` | upstream に同梱の `resources/example_reference.mp3` を参照音声として使用 |
-| `clone` | `--openvoice-prompt-wav` を参照音声として使用（指定時のみ有効） |
+`faster-whisper>=1.0`（`av==17.x` で py3.13 wheel あり）を先に入れても、uv が OpenVoice 側のピンを優先して 0.9.0 に巻き戻すため改善しません。回避するには `--no-deps` で入れて OpenVoice + MeloTTS の依存ツリーを手動で再構成する必要があり、その過程で本リポの MeloTTS 単体エンジンも壊している Rust ツールチェーン問題まで巻き込みます。
 
-音声クローンを使う場合は、必ず権利を持っている音声（本人の同意がある音声）でのみ行ってください。
+upstream がピンを緩めた段階で再アクティベートできるよう、ラッパー側のコードはそのまま残しています。**ライセンス（仮に動いた場合）:** コード・重みとも MIT（2024-04 以降）。
 
 ### VibeVoice (現在動作不可)
 
@@ -624,7 +624,7 @@ upstream の API が落ち着いた段階で再アクティベートできるよ
 | OuteTTS (0.6B) | Apache 2.0 | Apache 2.0 | OK | 日本語含む多言語、CPU 動作可、voice cloning |
 | OuteTTS (1B)   | Apache 2.0 | CC-BY-NC-SA-4.0 + Llama 3.2 Community License | 不可 | Llama-3.2 ベース。重みは非商用 |
 | Dia | Apache 2.0 | Apache 2.0 | OK | 英語のみ。`[S1]`/`[S2]` でマルチスピーカー対話 TTS |
-| OpenVoice-V2 | MIT | MIT | OK | 多言語（日本語含む）。voice cloning。MeloTTS 依存（環境次第で導入不可） |
+| OpenVoice-V2 | MIT | MIT | OK | 多言語（日本語含む）。voice cloning。現在動作不可: `faster-whisper==0.9.0` 経由の `av==10` が Python 3.13 でビルドできない |
 | VibeVoice | MIT | MIT | 要注意（research-only） | 英 / 中のみ。現在は動作不可: upstream API 移行中（.wav speaker ファイル → .pt prompt cache へ移行） |
 | Fish-Speech | Apache 2.0 | Apache 2.0 | OK | A100/L4 GPU 必須（VRAM 24GB+） |
 
