@@ -34,15 +34,27 @@ def install(settings: Settings) -> dict:
     python_bin = _ensure_py310_venv(engine_dir)
 
     # Upstream pins are heavy (torch==2.3.1, deepspeed==0.15.1, onnxruntime-gpu==1.18.0,
-    # openai-whisper==20231117, etc.). The requirements.txt also declares an extra
-    # `aiinfra` PyPI index for onnxruntime-cuda-12 wheels; uv defaults to first-index
-    # only, which then fails with "no version of protobuf==4.25" because that exact
-    # version lives on the primary PyPI. Allow uv to pull from any declared index.
+    # openai-whisper==20231117, etc.). Two installer quirks:
+    #
+    # 1. The requirements.txt declares an extra `aiinfra` PyPI index for
+    #    onnxruntime-cuda-12 wheels; uv defaults to first-index-only, which fails
+    #    with "no version of protobuf==4.25" because that exact version only
+    #    lives on the primary PyPI. `--index-strategy unsafe-best-match` lets uv
+    #    pull from any declared index.
+    #
+    # 2. `openai-whisper==20231117` has no pyproject.toml and its legacy setup.py
+    #    imports `pkg_resources` at build time. uv's isolated build env uses a
+    #    setuptools that no longer auto-imports pkg_resources, producing
+    #    `ModuleNotFoundError: No module named 'pkg_resources'`. Pre-install
+    #    setuptools into the venv and disable build isolation just for whisper
+    #    so it picks the venv's setuptools up.
+    uv_pip_install(python_bin, ["setuptools", "wheel"])
     run(
         [
             "uv", "pip", "install",
             "--python", str(python_bin),
             "--index-strategy", "unsafe-best-match",
+            "--no-build-isolation-package", "openai-whisper",
             "-r", str(repo_dir / "requirements.txt"),
         ]
     )
