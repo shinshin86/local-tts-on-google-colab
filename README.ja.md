@@ -26,7 +26,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | Dia | 動作OK (GPU推奨) | 英語（マルチスピーカー対話） |
 | Kyutai-TTS | 動作OK (GPU推奨) | 英語 / フランス語 |
 | Pocket-TTS | 動作OK (CPU可・~6x realtime) | 英語 / 仏 / 独 / 伊 / 葡 / 西 |
-| Orpheus-TTS | 動作OK (GPU 必須・L4/A100 推奨) | 英語（Llama-3.2-3B ベース、vLLM） |
+| Orpheus-TTS | 動作不可（HF gated 重み・Llama 3.2 ライセンス同意 + `HF_TOKEN` 必須） | 英語（Llama-3.2-3B ベース、vLLM） |
 | CosyVoice2 | 動作OK (GPU推奨・Python 3.10 venv) | 日本語 / 英語 / 中 / 韓 / 独 他 9言語 |
 | Spark-TTS | 動作OK (GPU推奨) | 英語 / 中国語（重みは非商用） |
 | OpenVoice-V2 | 動作不可（Python 3.13 で `av==10` がビルドできない） | 日本語 / 英語 / 西 / 仏 / 中 / 韓 |
@@ -225,9 +225,13 @@ SPARK_PROMPT_WAV = ""  #@param {type:"string"}
 SPARK_PROMPT_TEXT = ""  #@param {type:"string"}
 
 #@markdown ---
-#@markdown Orpheus-TTS (GPU required, English-only, vLLM backend, Llama-3.2-3B base)
+#@markdown Orpheus-TTS (currently not working — HF-gated weights)
 #@markdown - Code: Apache 2.0. Weights: Apache 2.0 + Llama 3.2 Community License (base model).
 #@markdown - Pinned to vllm==0.7.3 due to a known regression in newer vLLM 0.7.x.
+#@markdown - **Before running**: request access to canopylabs/orpheus-3b-0.1-ft AND
+#@markdown   meta-llama/Llama-3.2-3B-Instruct on HF, accept the Llama 3.2 license,
+#@markdown   then set `HF_TOKEN` (Colab Secrets → New secret with notebook access).
+#@markdown   See the README "Orpheus-TTS" section for the full setup.
 ORPHEUS_HF_MODEL = "canopylabs/orpheus-tts-0.1-finetune-prod"  #@param {type:"string"}
 ORPHEUS_DEFAULT_VOICE = "tara"  #@param ["tara", "leah", "jess", "leo", "dan", "mia", "zac", "zoe"]
 ORPHEUS_MAX_MODEL_LEN = 2048  #@param {type:"integer"}
@@ -675,11 +679,28 @@ voice cloning では、必ず権利を持つ参照音声（話者本人の同意
 
 **ライセンス注意:** コードは Apache 2.0 ですが、**`Spark-TTS-0.5B` の重みは CC BY-NC-SA 4.0（非商用のみ）** に変更されています（学習データのライセンス制約のため、当初 Apache 2.0 だったところを上流で再ライセンス）。Sarashina-TTS / OuteTTS 1B / Voxtral-TTS と同じ扱いになります — 研究・個人利用は OK、商用利用は不可。上流モデルカードでも、合意のない voice cloning・なりすまし・詐欺・違法利用は禁止されています。
 
-### Orpheus-TTS
+### Orpheus-TTS（現在動作不可 — HF gated 重み）
 
-[canopyai/Orpheus-TTS](https://github.com/canopyai/Orpheus-TTS) を使った Canopy Labs の英語向け高品質 TTS です。`meta-llama/Llama-3.2-3B-Instruct` をベースとした LLM-TTS で、`orpheus-speech` パッケージ経由で vLLM 上にホスティングされます。デフォルトチェックポイント `canopylabs/orpheus-tts-0.1-finetune-prod` には英語 voice が 8 種類同梱されています: `tara`、`leah`、`jess`、`leo`、`dan`、`mia`、`zac`、`zoe`（upstream の主観評価で会話自然さ順）。出力は 24 kHz モノラル WAV。日本語は **非対応**。ラッパーは `vllm==0.7.3` をピンしています（新しい 0.7.x で Orpheus のストリーミング生成を壊す regression があったため）。GPU 必須、L4 / A100 推奨（3B 重み + vLLM KV キャッシュで VRAM ~10–12GB）。Python 3.10+。
+[canopyai/Orpheus-TTS](https://github.com/canopyai/Orpheus-TTS) を使う構成で、`meta-llama/Llama-3.2-3B-Instruct` をベースに `orpheus-speech` 経由で vLLM 上にホスティングする英語 LLM-TTS として実装しています。デフォルトチェックポイント `canopylabs/orpheus-tts-0.1-finetune-prod` には英語 voice が 8 種類同梱されています: `tara`、`leah`、`jess`、`leo`、`dan`、`mia`、`zac`、`zoe`。出力は 24 kHz モノラル WAV。日本語は **非対応**。
 
-**ライセンス:** コードは Apache 2.0。重みリポジトリも Apache 2.0 表記ですが、`meta-llama/Llama-3.2-3B-Instruct` から fine-tune されているため、**Llama 3.2 Community License も実質的に適用されます**（OuteTTS 1B と同じ状況）。商用利用前に両方の規約を必ず確認してください。
+**Colab で素のままでは動かない理由:** 重みの実体である `canopylabs/orpheus-3b-0.1-ft` が **Hugging Face の gated リポジトリ**になっています（Meta の `Llama-3.2-3B-Instruct` をベースにした fine-tune モデルのため、Llama 3.2 Community License 同意が必須）。トークン未設定だと vLLM がモデルロード時に下記で失敗します:
+
+```
+OSError: You are trying to access a gated repo.
+Access to model canopylabs/orpheus-3b-0.1-ft is restricted. You must have access to it and be authenticated to access it.
+```
+
+**動かすにはセル実行前に以下をすべて済ませる必要があります:**
+
+1. Hugging Face にログインして、**両方**のリポジトリでアクセス申請を行う（フォーム送信後ほぼ即承認）:
+   - <https://huggingface.co/canopylabs/orpheus-3b-0.1-ft>
+   - <https://huggingface.co/meta-llama/Llama-3.2-3B-Instruct>
+2. Meta のリポジトリで **Llama 3.2 Community License に同意**する。Orpheus の重みリポは Apache 2.0 表記ですが、ベースが Llama-3.2 のため、Meta の Acceptable Use Policy など Llama 側のライセンスも実質的に適用されます。
+3. <https://huggingface.co/settings/tokens> でアクセストークンを発行し、Colab ランタイムの環境変数 `HF_TOKEN` として渡す。最も簡単なのは *Tools → Secrets → New secret* で key=`HF_TOKEN` の値にトークンを貼り付け、「Notebook access」を有効化する手順。ラッパーは `os.environ` 経由で取得し、エンジンサブプロセスに引き継ぎます。
+
+ラッパーは `vllm==0.7.3` をピン（新しい 0.7.x で Orpheus のストリーミング生成を壊す regression あり）、Python 3.12 の venv を強制します（`xgrammar==0.1.11` は cp313 wheel 未提供のため）。GPU 必須、L4 / A100 推奨（3B 重み + vLLM KV キャッシュで VRAM ~10–12GB）。
+
+**ライセンス（アクセス取得後）:** コードは Apache 2.0。重みリポジトリも Apache 2.0 表記ですが、`meta-llama/Llama-3.2-3B-Instruct` から fine-tune されているため、**Llama 3.2 Community License も実質的に適用されます**（OuteTTS 1B と同じ状況）。商用利用前に両方の規約を必ず確認してください。
 
 ### OpenVoice-V2 (現在動作不可)
 
@@ -759,7 +780,7 @@ voice cloning では、必ず権利を持つ参照音声（話者本人の同意
 | Kyutai-TTS | MIT (Python) / Apache 2.0 (Rust) | CC-BY-4.0 | OK（要 attribution） | 英語 / 仏。DSM ベースのストリーミング TTS。GPU 推奨 |
 | Pocket-TTS (model) | MIT | CC-BY-4.0 | OK（要 attribution） | 100M パラメータ、CPU のみ。英 / 仏 / 独 / 伊 / 葡 / 西 |
 | Pocket-TTS (voices) | — | voice ごとに異なる | 各 voice で要確認 | voice ライセンスは [kyutai/tts-voices](https://huggingface.co/kyutai/tts-voices) を参照。上流規約により非合意のなりすまし禁止 |
-| Orpheus-TTS | Apache 2.0 | Apache 2.0 + Llama 3.2 Community License | 要注意 | ベースが Llama-3.2-3B-Instruct のため Llama Community License も実質適用。英語のみ |
+| Orpheus-TTS | Apache 2.0 | Apache 2.0 + Llama 3.2 Community License | 要注意 | ベースが Llama-3.2-3B-Instruct のため Llama Community License も実質適用。英語のみ。**現在動作不可: 重みが HF gated で Llama 3.2 ライセンス同意 + `HF_TOKEN` が必須** |
 | CosyVoice2 | Apache 2.0 | Apache 2.0 | OK | 多言語（日本語含む）。ゼロショット voice cloning。Python 3.10 venv 必須 |
 | Spark-TTS | Apache 2.0 | CC BY-NC-SA 4.0 | 不可 | 英 / 中のみ。重みは学習データ制約で Apache 2.0 から再ライセンス |
 | OpenVoice-V2 | MIT | MIT | OK | 多言語（日本語含む）。voice cloning。現在動作不可: `faster-whisper==0.9.0` 経由の `av==10` が Python 3.13 でビルドできない |

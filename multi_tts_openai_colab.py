@@ -169,9 +169,13 @@ SPARK_PROMPT_WAV = ""  #@param {type:"string"}
 SPARK_PROMPT_TEXT = ""  #@param {type:"string"}
 
 #@markdown ---
-#@markdown Orpheus-TTS (GPU required, English-only, vLLM backend, Llama-3.2-3B base)
+#@markdown Orpheus-TTS (currently not working — HF-gated weights)
 #@markdown - Code: Apache 2.0. Weights: Apache 2.0 + Llama 3.2 Community License (base model).
 #@markdown - Pinned to vllm==0.7.3 due to a known regression in newer vLLM 0.7.x.
+#@markdown - **Before running**: request access to canopylabs/orpheus-3b-0.1-ft AND
+#@markdown   meta-llama/Llama-3.2-3B-Instruct on HF, accept the Llama 3.2 license,
+#@markdown   then set `HF_TOKEN` (Colab Secrets → New secret with notebook access).
+#@markdown   See the README "Orpheus-TTS" section for the full setup.
 ORPHEUS_HF_MODEL = "canopylabs/orpheus-tts-0.1-finetune-prod"  #@param {type:"string"}
 ORPHEUS_DEFAULT_VOICE = "tara"  #@param ["tara", "leah", "jess", "leo", "dan", "mia", "zac", "zoe"]
 ORPHEUS_MAX_MODEL_LEN = 2048  #@param {type:"integer"}

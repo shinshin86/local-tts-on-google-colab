@@ -18,7 +18,7 @@ Supported engines:
 | NeuTTS | Works (CPU OK, voice cloning) | English / Spanish / German / French |
 | TinyTTS | Works | English |
 | Voxtral-TTS | Works (GPU required, VRAM 16GB+) | English / French / Spanish and 9 languages |
-| Orpheus-TTS | Works (GPU required, L4/A100 recommended) | English (Llama-3.2-3B base, vLLM) |
+| Orpheus-TTS | Not working (HF-gated weights, requires Llama 3.2 license acceptance + `HF_TOKEN`) | English (Llama-3.2-3B base, vLLM) |
 | CosyVoice2 | Works (GPU recommended, Python 3.10 venv) | Japanese / English / Chinese / Korean / German and 9 languages |
 | Spark-TTS | Works (GPU recommended) | English / Chinese (non-commercial weights) |
 | Sarashina-TTS | Works (GPU required, ~6GB VRAM) | Japanese / English |
@@ -225,9 +225,13 @@ SPARK_PROMPT_WAV = ""  #@param {type:"string"}
 SPARK_PROMPT_TEXT = ""  #@param {type:"string"}
 
 #@markdown ---
-#@markdown Orpheus-TTS (GPU required, English-only, vLLM backend, Llama-3.2-3B base)
+#@markdown Orpheus-TTS (currently not working — HF-gated weights)
 #@markdown - Code: Apache 2.0. Weights: Apache 2.0 + Llama 3.2 Community License (base model).
 #@markdown - Pinned to vllm==0.7.3 due to a known regression in newer vLLM 0.7.x.
+#@markdown - **Before running**: request access to canopylabs/orpheus-3b-0.1-ft AND
+#@markdown   meta-llama/Llama-3.2-3B-Instruct on HF, accept the Llama 3.2 license,
+#@markdown   then set `HF_TOKEN` (Colab Secrets → New secret with notebook access).
+#@markdown   See the README "Orpheus-TTS" section for the full setup.
 ORPHEUS_HF_MODEL = "canopylabs/orpheus-tts-0.1-finetune-prod"  #@param {type:"string"}
 ORPHEUS_DEFAULT_VOICE = "tara"  #@param ["tara", "leah", "jess", "leo", "dan", "mia", "zac", "zoe"]
 ORPHEUS_MAX_MODEL_LEN = 2048  #@param {type:"integer"}
@@ -675,11 +679,28 @@ For voice cloning, only use reference audio you have rights to (consent of the s
 
 **License caveat:** code is Apache 2.0, but **the `Spark-TTS-0.5B` weights are CC BY-NC-SA 4.0 (non-commercial only)** because of training-data license constraints — the weights were previously Apache 2.0 and were re-licensed by upstream. Use the same way you would treat Sarashina-TTS / OuteTTS 1B / Voxtral-TTS in this repository: research and personal use are fine, commercial use is not allowed. The upstream model card also warns against unauthorized voice cloning, impersonation, fraud, and illegal use.
 
-### Orpheus-TTS
+### Orpheus-TTS (currently not working — HF-gated weights)
 
-A high-quality English TTS using [canopyai/Orpheus-TTS](https://github.com/canopyai/Orpheus-TTS) by Canopy Labs. Built on `meta-llama/Llama-3.2-3B-Instruct` and served via vLLM through the `orpheus-speech` package. The default checkpoint `canopylabs/orpheus-tts-0.1-finetune-prod` ships with 8 English voices: `tara`, `leah`, `jess`, `leo`, `dan`, `mia`, `zac`, `zoe` (in subjective order of conversational realism per upstream). Output is 24 kHz mono WAV. Japanese is **not** supported. The wrapper pins `vllm==0.7.3` because newer 0.7.x releases shipped a regression that breaks Orpheus' streaming generator. A GPU runtime is required; L4 / A100 is recommended (VRAM ~10–12GB for the 3B weights plus vLLM KV cache). Python 3.10+.
+Intended to use [canopyai/Orpheus-TTS](https://github.com/canopyai/Orpheus-TTS) by Canopy Labs — an English LLM-TTS built on `meta-llama/Llama-3.2-3B-Instruct` and served via vLLM through the `orpheus-speech` package. The default checkpoint `canopylabs/orpheus-tts-0.1-finetune-prod` ships with 8 English voices: `tara`, `leah`, `jess`, `leo`, `dan`, `mia`, `zac`, `zoe`. Output is 24 kHz mono WAV. Japanese is **not** supported.
 
-**License:** code is Apache 2.0. The weights repo is also tagged Apache 2.0, **but** it is fine-tuned from `meta-llama/Llama-3.2-3B-Instruct`, so the **Llama 3.2 Community License** also applies in practice (same situation as OuteTTS 1B). Read both licenses before commercial use.
+**Why it does not work out-of-the-box on Colab:** the underlying weights repo `canopylabs/orpheus-3b-0.1-ft` is a **gated Hugging Face repository**, because the model is fine-tuned from Meta's `Llama-3.2-3B-Instruct` (Llama 3.2 Community License). With no token configured, vLLM fails at model load with:
+
+```
+OSError: You are trying to access a gated repo.
+Access to model canopylabs/orpheus-3b-0.1-ft is restricted. You must have access to it and be authenticated to access it.
+```
+
+**To make it work, you must do all of the following before running the cell:**
+
+1. Sign in to Hugging Face and request access to **both** repos. Acceptance is usually instant once you fill in the form:
+   - <https://huggingface.co/canopylabs/orpheus-3b-0.1-ft>
+   - <https://huggingface.co/meta-llama/Llama-3.2-3B-Instruct>
+2. Read and **agree to the Llama 3.2 Community License** on the Meta repo. The license restricts use cases (e.g. no use against Meta's Acceptable Use Policy) and applies regardless of the Apache-2.0 tag on the Orpheus repo itself.
+3. Create a Hugging Face access token at <https://huggingface.co/settings/tokens> and expose it as `HF_TOKEN` in the Colab runtime — the simplest path is *Tools → Secrets → New secret*, key `HF_TOKEN`, value your token, then enable “Notebook access”. The wrapper picks it up via `os.environ` and forwards it to the engine subprocess.
+
+The wrapper pins `vllm==0.7.3` (newer 0.7.x has a regression that breaks Orpheus' streaming generator) and creates a Python 3.12 venv (`xgrammar==0.1.11` has no cp313 wheel). A GPU is required — L4 / A100 recommended (VRAM ~10–12GB for the 3B weights plus vLLM KV cache).
+
+**License (when access is granted):** code is Apache 2.0. The weights repo is tagged Apache 2.0, but in practice the **Llama 3.2 Community License** also applies because the model is fine-tuned from `Llama-3.2-3B-Instruct` (same situation as OuteTTS 1B). Always read both licenses before any commercial use.
 
 ### OpenVoice-V2 (currently not working)
 
@@ -749,7 +770,7 @@ The license for each engine is as follows. When using them, always check each pr
 | NeuTTS | Apache 2.0 | Apache 2.0 (Air) / NeuTTS Open License 1.0 (Nano) | OK (Air) / Check terms (Nano) | Voice cloning. EN / ES / DE / FR |
 | TinyTTS | Apache 2.0 | Apache 2.0 | OK | |
 | Voxtral-TTS | — | CC BY-NC 4.0 | Not allowed | Via vLLM + vllm-omni. Non-commercial due to voice dataset license constraints |
-| Orpheus-TTS | Apache 2.0 | Apache 2.0 + Llama 3.2 Community License | Caution | Llama-3.2-3B-Instruct base; Llama Community License applies in practice. EN only |
+| Orpheus-TTS | Apache 2.0 | Apache 2.0 + Llama 3.2 Community License | Caution | Llama-3.2-3B-Instruct base; Llama Community License applies in practice. EN only. **Currently not working: weights are HF-gated and require Llama 3.2 license acceptance + `HF_TOKEN`** |
 | CosyVoice2 | Apache 2.0 | Apache 2.0 | OK | Multilingual incl JP. Zero-shot voice cloning. Requires Python 3.10 venv |
 | Spark-TTS | Apache 2.0 | CC BY-NC-SA 4.0 | Not allowed | EN / ZH only. Weights re-licensed from Apache 2.0 due to training-data constraints |
 | Sarashina-TTS | — | Sarashina Model NonCommercial License | Not allowed | Japanese / English. Zero-shot voice cloning. Output contains a SilentCipher watermark (do not remove) |
