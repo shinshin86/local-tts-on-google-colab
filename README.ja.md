@@ -26,6 +26,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | Dia | 動作OK (GPU推奨) | 英語（マルチスピーカー対話） |
 | Kyutai-TTS | 動作OK (GPU推奨) | 英語 / フランス語 |
 | Pocket-TTS | 動作OK (CPU可・~6x realtime) | 英語 / 仏 / 独 / 伊 / 葡 / 西 |
+| Orpheus-TTS | 動作OK (GPU 必須・L4/A100 推奨) | 英語（Llama-3.2-3B ベース、vLLM） |
 | OpenVoice-V2 | 動作不可（Python 3.13 で `av==10` がビルドできない） | 日本語 / 英語 / 西 / 仏 / 中 / 韓 |
 | VibeVoice | 動作不可（upstream API 移行中） | 英語 / 中国語（長尺・最大 4 話者） |
 | Fish-Speech | 動作不可 | 日本語 / 英語 / 中国語 他 80言語以上 |
@@ -65,7 +66,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Chatterbox", "Dia", "F5-TTS", "Fish-Speech", "Irodori-TTS", "Kokoro", "Kyutai-TTS", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "OpenVoice-V2", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Style-Bert-VITS2", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
+ENGINE = "Kokoro"  #@param ["Chatterbox", "Dia", "F5-TTS", "Fish-Speech", "Irodori-TTS", "Kokoro", "Kyutai-TTS", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Style-Bert-VITS2", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -202,6 +203,14 @@ DIA_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
 OPENVOICE_LANGUAGE = "JP"  #@param ["EN", "ES", "FR", "ZH", "JP", "KR"]
 OPENVOICE_PROMPT_WAV = ""  #@param {type:"string"}
 OPENVOICE_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+
+#@markdown ---
+#@markdown Orpheus-TTS (GPU required, English-only, vLLM backend, Llama-3.2-3B base)
+#@markdown - Code: Apache 2.0. Weights: Apache 2.0 + Llama 3.2 Community License (base model).
+#@markdown - Pinned to vllm==0.7.3 due to a known regression in newer vLLM 0.7.x.
+ORPHEUS_HF_MODEL = "canopylabs/orpheus-tts-0.1-finetune-prod"  #@param {type:"string"}
+ORPHEUS_DEFAULT_VOICE = "tara"  #@param ["tara", "leah", "jess", "leo", "dan", "mia", "zac", "zoe"]
+ORPHEUS_MAX_MODEL_LEN = 2048  #@param {type:"integer"}
 
 #@markdown ---
 #@markdown VibeVoice (GPU required, English/Chinese, long-form multi-speaker)
@@ -390,6 +399,12 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         OPENVOICE_PROMPT_WAV,
         "--openvoice-default-voice",
         OPENVOICE_DEFAULT_VOICE,
+        "--orpheus-hf-model",
+        ORPHEUS_HF_MODEL,
+        "--orpheus-default-voice",
+        ORPHEUS_DEFAULT_VOICE,
+        "--orpheus-max-model-len",
+        str(ORPHEUS_MAX_MODEL_LEN),
         "--vibevoice-hf-model",
         VIBEVOICE_HF_MODEL,
         "--vibevoice-default-speaker",
@@ -603,6 +618,12 @@ Resemble AI の [resemble-ai/chatterbox](https://github.com/resemble-ai/chatterb
 
 [kyutai-labs/pocket-tts](https://github.com/kyutai-labs/pocket-tts) を使った Kyutai Labs の超軽量 CPU TTS です。100M パラメータで、MacBook Air M4 の CPU 2 コアだけで ~6x realtime で動作します。**GPU 不要**。デフォルトの Hugging Face モデルは `kyutai/pocket-tts`、voice は `kyutai/tts-voices` から取得。言語別モデルが用意されており（`english` / `english_2026-01` / `english_2026-04` / `french_24l` / `german_24l` / `italian` / `portuguese` / `spanish_24l`）、`--pocket-language` で選択します。`default` voice は `POCKET_DEFAULT_SPEAKER`（デフォルト: `alba`）の内蔵プリセットを使用、`--pocket-prompt-wav` を指定すると独自音声からの `clone` voice が有効になります。21 種類の内蔵プリセット名（`alba`、`anna`、`charles` ...）を `voice` パラメータに直接渡すこともできます。ライセンス: コードは MIT、モデル重みは CC-BY-4.0、**voice ごとに個別ライセンス**（[kyutai/tts-voices](https://huggingface.co/kyutai/tts-voices) を参照）。**Prohibited use:** 上流規約により、合意のない voice impersonation や偽情報の生成は禁止されています。
 
+### Orpheus-TTS
+
+[canopyai/Orpheus-TTS](https://github.com/canopyai/Orpheus-TTS) を使った Canopy Labs の英語向け高品質 TTS です。`meta-llama/Llama-3.2-3B-Instruct` をベースとした LLM-TTS で、`orpheus-speech` パッケージ経由で vLLM 上にホスティングされます。デフォルトチェックポイント `canopylabs/orpheus-tts-0.1-finetune-prod` には英語 voice が 8 種類同梱されています: `tara`、`leah`、`jess`、`leo`、`dan`、`mia`、`zac`、`zoe`（upstream の主観評価で会話自然さ順）。出力は 24 kHz モノラル WAV。日本語は **非対応**。ラッパーは `vllm==0.7.3` をピンしています（新しい 0.7.x で Orpheus のストリーミング生成を壊す regression があったため）。GPU 必須、L4 / A100 推奨（3B 重み + vLLM KV キャッシュで VRAM ~10–12GB）。Python 3.10+。
+
+**ライセンス:** コードは Apache 2.0。重みリポジトリも Apache 2.0 表記ですが、`meta-llama/Llama-3.2-3B-Instruct` から fine-tune されているため、**Llama 3.2 Community License も実質的に適用されます**（OuteTTS 1B と同じ状況）。商用利用前に両方の規約を必ず確認してください。
+
 ### OpenVoice-V2 (現在動作不可)
 
 [myshell-ai/OpenVoice](https://github.com/myshell-ai/OpenVoice) V2 を使う構成で、2 段階の voice cloning TTS（MeloTTS でベース合成 → ToneColorConverter で声色変換）として実装しています。コード・重みともに MIT で商用利用可。
@@ -670,6 +691,7 @@ upstream の API が落ち着いた段階で再アクティベートできるよ
 | Kyutai-TTS | MIT (Python) / Apache 2.0 (Rust) | CC-BY-4.0 | OK（要 attribution） | 英語 / 仏。DSM ベースのストリーミング TTS。GPU 推奨 |
 | Pocket-TTS (model) | MIT | CC-BY-4.0 | OK（要 attribution） | 100M パラメータ、CPU のみ。英 / 仏 / 独 / 伊 / 葡 / 西 |
 | Pocket-TTS (voices) | — | voice ごとに異なる | 各 voice で要確認 | voice ライセンスは [kyutai/tts-voices](https://huggingface.co/kyutai/tts-voices) を参照。上流規約により非合意のなりすまし禁止 |
+| Orpheus-TTS | Apache 2.0 | Apache 2.0 + Llama 3.2 Community License | 要注意 | ベースが Llama-3.2-3B-Instruct のため Llama Community License も実質適用。英語のみ |
 | OpenVoice-V2 | MIT | MIT | OK | 多言語（日本語含む）。voice cloning。現在動作不可: `faster-whisper==0.9.0` 経由の `av==10` が Python 3.13 でビルドできない |
 | VibeVoice | MIT | MIT | 要注意（research-only） | 英 / 中のみ。現在は動作不可: upstream API 移行中（.wav speaker ファイル → .pt prompt cache へ移行） |
 | Fish-Speech | Apache 2.0 | Apache 2.0 | OK | A100/L4 GPU 必須（VRAM 24GB+） |
@@ -728,6 +750,8 @@ upstream の API が落ち着いた段階で再アクティベートできるよ
   https://github.com/kyutai-labs/delayed-streams-modeling
 - Pocket-TTS
   https://github.com/kyutai-labs/pocket-tts
+- Orpheus-TTS
+  https://github.com/canopyai/Orpheus-TTS
 - OpenVoice
   https://github.com/myshell-ai/OpenVoice
 - VibeVoice

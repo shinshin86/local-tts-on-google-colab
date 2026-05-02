@@ -97,6 +97,9 @@ def parse_args():
     parser.add_argument("--openvoice-language", default="JP")
     parser.add_argument("--openvoice-prompt-wav", default="")
     parser.add_argument("--openvoice-default-voice", default="default")
+    parser.add_argument("--orpheus-hf-model", default="canopylabs/orpheus-tts-0.1-finetune-prod")
+    parser.add_argument("--orpheus-default-voice", default="tara")
+    parser.add_argument("--orpheus-max-model-len", type=int, default=2048)
     parser.add_argument("--vibevoice-hf-model", default="microsoft/VibeVoice-1.5B")
     parser.add_argument("--vibevoice-default-speaker", default="en-Alice_woman")
     parser.add_argument("--vibevoice-prompt-wav", default="")
@@ -186,6 +189,9 @@ def main():
         openvoice_language=args.openvoice_language,
         openvoice_prompt_wav=args.openvoice_prompt_wav,
         openvoice_default_voice=args.openvoice_default_voice,
+        orpheus_hf_model=args.orpheus_hf_model,
+        orpheus_default_voice=args.orpheus_default_voice,
+        orpheus_max_model_len=args.orpheus_max_model_len,
         vibevoice_hf_model=args.vibevoice_hf_model,
         vibevoice_default_speaker=args.vibevoice_default_speaker,
         vibevoice_prompt_wav=args.vibevoice_prompt_wav,

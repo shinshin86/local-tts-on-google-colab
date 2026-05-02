@@ -10,6 +10,7 @@ from .melo import install as install_melo
 from .moss_tts_nano import install as install_moss_tts_nano
 from .neutts import install as install_neutts
 from .openvoice_v2 import install as install_openvoice_v2
+from .orpheus import install as install_orpheus
 from .outetts import install as install_outetts
 from .piper import install as install_piper
 from .piper_plus import install as install_piper_plus
@@ -35,6 +36,7 @@ INSTALLERS = {
     "MOSS-TTS-Nano": install_moss_tts_nano,
     "NeuTTS": install_neutts,
     "OpenVoice-V2": install_openvoice_v2,
+    "Orpheus-TTS": install_orpheus,
     "OuteTTS": install_outetts,
     "Style-Bert-VITS2": install_style_bert,
     "Piper": install_piper,

@@ -18,6 +18,7 @@ Supported engines:
 | NeuTTS | Works (CPU OK, voice cloning) | English / Spanish / German / French |
 | TinyTTS | Works | English |
 | Voxtral-TTS | Works (GPU required, VRAM 16GB+) | English / French / Spanish and 9 languages |
+| Orpheus-TTS | Works (GPU required, L4/A100 recommended) | English (Llama-3.2-3B base, vLLM) |
 | Sarashina-TTS | Works (GPU required, ~6GB VRAM) | Japanese / English |
 | F5-TTS | Works (GPU required) | English / Chinese (Japanese via separate model) |
 | Chatterbox | Works (GPU recommended) | Japanese / English / Chinese and 23 languages |
@@ -65,7 +66,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Chatterbox", "Dia", "F5-TTS", "Fish-Speech", "Irodori-TTS", "Kokoro", "Kyutai-TTS", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "OpenVoice-V2", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Style-Bert-VITS2", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
+ENGINE = "Kokoro"  #@param ["Chatterbox", "Dia", "F5-TTS", "Fish-Speech", "Irodori-TTS", "Kokoro", "Kyutai-TTS", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Style-Bert-VITS2", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -202,6 +203,14 @@ DIA_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
 OPENVOICE_LANGUAGE = "JP"  #@param ["EN", "ES", "FR", "ZH", "JP", "KR"]
 OPENVOICE_PROMPT_WAV = ""  #@param {type:"string"}
 OPENVOICE_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+
+#@markdown ---
+#@markdown Orpheus-TTS (GPU required, English-only, vLLM backend, Llama-3.2-3B base)
+#@markdown - Code: Apache 2.0. Weights: Apache 2.0 + Llama 3.2 Community License (base model).
+#@markdown - Pinned to vllm==0.7.3 due to a known regression in newer vLLM 0.7.x.
+ORPHEUS_HF_MODEL = "canopylabs/orpheus-tts-0.1-finetune-prod"  #@param {type:"string"}
+ORPHEUS_DEFAULT_VOICE = "tara"  #@param ["tara", "leah", "jess", "leo", "dan", "mia", "zac", "zoe"]
+ORPHEUS_MAX_MODEL_LEN = 2048  #@param {type:"integer"}
 
 #@markdown ---
 #@markdown VibeVoice (GPU required, English/Chinese, long-form multi-speaker)
@@ -390,6 +399,12 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         OPENVOICE_PROMPT_WAV,
         "--openvoice-default-voice",
         OPENVOICE_DEFAULT_VOICE,
+        "--orpheus-hf-model",
+        ORPHEUS_HF_MODEL,
+        "--orpheus-default-voice",
+        ORPHEUS_DEFAULT_VOICE,
+        "--orpheus-max-model-len",
+        str(ORPHEUS_MAX_MODEL_LEN),
         "--vibevoice-hf-model",
         VIBEVOICE_HF_MODEL,
         "--vibevoice-default-speaker",
@@ -603,6 +618,12 @@ A streaming TTS using [kyutai-labs/delayed-streams-modeling](https://github.com/
 
 An ultra-lightweight CPU TTS using [kyutai-labs/pocket-tts](https://github.com/kyutai-labs/pocket-tts) — Kyutai Labs' 100M-parameter on-device TTS that runs at ~6× real-time on a MacBook Air M4 using only 2 CPU cores. GPU is **not** required. Default Hugging Face model: `kyutai/pocket-tts`; voices are sourced from `kyutai/tts-voices`. Six language models are available (`english` / `english_2026-01` / `english_2026-04` / `french_24l` / `german_24l` / `italian` / `portuguese` / `spanish_24l`); pick one via `--pocket-language`. The default voice uses the `POCKET_DEFAULT_SPEAKER` preset (default: `alba`); supplying `--pocket-prompt-wav` enables a `clone` voice from your own audio file or a `.safetensors` voice cache. The 21 built-in preset names (`alba`, `anna`, `charles`, …) can also be passed directly as the `voice` parameter. License: code is MIT, model weights are CC-BY-4.0; **individual voice licenses vary** (see [kyutai/tts-voices](https://huggingface.co/kyutai/tts-voices)). **Prohibited use:** voice impersonation or cloning without explicit and lawful consent, and disinformation, are explicitly forbidden by the upstream terms.
 
+### Orpheus-TTS
+
+A high-quality English TTS using [canopyai/Orpheus-TTS](https://github.com/canopyai/Orpheus-TTS) by Canopy Labs. Built on `meta-llama/Llama-3.2-3B-Instruct` and served via vLLM through the `orpheus-speech` package. The default checkpoint `canopylabs/orpheus-tts-0.1-finetune-prod` ships with 8 English voices: `tara`, `leah`, `jess`, `leo`, `dan`, `mia`, `zac`, `zoe` (in subjective order of conversational realism per upstream). Output is 24 kHz mono WAV. Japanese is **not** supported. The wrapper pins `vllm==0.7.3` because newer 0.7.x releases shipped a regression that breaks Orpheus' streaming generator. A GPU runtime is required; L4 / A100 is recommended (VRAM ~10–12GB for the 3B weights plus vLLM KV cache). Python 3.10+.
+
+**License:** code is Apache 2.0. The weights repo is also tagged Apache 2.0, **but** it is fine-tuned from `meta-llama/Llama-3.2-3B-Instruct`, so the **Llama 3.2 Community License** also applies in practice (same situation as OuteTTS 1B). Read both licenses before commercial use.
+
 ### OpenVoice-V2 (currently not working)
 
 Intended to use [myshell-ai/OpenVoice](https://github.com/myshell-ai/OpenVoice) V2 — a two-stage voice cloning TTS that first synthesises base speech with MeloTTS, then runs a ToneColorConverter (V2 checkpoints) to match the timbre of a reference clip. Both the code and the weights are MIT, so commercial use is allowed.
@@ -660,6 +681,7 @@ The license for each engine is as follows. When using them, always check each pr
 | NeuTTS | Apache 2.0 | Apache 2.0 (Air) / NeuTTS Open License 1.0 (Nano) | OK (Air) / Check terms (Nano) | Voice cloning. EN / ES / DE / FR |
 | TinyTTS | Apache 2.0 | Apache 2.0 | OK | |
 | Voxtral-TTS | — | CC BY-NC 4.0 | Not allowed | Via vLLM + vllm-omni. Non-commercial due to voice dataset license constraints |
+| Orpheus-TTS | Apache 2.0 | Apache 2.0 + Llama 3.2 Community License | Caution | Llama-3.2-3B-Instruct base; Llama Community License applies in practice. EN only |
 | Sarashina-TTS | — | Sarashina Model NonCommercial License | Not allowed | Japanese / English. Zero-shot voice cloning. Output contains a SilentCipher watermark (do not remove) |
 | F5-TTS | MIT | CC-BY-NC | Not allowed (model) | Model weights are non-commercial due to Emilia dataset constraints |
 | Chatterbox | MIT | MIT | OK | Multilingual (23 languages incl JP). Zero-shot voice cloning |
@@ -728,6 +750,8 @@ This repository itself is intended for short-term operational verification and t
   https://github.com/kyutai-labs/delayed-streams-modeling
 - Pocket-TTS
   https://github.com/kyutai-labs/pocket-tts
+- Orpheus-TTS
+  https://github.com/canopyai/Orpheus-TTS
 - OpenVoice
   https://github.com/myshell-ai/OpenVoice
 - VibeVoice

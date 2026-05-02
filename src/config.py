@@ -116,6 +116,9 @@ class Settings:
     openvoice_language: str = "JP"
     openvoice_prompt_wav: str = ""
     openvoice_default_voice: str = "default"
+    orpheus_hf_model: str = "canopylabs/orpheus-tts-0.1-finetune-prod"
+    orpheus_default_voice: str = "tara"
+    orpheus_max_model_len: int = 2048
     vibevoice_hf_model: str = "microsoft/VibeVoice-1.5B"
     vibevoice_default_speaker: str = "en-Alice_woman"
     vibevoice_prompt_wav: str = ""

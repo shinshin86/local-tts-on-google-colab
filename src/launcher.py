@@ -48,6 +48,8 @@ def resolve_selected_voice(settings: Settings) -> str:
         return settings.kyutai_default_voice
     if settings.engine == "Pocket-TTS":
         return settings.pocket_default_voice
+    if settings.engine == "Orpheus-TTS":
+        return settings.orpheus_default_voice
     return ""
 
 
@@ -225,6 +227,16 @@ def print_engine_voice_hints(settings: Settings):
         print("注意: GPU 不要（CPU で十分高速）。Python 3.10+。")
         print("ライセンス: コードは MIT、重みは CC-BY-4.0。voice ごとに個別ライセンス（kyutai/tts-voices を参照）。")
         print("Prohibited use: 合意のない voice impersonation や偽情報の生成は禁止です。")
+    elif settings.engine == "Orpheus-TTS":
+        print("Orpheus-TTS は Canopy Labs の英語 LLM-TTS です（Llama-3.2-3B ベース、vLLM バックエンド）。")
+        print(f"モデル: {settings.orpheus_hf_model}")
+        print(f"デフォルト voice: {settings.orpheus_default_voice}")
+        print(f"max_model_len: {settings.orpheus_max_model_len}")
+        print("voice 候補:", ", ".join(["tara", "leah", "jess", "leo", "dan", "mia", "zac", "zoe"]))
+        print("対応言語: 英語のみ（日本語非対応）。")
+        print("注意: GPU 必須（VRAM ~10-12GB、L4/A100 推奨）。Python 3.10+。")
+        print("ライセンス: コードは Apache 2.0、重みは Apache 2.0 表記だがベースは Llama-3.2-3B-Instruct のため")
+        print("           実質的に Llama 3.2 Community License も適用されます。")
     elif settings.engine == "VibeVoice":
         print("VibeVoice は Microsoft の長尺マルチスピーカー TTS です（最大 90 分・4 話者の一括生成）。")
         print(f"モデル: {settings.vibevoice_hf_model}")
