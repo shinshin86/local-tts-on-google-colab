@@ -1,16 +1,26 @@
 from __future__ import annotations
 
 import os
+from pathlib import Path
 
 from src.config import Settings
-from src.runtime import ensure_venv, popen, uv_pip_install, write_text
+from src.runtime import popen, run, uv_pip_install, write_text
+
+
+def _ensure_py312_venv(engine_dir: Path) -> Path:
+    venv_dir = engine_dir / ".venv"
+    if not venv_dir.exists():
+        # vllm==0.7.3 transitively depends on xgrammar==0.1.11, which has wheels only
+        # for cp39-cp312. Pin the venv to Python 3.12 so uv does not auto-fetch 3.13.
+        run(["uv", "venv", "--python", "3.12", str(venv_dir)])
+    return venv_dir / "bin" / "python"
 
 
 def install(settings: Settings) -> dict:
     engine_dir = settings.engines_dir / "orpheus-tts"
     engine_dir.mkdir(parents=True, exist_ok=True)
 
-    python_bin = ensure_venv(engine_dir)
+    python_bin = _ensure_py312_venv(engine_dir)
     # orpheus-speech bundles vLLM; the upstream README pins vllm==0.7.3 because newer 0.7.x
     # had a March-18 regression that breaks Orpheus' streaming generator.
     uv_pip_install(
