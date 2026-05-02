@@ -27,14 +27,14 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | Kyutai-TTS | 動作OK (GPU推奨) | 英語 / フランス語 |
 | Pocket-TTS | 動作OK (CPU可・~6x realtime) | 英語 / 仏 / 独 / 伊 / 葡 / 西 |
 | Orpheus-TTS | 動作OK (GPU 必須・L4/A100 推奨) | 英語（Llama-3.2-3B ベース、vLLM） |
+| CosyVoice2 | 動作OK (GPU推奨・Python 3.10 venv) | 日本語 / 英語 / 中 / 韓 / 独 他 9言語 |
 | OpenVoice-V2 | 動作不可（Python 3.13 で `av==10` がビルドできない） | 日本語 / 英語 / 西 / 仏 / 中 / 韓 |
 | VibeVoice | 動作不可（upstream API 移行中） | 英語 / 中国語（長尺・最大 4 話者） |
 | Fish-Speech | 動作不可 | 日本語 / 英語 / 中国語 他 80言語以上 |
 | MeloTTS | 動作不可 | - |
 | Style-Bert-VITS2 | 動作不可 | - |
-| CosyVoice2 | 動作不可 | - |
 
-`MeloTTS`、`Style-Bert-VITS2`、`CosyVoice2` は Colab の uv + venv 環境で依存解決に問題があり、現時点では動作しません。
+`MeloTTS`、`Style-Bert-VITS2` は Colab の uv + venv 環境で依存解決に問題があり、現時点では動作しません。
 
 `Fish-Speech` は VRAM 24GB 以上が必要で A100/L4 GPU を想定していますが、Colab 環境ではモデルロード時に OOM（メモリ不足）でランタイムがクラッシュするため、現時点では動作しません。
 
@@ -66,7 +66,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Chatterbox", "Dia", "F5-TTS", "Fish-Speech", "Irodori-TTS", "Kokoro", "Kyutai-TTS", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Style-Bert-VITS2", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
+ENGINE = "Kokoro"  #@param ["Chatterbox", "CosyVoice2", "Dia", "F5-TTS", "Fish-Speech", "Irodori-TTS", "Kokoro", "Kyutai-TTS", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Style-Bert-VITS2", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -203,6 +203,14 @@ DIA_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
 OPENVOICE_LANGUAGE = "JP"  #@param ["EN", "ES", "FR", "ZH", "JP", "KR"]
 OPENVOICE_PROMPT_WAV = ""  #@param {type:"string"}
 OPENVOICE_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+
+#@markdown ---
+#@markdown CosyVoice2 (GPU recommended, multilingual incl JP, Apache 2.0)
+#@markdown - Forces a Python 3.10 venv because upstream pins (torch 2.3.1, openai-whisper 20231117, etc.) do not resolve under Python 3.12.
+COSYVOICE_HF_MODEL = "FunAudioLLM/CosyVoice2-0.5B"  #@param {type:"string"}
+COSYVOICE_PROMPT_WAV = ""  #@param {type:"string"}
+COSYVOICE_PROMPT_TEXT = ""  #@param {type:"string"}
+COSYVOICE_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
 
 #@markdown ---
 #@markdown Orpheus-TTS (GPU required, English-only, vLLM backend, Llama-3.2-3B base)
@@ -399,6 +407,14 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         OPENVOICE_PROMPT_WAV,
         "--openvoice-default-voice",
         OPENVOICE_DEFAULT_VOICE,
+        "--cosyvoice-hf-model",
+        COSYVOICE_HF_MODEL,
+        "--cosyvoice-prompt-wav",
+        COSYVOICE_PROMPT_WAV,
+        "--cosyvoice-prompt-text",
+        COSYVOICE_PROMPT_TEXT,
+        "--cosyvoice-default-voice",
+        COSYVOICE_DEFAULT_VOICE,
         "--orpheus-hf-model",
         ORPHEUS_HF_MODEL,
         "--orpheus-default-voice",
@@ -653,9 +669,20 @@ upstream の API が落ち着いた段階で再アクティベートできるよ
 
 [fishaudio/fish-speech](https://github.com/fishaudio/fish-speech) を使った高品質 TTS です。日本語は Tier 1 サポート（最高品質）で、80 言語以上に対応しています。VRAM 24GB 以上が必要で A100/L4 GPU を想定していますが、Colab 環境ではモデルロード時に OOM（メモリ不足）でランタイムがクラッシュするため、現時点では動作しません。ライセンス: Apache 2.0。
 
-### CosyVoice2 (現在動作不可)
+### CosyVoice2
 
-[FunAudioLLM/CosyVoice](https://github.com/FunAudioLLM/CosyVoice) を使う構成ですが、依存パッケージ（openai-whisper、onnxruntime-gpu、grpcio、deepspeed、lightning 等）が Python 3.12+ に対応しておらず、Colab の uv + venv 環境ではセットアップが完了しません。
+[FunAudioLLM/CosyVoice](https://github.com/FunAudioLLM/CosyVoice) を使った Alibaba FunAudioLLM の多言語ゼロショット voice cloning TTS です。0.5B パラメータの v2 チェックポイント（`FunAudioLLM/CosyVoice2-0.5B`）は **日本語**・英語・中国語・韓国語・独語・西語・仏語・伊語・露語の 9 言語に加えて中国方言 18 種類以上をサポートし、cross-lingual のゼロショットクローンが可能です。本ラッパーは上流の pin（`torch==2.3.1`、`openai-whisper==20231117`、`onnxruntime-gpu==1.18.0` 等）が Colab デフォルトの Python 3.12 で解決しないため、**Python 3.10 の venv を強制**します（`uv venv --python 3.10`）。`Matcha-TTS` サブモジュールが必要なので `--recursive` で clone します。GPU 推奨（VRAM ~4GB）。
+
+`voice` パラメータ:
+
+| voice | 説明 |
+|---|---|
+| `default` | 上流同梱の `asset/zero_shot_prompt.wav`（中国語女性）を参照音声として `inference_cross_lingual` を呼びます。入力言語と参照言語が違っても動作します。 |
+| `clone` | `--cosyvoice-prompt-wav` で参照音声を指定したときに有効。`--cosyvoice-prompt-text` も併記すると `inference_zero_shot`（書き起こし一致のときに高品質）、未指定なら `inference_cross_lingual` にフォールバックします。 |
+
+voice cloning では、必ず権利を持つ参照音声（話者本人の同意）のみを使用してください。
+
+ライセンス: コード（CosyVoice リポジトリ）も重み（`CosyVoice2-0.5B`、HF モデルカード明記）も Apache 2.0。
 
 ### MeloTTS (現在動作不可)
 
@@ -692,6 +719,7 @@ upstream の API が落ち着いた段階で再アクティベートできるよ
 | Pocket-TTS (model) | MIT | CC-BY-4.0 | OK（要 attribution） | 100M パラメータ、CPU のみ。英 / 仏 / 独 / 伊 / 葡 / 西 |
 | Pocket-TTS (voices) | — | voice ごとに異なる | 各 voice で要確認 | voice ライセンスは [kyutai/tts-voices](https://huggingface.co/kyutai/tts-voices) を参照。上流規約により非合意のなりすまし禁止 |
 | Orpheus-TTS | Apache 2.0 | Apache 2.0 + Llama 3.2 Community License | 要注意 | ベースが Llama-3.2-3B-Instruct のため Llama Community License も実質適用。英語のみ |
+| CosyVoice2 | Apache 2.0 | Apache 2.0 | OK | 多言語（日本語含む）。ゼロショット voice cloning。Python 3.10 venv 必須 |
 | OpenVoice-V2 | MIT | MIT | OK | 多言語（日本語含む）。voice cloning。現在動作不可: `faster-whisper==0.9.0` 経由の `av==10` が Python 3.13 でビルドできない |
 | VibeVoice | MIT | MIT | 要注意（research-only） | 英 / 中のみ。現在は動作不可: upstream API 移行中（.wav speaker ファイル → .pt prompt cache へ移行） |
 | Fish-Speech | Apache 2.0 | Apache 2.0 | OK | A100/L4 GPU 必須（VRAM 24GB+） |

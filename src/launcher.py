@@ -50,6 +50,8 @@ def resolve_selected_voice(settings: Settings) -> str:
         return settings.pocket_default_voice
     if settings.engine == "Orpheus-TTS":
         return settings.orpheus_default_voice
+    if settings.engine == "CosyVoice2":
+        return settings.cosyvoice_default_voice
     return ""
 
 
@@ -227,6 +229,23 @@ def print_engine_voice_hints(settings: Settings):
         print("注意: GPU 不要（CPU で十分高速）。Python 3.10+。")
         print("ライセンス: コードは MIT、重みは CC-BY-4.0。voice ごとに個別ライセンス（kyutai/tts-voices を参照）。")
         print("Prohibited use: 合意のない voice impersonation や偽情報の生成は禁止です。")
+    elif settings.engine == "CosyVoice2":
+        print("CosyVoice2 は Alibaba FunAudioLLM のゼロショット voice cloning TTS です（多言語、日本語対応）。")
+        print(f"モデル: {settings.cosyvoice_hf_model}")
+        print(f"デフォルト voice: {settings.cosyvoice_default_voice}")
+        print("voice 候補: default（同梱の asset/zero_shot_prompt.wav を参照音声として cross_lingual 推論）")
+        if settings.cosyvoice_prompt_wav:
+            print(f"             clone（参照音声: {settings.cosyvoice_prompt_wav}）")
+            if settings.cosyvoice_prompt_text:
+                print(f"             prompt_text: {settings.cosyvoice_prompt_text}（zero_shot 推論）")
+            else:
+                print("             prompt_text 未指定: cross_lingual 推論（参照と入力の言語が違っても OK）")
+        else:
+            print("             clone は --cosyvoice-prompt-wav を指定すると有効になります")
+        print("対応言語: 中国語 / 英語 / 日本語 / 韓国語 / 独語 / 西語 / 仏語 / 伊語 / 露語 + 中国方言 18種類")
+        print("注意: 上流要件により Python 3.10 専用 venv を作成します（uv venv --python 3.10）。")
+        print("      GPU 推奨（VRAM ~4GB）。")
+        print("ライセンス: コードは Apache 2.0、重み（CosyVoice2-0.5B）も Apache 2.0（HF モデルカード）。")
     elif settings.engine == "Orpheus-TTS":
         print("Orpheus-TTS は Canopy Labs の英語 LLM-TTS です（Llama-3.2-3B ベース、vLLM バックエンド）。")
         print(f"モデル: {settings.orpheus_hf_model}")

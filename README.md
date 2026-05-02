@@ -19,6 +19,7 @@ Supported engines:
 | TinyTTS | Works | English |
 | Voxtral-TTS | Works (GPU required, VRAM 16GB+) | English / French / Spanish and 9 languages |
 | Orpheus-TTS | Works (GPU required, L4/A100 recommended) | English (Llama-3.2-3B base, vLLM) |
+| CosyVoice2 | Works (GPU recommended, Python 3.10 venv) | Japanese / English / Chinese / Korean / German and 9 languages |
 | Sarashina-TTS | Works (GPU required, ~6GB VRAM) | Japanese / English |
 | F5-TTS | Works (GPU required) | English / Chinese (Japanese via separate model) |
 | Chatterbox | Works (GPU recommended) | Japanese / English / Chinese and 23 languages |
@@ -32,9 +33,8 @@ Supported engines:
 | Fish-Speech | Not working | Japanese / English / Chinese and 80+ languages |
 | MeloTTS | Not working | - |
 | Style-Bert-VITS2 | Not working | - |
-| CosyVoice2 | Not working | - |
 
-`MeloTTS`, `Style-Bert-VITS2`, and `CosyVoice2` currently have dependency resolution issues under Colab's uv + venv environment and do not work.
+`MeloTTS` and `Style-Bert-VITS2` currently have dependency resolution issues under Colab's uv + venv environment and do not work.
 
 `Fish-Speech` requires 24GB+ VRAM and targets A100/L4 GPUs. On Colab, the runtime crashes with OOM (out of memory) during model loading, so it currently does not work.
 
@@ -66,7 +66,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Chatterbox", "Dia", "F5-TTS", "Fish-Speech", "Irodori-TTS", "Kokoro", "Kyutai-TTS", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Style-Bert-VITS2", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
+ENGINE = "Kokoro"  #@param ["Chatterbox", "CosyVoice2", "Dia", "F5-TTS", "Fish-Speech", "Irodori-TTS", "Kokoro", "Kyutai-TTS", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Style-Bert-VITS2", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -203,6 +203,14 @@ DIA_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
 OPENVOICE_LANGUAGE = "JP"  #@param ["EN", "ES", "FR", "ZH", "JP", "KR"]
 OPENVOICE_PROMPT_WAV = ""  #@param {type:"string"}
 OPENVOICE_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+
+#@markdown ---
+#@markdown CosyVoice2 (GPU recommended, multilingual incl JP, Apache 2.0)
+#@markdown - Forces a Python 3.10 venv because upstream pins (torch 2.3.1, openai-whisper 20231117, etc.) do not resolve under Python 3.12.
+COSYVOICE_HF_MODEL = "FunAudioLLM/CosyVoice2-0.5B"  #@param {type:"string"}
+COSYVOICE_PROMPT_WAV = ""  #@param {type:"string"}
+COSYVOICE_PROMPT_TEXT = ""  #@param {type:"string"}
+COSYVOICE_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
 
 #@markdown ---
 #@markdown Orpheus-TTS (GPU required, English-only, vLLM backend, Llama-3.2-3B base)
@@ -399,6 +407,14 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         OPENVOICE_PROMPT_WAV,
         "--openvoice-default-voice",
         OPENVOICE_DEFAULT_VOICE,
+        "--cosyvoice-hf-model",
+        COSYVOICE_HF_MODEL,
+        "--cosyvoice-prompt-wav",
+        COSYVOICE_PROMPT_WAV,
+        "--cosyvoice-prompt-text",
+        COSYVOICE_PROMPT_TEXT,
+        "--cosyvoice-default-voice",
+        COSYVOICE_DEFAULT_VOICE,
         "--orpheus-hf-model",
         ORPHEUS_HF_MODEL,
         "--orpheus-default-voice",
@@ -653,9 +669,20 @@ The wrapper code is kept in tree so it can be rebuilt against the upstream API o
 
 A high-quality TTS using [fishaudio/fish-speech](https://github.com/fishaudio/fish-speech). Japanese is Tier 1 supported (highest quality) and it supports 80+ languages. It requires 24GB+ VRAM and targets A100/L4 GPUs, but on Colab the runtime crashes with OOM during model loading, so it currently does not work. License: Apache 2.0.
 
-### CosyVoice2 (currently not working)
+### CosyVoice2
 
-Intended to use [FunAudioLLM/CosyVoice](https://github.com/FunAudioLLM/CosyVoice), but dependent packages (openai-whisper, onnxruntime-gpu, grpcio, deepspeed, lightning, etc.) do not support Python 3.12+, so setup does not complete in Colab's uv + venv environment.
+A multilingual zero-shot voice cloning TTS using [FunAudioLLM/CosyVoice](https://github.com/FunAudioLLM/CosyVoice). The 0.5B-parameter v2 checkpoint (`FunAudioLLM/CosyVoice2-0.5B`) supports 9 common languages — **Japanese**, English, Chinese, Korean, German, Spanish, French, Italian, Russian — plus 18+ Chinese dialects, with cross-lingual zero-shot cloning. The wrapper forces a **Python 3.10 venv** (`uv venv --python 3.10`) because upstream pins (`torch==2.3.1`, `openai-whisper==20231117`, `onnxruntime-gpu==1.18.0`, etc.) do not resolve under Colab's default Python 3.12. The repo is cloned with `--recursive` to pick up the `Matcha-TTS` submodule. A GPU is recommended (VRAM ~4GB).
+
+The `voice` parameter exposes:
+
+| voice | description |
+|---|---|
+| `default` | Uses the bundled `asset/zero_shot_prompt.wav` reference (Chinese female) via `inference_cross_lingual`, which works regardless of input language. |
+| `clone` | Zero-shot voice cloning with `--cosyvoice-prompt-wav`. If `--cosyvoice-prompt-text` is also set, calls `inference_zero_shot` (better quality when transcript matches); otherwise falls back to `inference_cross_lingual`. |
+
+For voice cloning, only use reference audio you have rights to (consent of the speaker).
+
+License: Apache 2.0 for both code (CosyVoice repo) and the `CosyVoice2-0.5B` weights (per the Hugging Face model card).
 
 ### MeloTTS (currently not working)
 
@@ -682,6 +709,7 @@ The license for each engine is as follows. When using them, always check each pr
 | TinyTTS | Apache 2.0 | Apache 2.0 | OK | |
 | Voxtral-TTS | — | CC BY-NC 4.0 | Not allowed | Via vLLM + vllm-omni. Non-commercial due to voice dataset license constraints |
 | Orpheus-TTS | Apache 2.0 | Apache 2.0 + Llama 3.2 Community License | Caution | Llama-3.2-3B-Instruct base; Llama Community License applies in practice. EN only |
+| CosyVoice2 | Apache 2.0 | Apache 2.0 | OK | Multilingual incl JP. Zero-shot voice cloning. Requires Python 3.10 venv |
 | Sarashina-TTS | — | Sarashina Model NonCommercial License | Not allowed | Japanese / English. Zero-shot voice cloning. Output contains a SilentCipher watermark (do not remove) |
 | F5-TTS | MIT | CC-BY-NC | Not allowed (model) | Model weights are non-commercial due to Emilia dataset constraints |
 | Chatterbox | MIT | MIT | OK | Multilingual (23 languages incl JP). Zero-shot voice cloning |

@@ -100,6 +100,10 @@ def parse_args():
     parser.add_argument("--orpheus-hf-model", default="canopylabs/orpheus-tts-0.1-finetune-prod")
     parser.add_argument("--orpheus-default-voice", default="tara")
     parser.add_argument("--orpheus-max-model-len", type=int, default=2048)
+    parser.add_argument("--cosyvoice-hf-model", default="FunAudioLLM/CosyVoice2-0.5B")
+    parser.add_argument("--cosyvoice-prompt-wav", default="")
+    parser.add_argument("--cosyvoice-prompt-text", default="")
+    parser.add_argument("--cosyvoice-default-voice", default="default")
     parser.add_argument("--vibevoice-hf-model", default="microsoft/VibeVoice-1.5B")
     parser.add_argument("--vibevoice-default-speaker", default="en-Alice_woman")
     parser.add_argument("--vibevoice-prompt-wav", default="")
@@ -192,6 +196,10 @@ def main():
         orpheus_hf_model=args.orpheus_hf_model,
         orpheus_default_voice=args.orpheus_default_voice,
         orpheus_max_model_len=args.orpheus_max_model_len,
+        cosyvoice_hf_model=args.cosyvoice_hf_model,
+        cosyvoice_prompt_wav=args.cosyvoice_prompt_wav,
+        cosyvoice_prompt_text=args.cosyvoice_prompt_text,
+        cosyvoice_default_voice=args.cosyvoice_default_voice,
         vibevoice_hf_model=args.vibevoice_hf_model,
         vibevoice_default_speaker=args.vibevoice_default_speaker,
         vibevoice_prompt_wav=args.vibevoice_prompt_wav,

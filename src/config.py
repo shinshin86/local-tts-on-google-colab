@@ -119,6 +119,10 @@ class Settings:
     orpheus_hf_model: str = "canopylabs/orpheus-tts-0.1-finetune-prod"
     orpheus_default_voice: str = "tara"
     orpheus_max_model_len: int = 2048
+    cosyvoice_hf_model: str = "FunAudioLLM/CosyVoice2-0.5B"
+    cosyvoice_prompt_wav: str = ""
+    cosyvoice_prompt_text: str = ""
+    cosyvoice_default_voice: str = "default"
     vibevoice_hf_model: str = "microsoft/VibeVoice-1.5B"
     vibevoice_default_speaker: str = "en-Alice_woman"
     vibevoice_prompt_wav: str = ""
