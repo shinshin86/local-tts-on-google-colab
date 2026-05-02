@@ -1,12 +1,24 @@
 from __future__ import annotations
 
 import os
+from pathlib import Path
 
 from src.config import Settings
-from src.runtime import ensure_venv, popen, run, uv_pip_install, write_text
+from src.runtime import popen, run, uv_pip_install, write_text
 
 
 SPARK_REPO_URL = "https://github.com/SparkAudio/Spark-TTS.git"
+
+
+def _ensure_py312_venv(engine_dir: Path) -> Path:
+    venv_dir = engine_dir / ".venv"
+    if not venv_dir.exists():
+        # Spark-TTS pins torch==2.5.1 / torchaudio==2.5.1, which only ship cp39-cp312
+        # wheels. Without a `--python` flag, `uv venv` auto-fetches CPython 3.13 and
+        # then fails with `torchaudio==2.5.1 has no wheels with a matching ABI tag
+        # (e.g., cp313)`. Pin the venv to Python 3.12 so resolution succeeds.
+        run(["uv", "venv", "--python", "3.12", str(venv_dir)])
+    return venv_dir / "bin" / "python"
 
 
 def install(settings: Settings) -> dict:
@@ -17,7 +29,7 @@ def install(settings: Settings) -> dict:
     if not repo_dir.exists():
         run(["git", "clone", SPARK_REPO_URL, str(repo_dir)])
 
-    python_bin = ensure_venv(engine_dir)
+    python_bin = _ensure_py312_venv(engine_dir)
 
     uv_pip_install(python_bin, ["-r", str(repo_dir / "requirements.txt")])
     uv_pip_install(python_bin, ["fastapi", "uvicorn", "huggingface_hub"])
