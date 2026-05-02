@@ -36,6 +36,13 @@ def parse_args():
     parser.add_argument("--irodori-codec-precision", default="fp32")
     parser.add_argument("--kokoro-default-voice", default="jf_alpha")
     parser.add_argument("--kokoro-default-lang-code", default="j")
+    parser.add_argument("--kyutai-hf-repo", default="kyutai/tts-1.6b-en_fr")
+    parser.add_argument("--kyutai-voice-repo", default="kyutai/tts-voices")
+    parser.add_argument(
+        "--kyutai-voice", default="expresso/ex03-ex01_happy_001_channel1_334s.wav"
+    )
+    parser.add_argument("--kyutai-prompt-wav", default="")
+    parser.add_argument("--kyutai-default-voice", default="default")
     parser.add_argument("--melo-language", default="JP")
     parser.add_argument("--melo-default-voice", default="JP")
     parser.add_argument("--style-bert-model-repo", default="litagin/style_bert_vits2_jvnv")
@@ -116,6 +123,11 @@ def main():
         irodori_codec_precision=args.irodori_codec_precision,
         kokoro_default_voice=args.kokoro_default_voice,
         kokoro_default_lang_code=args.kokoro_default_lang_code,
+        kyutai_hf_repo=args.kyutai_hf_repo,
+        kyutai_voice_repo=args.kyutai_voice_repo,
+        kyutai_voice=args.kyutai_voice,
+        kyutai_prompt_wav=args.kyutai_prompt_wav,
+        kyutai_default_voice=args.kyutai_default_voice,
         melo_language=args.melo_language,
         melo_default_voice=args.melo_default_voice,
         style_bert_model_repo=args.style_bert_model_repo,

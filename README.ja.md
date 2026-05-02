@@ -24,6 +24,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | Zonos | 動作OK (GPU必須・VRAM ~6GB) | 日本語 / 英語 / 中国語 / フランス語 / ドイツ語 |
 | OuteTTS | 動作OK (CPU可) | 日本語 / 英語 / 中国語 他 多言語 |
 | Dia | 動作OK (GPU推奨) | 英語（マルチスピーカー対話） |
+| Kyutai-TTS | 動作OK (GPU推奨) | 英語 / フランス語 |
 | OpenVoice-V2 | 動作不可（Python 3.13 で `av==10` がビルドできない） | 日本語 / 英語 / 西 / 仏 / 中 / 韓 |
 | VibeVoice | 動作不可（upstream API 移行中） | 英語 / 中国語（長尺・最大 4 話者） |
 | Fish-Speech | 動作不可 | 日本語 / 英語 / 中国語 他 80言語以上 |
@@ -63,7 +64,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Chatterbox", "Dia", "F5-TTS", "Fish-Speech", "Irodori-TTS", "Kokoro", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "OpenVoice-V2", "OuteTTS", "Piper", "Piper-Plus", "Qwen3-TTS", "Sarashina-TTS", "Style-Bert-VITS2", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
+ENGINE = "Kokoro"  #@param ["Chatterbox", "Dia", "F5-TTS", "Fish-Speech", "Irodori-TTS", "Kokoro", "Kyutai-TTS", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "OpenVoice-V2", "OuteTTS", "Piper", "Piper-Plus", "Qwen3-TTS", "Sarashina-TTS", "Style-Bert-VITS2", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -92,6 +93,14 @@ IRODORI_CODEC_PRECISION = "fp32"  #@param ["fp32", "bf16", "fp16"]
 #@markdown Kokoro
 KOKORO_DEFAULT_VOICE = "jf_alpha"  #@param ["jf_alpha", "jf_gongitsune", "jm_kumo", "af_heart", "af_bella", "am_adam", "bf_emma", "bm_george", "zf_xiaobei"]
 KOKORO_DEFAULT_LANG_CODE = "j"  #@param ["j", "a", "b", "e", "f", "h", "i", "p", "z"]
+
+#@markdown ---
+#@markdown Kyutai-TTS (GPU recommended, English/French only, CC-BY-4.0 weights)
+KYUTAI_HF_REPO = "kyutai/tts-1.6b-en_fr"  #@param {type:"string"}
+KYUTAI_VOICE_REPO = "kyutai/tts-voices"  #@param {type:"string"}
+KYUTAI_VOICE = "expresso/ex03-ex01_happy_001_channel1_334s.wav"  #@param {type:"string"}
+KYUTAI_PROMPT_WAV = ""  #@param {type:"string"}
+KYUTAI_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
 
 #@markdown ---
 #@markdown MeloTTS
@@ -263,6 +272,16 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         KOKORO_DEFAULT_VOICE,
         "--kokoro-default-lang-code",
         KOKORO_DEFAULT_LANG_CODE,
+        "--kyutai-hf-repo",
+        KYUTAI_HF_REPO,
+        "--kyutai-voice-repo",
+        KYUTAI_VOICE_REPO,
+        "--kyutai-voice",
+        KYUTAI_VOICE,
+        "--kyutai-prompt-wav",
+        KYUTAI_PROMPT_WAV,
+        "--kyutai-default-voice",
+        KYUTAI_DEFAULT_VOICE,
         "--melo-language",
         MELO_LANGUAGE,
         "--melo-default-voice",
@@ -560,6 +579,10 @@ Resemble AI の [resemble-ai/chatterbox](https://github.com/resemble-ai/chatterb
 
 音声クローンを使う場合は、必ず権利を持っている音声（本人の同意がある音声）でのみ行ってください。
 
+### Kyutai-TTS
+
+[kyutai-labs/delayed-streams-modeling](https://github.com/kyutai-labs/delayed-streams-modeling) を使った Kyutai Labs の英語 / フランス語 TTS です。Delayed Streams Modeling (DSM) フレームワーク上に実装されており、ストリーミング推論に対応しています。デフォルトモデルは `kyutai/tts-1.6b-en_fr`（1.6B パラメータ、英語 + フランス語）。voice は別の Hugging Face リポ（デフォルト `kyutai/tts-voices`）から読み込まれ、`default` voice では `KYUTAI_VOICE`（デフォルト `expresso/ex03-ex01_happy_001_channel1_334s.wav`）が参照されます。`--kyutai-prompt-wav`（ローカルの `.wav` または事前計算済みの `.safetensors` voice cache）を指定すると `clone` voice が有効になります。任意の voice repo 内パスを `voice` パラメータに直接指定することも可能です。GPU 推奨（CUDA、VRAM ~6GB）。日本語は **非対応**。ライセンス: コードは MIT (Python) / Apache 2.0 (Rust)、モデル重みは CC-BY-4.0。
+
 ### OpenVoice-V2 (現在動作不可)
 
 [myshell-ai/OpenVoice](https://github.com/myshell-ai/OpenVoice) V2 を使う構成で、2 段階の voice cloning TTS（MeloTTS でベース合成 → ToneColorConverter で声色変換）として実装しています。コード・重みともに MIT で商用利用可。
@@ -624,6 +647,7 @@ upstream の API が落ち着いた段階で再アクティベートできるよ
 | OuteTTS (0.6B) | Apache 2.0 | Apache 2.0 | OK | 日本語含む多言語、CPU 動作可、voice cloning |
 | OuteTTS (1B)   | Apache 2.0 | CC-BY-NC-SA-4.0 + Llama 3.2 Community License | 不可 | Llama-3.2 ベース。重みは非商用 |
 | Dia | Apache 2.0 | Apache 2.0 | OK | 英語のみ。`[S1]`/`[S2]` でマルチスピーカー対話 TTS |
+| Kyutai-TTS | MIT (Python) / Apache 2.0 (Rust) | CC-BY-4.0 | OK（要 attribution） | 英語 / 仏。DSM ベースのストリーミング TTS。GPU 推奨 |
 | OpenVoice-V2 | MIT | MIT | OK | 多言語（日本語含む）。voice cloning。現在動作不可: `faster-whisper==0.9.0` 経由の `av==10` が Python 3.13 でビルドできない |
 | VibeVoice | MIT | MIT | 要注意（research-only） | 英 / 中のみ。現在は動作不可: upstream API 移行中（.wav speaker ファイル → .pt prompt cache へ移行） |
 | Fish-Speech | Apache 2.0 | Apache 2.0 | OK | A100/L4 GPU 必須（VRAM 24GB+） |
@@ -678,6 +702,8 @@ upstream の API が落ち着いた段階で再アクティベートできるよ
   https://github.com/edwko/OuteTTS
 - Dia
   https://github.com/nari-labs/dia
+- Kyutai-TTS (delayed-streams-modeling)
+  https://github.com/kyutai-labs/delayed-streams-modeling
 - OpenVoice
   https://github.com/myshell-ai/OpenVoice
 - VibeVoice

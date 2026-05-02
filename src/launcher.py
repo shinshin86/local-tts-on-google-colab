@@ -44,6 +44,8 @@ def resolve_selected_voice(settings: Settings) -> str:
         return settings.openvoice_default_voice
     if settings.engine == "VibeVoice":
         return settings.vibevoice_default_voice
+    if settings.engine == "Kyutai-TTS":
+        return settings.kyutai_default_voice
     return ""
 
 
@@ -191,6 +193,21 @@ def print_engine_voice_hints(settings: Settings):
         print("対応言語: EN / ES / FR / ZH / JP / KR")
         print("注意: ベース TTS は MeloTTS のため、本リポの MeloTTS 単体エンジンと同じ依存解決問題（tokenizers Rust ビルド失敗）に当たる可能性があります。")
         print("ライセンス: コードと重みとも MIT（2024-04 以降、商用 OK）")
+    elif settings.engine == "Kyutai-TTS":
+        print("Kyutai TTS は Kyutai の英語 / フランス語 TTS です（DSM ベース、ストリーミング対応）。")
+        print(f"モデル: {settings.kyutai_hf_repo}")
+        print(f"voice repo: {settings.kyutai_voice_repo}")
+        print(f"デフォルト voice path: {settings.kyutai_voice}")
+        print(f"デフォルト voice: {settings.kyutai_default_voice}")
+        print("voice 候補: default（KYUTAI_VOICE で指定した voice repo 内のパスを使用）")
+        if settings.kyutai_prompt_wav:
+            print(f"             clone（参照: {settings.kyutai_prompt_wav}）")
+        else:
+            print("             clone は --kyutai-prompt-wav を指定すると有効になります（.wav または .safetensors）")
+        print("             任意の voice repo 内パス（例: 'expresso/ex03-...wav'）を voice に直接指定することも可能です。")
+        print("対応言語: 英語 / フランス語のみ（日本語非対応）。")
+        print("注意: GPU 推奨（VRAM ~6GB）。Python 3.10+。")
+        print("ライセンス: コードは MIT (Python) / Apache 2.0 (Rust)、重みは CC-BY-4.0。")
     elif settings.engine == "VibeVoice":
         print("VibeVoice は Microsoft の長尺マルチスピーカー TTS です（最大 90 分・4 話者の一括生成）。")
         print(f"モデル: {settings.vibevoice_hf_model}")

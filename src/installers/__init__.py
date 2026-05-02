@@ -5,6 +5,7 @@ from .fish_speech import install as install_fish_speech
 from .irodori import install as install_irodori
 from .qwen3_tts import install as install_qwen3_tts
 from .kokoro import install as install_kokoro
+from .kyutai_tts import install as install_kyutai_tts
 from .melo import install as install_melo
 from .moss_tts_nano import install as install_moss_tts_nano
 from .neutts import install as install_neutts
@@ -28,6 +29,7 @@ INSTALLERS = {
     "Fish-Speech": install_fish_speech,
     "Irodori-TTS": install_irodori,
     "Kokoro": install_kokoro,
+    "Kyutai-TTS": install_kyutai_tts,
     "MeloTTS": install_melo,
     "MOSS-TTS-Nano": install_moss_tts_nano,
     "NeuTTS": install_neutts,
