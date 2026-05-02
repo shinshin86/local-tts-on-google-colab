@@ -48,8 +48,15 @@ _model: OrpheusModel | None = None
 def get_model() -> OrpheusModel:
     global _model
     if _model is None:
-        logger.info("Loading Orpheus model %s (max_model_len=%d)", HF_MODEL, MAX_MODEL_LEN)
-        _model = OrpheusModel(model_name=HF_MODEL, max_model_len=MAX_MODEL_LEN)
+        # `orpheus-speech==0.1.0` exposes only OrpheusModel(model_name=...).
+        # Newer versions accept max_model_len; pass it through when supported.
+        import inspect
+
+        kwargs: dict = {"model_name": HF_MODEL}
+        if "max_model_len" in inspect.signature(OrpheusModel.__init__).parameters:
+            kwargs["max_model_len"] = MAX_MODEL_LEN
+        logger.info("Loading Orpheus model %s with kwargs %s", HF_MODEL, list(kwargs))
+        _model = OrpheusModel(**kwargs)
         logger.info("Orpheus model loaded.")
     return _model
 
