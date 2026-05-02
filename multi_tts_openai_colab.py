@@ -11,7 +11,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Chatterbox", "CosyVoice2", "Dia", "F5-TTS", "Fish-Speech", "Irodori-TTS", "Kokoro", "Kyutai-TTS", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Style-Bert-VITS2", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
+ENGINE = "Kokoro"  #@param ["Chatterbox", "CosyVoice2", "Dia", "F5-TTS", "Fish-Speech", "Irodori-TTS", "Kokoro", "Kyutai-TTS", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Spark-TTS", "Style-Bert-VITS2", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -156,6 +156,17 @@ COSYVOICE_HF_MODEL = "FunAudioLLM/CosyVoice2-0.5B"  #@param {type:"string"}
 COSYVOICE_PROMPT_WAV = ""  #@param {type:"string"}
 COSYVOICE_PROMPT_TEXT = ""  #@param {type:"string"}
 COSYVOICE_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+
+#@markdown ---
+#@markdown Spark-TTS (GPU recommended, EN/ZH only, voice cloning + gender/pitch/speed control)
+#@markdown - Code: Apache 2.0. Weights: CC BY-NC-SA 4.0 (non-commercial only) due to training data license.
+SPARK_HF_MODEL = "SparkAudio/Spark-TTS-0.5B"  #@param {type:"string"}
+SPARK_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+SPARK_DEFAULT_GENDER = "female"  #@param ["male", "female"]
+SPARK_DEFAULT_PITCH = "moderate"  #@param ["very_low", "low", "moderate", "high", "very_high"]
+SPARK_DEFAULT_SPEED = "moderate"  #@param ["very_low", "low", "moderate", "high", "very_high"]
+SPARK_PROMPT_WAV = ""  #@param {type:"string"}
+SPARK_PROMPT_TEXT = ""  #@param {type:"string"}
 
 #@markdown ---
 #@markdown Orpheus-TTS (GPU required, English-only, vLLM backend, Llama-3.2-3B base)
@@ -360,6 +371,20 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         COSYVOICE_PROMPT_TEXT,
         "--cosyvoice-default-voice",
         COSYVOICE_DEFAULT_VOICE,
+        "--spark-hf-model",
+        SPARK_HF_MODEL,
+        "--spark-default-voice",
+        SPARK_DEFAULT_VOICE,
+        "--spark-default-gender",
+        SPARK_DEFAULT_GENDER,
+        "--spark-default-pitch",
+        SPARK_DEFAULT_PITCH,
+        "--spark-default-speed",
+        SPARK_DEFAULT_SPEED,
+        "--spark-prompt-wav",
+        SPARK_PROMPT_WAV,
+        "--spark-prompt-text",
+        SPARK_PROMPT_TEXT,
         "--orpheus-hf-model",
         ORPHEUS_HF_MODEL,
         "--orpheus-default-voice",

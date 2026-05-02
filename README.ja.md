@@ -28,6 +28,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | Pocket-TTS | 動作OK (CPU可・~6x realtime) | 英語 / 仏 / 独 / 伊 / 葡 / 西 |
 | Orpheus-TTS | 動作OK (GPU 必須・L4/A100 推奨) | 英語（Llama-3.2-3B ベース、vLLM） |
 | CosyVoice2 | 動作OK (GPU推奨・Python 3.10 venv) | 日本語 / 英語 / 中 / 韓 / 独 他 9言語 |
+| Spark-TTS | 動作OK (GPU推奨) | 英語 / 中国語（重みは非商用） |
 | OpenVoice-V2 | 動作不可（Python 3.13 で `av==10` がビルドできない） | 日本語 / 英語 / 西 / 仏 / 中 / 韓 |
 | VibeVoice | 動作不可（upstream API 移行中） | 英語 / 中国語（長尺・最大 4 話者） |
 | Fish-Speech | 動作不可 | 日本語 / 英語 / 中国語 他 80言語以上 |
@@ -66,7 +67,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Chatterbox", "CosyVoice2", "Dia", "F5-TTS", "Fish-Speech", "Irodori-TTS", "Kokoro", "Kyutai-TTS", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Style-Bert-VITS2", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
+ENGINE = "Kokoro"  #@param ["Chatterbox", "CosyVoice2", "Dia", "F5-TTS", "Fish-Speech", "Irodori-TTS", "Kokoro", "Kyutai-TTS", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Spark-TTS", "Style-Bert-VITS2", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -211,6 +212,17 @@ COSYVOICE_HF_MODEL = "FunAudioLLM/CosyVoice2-0.5B"  #@param {type:"string"}
 COSYVOICE_PROMPT_WAV = ""  #@param {type:"string"}
 COSYVOICE_PROMPT_TEXT = ""  #@param {type:"string"}
 COSYVOICE_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+
+#@markdown ---
+#@markdown Spark-TTS (GPU recommended, EN/ZH only, voice cloning + gender/pitch/speed control)
+#@markdown - Code: Apache 2.0. Weights: CC BY-NC-SA 4.0 (non-commercial only) due to training data license.
+SPARK_HF_MODEL = "SparkAudio/Spark-TTS-0.5B"  #@param {type:"string"}
+SPARK_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+SPARK_DEFAULT_GENDER = "female"  #@param ["male", "female"]
+SPARK_DEFAULT_PITCH = "moderate"  #@param ["very_low", "low", "moderate", "high", "very_high"]
+SPARK_DEFAULT_SPEED = "moderate"  #@param ["very_low", "low", "moderate", "high", "very_high"]
+SPARK_PROMPT_WAV = ""  #@param {type:"string"}
+SPARK_PROMPT_TEXT = ""  #@param {type:"string"}
 
 #@markdown ---
 #@markdown Orpheus-TTS (GPU required, English-only, vLLM backend, Llama-3.2-3B base)
@@ -415,6 +427,20 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         COSYVOICE_PROMPT_TEXT,
         "--cosyvoice-default-voice",
         COSYVOICE_DEFAULT_VOICE,
+        "--spark-hf-model",
+        SPARK_HF_MODEL,
+        "--spark-default-voice",
+        SPARK_DEFAULT_VOICE,
+        "--spark-default-gender",
+        SPARK_DEFAULT_GENDER,
+        "--spark-default-pitch",
+        SPARK_DEFAULT_PITCH,
+        "--spark-default-speed",
+        SPARK_DEFAULT_SPEED,
+        "--spark-prompt-wav",
+        SPARK_PROMPT_WAV,
+        "--spark-prompt-text",
+        SPARK_PROMPT_TEXT,
         "--orpheus-hf-model",
         ORPHEUS_HF_MODEL,
         "--orpheus-default-voice",
@@ -634,6 +660,21 @@ Resemble AI の [resemble-ai/chatterbox](https://github.com/resemble-ai/chatterb
 
 [kyutai-labs/pocket-tts](https://github.com/kyutai-labs/pocket-tts) を使った Kyutai Labs の超軽量 CPU TTS です。100M パラメータで、MacBook Air M4 の CPU 2 コアだけで ~6x realtime で動作します。**GPU 不要**。デフォルトの Hugging Face モデルは `kyutai/pocket-tts`、voice は `kyutai/tts-voices` から取得。言語別モデルが用意されており（`english` / `english_2026-01` / `english_2026-04` / `french_24l` / `german_24l` / `italian` / `portuguese` / `spanish_24l`）、`--pocket-language` で選択します。`default` voice は `POCKET_DEFAULT_SPEAKER`（デフォルト: `alba`）の内蔵プリセットを使用、`--pocket-prompt-wav` を指定すると独自音声からの `clone` voice が有効になります。21 種類の内蔵プリセット名（`alba`、`anna`、`charles` ...）を `voice` パラメータに直接渡すこともできます。ライセンス: コードは MIT、モデル重みは CC-BY-4.0、**voice ごとに個別ライセンス**（[kyutai/tts-voices](https://huggingface.co/kyutai/tts-voices) を参照）。**Prohibited use:** 上流規約により、合意のない voice impersonation や偽情報の生成は禁止されています。
 
+### Spark-TTS
+
+[SparkAudio/Spark-TTS](https://github.com/SparkAudio/Spark-TTS) を使った 0.5B パラメータの Qwen2.5 ベース LLM-TTS です。**英語 / 中国語のみ**（日本語は **非対応**）対応で、ゼロショット voice cloning と、参照音声なしでの gender / pitch / speed 制御生成の 2 モードを持ちます。出力は 16 kHz モノラル WAV。GPU 推奨（VRAM ~4GB）。
+
+`voice` パラメータ:
+
+| voice | 説明 |
+|---|---|
+| `default` | 参照音声なしのプレーン TTS。`--spark-default-gender`（`male` / `female`）、`--spark-default-pitch`（`very_low` / `low` / `moderate` / `high` / `very_high`）、`--spark-default-speed`（同 5 段階）で制御します。 |
+| `clone` | ゼロショット voice cloning。`--spark-prompt-wav` を必須とし、`--spark-prompt-text`（参照音声の書き起こし、任意）を一緒に渡すと品質が安定します。 |
+
+voice cloning では、必ず権利を持つ参照音声（話者本人の同意）のみを使用してください。
+
+**ライセンス注意:** コードは Apache 2.0 ですが、**`Spark-TTS-0.5B` の重みは CC BY-NC-SA 4.0（非商用のみ）** に変更されています（学習データのライセンス制約のため、当初 Apache 2.0 だったところを上流で再ライセンス）。Sarashina-TTS / OuteTTS 1B / Voxtral-TTS と同じ扱いになります — 研究・個人利用は OK、商用利用は不可。上流モデルカードでも、合意のない voice cloning・なりすまし・詐欺・違法利用は禁止されています。
+
 ### Orpheus-TTS
 
 [canopyai/Orpheus-TTS](https://github.com/canopyai/Orpheus-TTS) を使った Canopy Labs の英語向け高品質 TTS です。`meta-llama/Llama-3.2-3B-Instruct` をベースとした LLM-TTS で、`orpheus-speech` パッケージ経由で vLLM 上にホスティングされます。デフォルトチェックポイント `canopylabs/orpheus-tts-0.1-finetune-prod` には英語 voice が 8 種類同梱されています: `tara`、`leah`、`jess`、`leo`、`dan`、`mia`、`zac`、`zoe`（upstream の主観評価で会話自然さ順）。出力は 24 kHz モノラル WAV。日本語は **非対応**。ラッパーは `vllm==0.7.3` をピンしています（新しい 0.7.x で Orpheus のストリーミング生成を壊す regression があったため）。GPU 必須、L4 / A100 推奨（3B 重み + vLLM KV キャッシュで VRAM ~10–12GB）。Python 3.10+。
@@ -720,6 +761,7 @@ voice cloning では、必ず権利を持つ参照音声（話者本人の同意
 | Pocket-TTS (voices) | — | voice ごとに異なる | 各 voice で要確認 | voice ライセンスは [kyutai/tts-voices](https://huggingface.co/kyutai/tts-voices) を参照。上流規約により非合意のなりすまし禁止 |
 | Orpheus-TTS | Apache 2.0 | Apache 2.0 + Llama 3.2 Community License | 要注意 | ベースが Llama-3.2-3B-Instruct のため Llama Community License も実質適用。英語のみ |
 | CosyVoice2 | Apache 2.0 | Apache 2.0 | OK | 多言語（日本語含む）。ゼロショット voice cloning。Python 3.10 venv 必須 |
+| Spark-TTS | Apache 2.0 | CC BY-NC-SA 4.0 | 不可 | 英 / 中のみ。重みは学習データ制約で Apache 2.0 から再ライセンス |
 | OpenVoice-V2 | MIT | MIT | OK | 多言語（日本語含む）。voice cloning。現在動作不可: `faster-whisper==0.9.0` 経由の `av==10` が Python 3.13 でビルドできない |
 | VibeVoice | MIT | MIT | 要注意（research-only） | 英 / 中のみ。現在は動作不可: upstream API 移行中（.wav speaker ファイル → .pt prompt cache へ移行） |
 | Fish-Speech | Apache 2.0 | Apache 2.0 | OK | A100/L4 GPU 必須（VRAM 24GB+） |
@@ -780,6 +822,8 @@ voice cloning では、必ず権利を持つ参照音声（話者本人の同意
   https://github.com/kyutai-labs/pocket-tts
 - Orpheus-TTS
   https://github.com/canopyai/Orpheus-TTS
+- Spark-TTS
+  https://github.com/SparkAudio/Spark-TTS
 - OpenVoice
   https://github.com/myshell-ai/OpenVoice
 - VibeVoice

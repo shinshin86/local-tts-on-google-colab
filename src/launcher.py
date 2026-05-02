@@ -52,6 +52,8 @@ def resolve_selected_voice(settings: Settings) -> str:
         return settings.orpheus_default_voice
     if settings.engine == "CosyVoice2":
         return settings.cosyvoice_default_voice
+    if settings.engine == "Spark-TTS":
+        return settings.spark_default_voice
     return ""
 
 
@@ -229,6 +231,22 @@ def print_engine_voice_hints(settings: Settings):
         print("注意: GPU 不要（CPU で十分高速）。Python 3.10+。")
         print("ライセンス: コードは MIT、重みは CC-BY-4.0。voice ごとに個別ライセンス（kyutai/tts-voices を参照）。")
         print("Prohibited use: 合意のない voice impersonation や偽情報の生成は禁止です。")
+    elif settings.engine == "Spark-TTS":
+        print("Spark-TTS は SparkAudio の Qwen2.5 ベース LLM-TTS です（中国語 / 英語、ゼロショット voice cloning）。")
+        print(f"モデル: {settings.spark_hf_model}")
+        print(f"デフォルト voice: {settings.spark_default_voice}")
+        print(f"デフォルト gender / pitch / speed: {settings.spark_default_gender} / {settings.spark_default_pitch} / {settings.spark_default_speed}")
+        print("voice 候補: default（プロンプト無し、gender/pitch/speed 制御モード）")
+        if settings.spark_prompt_wav:
+            print(f"             clone（参照音声: {settings.spark_prompt_wav}）")
+            if settings.spark_prompt_text:
+                print(f"             prompt_text: {settings.spark_prompt_text}")
+        else:
+            print("             clone は --spark-prompt-wav を指定すると有効になります（任意で --spark-prompt-text）")
+        print("対応言語: 中国語 / 英語のみ（日本語非対応）。")
+        print("注意: GPU 推奨（VRAM ~4GB）。出力は 16 kHz mono。")
+        print("ライセンス警告: コードは Apache 2.0 ですが、重み（Spark-TTS-0.5B）は **CC BY-NC-SA 4.0** で")
+        print("                 学習データのライセンス制約のため非商用のみです。商用利用は不可。")
     elif settings.engine == "CosyVoice2":
         print("CosyVoice2 は Alibaba FunAudioLLM のゼロショット voice cloning TTS です（多言語、日本語対応）。")
         print(f"モデル: {settings.cosyvoice_hf_model}")

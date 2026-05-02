@@ -104,6 +104,13 @@ def parse_args():
     parser.add_argument("--cosyvoice-prompt-wav", default="")
     parser.add_argument("--cosyvoice-prompt-text", default="")
     parser.add_argument("--cosyvoice-default-voice", default="default")
+    parser.add_argument("--spark-hf-model", default="SparkAudio/Spark-TTS-0.5B")
+    parser.add_argument("--spark-default-voice", default="default")
+    parser.add_argument("--spark-default-gender", default="female")
+    parser.add_argument("--spark-default-pitch", default="moderate")
+    parser.add_argument("--spark-default-speed", default="moderate")
+    parser.add_argument("--spark-prompt-wav", default="")
+    parser.add_argument("--spark-prompt-text", default="")
     parser.add_argument("--vibevoice-hf-model", default="microsoft/VibeVoice-1.5B")
     parser.add_argument("--vibevoice-default-speaker", default="en-Alice_woman")
     parser.add_argument("--vibevoice-prompt-wav", default="")
@@ -200,6 +207,13 @@ def main():
         cosyvoice_prompt_wav=args.cosyvoice_prompt_wav,
         cosyvoice_prompt_text=args.cosyvoice_prompt_text,
         cosyvoice_default_voice=args.cosyvoice_default_voice,
+        spark_hf_model=args.spark_hf_model,
+        spark_default_voice=args.spark_default_voice,
+        spark_default_gender=args.spark_default_gender,
+        spark_default_pitch=args.spark_default_pitch,
+        spark_default_speed=args.spark_default_speed,
+        spark_prompt_wav=args.spark_prompt_wav,
+        spark_prompt_text=args.spark_prompt_text,
         vibevoice_hf_model=args.vibevoice_hf_model,
         vibevoice_default_speaker=args.vibevoice_default_speaker,
         vibevoice_prompt_wav=args.vibevoice_prompt_wav,
