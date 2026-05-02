@@ -5,6 +5,7 @@ from .fish_speech import install as install_fish_speech
 from .irodori import install as install_irodori
 from .qwen3_tts import install as install_qwen3_tts
 from .kokoro import install as install_kokoro
+from .kyutai_tts import install as install_kyutai_tts
 from .melo import install as install_melo
 from .moss_tts_nano import install as install_moss_tts_nano
 from .neutts import install as install_neutts
@@ -12,6 +13,7 @@ from .openvoice_v2 import install as install_openvoice_v2
 from .outetts import install as install_outetts
 from .piper import install as install_piper
 from .piper_plus import install as install_piper_plus
+from .pocket_tts import install as install_pocket_tts
 from .sarashina_tts import install as install_sarashina_tts
 from .style_bert import install as install_style_bert
 from .vibevoice import install as install_vibevoice
@@ -28,6 +30,7 @@ INSTALLERS = {
     "Fish-Speech": install_fish_speech,
     "Irodori-TTS": install_irodori,
     "Kokoro": install_kokoro,
+    "Kyutai-TTS": install_kyutai_tts,
     "MeloTTS": install_melo,
     "MOSS-TTS-Nano": install_moss_tts_nano,
     "NeuTTS": install_neutts,
@@ -36,6 +39,7 @@ INSTALLERS = {
     "Style-Bert-VITS2": install_style_bert,
     "Piper": install_piper,
     "Piper-Plus": install_piper_plus,
+    "Pocket-TTS": install_pocket_tts,
     "Qwen3-TTS": install_qwen3_tts,
     "Sarashina-TTS": install_sarashina_tts,
     "TinyTTS": install_tiny_tts,
