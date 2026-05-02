@@ -43,12 +43,13 @@ def install(settings: Settings) -> dict:
     #    pull from any declared index.
     #
     # 2. `openai-whisper==20231117` has no pyproject.toml and its legacy setup.py
-    #    imports `pkg_resources` at build time. uv's isolated build env uses a
-    #    setuptools that no longer auto-imports pkg_resources, producing
+    #    starts with `from pkg_resources import ...`. Modern setuptools (>=80)
+    #    stopped shipping the `pkg_resources` module, so the build fails with
     #    `ModuleNotFoundError: No module named 'pkg_resources'`. Pre-install
-    #    setuptools into the venv and disable build isolation just for whisper
-    #    so it picks the venv's setuptools up.
-    uv_pip_install(python_bin, ["setuptools", "wheel"])
+    #    `setuptools<70` (which still ships pkg_resources) plus wheel into the
+    #    venv, then disable build isolation just for whisper so its build
+    #    reuses that older setuptools.
+    uv_pip_install(python_bin, ["setuptools<70", "wheel"])
     run(
         [
             "uv", "pip", "install",
