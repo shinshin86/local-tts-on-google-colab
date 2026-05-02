@@ -19,7 +19,6 @@ if COSYVOICE_REPO_DIR:
     sys.path.insert(0, str(Path(COSYVOICE_REPO_DIR) / "third_party" / "Matcha-TTS"))
 
 from cosyvoice.cli.cosyvoice import CosyVoice2  # noqa: E402
-from cosyvoice.utils.file_utils import load_wav  # noqa: E402
 
 logger = logging.getLogger("uvicorn.error")
 
@@ -28,8 +27,6 @@ MODEL_DIR = os.environ.get("COSYVOICE_MODEL_DIR", "")
 PROMPT_WAV = os.environ.get("COSYVOICE_PROMPT_WAV", "")
 PROMPT_TEXT = os.environ.get("COSYVOICE_PROMPT_TEXT", "")
 DEFAULT_VOICE = os.environ.get("COSYVOICE_DEFAULT_VOICE", "default")
-
-PROMPT_SR = 16000
 
 app = FastAPI(title="CosyVoice2 OpenAI Compatible TTS")
 
@@ -53,7 +50,6 @@ class AudioSpeechRequest(BaseModel):
 
 
 _model: CosyVoice2 | None = None
-_default_prompt = None
 
 
 def _bundled_default_prompt_path() -> str:
@@ -67,13 +63,6 @@ def get_model() -> CosyVoice2:
         _model = CosyVoice2(MODEL_DIR, load_jit=False, load_trt=False, fp16=False)
         logger.info("CosyVoice2 loaded (sample_rate=%d)", _model.sample_rate)
     return _model
-
-
-def get_default_prompt():
-    global _default_prompt
-    if _default_prompt is None:
-        _default_prompt = load_wav(_bundled_default_prompt_path(), PROMPT_SR)
-    return _default_prompt
 
 
 @app.exception_handler(Exception)
@@ -126,19 +115,20 @@ async def audio_speech(payload: AudioSpeechRequest):
                 status_code=400,
                 detail="voice='clone' requires --cosyvoice-prompt-wav at startup.",
             )
-        prompt_wav = load_wav(PROMPT_WAV, PROMPT_SR)
+        prompt_path = PROMPT_WAV
         if PROMPT_TEXT:
             it = model.inference_zero_shot(
-                payload.input, PROMPT_TEXT, prompt_wav, stream=False, speed=payload.speed
+                payload.input, PROMPT_TEXT, prompt_path, stream=False, speed=payload.speed
             )
         else:
             it = model.inference_cross_lingual(
-                payload.input, prompt_wav, stream=False, speed=payload.speed
+                payload.input, prompt_path, stream=False, speed=payload.speed
             )
     elif voice == "default":
         # Bundled reference is Chinese; cross_lingual handles arbitrary input language.
+        # Pass the file path; the upstream frontend re-loads it at the rate the model expects.
         it = model.inference_cross_lingual(
-            payload.input, get_default_prompt(), stream=False, speed=payload.speed
+            payload.input, _bundled_default_prompt_path(), stream=False, speed=payload.speed
         )
     else:
         raise HTTPException(
