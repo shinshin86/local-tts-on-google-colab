@@ -13,6 +13,7 @@ from .openvoice_v2 import install as install_openvoice_v2
 from .outetts import install as install_outetts
 from .piper import install as install_piper
 from .piper_plus import install as install_piper_plus
+from .pocket_tts import install as install_pocket_tts
 from .sarashina_tts import install as install_sarashina_tts
 from .style_bert import install as install_style_bert
 from .vibevoice import install as install_vibevoice
@@ -38,6 +39,7 @@ INSTALLERS = {
     "Style-Bert-VITS2": install_style_bert,
     "Piper": install_piper,
     "Piper-Plus": install_piper_plus,
+    "Pocket-TTS": install_pocket_tts,
     "Qwen3-TTS": install_qwen3_tts,
     "Sarashina-TTS": install_sarashina_tts,
     "TinyTTS": install_tiny_tts,

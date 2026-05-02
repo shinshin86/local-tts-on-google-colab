@@ -43,6 +43,10 @@ def parse_args():
     )
     parser.add_argument("--kyutai-prompt-wav", default="")
     parser.add_argument("--kyutai-default-voice", default="default")
+    parser.add_argument("--pocket-language", default="english")
+    parser.add_argument("--pocket-default-speaker", default="alba")
+    parser.add_argument("--pocket-prompt-wav", default="")
+    parser.add_argument("--pocket-default-voice", default="default")
     parser.add_argument("--melo-language", default="JP")
     parser.add_argument("--melo-default-voice", default="JP")
     parser.add_argument("--style-bert-model-repo", default="litagin/style_bert_vits2_jvnv")
@@ -128,6 +132,10 @@ def main():
         kyutai_voice=args.kyutai_voice,
         kyutai_prompt_wav=args.kyutai_prompt_wav,
         kyutai_default_voice=args.kyutai_default_voice,
+        pocket_language=args.pocket_language,
+        pocket_default_speaker=args.pocket_default_speaker,
+        pocket_prompt_wav=args.pocket_prompt_wav,
+        pocket_default_voice=args.pocket_default_voice,
         melo_language=args.melo_language,
         melo_default_voice=args.melo_default_voice,
         style_bert_model_repo=args.style_bert_model_repo,

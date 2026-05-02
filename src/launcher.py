@@ -46,6 +46,8 @@ def resolve_selected_voice(settings: Settings) -> str:
         return settings.vibevoice_default_voice
     if settings.engine == "Kyutai-TTS":
         return settings.kyutai_default_voice
+    if settings.engine == "Pocket-TTS":
+        return settings.pocket_default_voice
     return ""
 
 
@@ -208,6 +210,21 @@ def print_engine_voice_hints(settings: Settings):
         print("対応言語: 英語 / フランス語のみ（日本語非対応）。")
         print("注意: GPU 推奨（VRAM ~6GB）。Python 3.10+。")
         print("ライセンス: コードは MIT (Python) / Apache 2.0 (Rust)、重みは CC-BY-4.0。")
+    elif settings.engine == "Pocket-TTS":
+        print("Pocket TTS は Kyutai の超軽量 CPU TTS です（100M パラメータ、~6x realtime on M4）。")
+        print(f"language: {settings.pocket_language}")
+        print(f"デフォルト speaker: {settings.pocket_default_speaker}")
+        print(f"デフォルト voice: {settings.pocket_default_voice}")
+        print("voice 候補: default（POCKET_DEFAULT_SPEAKER に指定した内蔵プリセットを使用）")
+        if settings.pocket_prompt_wav:
+            print(f"             clone（参照音声: {settings.pocket_prompt_wav}）")
+        else:
+            print("             clone は --pocket-prompt-wav を指定すると有効になります（.wav または .safetensors）")
+        print("             内蔵プリセット名（alba, anna, charles, ...）を voice に直接渡すことも可能です。")
+        print("対応言語: english / french_24l / german_24l / italian / portuguese / spanish_24l")
+        print("注意: GPU 不要（CPU で十分高速）。Python 3.10+。")
+        print("ライセンス: コードは MIT、重みは CC-BY-4.0。voice ごとに個別ライセンス（kyutai/tts-voices を参照）。")
+        print("Prohibited use: 合意のない voice impersonation や偽情報の生成は禁止です。")
     elif settings.engine == "VibeVoice":
         print("VibeVoice は Microsoft の長尺マルチスピーカー TTS です（最大 90 分・4 話者の一括生成）。")
         print(f"モデル: {settings.vibevoice_hf_model}")
