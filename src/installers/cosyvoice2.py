@@ -34,8 +34,18 @@ def install(settings: Settings) -> dict:
     python_bin = _ensure_py310_venv(engine_dir)
 
     # Upstream pins are heavy (torch==2.3.1, deepspeed==0.15.1, onnxruntime-gpu==1.18.0,
-    # openai-whisper==20231117, etc.). Install as-is to match upstream expectations.
-    uv_pip_install(python_bin, ["-r", str(repo_dir / "requirements.txt")])
+    # openai-whisper==20231117, etc.). The requirements.txt also declares an extra
+    # `aiinfra` PyPI index for onnxruntime-cuda-12 wheels; uv defaults to first-index
+    # only, which then fails with "no version of protobuf==4.25" because that exact
+    # version lives on the primary PyPI. Allow uv to pull from any declared index.
+    run(
+        [
+            "uv", "pip", "install",
+            "--python", str(python_bin),
+            "--index-strategy", "unsafe-best-match",
+            "-r", str(repo_dir / "requirements.txt"),
+        ]
+    )
     uv_pip_install(python_bin, ["fastapi", "uvicorn", "soundfile"])
 
     model_dir = repo_dir / "pretrained_models" / "CosyVoice2-0.5B"
