@@ -11,7 +11,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Chatterbox", "Dia", "F5-TTS", "Fish-Speech", "Irodori-TTS", "Kokoro", "Kyutai-TTS", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "OpenVoice-V2", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Style-Bert-VITS2", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
+ENGINE = "Kokoro"  #@param ["Chatterbox", "CosyVoice2", "Dia", "F5-TTS", "Fish-Speech", "Irodori-TTS", "Kokoro", "Kyutai-TTS", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Spark-TTS", "Style-Bert-VITS2", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -148,6 +148,37 @@ DIA_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
 OPENVOICE_LANGUAGE = "JP"  #@param ["EN", "ES", "FR", "ZH", "JP", "KR"]
 OPENVOICE_PROMPT_WAV = ""  #@param {type:"string"}
 OPENVOICE_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+
+#@markdown ---
+#@markdown CosyVoice2 (GPU recommended, multilingual incl JP, Apache 2.0)
+#@markdown - Forces a Python 3.10 venv because upstream pins (torch 2.3.1, openai-whisper 20231117, etc.) do not resolve under Python 3.12.
+COSYVOICE_HF_MODEL = "FunAudioLLM/CosyVoice2-0.5B"  #@param {type:"string"}
+COSYVOICE_PROMPT_WAV = ""  #@param {type:"string"}
+COSYVOICE_PROMPT_TEXT = ""  #@param {type:"string"}
+COSYVOICE_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+
+#@markdown ---
+#@markdown Spark-TTS (GPU recommended, EN/ZH only, voice cloning + gender/pitch/speed control)
+#@markdown - Code: Apache 2.0. Weights: CC BY-NC-SA 4.0 (non-commercial only) due to training data license.
+SPARK_HF_MODEL = "SparkAudio/Spark-TTS-0.5B"  #@param {type:"string"}
+SPARK_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+SPARK_DEFAULT_GENDER = "female"  #@param ["male", "female"]
+SPARK_DEFAULT_PITCH = "moderate"  #@param ["very_low", "low", "moderate", "high", "very_high"]
+SPARK_DEFAULT_SPEED = "moderate"  #@param ["very_low", "low", "moderate", "high", "very_high"]
+SPARK_PROMPT_WAV = ""  #@param {type:"string"}
+SPARK_PROMPT_TEXT = ""  #@param {type:"string"}
+
+#@markdown ---
+#@markdown Orpheus-TTS (currently not working — HF-gated weights)
+#@markdown - Code: Apache 2.0. Weights: Apache 2.0 + Llama 3.2 Community License (base model).
+#@markdown - Pinned to vllm==0.7.3 due to a known regression in newer vLLM 0.7.x.
+#@markdown - **Before running**: request access to canopylabs/orpheus-3b-0.1-ft AND
+#@markdown   meta-llama/Llama-3.2-3B-Instruct on HF, accept the Llama 3.2 license,
+#@markdown   then set `HF_TOKEN` (Colab Secrets → New secret with notebook access).
+#@markdown   See the README "Orpheus-TTS" section for the full setup.
+ORPHEUS_HF_MODEL = "canopylabs/orpheus-tts-0.1-finetune-prod"  #@param {type:"string"}
+ORPHEUS_DEFAULT_VOICE = "tara"  #@param ["tara", "leah", "jess", "leo", "dan", "mia", "zac", "zoe"]
+ORPHEUS_MAX_MODEL_LEN = 2048  #@param {type:"integer"}
 
 #@markdown ---
 #@markdown VibeVoice (GPU required, English/Chinese, long-form multi-speaker)
@@ -336,6 +367,34 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         OPENVOICE_PROMPT_WAV,
         "--openvoice-default-voice",
         OPENVOICE_DEFAULT_VOICE,
+        "--cosyvoice-hf-model",
+        COSYVOICE_HF_MODEL,
+        "--cosyvoice-prompt-wav",
+        COSYVOICE_PROMPT_WAV,
+        "--cosyvoice-prompt-text",
+        COSYVOICE_PROMPT_TEXT,
+        "--cosyvoice-default-voice",
+        COSYVOICE_DEFAULT_VOICE,
+        "--spark-hf-model",
+        SPARK_HF_MODEL,
+        "--spark-default-voice",
+        SPARK_DEFAULT_VOICE,
+        "--spark-default-gender",
+        SPARK_DEFAULT_GENDER,
+        "--spark-default-pitch",
+        SPARK_DEFAULT_PITCH,
+        "--spark-default-speed",
+        SPARK_DEFAULT_SPEED,
+        "--spark-prompt-wav",
+        SPARK_PROMPT_WAV,
+        "--spark-prompt-text",
+        SPARK_PROMPT_TEXT,
+        "--orpheus-hf-model",
+        ORPHEUS_HF_MODEL,
+        "--orpheus-default-voice",
+        ORPHEUS_DEFAULT_VOICE,
+        "--orpheus-max-model-len",
+        str(ORPHEUS_MAX_MODEL_LEN),
         "--vibevoice-hf-model",
         VIBEVOICE_HF_MODEL,
         "--vibevoice-default-speaker",
