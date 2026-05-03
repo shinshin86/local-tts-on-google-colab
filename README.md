@@ -1,5 +1,7 @@
 # local-tts-on-google-colab
 
+![Logo](./images/logo.png)
+
 **English** | [日本語](README.ja.md)
 
 A sample project that temporarily launches a selected local TTS engine on Google Colab as an OpenAI-compatible `/v1/audio/speech` endpoint for quick evaluation.

@@ -1,5 +1,7 @@
 # local-tts-on-google-colab
 
+![Logo](./images/logo.png)
+
 [English](README.md) | **日本語**
 
 Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/v1/audio/speech` として起動し、動作確認できるようにするためのサンプルです。
