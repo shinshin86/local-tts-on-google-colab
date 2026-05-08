@@ -17,6 +17,9 @@ GPT_SOVITS_REPO_DIR = os.environ.get("GPT_SOVITS_REPO_DIR", "")
 if GPT_SOVITS_REPO_DIR:
     sys.path.insert(0, GPT_SOVITS_REPO_DIR)
     sys.path.insert(0, str(Path(GPT_SOVITS_REPO_DIR) / "GPT_SoVITS"))
+    # Upstream's GPT_SoVITS/sv.py does `from ERes2NetV2 import ERes2NetV2`,
+    # which requires the eres2net/ subdirectory on sys.path too.
+    sys.path.insert(0, str(Path(GPT_SOVITS_REPO_DIR) / "GPT_SoVITS" / "eres2net"))
 
 from GPT_SoVITS.TTS_infer_pack.TTS import TTS, TTS_Config  # noqa: E402
 
