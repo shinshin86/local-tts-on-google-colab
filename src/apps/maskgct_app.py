@@ -18,6 +18,11 @@ from pydantic import BaseModel
 MASKGCT_REPO_DIR = os.environ.get("MASKGCT_REPO_DIR", "")
 if MASKGCT_REPO_DIR:
     sys.path.insert(0, MASKGCT_REPO_DIR)
+    # Upstream's mandarin g2p module uses relative paths like
+    # `./models/tts/maskgct/g2p/sources/...` and calls `exit()` if the resource
+    # files are missing. Chdir into the Amphion repo so those relative paths
+    # resolve before triggering the import below.
+    os.chdir(MASKGCT_REPO_DIR)
 
 from models.tts.maskgct.maskgct_utils import (  # noqa: E402
     MaskGCT_Inference_Pipeline,
