@@ -49,6 +49,10 @@ def install(settings: Settings) -> dict:
         "STYLETTS2_BETA": str(settings.styletts2_beta),
         "STYLETTS2_DIFFUSION_STEPS": str(settings.styletts2_diffusion_steps),
         "STYLETTS2_EMBEDDING_SCALE": str(settings.styletts2_embedding_scale),
+        # Colab sets MPLBACKEND to its inline backend, which isn't installed in
+        # this venv. styletts2.utils imports matplotlib at module load time, so
+        # force a headless backend before that import happens.
+        "MPLBACKEND": "Agg",
     }
     proc = popen(
         [
