@@ -117,6 +117,42 @@ def parse_args():
     parser.add_argument("--vibevoice-default-voice", default="default")
     parser.add_argument("--vibevoice-ddpm-steps", type=int, default=10)
     parser.add_argument("--vibevoice-cfg-scale", type=float, default=1.3)
+    parser.add_argument("--bark-default-voice", default="v2/en_speaker_6")
+    parser.add_argument("--bark-use-small-models", action="store_true")
+    parser.add_argument("--chattts-default-voice", default="default")
+    parser.add_argument("--chattts-seed", type=int, default=2)
+    parser.add_argument("--chattts-temperature", type=float, default=0.3)
+    parser.add_argument("--csm-hf-model", default="sesame/csm-1b")
+    parser.add_argument("--csm-llama-model", default="meta-llama/Llama-3.2-1B")
+    parser.add_argument("--csm-default-voice", default="default")
+    parser.add_argument("--csm-default-speaker", type=int, default=0)
+    parser.add_argument("--csm-max-audio-length-ms", type=int, default=10000)
+    parser.add_argument("--csm-temperature", type=float, default=0.9)
+    parser.add_argument("--styletts2-default-voice", default="default")
+    parser.add_argument("--styletts2-prompt-wav", default="")
+    parser.add_argument("--styletts2-alpha", type=float, default=0.3)
+    parser.add_argument("--styletts2-beta", type=float, default=0.7)
+    parser.add_argument("--styletts2-diffusion-steps", type=int, default=5)
+    parser.add_argument("--styletts2-embedding-scale", type=float, default=1.0)
+    parser.add_argument("--maskgct-default-voice", default="default")
+    parser.add_argument("--maskgct-prompt-wav", default="")
+    parser.add_argument("--maskgct-prompt-text", default="")
+    parser.add_argument("--maskgct-prompt-lang", default="en")
+    parser.add_argument("--maskgct-target-lang", default="en")
+    parser.add_argument("--gpt-sovits-version", default="v2")
+    parser.add_argument("--gpt-sovits-default-voice", default="default")
+    parser.add_argument("--gpt-sovits-prompt-wav", default="")
+    parser.add_argument("--gpt-sovits-prompt-text", default="")
+    parser.add_argument("--gpt-sovits-prompt-lang", default="en")
+    parser.add_argument("--gpt-sovits-target-lang", default="en")
+    parser.add_argument("--higgs-hf-model", default="bosonai/higgs-audio-v2-generation-3B-base")
+    parser.add_argument("--higgs-hf-tokenizer", default="bosonai/higgs-audio-v2-tokenizer")
+    parser.add_argument("--higgs-default-voice", default="default")
+    parser.add_argument("--higgs-default-ref-voice", default="belinda")
+    parser.add_argument("--higgs-prompt-wav", default="")
+    parser.add_argument("--higgs-prompt-text", default="")
+    parser.add_argument("--higgs-max-new-tokens", type=int, default=1024)
+    parser.add_argument("--higgs-temperature", type=float, default=0.7)
     parser.add_argument("--root-dir", default="/content/openai-compatible-local-tts")
     return parser.parse_args()
 
@@ -220,6 +256,42 @@ def main():
         vibevoice_default_voice=args.vibevoice_default_voice,
         vibevoice_ddpm_steps=args.vibevoice_ddpm_steps,
         vibevoice_cfg_scale=args.vibevoice_cfg_scale,
+        bark_default_voice=args.bark_default_voice,
+        bark_use_small_models=args.bark_use_small_models,
+        chattts_default_voice=args.chattts_default_voice,
+        chattts_seed=args.chattts_seed,
+        chattts_temperature=args.chattts_temperature,
+        csm_hf_model=args.csm_hf_model,
+        csm_llama_model=args.csm_llama_model,
+        csm_default_voice=args.csm_default_voice,
+        csm_default_speaker=args.csm_default_speaker,
+        csm_max_audio_length_ms=args.csm_max_audio_length_ms,
+        csm_temperature=args.csm_temperature,
+        styletts2_default_voice=args.styletts2_default_voice,
+        styletts2_prompt_wav=args.styletts2_prompt_wav,
+        styletts2_alpha=args.styletts2_alpha,
+        styletts2_beta=args.styletts2_beta,
+        styletts2_diffusion_steps=args.styletts2_diffusion_steps,
+        styletts2_embedding_scale=args.styletts2_embedding_scale,
+        maskgct_default_voice=args.maskgct_default_voice,
+        maskgct_prompt_wav=args.maskgct_prompt_wav,
+        maskgct_prompt_text=args.maskgct_prompt_text,
+        maskgct_prompt_lang=args.maskgct_prompt_lang,
+        maskgct_target_lang=args.maskgct_target_lang,
+        gpt_sovits_version=args.gpt_sovits_version,
+        gpt_sovits_default_voice=args.gpt_sovits_default_voice,
+        gpt_sovits_prompt_wav=args.gpt_sovits_prompt_wav,
+        gpt_sovits_prompt_text=args.gpt_sovits_prompt_text,
+        gpt_sovits_prompt_lang=args.gpt_sovits_prompt_lang,
+        gpt_sovits_target_lang=args.gpt_sovits_target_lang,
+        higgs_hf_model=args.higgs_hf_model,
+        higgs_hf_tokenizer=args.higgs_hf_tokenizer,
+        higgs_default_voice=args.higgs_default_voice,
+        higgs_default_ref_voice=args.higgs_default_ref_voice,
+        higgs_prompt_wav=args.higgs_prompt_wav,
+        higgs_prompt_text=args.higgs_prompt_text,
+        higgs_max_new_tokens=args.higgs_max_new_tokens,
+        higgs_temperature=args.higgs_temperature,
         root_dir=Path(args.root_dir),
         repo_dir=REPO_DIR,
     )
