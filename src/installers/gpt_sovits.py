@@ -50,6 +50,20 @@ def install(settings: Settings) -> dict:
     )
     uv_pip_install(python_bin, ["fastapi", "uvicorn", "soundfile", "huggingface_hub"])
 
+    # requirements.txt resolves torch>=2.5.1 to whatever is latest (e.g. 2.10.x
+    # built against CUDA 12.x), but uv may pull torchaudio independently and
+    # land on a newer major (2.11.x built against CUDA 13.x). The mismatch
+    # causes torchaudio to fail at import with `libcudart.so.13: cannot open`.
+    # Reconcile by re-pinning torchaudio to the installed torch version.
+    pin_torchaudio = (
+        "import subprocess, sys, torch;"
+        " v = torch.__version__.split('+')[0];"
+        " subprocess.check_call(["
+        "'uv', 'pip', 'install', '--python', sys.executable, f'torchaudio=={v}'"
+        "])"
+    )
+    run([str(python_bin), "-c", pin_torchaudio])
+
     # Selectively download just the v2 weights (~1.2 GB) plus the BERT/HuBERT
     # base models. Pulling the entire 5.3 GB lj1995/GPT-SoVITS repo is wasteful
     # for the v2 default we ship.
