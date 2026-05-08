@@ -38,6 +38,15 @@ def popen(cmd, *, cwd=None, env=None, log_path: Path):
     print(f"$ {printable}  > {log_path}")
     log_path.parent.mkdir(parents=True, exist_ok=True)
     log_file = open(log_path, "a", buffering=1, encoding="utf-8")
+    # Colab sets MPLBACKEND=module://matplotlib_inline.backend_inline in the
+    # parent kernel, but that backend isn't installed inside engine venvs.
+    # Several engines transitively import matplotlib (torchmetrics, styletts2,
+    # …) and crash on startup. Force a headless backend unless the engine
+    # explicitly chose one.
+    if env is not None:
+        backend = env.get("MPLBACKEND", "")
+        if not backend or backend.startswith("module://matplotlib_inline"):
+            env = {**env, "MPLBACKEND": "Agg"}
     return subprocess.Popen(
         cmd,
         cwd=cwd,
