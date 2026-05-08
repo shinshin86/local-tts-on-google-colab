@@ -16,6 +16,22 @@ from pydantic import BaseModel
 if os.environ.get("BARK_USE_SMALL_MODELS", "0") == "1":
     os.environ["SUNO_USE_SMALL_MODELS"] = "True"
 
+# PyTorch 2.6 flipped `torch.load`'s default to `weights_only=True`. Upstream Bark
+# still ships pickled checkpoints (with numpy scalars), so loading fails unless we
+# restore the legacy behavior. Apply this before importing `bark`, which calls
+# `torch.load` during `preload_models()`.
+import torch  # noqa: E402
+
+_orig_torch_load = torch.load
+
+
+def _bark_torch_load(*args, **kwargs):
+    kwargs.setdefault("weights_only", False)
+    return _orig_torch_load(*args, **kwargs)
+
+
+torch.load = _bark_torch_load
+
 from bark import SAMPLE_RATE, generate_audio, preload_models  # noqa: E402
 
 logger = logging.getLogger("uvicorn.error")
