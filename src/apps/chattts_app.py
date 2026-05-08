@@ -12,7 +12,21 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
-import ChatTTS  # noqa: N814
+# PyTorch 2.6 flipped `torch.load`'s default to `weights_only=True`. ChatTTS still
+# ships pickled .pt checkpoints, so loading fails unless we restore the legacy
+# behavior. Patch before importing ChatTTS, which calls `torch.load` during
+# `Chat.load()`.
+_orig_torch_load = torch.load
+
+
+def _chattts_torch_load(*args, **kwargs):
+    kwargs.setdefault("weights_only", False)
+    return _orig_torch_load(*args, **kwargs)
+
+
+torch.load = _chattts_torch_load
+
+import ChatTTS  # noqa: E402, N814
 
 logger = logging.getLogger("uvicorn.error")
 

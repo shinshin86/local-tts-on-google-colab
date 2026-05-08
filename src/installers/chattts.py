@@ -21,6 +21,9 @@ def install(settings: Settings) -> dict:
             # Upstream README documents `pip install ChatTTS` (case-insensitive on PyPI).
             # Pin loosely to keep the dependency tree compatible with Colab's CUDA stack.
             "ChatTTS",
+            # ChatTTS imports `requests` from its asset-download helper but does not
+            # declare it as a dependency, so we install it explicitly.
+            "requests",
         ],
     )
 
