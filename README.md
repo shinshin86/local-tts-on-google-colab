@@ -38,7 +38,7 @@ Supported engines:
 | Style-Bert-VITS2 | Not working | - |
 | Bark | Pending Colab verification (GPU recommended, ~12GB / 8GB small) | English / Japanese / Chinese and 13 languages |
 | ChatTTS | Pending Colab verification (GPU recommended, **non-commercial**) | English / Chinese |
-| CSM-1B | Pending Colab verification (GPU required, HF-gated weights, `HF_TOKEN` required) | English |
+| CSM-1B | Not working by default (HF-gated weights for `sesame/csm-1b` + `meta-llama/Llama-3.2-1B`, requires accepting both licenses + `HF_TOKEN`) | English (Llama-3.2-1B base + Mimi codec) |
 | StyleTTS2 | Pending Colab verification (GPU recommended, Python 3.11 venv) | English |
 | MaskGCT | Pending Colab verification (GPU required, ~10-12GB, **non-commercial weights**) | English / Chinese |
 | GPT-SoVITS | Pending Colab verification (GPU recommended, reference audio required) | Chinese / English / Japanese / Korean / Cantonese |

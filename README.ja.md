@@ -38,7 +38,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | Style-Bert-VITS2 | 動作不可 | - |
 | Bark | Colab 検証中 (GPU推奨・~12GB / small=8GB) | 英語 / 日本語 / 中国語 他 13言語 |
 | ChatTTS | Colab 検証中 (GPU推奨・**商用不可**) | 英語 / 中国語 |
-| CSM-1B | Colab 検証中 (GPU必須・HF gated・`HF_TOKEN` 必須) | 英語 |
+| CSM-1B | デフォルトで動作不可（`sesame/csm-1b` と `meta-llama/Llama-3.2-1B` の HF gated。両方のライセンス同意 + `HF_TOKEN` が必要） | 英語（Llama-3.2-1B ベース + Mimi codec） |
 | StyleTTS2 | Colab 検証中 (GPU推奨・Python 3.11 venv) | 英語 |
 | MaskGCT | Colab 検証中 (GPU必須・~10-12GB・**商用不可**) | 英語 / 中国語 |
 | GPT-SoVITS | Colab 検証中 (GPU推奨・参照音声必須) | 中 / 英 / 日 / 韓 / 粤 |
