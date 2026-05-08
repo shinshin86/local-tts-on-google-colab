@@ -83,6 +83,20 @@ def install(settings: Settings) -> dict:
     )
     uv_pip_install(python_bin, ["fastapi", "uvicorn", "soundfile"])
 
+    # Upstream requirements pin torch==2.0.1 but leave torchaudio unpinned, so
+    # uv resolves the latest torchaudio (2.11.x, CUDA 13). Without the matching
+    # torchaudio (2.0.2 for torch 2.0.1), import fails with libcudart.so.13.
+    pin_torchaudio = (
+        "import subprocess, sys, torch;"
+        " v = torch.__version__.split('+')[0];"
+        " major_minor = '.'.join(v.split('.')[:2]);"
+        " subprocess.check_call(["
+        "'uv', 'pip', 'install', '--python', sys.executable,"
+        " f'torchaudio=={major_minor}.*'"
+        "])"
+    )
+    run([str(python_bin), "-c", pin_torchaudio])
+
     write_text(engine_dir / "app.py", settings.read_repo_text("src/apps/maskgct_app.py"))
 
     env = {
