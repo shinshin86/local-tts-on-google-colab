@@ -18,6 +18,7 @@ from boson_multimodal.data_types import (
     ChatMLSample,
     Message,
 )
+from boson_multimodal.model.higgs_audio.modeling_higgs_audio import HiggsAudioModel
 from boson_multimodal.serve.serve_engine import HiggsAudioServeEngine
 
 logger = logging.getLogger("uvicorn.error")
@@ -66,11 +67,63 @@ class AudioSpeechRequest(BaseModel):
 
 
 _engine: HiggsAudioServeEngine | None = None
+_higgs_audio_init_patched = False
+
+# Keys that need to flow from the flat HF config into the wrapped LlamaConfig.
+# Upstream HiggsAudioConfig builds a default LlamaConfig (vocab_size=32000) when
+# the HF config has no `text_config` block, which leaves `embed_tokens` too
+# small to address pad_token_id=128001 / audio_*_token_idx=128012-128016.
+_TEXT_CONFIG_KEYS = (
+    "vocab_size",
+    "hidden_size",
+    "num_hidden_layers",
+    "num_attention_heads",
+    "num_key_value_heads",
+    "intermediate_size",
+    "max_position_embeddings",
+    "rms_norm_eps",
+    "head_dim",
+    "rope_theta",
+    "tie_word_embeddings",
+    "attention_bias",
+    "attention_dropout",
+    "hidden_act",
+    "initializer_range",
+    "mlp_bias",
+    "pretraining_tp",
+    "use_cache",
+)
+
+
+def _patch_higgs_audio_config() -> None:
+    """Inject the missing flat-config values into HiggsAudioConfig.text_config."""
+    global _higgs_audio_init_patched
+    if _higgs_audio_init_patched:
+        return
+
+    import json
+    from huggingface_hub import hf_hub_download
+
+    raw_path = hf_hub_download(HF_MODEL, "config.json")
+    with open(raw_path, encoding="utf-8") as fp:
+        flat = json.load(fp)
+
+    overrides = {k: flat[k] for k in _TEXT_CONFIG_KEYS if k in flat}
+    orig_init = HiggsAudioModel.__init__
+
+    def patched_init(self, config):
+        for key, value in overrides.items():
+            setattr(config.text_config, key, value)
+        return orig_init(self, config)
+
+    HiggsAudioModel.__init__ = patched_init
+    _higgs_audio_init_patched = True
 
 
 def get_engine() -> HiggsAudioServeEngine:
     global _engine
     if _engine is None:
+        _patch_higgs_audio_config()
         device = "cuda" if torch.cuda.is_available() else "cpu"
         logger.info("Loading HiggsAudioServeEngine on %s (%s)", device, HF_MODEL)
         _engine = HiggsAudioServeEngine(
