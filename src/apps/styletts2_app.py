@@ -24,6 +24,13 @@ def _styletts2_torch_load(*args, **kwargs):
 
 torch.load = _styletts2_torch_load
 
+# styletts2.inference() calls nltk.word_tokenize(), which requires the
+# `punkt_tab` resource (NLTK >=3.9 replaced the legacy `punkt`). The pip
+# package downloads `punkt` only, so fetch the new resource here.
+import nltk  # noqa: E402
+
+nltk.download("punkt_tab", quiet=True)
+
 from styletts2 import tts as styletts2_tts  # noqa: E402
 
 logger = logging.getLogger("uvicorn.error")
