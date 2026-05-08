@@ -83,6 +83,10 @@ def install(settings: Settings) -> dict:
     )
     uv_pip_install(python_bin, ["fastapi", "uvicorn", "soundfile"])
 
+    # Upstream's g2p code uses LangSegment.setLangfilters(...) which was
+    # renamed/removed in LangSegment 0.2.0. Pin to the last 0.1.x release.
+    uv_pip_install(python_bin, ["LangSegment<0.2"])
+
     # Upstream requirements pin torch==2.0.1 but leave torchaudio unpinned, so
     # uv resolves the latest torchaudio (2.11.x, CUDA 13). Without the matching
     # torchaudio (2.0.2 for torch 2.0.1), import fails with libcudart.so.13.
