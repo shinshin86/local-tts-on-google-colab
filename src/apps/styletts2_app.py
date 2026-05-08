@@ -5,11 +5,26 @@ import os
 import tempfile
 from pathlib import Path
 
+import torch
 from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-from styletts2 import tts as styletts2_tts
+
+# PyTorch 2.6 flipped `torch.load`'s default to `weights_only=True`. The pip
+# `styletts2` package still ships pickled checkpoints (with non-tensor globals),
+# so we restore the legacy default before importing it.
+_orig_torch_load = torch.load
+
+
+def _styletts2_torch_load(*args, **kwargs):
+    kwargs.setdefault("weights_only", False)
+    return _orig_torch_load(*args, **kwargs)
+
+
+torch.load = _styletts2_torch_load
+
+from styletts2 import tts as styletts2_tts  # noqa: E402
 
 logger = logging.getLogger("uvicorn.error")
 
