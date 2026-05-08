@@ -83,9 +83,36 @@ def install(settings: Settings) -> dict:
     )
     uv_pip_install(python_bin, ["fastapi", "uvicorn", "soundfile"])
 
-    # Upstream's g2p code uses LangSegment.setLangfilters(...) which was
-    # renamed/removed in LangSegment 0.2.0. Pin to the last 0.1.x release.
-    uv_pip_install(python_bin, ["LangSegment<0.2"])
+    # LangSegment 0.2.0 (the only PyPI version still available) ships a broken
+    # __init__.py that imports `setLangfilters`/`getLangfilters` from its own
+    # submodule, but those names were removed when the API was renamed to
+    # `setfilters`/`getfilters`. Rewrite __init__.py to import only the
+    # symbols that actually exist.
+    langsegment_init = (
+        engine_dir
+        / ".venv"
+        / "lib"
+        / "python3.10"
+        / "site-packages"
+        / "LangSegment"
+        / "__init__.py"
+    )
+    if langsegment_init.exists():
+        write_text(
+            langsegment_init,
+            (
+                "from .LangSegment import (\n"
+                "    LangSegment,\n"
+                "    getTexts,\n"
+                "    classify,\n"
+                "    getCounts,\n"
+                "    printList,\n"
+                "    setfilters,\n"
+                "    getfilters,\n"
+                ")\n"
+                "__version__ = \"0.2.0\"\n"
+            ),
+        )
 
     # Upstream requirements pin torch==2.0.1 but leave torchaudio unpinned, so
     # uv resolves the latest torchaudio (2.11.x, CUDA 13). Without the matching
