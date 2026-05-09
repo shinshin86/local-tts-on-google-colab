@@ -117,6 +117,23 @@ def _patch_higgs_audio_config() -> None:
         return orig_init(self, config)
 
     HiggsAudioModel.__init__ = patched_init
+
+    # tokenizer_config.json sets tokenizer_class="TokenizersBackend", a class
+    # that exists only in unreleased transformers 5.x. Make AutoTokenizer fall
+    # back to PreTrainedTokenizerFast (which still loads tokenizer.json).
+    from transformers import AutoTokenizer, PreTrainedTokenizerFast
+
+    orig_auto_from_pretrained = AutoTokenizer.from_pretrained
+
+    def patched_auto_from_pretrained(*args, **kwargs):
+        try:
+            return orig_auto_from_pretrained(*args, **kwargs)
+        except ValueError as exc:
+            if "TokenizersBackend" not in str(exc):
+                raise
+            return PreTrainedTokenizerFast.from_pretrained(*args, **kwargs)
+
+    AutoTokenizer.from_pretrained = patched_auto_from_pretrained
     _higgs_audio_init_patched = True
 
 
