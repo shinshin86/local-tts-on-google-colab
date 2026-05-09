@@ -36,13 +36,13 @@ Supported engines:
 | Fish-Speech | Not working | Japanese / English / Chinese and 80+ languages |
 | MeloTTS | Not working | - |
 | Style-Bert-VITS2 | Not working | - |
-| Bark | Pending Colab verification (GPU recommended, ~12GB / 8GB small) | English / Japanese / Chinese and 13 languages |
-| ChatTTS | Pending Colab verification (GPU recommended, **non-commercial**) | English / Chinese |
+| Bark | Working on Colab (GPU recommended, ~12GB / 8GB small) | English / Japanese / Chinese and 13 languages |
+| ChatTTS | Working on Colab (GPU recommended, **non-commercial**) | English / Chinese |
 | CSM-1B | Not working by default (HF-gated weights for `sesame/csm-1b` + `meta-llama/Llama-3.2-1B`, requires accepting both licenses + `HF_TOKEN`) | English (Llama-3.2-1B base + Mimi codec) |
-| StyleTTS2 | Pending Colab verification (GPU recommended, Python 3.11 venv) | English |
-| MaskGCT | Pending Colab verification (GPU required, ~10-12GB, **non-commercial weights**) | English / Chinese |
-| GPT-SoVITS | Pending Colab verification (GPU recommended, reference audio required) | Chinese / English / Japanese / Korean / Cantonese |
-| Higgs-Audio-v2 | Pending Colab verification (**A100/L4 required**, VRAM 24GB+) | English |
+| StyleTTS2 | Working on Colab (GPU recommended, Python 3.11 venv) | English |
+| MaskGCT | Working on Colab (GPU required, ~10-12GB, **non-commercial weights**) | English / Chinese |
+| GPT-SoVITS | Engine starts on Colab — reference audio required for synthesis (no default speaker mode; pass `--gpt-sovits-prompt-wav` + `--gpt-sovits-prompt-text`) | Chinese / English / Japanese / Korean / Cantonese |
+| Higgs-Audio-v2 | Not working by default (upstream HF checkpoint requires unreleased `boson_multimodal` / transformers 5.x; engine starts but inference fails inside the audio tokenizer loader) | English |
 
 `MeloTTS` and `Style-Bert-VITS2` currently have dependency resolution issues under Colab's uv + venv environment and do not work.
 
@@ -1007,6 +1007,8 @@ The `voice` parameter exposes:
 - Outputs cannot be used to train other large language models.
 - Attribution required for redistribution.
 - Compliance with Meta's Acceptable Use Policy is required.
+
+**Status (currently not working by default):** the published HF checkpoint expects an unreleased branch of `boson-ai/higgs-audio` plus transformers 5.x, while the released `boson_multimodal` PyPI package targets transformers 4.46.x. The engine wiring (install / venv / app / voice list / cloudflared) is correct and `/`, `/v1/models`, `/v1/voices` all return 200 on Colab L4, but `/v1/audio/speech` returns 500 because the audio tokenizer loader (`load_higgs_audio_tokenizer`) passes the flat HF config keys (`acoustic_model_config`, `semantic_model_config`) to a `HiggsAudioTokenizer.__init__` that does not accept them. Two earlier mismatches are already worked around in this wrapper (text-config defaults that broke `nn.Embedding(padding_idx=128001, num_embeddings=32000)`, and a `tokenizer_class=TokenizersBackend` reference that only exists in unreleased transformers 5.x) but the audio-tokenizer schema drift requires an upstream fix in `boson-ai/higgs-audio` itself. Once upstream realigns code with the published config, this engine should work without further changes here.
 
 ### MeloTTS (currently not working)
 

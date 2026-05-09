@@ -36,13 +36,13 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | Fish-Speech | 動作不可 | 日本語 / 英語 / 中国語 他 80言語以上 |
 | MeloTTS | 動作不可 | - |
 | Style-Bert-VITS2 | 動作不可 | - |
-| Bark | Colab 検証中 (GPU推奨・~12GB / small=8GB) | 英語 / 日本語 / 中国語 他 13言語 |
-| ChatTTS | Colab 検証中 (GPU推奨・**商用不可**) | 英語 / 中国語 |
+| Bark | Colab 動作確認済み (GPU推奨・~12GB / small=8GB) | 英語 / 日本語 / 中国語 他 13言語 |
+| ChatTTS | Colab 動作確認済み (GPU推奨・**商用不可**) | 英語 / 中国語 |
 | CSM-1B | デフォルトで動作不可（`sesame/csm-1b` と `meta-llama/Llama-3.2-1B` の HF gated。両方のライセンス同意 + `HF_TOKEN` が必要） | 英語（Llama-3.2-1B ベース + Mimi codec） |
-| StyleTTS2 | Colab 検証中 (GPU推奨・Python 3.11 venv) | 英語 |
-| MaskGCT | Colab 検証中 (GPU必須・~10-12GB・**商用不可**) | 英語 / 中国語 |
-| GPT-SoVITS | Colab 検証中 (GPU推奨・参照音声必須) | 中 / 英 / 日 / 韓 / 粤 |
-| Higgs-Audio-v2 | Colab 検証中 (**A100/L4 必須**・VRAM 24GB+) | 英語 |
+| StyleTTS2 | Colab 動作確認済み (GPU推奨・Python 3.11 venv) | 英語 |
+| MaskGCT | Colab 動作確認済み (GPU必須・~10-12GB・**商用不可**) | 英語 / 中国語 |
+| GPT-SoVITS | Colab でエンジン起動確認済み（synthesis には参照音声必須・default speaker モード非対応・`--gpt-sovits-prompt-wav` と `--gpt-sovits-prompt-text` を指定） | 中 / 英 / 日 / 韓 / 粤 |
+| Higgs-Audio-v2 | デフォルトで動作不可（HF 上の checkpoint が未リリースの `boson_multimodal` / transformers 5.x を要求。エンジンは起動するが audio tokenizer ロード時に上流コードと config schema が一致せず推論失敗） | 英語 |
 
 `MeloTTS`、`Style-Bert-VITS2` は Colab の uv + venv 環境で依存解決に問題があり、現時点では動作しません。
 
@@ -1007,6 +1007,8 @@ GPT-SoVITS は本質的に few-shot cloning モデルで、内蔵の「default s
 - 出力を他の大規模言語モデルの学習に使用することは禁止されています。
 - 再配布には attribution が必要です。
 - Meta の Acceptable Use Policy への準拠が必要です。
+
+**ステータス（現時点でデフォルト動作不可）:** HF 上の checkpoint は `boson-ai/higgs-audio` の未リリースブランチと transformers 5.x を要求しますが、PyPI の `boson_multimodal` は transformers 4.46.x ベースです。エンジンの組み込み（インストール / venv / app / voice list / cloudflared）は正しく動作し、Colab L4 で `/`、`/v1/models`、`/v1/voices` はすべて 200 を返しますが、`/v1/audio/speech` は audio tokenizer のロード（`load_higgs_audio_tokenizer`）で 500 になります。具体的には HF の flat config キー（`acoustic_model_config`、`semantic_model_config`）を `HiggsAudioTokenizer.__init__` がそのまま受け付けないためです。前段の 2 つの不一致（`text_config` のデフォルトが `padding_idx=128001 / num_embeddings=32000` を引き起こす問題、および未リリース transformers 5.x にしか存在しない `tokenizer_class=TokenizersBackend` 参照）はラッパー側で workaround 済みですが、audio tokenizer の schema drift は `boson-ai/higgs-audio` 上流の修正が必要です。上流が公開済み config に合わせてコードを更新すれば、本ラッパーはそのまま動作するはずです。
 
 ### MeloTTS (現在動作不可)
 
