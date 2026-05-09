@@ -11,7 +11,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Chatterbox", "CosyVoice2", "Dia", "F5-TTS", "Fish-Speech", "Irodori-TTS", "Kokoro", "Kyutai-TTS", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Spark-TTS", "Style-Bert-VITS2", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
+ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Irodori-TTS", "Kokoro", "Kyutai-TTS", "MaskGCT", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -190,6 +190,72 @@ VIBEVOICE_PROMPT_WAV = ""  #@param {type:"string"}
 VIBEVOICE_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
 VIBEVOICE_DDPM_STEPS = 10  #@param {type:"integer"}
 VIBEVOICE_CFG_SCALE = 1.3  #@param {type:"number"}
+
+#@markdown ---
+#@markdown Bark (GPU recommended, 13 languages, MIT)
+#@markdown - License: code & weights both MIT. Generative audio (laughter, sound effects).
+BARK_DEFAULT_VOICE = "v2/en_speaker_6"  #@param ["v2/en_speaker_0", "v2/en_speaker_6", "v2/en_speaker_9", "v2/ja_speaker_0", "v2/ja_speaker_6", "v2/ja_speaker_9", "v2/zh_speaker_0", "v2/zh_speaker_6", "v2/de_speaker_0", "v2/es_speaker_0", "v2/fr_speaker_0", "v2/hi_speaker_0", "v2/it_speaker_0", "v2/ko_speaker_0", "v2/pt_speaker_0", "v2/ru_speaker_0"]
+BARK_USE_SMALL_MODELS = False  #@param {type:"boolean"}
+
+#@markdown ---
+#@markdown ChatTTS (GPU recommended, EN/ZH, AGPL-3.0+ code / CC-BY-NC-4.0 weights)
+#@markdown - **Non-commercial only.** Weights contain intentional high-frequency noise to deter misuse.
+CHATTTS_DEFAULT_VOICE = "default"  #@param ["default", "random"]
+CHATTTS_SEED = 2  #@param {type:"integer"}
+CHATTTS_TEMPERATURE = 0.3  #@param {type:"number"}
+
+#@markdown ---
+#@markdown Sesame CSM-1B (GPU required, English-only, Apache 2.0)
+#@markdown - **HF gated**: accept terms for `sesame/csm-1b` AND `meta-llama/Llama-3.2-1B`, then set `HF_TOKEN`.
+CSM_HF_MODEL = "sesame/csm-1b"  #@param {type:"string"}
+CSM_LLAMA_MODEL = "meta-llama/Llama-3.2-1B"  #@param {type:"string"}
+CSM_DEFAULT_VOICE = "default"  #@param {type:"string"}
+CSM_DEFAULT_SPEAKER = 0  #@param {type:"integer"}
+CSM_MAX_AUDIO_LENGTH_MS = 10000  #@param {type:"integer"}
+CSM_TEMPERATURE = 0.9  #@param {type:"number"}
+
+#@markdown ---
+#@markdown StyleTTS 2 (GPU recommended, English-only, MIT code / Custom weights)
+#@markdown - Uses sidharthrajaram/StyleTTS2 (MIT, gruut-based — GPL-free).
+#@markdown - Weights from yl4579/StyleTTS2-LibriTTS require disclosing that audio is synthesized.
+STYLETTS2_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+STYLETTS2_PROMPT_WAV = ""  #@param {type:"string"}
+STYLETTS2_ALPHA = 0.3  #@param {type:"number"}
+STYLETTS2_BETA = 0.7  #@param {type:"number"}
+STYLETTS2_DIFFUSION_STEPS = 5  #@param {type:"integer"}
+STYLETTS2_EMBEDDING_SCALE = 1.0  #@param {type:"number"}
+
+#@markdown ---
+#@markdown MaskGCT (GPU required, EN/ZH, MIT code / CC-BY-NC-4.0 weights)
+#@markdown - **Non-commercial only.** Zero-shot voice cloning — always uses a reference audio.
+MASKGCT_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+MASKGCT_PROMPT_WAV = ""  #@param {type:"string"}
+MASKGCT_PROMPT_TEXT = ""  #@param {type:"string"}
+MASKGCT_PROMPT_LANG = "en"  #@param ["en", "zh", "ja", "ko", "fr", "de"]
+MASKGCT_TARGET_LANG = "en"  #@param ["en", "zh", "ja", "ko", "fr", "de"]
+
+#@markdown ---
+#@markdown GPT-SoVITS (GPU recommended, ZH/EN/JA/KO/YUE, MIT)
+#@markdown - Few-shot voice cloning (5-second reference). Reference audio + transcript required.
+GPT_SOVITS_VERSION = "v2"  #@param ["v1", "v2", "v2Pro", "v2ProPlus", "v3", "v4"]
+GPT_SOVITS_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+GPT_SOVITS_PROMPT_WAV = ""  #@param {type:"string"}
+GPT_SOVITS_PROMPT_TEXT = ""  #@param {type:"string"}
+GPT_SOVITS_PROMPT_LANG = "en"  #@param ["en", "zh", "ja", "ko", "yue", "auto"]
+GPT_SOVITS_TARGET_LANG = "en"  #@param ["en", "zh", "ja", "ko", "yue", "auto"]
+
+#@markdown ---
+#@markdown Higgs Audio v2 (A100/L4 required, VRAM 24GB+, voice cloning)
+#@markdown - Code: Apache-2.0. **Weights: Boson Higgs Audio 2 Community License** (Llama-derived).
+#@markdown - Restrictions: >100k MAU requires extra license; outputs cannot be used to train other LLMs.
+HIGGS_HF_MODEL = "bosonai/higgs-audio-v2-generation-3B-base"  #@param {type:"string"}
+HIGGS_HF_TOKENIZER = "bosonai/higgs-audio-v2-tokenizer"  #@param {type:"string"}
+HIGGS_DEFAULT_VOICE = "default"  #@param {type:"string"}
+HIGGS_DEFAULT_REF_VOICE = "belinda"  #@param {type:"string"}
+HIGGS_PROMPT_WAV = ""  #@param {type:"string"}
+HIGGS_PROMPT_TEXT = ""  #@param {type:"string"}
+HIGGS_MAX_NEW_TOKENS = 1024  #@param {type:"integer"}
+HIGGS_TEMPERATURE = 0.7  #@param {type:"number"}
 
 import shlex
 import subprocess
@@ -407,9 +473,81 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         str(VIBEVOICE_DDPM_STEPS),
         "--vibevoice-cfg-scale",
         str(VIBEVOICE_CFG_SCALE),
+        "--bark-default-voice",
+        BARK_DEFAULT_VOICE,
+        "--chattts-default-voice",
+        CHATTTS_DEFAULT_VOICE,
+        "--chattts-seed",
+        str(CHATTTS_SEED),
+        "--chattts-temperature",
+        str(CHATTTS_TEMPERATURE),
+        "--csm-hf-model",
+        CSM_HF_MODEL,
+        "--csm-llama-model",
+        CSM_LLAMA_MODEL,
+        "--csm-default-voice",
+        CSM_DEFAULT_VOICE,
+        "--csm-default-speaker",
+        str(CSM_DEFAULT_SPEAKER),
+        "--csm-max-audio-length-ms",
+        str(CSM_MAX_AUDIO_LENGTH_MS),
+        "--csm-temperature",
+        str(CSM_TEMPERATURE),
+        "--styletts2-default-voice",
+        STYLETTS2_DEFAULT_VOICE,
+        "--styletts2-prompt-wav",
+        STYLETTS2_PROMPT_WAV,
+        "--styletts2-alpha",
+        str(STYLETTS2_ALPHA),
+        "--styletts2-beta",
+        str(STYLETTS2_BETA),
+        "--styletts2-diffusion-steps",
+        str(STYLETTS2_DIFFUSION_STEPS),
+        "--styletts2-embedding-scale",
+        str(STYLETTS2_EMBEDDING_SCALE),
+        "--maskgct-default-voice",
+        MASKGCT_DEFAULT_VOICE,
+        "--maskgct-prompt-wav",
+        MASKGCT_PROMPT_WAV,
+        "--maskgct-prompt-text",
+        MASKGCT_PROMPT_TEXT,
+        "--maskgct-prompt-lang",
+        MASKGCT_PROMPT_LANG,
+        "--maskgct-target-lang",
+        MASKGCT_TARGET_LANG,
+        "--gpt-sovits-version",
+        GPT_SOVITS_VERSION,
+        "--gpt-sovits-default-voice",
+        GPT_SOVITS_DEFAULT_VOICE,
+        "--gpt-sovits-prompt-wav",
+        GPT_SOVITS_PROMPT_WAV,
+        "--gpt-sovits-prompt-text",
+        GPT_SOVITS_PROMPT_TEXT,
+        "--gpt-sovits-prompt-lang",
+        GPT_SOVITS_PROMPT_LANG,
+        "--gpt-sovits-target-lang",
+        GPT_SOVITS_TARGET_LANG,
+        "--higgs-hf-model",
+        HIGGS_HF_MODEL,
+        "--higgs-hf-tokenizer",
+        HIGGS_HF_TOKENIZER,
+        "--higgs-default-voice",
+        HIGGS_DEFAULT_VOICE,
+        "--higgs-default-ref-voice",
+        HIGGS_DEFAULT_REF_VOICE,
+        "--higgs-prompt-wav",
+        HIGGS_PROMPT_WAV,
+        "--higgs-prompt-text",
+        HIGGS_PROMPT_TEXT,
+        "--higgs-max-new-tokens",
+        str(HIGGS_MAX_NEW_TOKENS),
+        "--higgs-temperature",
+        str(HIGGS_TEMPERATURE),
     ]
     if SARASHINA_USE_VLLM:
         cmd.append("--sarashina-use-vllm")
+    if BARK_USE_SMALL_MODELS:
+        cmd.append("--bark-use-small-models")
     cmd.append("--expose-public-url" if EXPOSE_PUBLIC_URL else "--no-expose-public-url")
     return cmd
 

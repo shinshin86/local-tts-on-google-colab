@@ -36,6 +36,13 @@ Supported engines:
 | Fish-Speech | Not working | Japanese / English / Chinese and 80+ languages |
 | MeloTTS | Not working | - |
 | Style-Bert-VITS2 | Not working | - |
+| Bark | Working on Colab (GPU recommended, ~12GB / 8GB small) | English / Japanese / Chinese and 13 languages |
+| ChatTTS | Working on Colab (GPU recommended, **non-commercial**) | English / Chinese |
+| CSM-1B | Not working by default (HF-gated weights for `sesame/csm-1b` + `meta-llama/Llama-3.2-1B`, requires accepting both licenses + `HF_TOKEN`) | English (Llama-3.2-1B base + Mimi codec) |
+| StyleTTS2 | Working on Colab (GPU recommended, Python 3.11 venv) | English |
+| MaskGCT | Working on Colab (GPU required, ~10-12GB, **non-commercial weights**) | English / Chinese |
+| GPT-SoVITS | Engine starts on Colab — reference audio required for synthesis (no default speaker mode; pass `--gpt-sovits-prompt-wav` + `--gpt-sovits-prompt-text`) | Chinese / English / Japanese / Korean / Cantonese |
+| Higgs-Audio-v2 | Not working by default (upstream HF checkpoint requires unreleased `boson_multimodal` / transformers 5.x; engine starts but inference fails inside the audio tokenizer loader) | English |
 
 `MeloTTS` and `Style-Bert-VITS2` currently have dependency resolution issues under Colab's uv + venv environment and do not work.
 
@@ -69,7 +76,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Chatterbox", "CosyVoice2", "Dia", "F5-TTS", "Fish-Speech", "Irodori-TTS", "Kokoro", "Kyutai-TTS", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Spark-TTS", "Style-Bert-VITS2", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
+ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Irodori-TTS", "Kokoro", "Kyutai-TTS", "MaskGCT", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -248,6 +255,72 @@ VIBEVOICE_PROMPT_WAV = ""  #@param {type:"string"}
 VIBEVOICE_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
 VIBEVOICE_DDPM_STEPS = 10  #@param {type:"integer"}
 VIBEVOICE_CFG_SCALE = 1.3  #@param {type:"number"}
+
+#@markdown ---
+#@markdown Bark (GPU recommended, 13 languages, MIT)
+#@markdown - License: code & weights both MIT. Generative audio (laughter, sound effects).
+BARK_DEFAULT_VOICE = "v2/en_speaker_6"  #@param ["v2/en_speaker_0", "v2/en_speaker_6", "v2/en_speaker_9", "v2/ja_speaker_0", "v2/ja_speaker_6", "v2/ja_speaker_9", "v2/zh_speaker_0", "v2/zh_speaker_6", "v2/de_speaker_0", "v2/es_speaker_0", "v2/fr_speaker_0", "v2/hi_speaker_0", "v2/it_speaker_0", "v2/ko_speaker_0", "v2/pt_speaker_0", "v2/ru_speaker_0"]
+BARK_USE_SMALL_MODELS = False  #@param {type:"boolean"}
+
+#@markdown ---
+#@markdown ChatTTS (GPU recommended, EN/ZH, AGPL-3.0+ code / CC-BY-NC-4.0 weights)
+#@markdown - **Non-commercial only.** Weights contain intentional high-frequency noise to deter misuse.
+CHATTTS_DEFAULT_VOICE = "default"  #@param ["default", "random"]
+CHATTTS_SEED = 2  #@param {type:"integer"}
+CHATTTS_TEMPERATURE = 0.3  #@param {type:"number"}
+
+#@markdown ---
+#@markdown Sesame CSM-1B (GPU required, English-only, Apache 2.0)
+#@markdown - **HF gated**: accept terms for `sesame/csm-1b` AND `meta-llama/Llama-3.2-1B`, then set `HF_TOKEN`.
+CSM_HF_MODEL = "sesame/csm-1b"  #@param {type:"string"}
+CSM_LLAMA_MODEL = "meta-llama/Llama-3.2-1B"  #@param {type:"string"}
+CSM_DEFAULT_VOICE = "default"  #@param {type:"string"}
+CSM_DEFAULT_SPEAKER = 0  #@param {type:"integer"}
+CSM_MAX_AUDIO_LENGTH_MS = 10000  #@param {type:"integer"}
+CSM_TEMPERATURE = 0.9  #@param {type:"number"}
+
+#@markdown ---
+#@markdown StyleTTS 2 (GPU recommended, English-only, MIT code / Custom weights)
+#@markdown - Uses sidharthrajaram/StyleTTS2 (MIT, gruut-based — GPL-free).
+#@markdown - Weights from yl4579/StyleTTS2-LibriTTS require disclosing that audio is synthesized.
+STYLETTS2_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+STYLETTS2_PROMPT_WAV = ""  #@param {type:"string"}
+STYLETTS2_ALPHA = 0.3  #@param {type:"number"}
+STYLETTS2_BETA = 0.7  #@param {type:"number"}
+STYLETTS2_DIFFUSION_STEPS = 5  #@param {type:"integer"}
+STYLETTS2_EMBEDDING_SCALE = 1.0  #@param {type:"number"}
+
+#@markdown ---
+#@markdown MaskGCT (GPU required, EN/ZH, MIT code / CC-BY-NC-4.0 weights)
+#@markdown - **Non-commercial only.** Zero-shot voice cloning — always uses a reference audio.
+MASKGCT_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+MASKGCT_PROMPT_WAV = ""  #@param {type:"string"}
+MASKGCT_PROMPT_TEXT = ""  #@param {type:"string"}
+MASKGCT_PROMPT_LANG = "en"  #@param ["en", "zh", "ja", "ko", "fr", "de"]
+MASKGCT_TARGET_LANG = "en"  #@param ["en", "zh", "ja", "ko", "fr", "de"]
+
+#@markdown ---
+#@markdown GPT-SoVITS (GPU recommended, ZH/EN/JA/KO/YUE, MIT)
+#@markdown - Few-shot voice cloning (5-second reference). Reference audio + transcript required.
+GPT_SOVITS_VERSION = "v2"  #@param ["v1", "v2", "v2Pro", "v2ProPlus", "v3", "v4"]
+GPT_SOVITS_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+GPT_SOVITS_PROMPT_WAV = ""  #@param {type:"string"}
+GPT_SOVITS_PROMPT_TEXT = ""  #@param {type:"string"}
+GPT_SOVITS_PROMPT_LANG = "en"  #@param ["en", "zh", "ja", "ko", "yue", "auto"]
+GPT_SOVITS_TARGET_LANG = "en"  #@param ["en", "zh", "ja", "ko", "yue", "auto"]
+
+#@markdown ---
+#@markdown Higgs Audio v2 (A100/L4 required, VRAM 24GB+, voice cloning)
+#@markdown - Code: Apache-2.0. **Weights: Boson Higgs Audio 2 Community License** (Llama-derived).
+#@markdown - Restrictions: >100k MAU requires extra license; outputs cannot be used to train other LLMs.
+HIGGS_HF_MODEL = "bosonai/higgs-audio-v2-generation-3B-base"  #@param {type:"string"}
+HIGGS_HF_TOKENIZER = "bosonai/higgs-audio-v2-tokenizer"  #@param {type:"string"}
+HIGGS_DEFAULT_VOICE = "default"  #@param {type:"string"}
+HIGGS_DEFAULT_REF_VOICE = "belinda"  #@param {type:"string"}
+HIGGS_PROMPT_WAV = ""  #@param {type:"string"}
+HIGGS_PROMPT_TEXT = ""  #@param {type:"string"}
+HIGGS_MAX_NEW_TOKENS = 1024  #@param {type:"integer"}
+HIGGS_TEMPERATURE = 0.7  #@param {type:"number"}
 
 import shlex
 import subprocess
@@ -465,9 +538,81 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         str(VIBEVOICE_DDPM_STEPS),
         "--vibevoice-cfg-scale",
         str(VIBEVOICE_CFG_SCALE),
+        "--bark-default-voice",
+        BARK_DEFAULT_VOICE,
+        "--chattts-default-voice",
+        CHATTTS_DEFAULT_VOICE,
+        "--chattts-seed",
+        str(CHATTTS_SEED),
+        "--chattts-temperature",
+        str(CHATTTS_TEMPERATURE),
+        "--csm-hf-model",
+        CSM_HF_MODEL,
+        "--csm-llama-model",
+        CSM_LLAMA_MODEL,
+        "--csm-default-voice",
+        CSM_DEFAULT_VOICE,
+        "--csm-default-speaker",
+        str(CSM_DEFAULT_SPEAKER),
+        "--csm-max-audio-length-ms",
+        str(CSM_MAX_AUDIO_LENGTH_MS),
+        "--csm-temperature",
+        str(CSM_TEMPERATURE),
+        "--styletts2-default-voice",
+        STYLETTS2_DEFAULT_VOICE,
+        "--styletts2-prompt-wav",
+        STYLETTS2_PROMPT_WAV,
+        "--styletts2-alpha",
+        str(STYLETTS2_ALPHA),
+        "--styletts2-beta",
+        str(STYLETTS2_BETA),
+        "--styletts2-diffusion-steps",
+        str(STYLETTS2_DIFFUSION_STEPS),
+        "--styletts2-embedding-scale",
+        str(STYLETTS2_EMBEDDING_SCALE),
+        "--maskgct-default-voice",
+        MASKGCT_DEFAULT_VOICE,
+        "--maskgct-prompt-wav",
+        MASKGCT_PROMPT_WAV,
+        "--maskgct-prompt-text",
+        MASKGCT_PROMPT_TEXT,
+        "--maskgct-prompt-lang",
+        MASKGCT_PROMPT_LANG,
+        "--maskgct-target-lang",
+        MASKGCT_TARGET_LANG,
+        "--gpt-sovits-version",
+        GPT_SOVITS_VERSION,
+        "--gpt-sovits-default-voice",
+        GPT_SOVITS_DEFAULT_VOICE,
+        "--gpt-sovits-prompt-wav",
+        GPT_SOVITS_PROMPT_WAV,
+        "--gpt-sovits-prompt-text",
+        GPT_SOVITS_PROMPT_TEXT,
+        "--gpt-sovits-prompt-lang",
+        GPT_SOVITS_PROMPT_LANG,
+        "--gpt-sovits-target-lang",
+        GPT_SOVITS_TARGET_LANG,
+        "--higgs-hf-model",
+        HIGGS_HF_MODEL,
+        "--higgs-hf-tokenizer",
+        HIGGS_HF_TOKENIZER,
+        "--higgs-default-voice",
+        HIGGS_DEFAULT_VOICE,
+        "--higgs-default-ref-voice",
+        HIGGS_DEFAULT_REF_VOICE,
+        "--higgs-prompt-wav",
+        HIGGS_PROMPT_WAV,
+        "--higgs-prompt-text",
+        HIGGS_PROMPT_TEXT,
+        "--higgs-max-new-tokens",
+        str(HIGGS_MAX_NEW_TOKENS),
+        "--higgs-temperature",
+        str(HIGGS_TEMPERATURE),
     ]
     if SARASHINA_USE_VLLM:
         cmd.append("--sarashina-use-vllm")
+    if BARK_USE_SMALL_MODELS:
+        cmd.append("--bark-use-small-models")
     cmd.append("--expose-public-url" if EXPOSE_PUBLIC_URL else "--no-expose-public-url")
     return cmd
 
@@ -748,6 +893,123 @@ For voice cloning, only use reference audio you have rights to (consent of the s
 
 License: Apache 2.0 for both code (CosyVoice repo) and the `CosyVoice2-0.5B` weights (per the Hugging Face model card).
 
+### Bark
+
+A text-prompted generative audio model from Suno using [suno-ai/bark](https://github.com/suno-ai/bark). Supports 13 languages (English, German, Spanish, French, Hindi, Italian, **Japanese**, Korean, Polish, Portuguese, Russian, Turkish, Simplified Chinese) and can produce non-verbal sounds (laughter, sighs, simple SFX). Voice presets follow the upstream Speaker Library naming `v2/<lang>_speaker_<n>` (10 speakers per language).
+
+The full model needs ~12 GB VRAM; set `BARK_USE_SMALL_MODELS=True` (or `--bark-use-small-models`) to drop to ~8 GB. Generation is stochastic — the same input can yield different audio.
+
+License: code & weights both MIT (commercially usable). The author labels Bark as research-oriented and acknowledges potential dual-use; use responsibly.
+
+### ChatTTS
+
+A conversational TTS from 2noise using [2noise/ChatTTS](https://github.com/2noise/ChatTTS). Designed for daily dialogue with expressive features (laughter, hesitation, pauses). EN / ZH only.
+
+The `voice` parameter exposes:
+
+| voice | description |
+|---|---|
+| `default` | Reproducible speaker generated from `--chattts-seed` (default 2). Same seed yields the same speaker. |
+| `random` | A fresh random speaker on every request via `chat.sample_random_speaker()`. |
+
+**License caveat (important):** the code is **AGPL-3.0+** and the **weights are CC BY-NC 4.0**, so this engine is **research / educational use only — commercial use is not allowed**. The weights also contain intentional high-frequency noise added during training to discourage misuse, which slightly degrades audio quality.
+
+### CSM-1B (Sesame Conversational Speech Model)
+
+A conversational speech model from Sesame using [SesameAILabs/csm](https://github.com/SesameAILabs/csm). The architecture is a Llama-3.2-1B backbone plus an audio decoder that produces Mimi codec audio (the same codec lineage as Kyutai-TTS). EN only.
+
+The wrapper forces a **Python 3.11 venv** because upstream pins `torch==2.4.0` / `torchtune==0.4.0` / `torchao==0.9.0`. It also sets `NO_TORCH_COMPILE=1` per upstream README. GPU recommended (VRAM ~6 GB).
+
+**HF gated weights** — the model card requires accepting terms before downloads, and the Llama-3.2-1B base model is also gated under the Llama 3.2 Community License. To use it on Colab:
+
+1. Visit `https://huggingface.co/sesame/csm-1b` and accept the conditions.
+2. Visit `https://huggingface.co/meta-llama/Llama-3.2-1B`, accept the Llama 3.2 Community License.
+3. Add `HF_TOKEN` to Colab Secrets (notebook access enabled).
+
+The `voice` parameter exposes:
+
+| voice | description |
+|---|---|
+| `default` | Uses speaker_id `--csm-default-speaker` (default 0). |
+| `speaker_<int>` | Direct speaker_id (e.g. `speaker_1`). |
+
+License: code & CSM-1B weights are Apache 2.0. The Llama-3.2-1B base is under the Llama 3.2 Community License.
+
+### StyleTTS2
+
+A high-quality TTS using diffusion + adversarial training with large speech language models, by yl4579 ([yl4579/StyleTTS2](https://github.com/yl4579/StyleTTS2)). The wrapper uses the [sidharthrajaram/StyleTTS2](https://github.com/sidharthrajaram/StyleTTS2) pip package, which substitutes **gruut (MIT)** for the upstream **phonemizer (GPL-3.0)** to keep the dependency tree GPL-free.
+
+EN only (gruut is English-focused). The wrapper uses a **Python 3.11 venv** to isolate the legacy pins from sidharthrajaram's package.
+
+The `voice` parameter exposes:
+
+| voice | description |
+|---|---|
+| `default` | Random style sampled from diffusion (no reference audio). |
+| `clone` | Voice cloning. Only available when `--styletts2-prompt-wav` is configured. |
+
+`--styletts2-alpha` controls timbre similarity to the reference (0=full reference, 1=full sampling). `--styletts2-beta` controls prosody similarity. `--styletts2-diffusion-steps` and `--styletts2-embedding-scale` are upstream knobs for variation and emotion strength.
+
+**License caveat:** code (both upstream and the pip fork) is MIT, but the LibriTTS pretrained checkpoint (`yl4579/StyleTTS2-LibriTTS`) is under a **custom license that requires disclosing the audio is synthesized**. Voice cloning requires explicit consent of the speaker.
+
+### MaskGCT
+
+A Masked Generative Codec Transformer TTS from Amphion ([open-mmlab/Amphion](https://github.com/open-mmlab/Amphion/tree/main/models/tts/maskgct)). Fully non-autoregressive, eliminating the explicit alignment step. Zero-shot voice cloning — every request needs a reference audio. EN / ZH (with optional `prompt_lang` / `target_lang` for other languages).
+
+The wrapper sparse-checks-out only the `models/tts/maskgct`, `models/codec`, and `utils` paths from Amphion (the full repo is huge), and forces a **Python 3.10 venv** because upstream pins `torch==2.0.1` / `transformers==4.41.2` / `numpy==1.26.0`. Requires `espeak-ng` system package and the same `setuptools<70` pre-install trick as CosyVoice2 (transitive `openai-whisper==20231117` legacy setup.py needs `pkg_resources`).
+
+The `voice` parameter exposes:
+
+| voice | description |
+|---|---|
+| `default` | Uses the bundled `models/tts/maskgct/wav/prompt.wav` (English female) shipped in the upstream repo. |
+| `clone` | Voice cloning. Only available when both `--maskgct-prompt-wav` and `--maskgct-prompt-text` are configured. |
+
+GPU required (VRAM ~10-12 GB).
+
+**License caveat:** code is MIT, but the weights (`amphion/MaskGCT`) are under **CC BY-NC 4.0**, so this engine is **non-commercial only**.
+
+### GPT-SoVITS
+
+A few-shot voice cloning TTS from RVC-Boss using [RVC-Boss/GPT-SoVITS](https://github.com/RVC-Boss/GPT-SoVITS). 5 seconds of reference audio is enough for zero-shot inference; 1 minute can be used for fine-tuning. Supports **Chinese, English, Japanese, Korean, Cantonese**. Multiple model versions (v1, v2, v2Pro, v2ProPlus, v3, v4) are exposed via `--gpt-sovits-version` (default `v2`).
+
+GPT-SoVITS is fundamentally a few-shot cloning model — there is no built-in "default speaker" mode. The wrapper requires `--gpt-sovits-prompt-wav` and `--gpt-sovits-prompt-text` at startup; without them every request returns 400.
+
+The wrapper uses a **Python 3.11 venv** (upstream documents Python 3.10 / 3.11). On first run it selectively snapshot-downloads only the v2 weights (`gsv-v2final-pretrained/` ~1.2 GB) plus `chinese-hubert-base/` and `chinese-roberta-wwm-ext-large/` from `lj1995/GPT-SoVITS` instead of the full 5.3 GB repo. GPU recommended (VRAM ~4-6 GB).
+
+The `voice` parameter exposes:
+
+| voice | description |
+|---|---|
+| `default` / `clone` | Both use the configured prompt audio + transcript. (GPT-SoVITS has no plain-TTS fallback.) |
+
+License: code is MIT, weights (`lj1995/GPT-SoVITS`) are MIT — commercially usable.
+
+### Higgs-Audio-v2
+
+An LLM-based audio foundation model from Boson AI ([boson-ai/higgs-audio](https://github.com/boson-ai/higgs-audio)). The 3B-base generation model is paired with a separate audio tokenizer (`bosonai/higgs-audio-v2-tokenizer`). Voice cloning works either by referencing a bundled preset (e.g. `belinda`, `broom_salesman` under `examples/voice_prompts/`) or by passing a custom audio path.
+
+**Hardware**: requires ~24 GB VRAM for the 3B model, so **A100 / L4 (Colab Pro) is required**. T4 (free tier) cannot host this model.
+
+The wrapper uses a **Python 3.10 venv** (matching upstream NVIDIA container target) and `pip install -e .` to expose the `boson_multimodal` package. The default reference voice is `belinda`; pass `--higgs-default-ref-voice <name>` to change it (any preset under `examples/voice_prompts/`).
+
+The `voice` parameter exposes:
+
+| voice | description |
+|---|---|
+| `default` | Uses preset `--higgs-default-ref-voice` (default `belinda`). |
+| `clone` | Voice cloning. Only available when both `--higgs-prompt-wav` and `--higgs-prompt-text` are configured. |
+| `<preset_name>` | Any preset name under `examples/voice_prompts/` (e.g. `broom_salesman`). |
+
+**License caveat (important):** code is Apache-2.0, but the weights (`bosonai/higgs-audio-v2-generation-3B-base`) are under the **Boson Higgs Audio 2 Community License** — a derivative of Meta's Llama 3 Community License. Restrictions:
+
+- Commercial use is permitted, but if your product has more than 100,000 monthly active users, you must request an expanded license from Boson AI.
+- Outputs cannot be used to train other large language models.
+- Attribution required for redistribution.
+- Compliance with Meta's Acceptable Use Policy is required.
+
+**Status (currently not working by default):** the published HF checkpoint expects an unreleased branch of `boson-ai/higgs-audio` plus transformers 5.x, while the released `boson_multimodal` PyPI package targets transformers 4.46.x. The engine wiring (install / venv / app / voice list / cloudflared) is correct and `/`, `/v1/models`, `/v1/voices` all return 200 on Colab L4, but `/v1/audio/speech` returns 500 because the audio tokenizer loader (`load_higgs_audio_tokenizer`) passes the flat HF config keys (`acoustic_model_config`, `semantic_model_config`) to a `HiggsAudioTokenizer.__init__` that does not accept them. Two earlier mismatches are already worked around in this wrapper (text-config defaults that broke `nn.Embedding(padding_idx=128001, num_embeddings=32000)`, and a `tokenizer_class=TokenizersBackend` reference that only exists in unreleased transformers 5.x) but the audio-tokenizer schema drift requires an upstream fix in `boson-ai/higgs-audio` itself. Once upstream realigns code with the published config, this engine should work without further changes here.
+
 ### MeloTTS (currently not working)
 
 Intended to use [myshell-ai/MeloTTS](https://github.com/myshell-ai/MeloTTS), but the dependency `tokenizers` requires a Rust compiler to build, so installation fails in the current Colab environment.
@@ -788,6 +1050,15 @@ The license for each engine is as follows. When using them, always check each pr
 | OpenVoice-V2 | MIT | MIT | OK | Multilingual (incl JP). Voice cloning. Currently not working: `av==10` (via `faster-whisper==0.9.0` pin) won't build on Python 3.13 |
 | VibeVoice | MIT | MIT | Caution (research-only) | EN/ZH only per model card. Currently not working: upstream is mid-API migration (.wav speakers replaced with .pt caches) |
 | Fish-Speech | Apache 2.0 | Apache 2.0 | OK | Requires A100/L4 GPU (VRAM 24GB+) |
+| Bark | MIT | MIT | OK | 13 languages incl JP. Generative (laughter / SFX). Author labels weights as research-oriented |
+| ChatTTS | AGPL-3.0+ | CC BY-NC 4.0 | **Not allowed** | EN / ZH conversational TTS. Weights contain intentional high-frequency noise to deter misuse |
+| CSM-1B | Apache 2.0 | Apache 2.0 | OK | EN only. Conversational. Llama-3.2-1B is also pulled in (Llama 3.2 Community License). HF gated |
+| StyleTTS2 (code) | MIT | — | — | Uses sidharthrajaram/StyleTTS2 (MIT, gruut-based — avoids upstream's GPL phonemizer) |
+| StyleTTS2 (LibriTTS weights) | — | Custom (yl4579/StyleTTS2-LibriTTS) | Caution | Requires disclosing that audio is synthesized; voice cloning needs explicit consent |
+| MaskGCT | MIT | CC BY-NC 4.0 | **Not allowed** | EN / ZH zero-shot voice cloning. Weights are non-commercial |
+| GPT-SoVITS | MIT | MIT | OK | ZH / EN / JA / KO / YUE few-shot voice cloning. Reference audio + transcript required |
+| Higgs-Audio-v2 (code) | Apache 2.0 | — | — | LLM-based audio foundation model. EN focus |
+| Higgs-Audio-v2 (weights) | — | Boson Higgs Audio 2 Community License | Caution | Llama-derived community license. Restricted: >100k MAU needs extra license; outputs cannot be used to train other LLMs |
 
 **About Piper**: The `piper-tts` package is GPL-3.0. Also, the default `en_US-lessac-medium` voice is trained on the Blizzard 2013 dataset provided by Lessac Technologies, and its license prohibits commercial use. If you need commercial use, choose another voice model trained with a permissive license.
 
@@ -855,3 +1126,19 @@ This repository itself is intended for short-term operational verification and t
   https://github.com/fishaudio/fish-speech
 - CosyVoice
   https://github.com/FunAudioLLM/CosyVoice
+- Bark
+  https://github.com/suno-ai/bark
+- ChatTTS
+  https://github.com/2noise/ChatTTS
+- CSM (Conversational Speech Model)
+  https://github.com/SesameAILabs/csm
+- StyleTTS 2 (upstream)
+  https://github.com/yl4579/StyleTTS2
+- StyleTTS 2 (pip-installable fork)
+  https://github.com/sidharthrajaram/StyleTTS2
+- MaskGCT (Amphion)
+  https://github.com/open-mmlab/Amphion/tree/main/models/tts/maskgct
+- GPT-SoVITS
+  https://github.com/RVC-Boss/GPT-SoVITS
+- Higgs Audio v2
+  https://github.com/boson-ai/higgs-audio

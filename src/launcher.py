@@ -54,6 +54,20 @@ def resolve_selected_voice(settings: Settings) -> str:
         return settings.cosyvoice_default_voice
     if settings.engine == "Spark-TTS":
         return settings.spark_default_voice
+    if settings.engine == "Bark":
+        return settings.bark_default_voice
+    if settings.engine == "ChatTTS":
+        return settings.chattts_default_voice
+    if settings.engine == "CSM-1B":
+        return settings.csm_default_voice
+    if settings.engine == "StyleTTS2":
+        return settings.styletts2_default_voice
+    if settings.engine == "MaskGCT":
+        return settings.maskgct_default_voice
+    if settings.engine == "GPT-SoVITS":
+        return settings.gpt_sovits_default_voice
+    if settings.engine == "Higgs-Audio-v2":
+        return settings.higgs_default_voice
     return ""
 
 
@@ -274,6 +288,91 @@ def print_engine_voice_hints(settings: Settings):
         print("注意: GPU 必須（VRAM ~10-12GB、L4/A100 推奨）。Python 3.10+。")
         print("ライセンス: コードは Apache 2.0、重みは Apache 2.0 表記だがベースは Llama-3.2-3B-Instruct のため")
         print("           実質的に Llama 3.2 Community License も適用されます。")
+    elif settings.engine == "Higgs-Audio-v2":
+        print("Higgs Audio v2 は Boson AI の LLM ベース音声基盤モデルです（3B-base、表現力高、voice cloning）。")
+        print(f"モデル: {settings.higgs_hf_model}")
+        print(f"audio tokenizer: {settings.higgs_hf_tokenizer}")
+        print(f"デフォルト voice: {settings.higgs_default_voice} / 参照プリセット: {settings.higgs_default_ref_voice}")
+        print(f"max_new_tokens: {settings.higgs_max_new_tokens} / temperature: {settings.higgs_temperature}")
+        print("voice 候補: default（examples/voice_prompts 内のプリセット名 = HIGGS_DEFAULT_REF_VOICE）")
+        print("             プリセット名（belinda, broom_salesman 等）を voice に直接指定することも可能です。")
+        if settings.higgs_prompt_wav and settings.higgs_prompt_text:
+            print(f"             clone（参照音声: {settings.higgs_prompt_wav}）")
+        else:
+            print("             clone は --higgs-prompt-wav と --higgs-prompt-text を指定すると有効になります")
+        print("対応言語: 英語中心（多言語対応の表記もあり）。")
+        print("注意: A100 / L4 など 24GB+ VRAM 必須（T4 では起動不可）。Python 3.10 venv。")
+        print("ライセンス警告: コードは Apache-2.0 ですが、重み（bosonai/higgs-audio-v2-generation-3B-base）は")
+        print("                 **Boson Higgs Audio 2 Community License**（Llama 系派生）で、")
+        print("                 商用利用には MAU 10万人以下の制限と、出力で他 LLM を学習させる用途の禁止があります。")
+    elif settings.engine == "GPT-SoVITS":
+        print("GPT-SoVITS は RVC-Boss の few-shot voice cloning TTS です（5秒の参照音声で zero-shot 推論）。")
+        print(f"version: {settings.gpt_sovits_version}")
+        print(f"prompt_lang: {settings.gpt_sovits_prompt_lang} / target_lang: {settings.gpt_sovits_target_lang}")
+        if settings.gpt_sovits_prompt_wav and settings.gpt_sovits_prompt_text:
+            print(f"参照音声: {settings.gpt_sovits_prompt_wav}")
+            print(f"prompt_text: {settings.gpt_sovits_prompt_text}")
+        else:
+            print("参照音声未設定: --gpt-sovits-prompt-wav と --gpt-sovits-prompt-text が必須です。")
+            print("(GPT-SoVITS は本質的に few-shot cloning モデルで、参照なしの推論はサポートしていません。)")
+        print("対応言語: zh / en / ja / ko / yue (Cantonese)")
+        print("注意: GPU 推奨（VRAM ~4-6GB）。Python 3.11 venv を作成し torch>=2.5.1 をインストールします。")
+        print("      初回起動時に lj1995/GPT-SoVITS から v2 重み（~1.2GB）と BERT/HuBERT 基盤をダウンロードします。")
+        print("ライセンス: コードは MIT、重み（lj1995/GPT-SoVITS）も MIT（商用 OK）。")
+    elif settings.engine == "MaskGCT":
+        print("MaskGCT は Amphion の Masked Generative Codec TTS です（ゼロショット voice cloning）。")
+        print(f"デフォルト voice: {settings.maskgct_default_voice}")
+        print(f"prompt_lang: {settings.maskgct_prompt_lang} / target_lang: {settings.maskgct_target_lang}")
+        print("voice 候補: default（同梱の models/tts/maskgct/wav/prompt.wav を参照音声として使用）")
+        if settings.maskgct_prompt_wav and settings.maskgct_prompt_text:
+            print(f"             clone（参照音声: {settings.maskgct_prompt_wav}）")
+        else:
+            print("             clone は --maskgct-prompt-wav と --maskgct-prompt-text の両方を指定すると有効になります")
+        print("対応言語: en / zh（およびその他、prompt_lang / target_lang で指定）。")
+        print("注意: GPU 推奨（VRAM ~10-12GB）。Python 3.10 venv で torch==2.0.1 をインストールします。")
+        print("ライセンス警告: コードは MIT、重み（amphion/MaskGCT）は **CC-BY-NC-4.0** で")
+        print("                 商用利用は不可です。")
+    elif settings.engine == "StyleTTS2":
+        print("StyleTTS 2 は yl4579 の高品質 TTS です（拡散 + SLM 敵対学習、英語）。")
+        print(f"デフォルト voice: {settings.styletts2_default_voice}")
+        print(f"alpha: {settings.styletts2_alpha} / beta: {settings.styletts2_beta}")
+        print(f"diffusion_steps: {settings.styletts2_diffusion_steps} / embedding_scale: {settings.styletts2_embedding_scale}")
+        print("voice 候補: default（プロンプトなし、ランダム話者をサンプリング）")
+        if settings.styletts2_prompt_wav:
+            print(f"             clone（参照音声: {settings.styletts2_prompt_wav}）")
+        else:
+            print("             clone は --styletts2-prompt-wav を指定すると有効になります")
+        print("対応言語: 英語のみ（gruut フォニマイザー）。日本語テキストは正しく発音されません。")
+        print("注意: GPU 推奨（VRAM ~2-4GB）。Python 3.11 venv で legacy 依存を分離します。")
+        print("ライセンス: コードは MIT（pip 版 styletts2 / 上流とも）。重み（LibriTTS）は")
+        print("           上流の Custom License で、合成であることの開示が要求されます。")
+    elif settings.engine == "CSM-1B":
+        print("CSM-1B は Sesame AI の対話特化 TTS です（Llama 3.2 backbone + Mimi codec）。")
+        print(f"モデル: {settings.csm_hf_model} + {settings.csm_llama_model}")
+        print(f"デフォルト voice: {settings.csm_default_voice} / speaker_id: {settings.csm_default_speaker}")
+        print(f"max_audio_length_ms: {settings.csm_max_audio_length_ms} / temperature: {settings.csm_temperature}")
+        print("voice 候補: default, speaker_0, speaker_1, ...（任意の整数 speaker_id）")
+        print("対応言語: 英語のみ。日本語テキストは正しく発音されません。")
+        print("注意: GPU 推奨（VRAM ~6GB）。Python 3.11 venv を作成し torch==2.4.0 をインストールします。")
+        print("HF gated: 初回利用時に sesame/csm-1b と meta-llama/Llama-3.2-1B 双方の同意が必要です。")
+        print("          Colab Secrets で HF_TOKEN を設定してください。")
+        print("ライセンス: コードと重みとも Apache 2.0（商用 OK）。Llama-3.2-1B は Llama 3.2 Community License。")
+    elif settings.engine == "ChatTTS":
+        print("ChatTTS は 2noise の対話特化 TTS です（笑い声 / ためらい / ポーズなどを表現）。")
+        print(f"デフォルト voice: {settings.chattts_default_voice}")
+        print(f"seed: {settings.chattts_seed} / temperature: {settings.chattts_temperature}")
+        print("voice 候補: default（CHATTTS_SEED から再現可能な話者を生成）, random（毎回ランダム話者）")
+        print("対応言語: 英語 / 中国語のみ。日本語テキストは正しく発音されません。")
+        print("注意: 重みには高周波ノイズが意図的に挿入されており（乱用防止）、出力品質はやや劣化します。")
+        print("ライセンス警告: コードは AGPL-3.0+、重みは CC-BY-NC-4.0 で **商用利用は不可**（教育 / 研究用途のみ）。")
+    elif settings.engine == "Bark":
+        print("Bark は Suno AI の生成的 TTS です（13言語対応、ノンバーバル音/効果音も生成可能）。")
+        print(f"デフォルト voice: {settings.bark_default_voice}")
+        print(f"small models: {'有効（VRAM ~8GB）' if settings.bark_use_small_models else '無効（フル版、VRAM ~12GB）'}")
+        print("voice 候補は Bark 公式 Speaker Library 名（例: v2/en_speaker_0..9, v2/ja_speaker_0..9 など13言語×10話者）。")
+        print("対応言語: en, de, es, fr, hi, it, ja, ko, pl, pt, ru, tr, zh")
+        print("注意: GPU 推奨。生成プロセスはランダム性があり、同じ入力でも結果が変わります。")
+        print("ライセンス: コードと重みとも MIT（商用 OK、ただし研究目的での提供を上流が明記）。")
     elif settings.engine == "VibeVoice":
         print("VibeVoice は Microsoft の長尺マルチスピーカー TTS です（最大 90 分・4 話者の一括生成）。")
         print(f"モデル: {settings.vibevoice_hf_model}")
