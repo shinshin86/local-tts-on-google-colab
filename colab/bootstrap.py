@@ -153,6 +153,10 @@ def parse_args():
     parser.add_argument("--higgs-prompt-text", default="")
     parser.add_argument("--higgs-max-new-tokens", type=int, default=1024)
     parser.add_argument("--higgs-temperature", type=float, default=0.7)
+    parser.add_argument("--supertonic-model", default="supertonic-3")
+    parser.add_argument("--supertonic-default-voice", default="M1")
+    parser.add_argument("--supertonic-default-lang", default="en")
+    parser.add_argument("--supertonic-total-steps", type=int, default=5)
     parser.add_argument("--root-dir", default="/content/openai-compatible-local-tts")
     return parser.parse_args()
 
@@ -292,6 +296,10 @@ def main():
         higgs_prompt_text=args.higgs_prompt_text,
         higgs_max_new_tokens=args.higgs_max_new_tokens,
         higgs_temperature=args.higgs_temperature,
+        supertonic_model=args.supertonic_model,
+        supertonic_default_voice=args.supertonic_default_voice,
+        supertonic_default_lang=args.supertonic_default_lang,
+        supertonic_total_steps=args.supertonic_total_steps,
         root_dir=Path(args.root_dir),
         repo_dir=REPO_DIR,
     )

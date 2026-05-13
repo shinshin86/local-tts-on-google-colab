@@ -26,6 +26,7 @@ from .sarashina_tts import install as install_sarashina_tts
 from .spark_tts import install as install_spark_tts
 from .style_bert import install as install_style_bert
 from .styletts2 import install as install_styletts2
+from .supertonic import install as install_supertonic
 from .vibevoice import install as install_vibevoice
 from .voxcpm import install as install_voxcpm
 from .tiny_tts import install as install_tiny_tts
@@ -56,6 +57,7 @@ INSTALLERS = {
     "OuteTTS": install_outetts,
     "Style-Bert-VITS2": install_style_bert,
     "StyleTTS2": install_styletts2,
+    "Supertonic": install_supertonic,
     "Piper": install_piper,
     "Piper-Plus": install_piper_plus,
     "Pocket-TTS": install_pocket_tts,

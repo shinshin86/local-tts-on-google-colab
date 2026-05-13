@@ -172,6 +172,10 @@ class Settings:
     higgs_prompt_text: str = ""
     higgs_max_new_tokens: int = 1024
     higgs_temperature: float = 0.7
+    supertonic_model: str = "supertonic-3"
+    supertonic_default_voice: str = "M1"
+    supertonic_default_lang: str = "en"
+    supertonic_total_steps: int = 5
     root_dir: Path = Path("/content/openai-compatible-local-tts")
     repo_dir: Path = field(default_factory=default_repo_dir)
     app_port: int = 8000
