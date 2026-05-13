@@ -68,6 +68,8 @@ def resolve_selected_voice(settings: Settings) -> str:
         return settings.gpt_sovits_default_voice
     if settings.engine == "Higgs-Audio-v2":
         return settings.higgs_default_voice
+    if settings.engine == "Supertonic":
+        return settings.supertonic_default_voice
     return ""
 
 
@@ -387,6 +389,18 @@ def print_engine_voice_hints(settings: Settings):
         print("対応言語: 英語 / 中国語のみ（モデル規約上、それ以外の言語は禁止）")
         print("注意: ライセンスは MIT ですが、Microsoft 公式に「research purpose only」と明記されており、")
         print("      なりすまし・ディスインフォ・実時間音声変換などは禁止です。商用 / 実運用での利用は推奨されていません。")
+    elif settings.engine == "Supertonic":
+        print("Supertonic は Supertone Inc. の超軽量オンデバイス TTS です（ONNX、~99M params、CPU 動作可）。")
+        print(f"モデル: {settings.supertonic_model}")
+        print(f"デフォルト voice: {settings.supertonic_default_voice}")
+        print(f"デフォルト language: {settings.supertonic_default_lang}")
+        print(f"total_steps: {settings.supertonic_total_steps}")
+        print("voice 候補: M1, M2, M3, M4, M5（男性）/ F1, F2, F3, F4, F5（女性）")
+        print("対応言語 (supertonic-3, 31言語 + na fallback):")
+        print("  en, ko, ja, ar, bg, cs, da, de, el, es, et, fi, fr, hi, hr, hu,")
+        print("  id, it, lt, lv, nl, pl, pt, ro, ru, sk, sl, sv, tr, uk, vi, na")
+        print("注意: GPU 不要（ONNX Runtime で CPU 動作）。Voice cloning は未対応（preset のみ）。")
+        print("ライセンス: コードは MIT、重みは OpenRAIL-M（商用 OK、ディープフェイク等の use-based 制限あり）。")
     else:
         print("Irodori-TTS は現状 voice 切り替えを持たない想定です。")
 

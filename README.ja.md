@@ -19,6 +19,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | MOSS-TTS-Nano | 動作（出力が約2秒で切れる） | 日本語 / 英語 / 中国語 他 20言語 |
 | NeuTTS | 動作OK (CPU可・voice cloning) | 英語 / スペイン語 / ドイツ語 / フランス語 |
 | TinyTTS | 動作OK | 英語 |
+| Supertonic | 動作OK (CPU可・ONNX・~99M params) | 英語 / 日本語 / 韓国語 他 31言語 |
 | Voxtral-TTS | 動作OK (GPU必須・VRAM 16GB+) | 英語 / フランス語 / スペイン語 他 9言語 |
 | Sarashina-TTS | 動作OK (GPU必須・VRAM ~6GB) | 日本語 / 英語 |
 | F5-TTS | 動作OK (GPU必須) | 英語 / 中国語（日本語は別モデル） |
@@ -76,7 +77,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Irodori-TTS", "Kokoro", "Kyutai-TTS", "MaskGCT", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
+ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Irodori-TTS", "Kokoro", "Kyutai-TTS", "MaskGCT", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -321,6 +322,15 @@ HIGGS_PROMPT_WAV = ""  #@param {type:"string"}
 HIGGS_PROMPT_TEXT = ""  #@param {type:"string"}
 HIGGS_MAX_NEW_TOKENS = 1024  #@param {type:"integer"}
 HIGGS_TEMPERATURE = 0.7  #@param {type:"number"}
+
+#@markdown ---
+#@markdown Supertonic (CPU OK, 31 languages incl JP/KO/EN, ONNX)
+#@markdown - Code: MIT. Weights: OpenRAIL-M (commercial OK, use-based ethical restrictions).
+#@markdown - Voice presets only (no voice cloning). Language is auto-detected for CJK text.
+SUPERTONIC_MODEL = "supertonic-3"  #@param ["supertonic-3", "supertonic-2", "supertonic"]
+SUPERTONIC_DEFAULT_VOICE = "M1"  #@param ["M1", "M2", "M3", "M4", "M5", "F1", "F2", "F3", "F4", "F5"]
+SUPERTONIC_DEFAULT_LANG = "en"  #@param ["en", "ja", "ko", "ar", "bg", "cs", "da", "de", "el", "es", "et", "fi", "fr", "hi", "hr", "hu", "id", "it", "lt", "lv", "nl", "pl", "pt", "ro", "ru", "sk", "sl", "sv", "tr", "uk", "vi", "na"]
+SUPERTONIC_TOTAL_STEPS = 5  #@param {type:"integer"}
 
 import shlex
 import subprocess
@@ -608,6 +618,14 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         str(HIGGS_MAX_NEW_TOKENS),
         "--higgs-temperature",
         str(HIGGS_TEMPERATURE),
+        "--supertonic-model",
+        SUPERTONIC_MODEL,
+        "--supertonic-default-voice",
+        SUPERTONIC_DEFAULT_VOICE,
+        "--supertonic-default-lang",
+        SUPERTONIC_DEFAULT_LANG,
+        "--supertonic-total-steps",
+        str(SUPERTONIC_TOTAL_STEPS),
     ]
     if SARASHINA_USE_VLLM:
         cmd.append("--sarashina-use-vllm")
@@ -720,6 +738,24 @@ main()
 ### TinyTTS
 
 [ecyht2/tiny-tts](https://github.com/ecyht2/tiny-tts) を使った超軽量の英語 TTS です。モデルはわずか 1.6M パラメータ（約 3.4MB）で、GPU 不要・CPU のみで 53 倍速のリアルタイム合成が可能です。音声は 44.1kHz で出力されます。voice の切り替え機能はありません。ライセンス: Apache 2.0。
+
+### Supertonic
+
+Supertone Inc. の [supertone-inc/supertonic](https://github.com/supertone-inc/supertonic) を使った超軽量オンデバイス TTS です。`supertonic-3` モデル（約 99M params、ONNX アセット約 305MB）は英語・日本語・韓国語を含む 31 言語に対応し、未対応テキスト向けに `na` フォールバックも持ちます。ONNX Runtime で完全に CPU 動作（GPU 不要）。本ラッパーは初回リクエストでモデルをロードし、voice style はリクエスト間でキャッシュします。
+
+`voice` パラメータは内蔵 10 プリセットを公開します:
+
+| voice | 説明 |
+|---|---|
+| `M1` – `M5` | 男性プリセット（M1: 明るく前向き / M2: 落ち着いた低音 / M3: 信頼感のあるビジネス / M4: 柔らかく親しみやすい / M5: 暖かみのあるナレーション） |
+| `F1` – `F5` | 女性プリセット（F1: 落ち着き / F2: 明るく若々しい / F3: アナウンサー調 / F4: 自信のあるビジネス / F5: 優しいウェルネス） |
+| `default` | `--supertonic-default-voice` のエイリアス（既定は `M1`） |
+
+公式 Python SDK は voice cloning に対応していません（クローン音声は Supertone の Voice Builder サービスで作成する想定）。`voice=clone` を指定すると明示的に 4xx を返します。
+
+Supertonic-3 は合成時に言語ヒントが必要ですが、OpenAI 互換の `/v1/audio/speech` には `language` フィールドが無いため、本ラッパーは JSON body に拡張フィールド `language` を受け付けます。`language` が省略された場合は入力テキストのスクリプトから簡易判定（ひらがな・カタカナ・CJK → `ja`、ハングル → `ko`）し、それ以外は `--supertonic-default-lang`（既定 `en`）にフォールバックします。言語が分からないテキストは `"na"` を指定してください。
+
+ライセンス: **コードは MIT**（https://github.com/supertone-inc/supertonic）、**重みは OpenRAIL-M**（https://huggingface.co/Supertone/supertonic-3）。商用利用 OK。なりすまし・ディープフェイク・誹謗中傷など、OpenRAIL-M の use-based ethical restrictions は適用されます（詳細はライセンス本文を参照）。
 
 ### Voxtral-TTS
 
@@ -1033,6 +1069,7 @@ GPT-SoVITS は本質的に few-shot cloning モデルで、内蔵の「default s
 | MOSS-TTS-Nano | Apache 2.0 | Apache 2.0 | OK | 100M パラメータ、CPU 動作可 |
 | NeuTTS | Apache 2.0 | Apache 2.0 (Air) / NeuTTS Open License 1.0 (Nano) | OK (Air) / 規約要確認 (Nano) | ボイスクローン。英 / 西 / 独 / 仏 |
 | TinyTTS | Apache 2.0 | Apache 2.0 | OK | |
+| Supertonic | MIT | OpenRAIL-M | OK | 31言語（日 / 韓 / 英含む）。CPU 動作（ONNX）。なりすまし・ディープフェイク等の use-based ethical restrictions あり |
 | Voxtral-TTS | — | CC BY-NC 4.0 | 不可 | vLLM + vllm-omni 経由。音声データセットのライセンス制約により非商用 |
 | Sarashina-TTS | — | Sarashina Model NonCommercial License | 不可 | 日本語 / 英語。ゼロショット音声クローン対応。出力には SilentCipher のウォーターマークが付与される（除去禁止） |
 | F5-TTS | MIT | CC-BY-NC | 不可（モデル） | モデル重みは Emilia データセットの制約により非商用 |
@@ -1092,6 +1129,8 @@ GPT-SoVITS は本質的に few-shot cloning モデルで、内蔵の「default s
   https://github.com/OpenBMB/VoxCPM
 - TinyTTS
   https://github.com/ecyht2/tiny-tts
+- Supertonic
+  https://github.com/supertone-inc/supertonic
 - MOSS-TTS-Nano
   https://github.com/OpenMOSS/MOSS-TTS-Nano
 - NeuTTS

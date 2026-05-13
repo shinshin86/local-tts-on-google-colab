@@ -19,6 +19,7 @@ Supported engines:
 | MOSS-TTS-Nano | Works (output truncated to ~2s) | Japanese / English / Chinese and 20 languages |
 | NeuTTS | Works (CPU OK, voice cloning) | English / Spanish / German / French |
 | TinyTTS | Works | English |
+| Supertonic | Works (CPU OK, ONNX, ~99M params) | English / Japanese / Korean and 31 languages |
 | Voxtral-TTS | Works (GPU required, VRAM 16GB+) | English / French / Spanish and 9 languages |
 | Orpheus-TTS | Not working (HF-gated weights, requires Llama 3.2 license acceptance + `HF_TOKEN`) | English (Llama-3.2-3B base, vLLM) |
 | CosyVoice2 | Works (GPU recommended, Python 3.10 venv) | Japanese / English / Chinese / Korean / German and 9 languages |
@@ -76,7 +77,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Irodori-TTS", "Kokoro", "Kyutai-TTS", "MaskGCT", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
+ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Irodori-TTS", "Kokoro", "Kyutai-TTS", "MaskGCT", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -321,6 +322,15 @@ HIGGS_PROMPT_WAV = ""  #@param {type:"string"}
 HIGGS_PROMPT_TEXT = ""  #@param {type:"string"}
 HIGGS_MAX_NEW_TOKENS = 1024  #@param {type:"integer"}
 HIGGS_TEMPERATURE = 0.7  #@param {type:"number"}
+
+#@markdown ---
+#@markdown Supertonic (CPU OK, 31 languages incl JP/KO/EN, ONNX)
+#@markdown - Code: MIT. Weights: OpenRAIL-M (commercial OK, use-based ethical restrictions).
+#@markdown - Voice presets only (no voice cloning). Language is auto-detected for CJK text.
+SUPERTONIC_MODEL = "supertonic-3"  #@param ["supertonic-3", "supertonic-2", "supertonic"]
+SUPERTONIC_DEFAULT_VOICE = "M1"  #@param ["M1", "M2", "M3", "M4", "M5", "F1", "F2", "F3", "F4", "F5"]
+SUPERTONIC_DEFAULT_LANG = "en"  #@param ["en", "ja", "ko", "ar", "bg", "cs", "da", "de", "el", "es", "et", "fi", "fr", "hi", "hr", "hu", "id", "it", "lt", "lv", "nl", "pl", "pt", "ro", "ru", "sk", "sl", "sv", "tr", "uk", "vi", "na"]
+SUPERTONIC_TOTAL_STEPS = 5  #@param {type:"integer"}
 
 import shlex
 import subprocess
@@ -608,6 +618,14 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         str(HIGGS_MAX_NEW_TOKENS),
         "--higgs-temperature",
         str(HIGGS_TEMPERATURE),
+        "--supertonic-model",
+        SUPERTONIC_MODEL,
+        "--supertonic-default-voice",
+        SUPERTONIC_DEFAULT_VOICE,
+        "--supertonic-default-lang",
+        SUPERTONIC_DEFAULT_LANG,
+        "--supertonic-total-steps",
+        str(SUPERTONIC_TOTAL_STEPS),
     ]
     if SARASHINA_USE_VLLM:
         cmd.append("--sarashina-use-vllm")
@@ -720,6 +738,24 @@ Default backbone: `neuphonic/neutts-air` (~360M params, English only, Apache 2.0
 ### TinyTTS
 
 An ultra-lightweight English TTS using [ecyht2/tiny-tts](https://github.com/ecyht2/tiny-tts). The model has only 1.6M parameters (~3.4 MB), no GPU required, and can synthesize speech at 53× real-time on CPU alone. Audio is output at 44.1 kHz. There is no voice switching. License: Apache 2.0.
+
+### Supertonic
+
+An ultra-lightweight on-device TTS using [supertone-inc/supertonic](https://github.com/supertone-inc/supertonic) by Supertone Inc. The `supertonic-3` model (~99M params, ~305MB ONNX assets) supports 31 languages including English, Japanese, and Korean, plus a `na` fallback for unknown text. Runs entirely on CPU via ONNX Runtime (no GPU required). The wrapper loads the model on first request and caches voice styles between requests.
+
+The `voice` parameter exposes the 10 built-in presets:
+
+| voice | description |
+|---|---|
+| `M1` – `M5` | Male presets (M1: upbeat / M2: deep / M3: authoritative / M4: gentle / M5: warm storyteller) |
+| `F1` – `F5` | Female presets (F1: calm / F2: cheerful / F3: announcer / F4: confident / F5: gentle) |
+| `default` | Alias for `--supertonic-default-voice` (defaults to `M1`) |
+
+Voice cloning is **not** supported by the public Python SDK — cloned voices are produced through Supertone's separate Voice Builder service. Requesting `voice=clone` returns a 4xx with a clear message.
+
+Supertonic-3 needs a language hint at synthesis time. OpenAI's `/v1/audio/speech` schema has no `language` field, so the wrapper accepts an extra `language` field in the JSON body. When `language` is omitted, the wrapper auto-detects the script (Hiragana/Katakana/CJK → `ja`, Hangul → `ko`) and otherwise falls back to `--supertonic-default-lang` (`en`). Use `"na"` for text whose language is unknown.
+
+License: **code MIT** (https://github.com/supertone-inc/supertonic), **weights OpenRAIL-M** (https://huggingface.co/Supertone/supertonic-3). Commercial use is permitted; use-based ethical restrictions apply (no impersonation, deepfakes, defamation, etc. — see the OpenRAIL-M license text for the full list).
 
 ### Voxtral-TTS
 
@@ -1033,6 +1069,7 @@ The license for each engine is as follows. When using them, always check each pr
 | MOSS-TTS-Nano | Apache 2.0 | Apache 2.0 | OK | 100M params, CPU OK |
 | NeuTTS | Apache 2.0 | Apache 2.0 (Air) / NeuTTS Open License 1.0 (Nano) | OK (Air) / Check terms (Nano) | Voice cloning. EN / ES / DE / FR |
 | TinyTTS | Apache 2.0 | Apache 2.0 | OK | |
+| Supertonic | MIT | OpenRAIL-M | OK | 31 languages incl JP/KO/EN. CPU OK (ONNX). Use-based ethical restrictions (no impersonation/deepfakes) |
 | Voxtral-TTS | — | CC BY-NC 4.0 | Not allowed | Via vLLM + vllm-omni. Non-commercial due to voice dataset license constraints |
 | Orpheus-TTS | Apache 2.0 | Apache 2.0 + Llama 3.2 Community License | Caution | Llama-3.2-3B-Instruct base; Llama Community License applies in practice. EN only. **Currently not working: weights are HF-gated and require Llama 3.2 license acceptance + `HF_TOKEN`** |
 | CosyVoice2 | Apache 2.0 | Apache 2.0 | OK | Multilingual incl JP. Zero-shot voice cloning. Requires Python 3.10 venv |
@@ -1092,6 +1129,8 @@ This repository itself is intended for short-term operational verification and t
   https://github.com/OpenBMB/VoxCPM
 - TinyTTS
   https://github.com/ecyht2/tiny-tts
+- Supertonic
+  https://github.com/supertone-inc/supertonic
 - MOSS-TTS-Nano
   https://github.com/OpenMOSS/MOSS-TTS-Nano
 - NeuTTS
