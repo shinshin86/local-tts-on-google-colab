@@ -169,6 +169,18 @@ def parse_args():
     parser.add_argument("--dramabox-seed", type=int, default=42)
     parser.add_argument("--dramabox-compile", action="store_true")
     parser.add_argument("--dramabox-no-bnb-4bit", action="store_true")
+    parser.add_argument("--scenema-default-voice", default="default")
+    parser.add_argument("--scenema-default-gender", default="male")
+    parser.add_argument("--scenema-prompt-wav", default="")
+    parser.add_argument("--scenema-gemma-quantize", default="nf4")
+    parser.add_argument("--scenema-seed", type=int, default=-1)
+    parser.add_argument("--scenema-pace", type=float, default=1.5)
+    parser.add_argument("--scenema-no-validate", action="store_true")
+    parser.add_argument("--scenema-min-match-ratio", type=float, default=0.90)
+    parser.add_argument("--scenema-skip-vc", action="store_true")
+    parser.add_argument("--scenema-vc-steps", type=int, default=25)
+    parser.add_argument("--scenema-vc-cfg-rate", type=float, default=0.5)
+    parser.add_argument("--scenema-background-sfx", action="store_true")
     parser.add_argument("--root-dir", default="/content/openai-compatible-local-tts")
     return parser.parse_args()
 
@@ -324,6 +336,18 @@ def main():
         dramabox_seed=args.dramabox_seed,
         dramabox_compile=args.dramabox_compile,
         dramabox_bnb_4bit=not args.dramabox_no_bnb_4bit,
+        scenema_default_voice=args.scenema_default_voice,
+        scenema_default_gender=args.scenema_default_gender,
+        scenema_prompt_wav=args.scenema_prompt_wav,
+        scenema_gemma_quantize=args.scenema_gemma_quantize,
+        scenema_seed=args.scenema_seed,
+        scenema_pace=args.scenema_pace,
+        scenema_validate=not args.scenema_no_validate,
+        scenema_min_match_ratio=args.scenema_min_match_ratio,
+        scenema_skip_vc=args.scenema_skip_vc,
+        scenema_vc_steps=args.scenema_vc_steps,
+        scenema_vc_cfg_rate=args.scenema_vc_cfg_rate,
+        scenema_background_sfx=args.scenema_background_sfx,
         root_dir=Path(args.root_dir),
         repo_dir=REPO_DIR,
     )

@@ -188,6 +188,18 @@ class Settings:
     dramabox_seed: int = 42
     dramabox_compile: bool = False
     dramabox_bnb_4bit: bool = True
+    scenema_default_voice: str = "default"
+    scenema_default_gender: str = "male"
+    scenema_prompt_wav: str = ""
+    scenema_gemma_quantize: str = "nf4"
+    scenema_seed: int = -1
+    scenema_pace: float = 1.5
+    scenema_validate: bool = True
+    scenema_min_match_ratio: float = 0.90
+    scenema_skip_vc: bool = False
+    scenema_vc_steps: int = 25
+    scenema_vc_cfg_rate: float = 0.5
+    scenema_background_sfx: bool = False
     root_dir: Path = Path("/content/openai-compatible-local-tts")
     repo_dir: Path = field(default_factory=default_repo_dir)
     app_port: int = 8000

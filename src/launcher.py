@@ -72,6 +72,8 @@ def resolve_selected_voice(settings: Settings) -> str:
         return settings.supertonic_default_voice
     if settings.engine == "DramaBox":
         return settings.dramabox_default_voice
+    if settings.engine == "Scenema":
+        return settings.scenema_default_voice
     return ""
 
 
@@ -411,6 +413,29 @@ def print_engine_voice_hints(settings: Settings):
         print("生成音声には Resemble Perth による不可聴ウォーターマークが常時付与されます（除去不可）。")
         print("ライセンス警告: コードと重みは **LTX-2 Community License Agreement**（Lightricks）。")
         print("                年商 $10M+ の組織は商用ライセンス必須。非競合条項・配布時の同ライセンス継承条項あり。")
+    elif settings.engine == "Scenema":
+        print("Scenema Audio は Scenema AI の表現力豊か / 演技指向 TTS です（LTX-2.3 派生 + Gemma 3 12B、英語中心、多言語可）。")
+        print(f"デフォルト voice: {settings.scenema_default_voice} / gender: {settings.scenema_default_gender}")
+        print(f"seed: {settings.scenema_seed} (-1=ランダム) / pace: {settings.scenema_pace} / validate: {settings.scenema_validate}")
+        print(f"skip_vc: {settings.scenema_skip_vc} / vc_steps: {settings.scenema_vc_steps} / vc_cfg_rate: {settings.scenema_vc_cfg_rate}")
+        print(f"background_sfx: {settings.scenema_background_sfx} / Gemma quantize: {settings.scenema_gemma_quantize}")
+        print("voice 候補: default, warm_male, smoky_female, child_girl, elderly_male, elderly_female")
+        print("            voice に上記プリセット名以外を渡すと、その文字列を voice description として直接使用します。")
+        if settings.scenema_prompt_wav:
+            print(f"             clone（参照音声: {settings.scenema_prompt_wav}）")
+        else:
+            print("             clone は --scenema-prompt-wav を指定すると有効になります（10〜20秒の参照音声推奨）")
+        print("入力テキストはそのまま <speak> でラップされ Scenema に渡されます。")
+        print("上級者は input に直接 <speak voice=\"...\" gender=\"...\"><action>...</action>... </speak> の XML を書くと、")
+        print("pass-through され action / sound タグなどの演技指示がそのまま効きます。")
+        print("対応言語: 英語中心。Scenema は主要世界言語にも対応（モデルカード参照）。")
+        print("注意: A100 GPU 必須（40GB VRAM）。初回起動時に約 38GB のチェックポイントをダウンロードします。")
+        print("      Gemma 3 12B IT は HF gated。https://huggingface.co/google/gemma-3-12b-it で同意し、")
+        print("      Colab Secrets で HF_TOKEN を設定してから起動してください。")
+        print("ライセンス: コードは MIT。Scenema Audio の重み（ScenemaAI/scenema-audio）は LTX-2.3 から派生のため、")
+        print("            **LTX-2 Community License Agreement**（Lightricks）が適用されます（DramaBox と同じ）。")
+        print("            Gemma 3 12B IT は Gemma Terms of Use（Google）。")
+        print("            年商 $10M+ の組織は LTX-2 商用ライセンス、Gemma も商用利用は Gemma 規約遵守が必要です。")
     elif settings.engine == "Supertonic":
         print("Supertonic は Supertone Inc. の超軽量オンデバイス TTS です（ONNX、~99M params、CPU 動作可）。")
         print(f"モデル: {settings.supertonic_model}")

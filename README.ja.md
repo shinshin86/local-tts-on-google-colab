@@ -45,6 +45,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | GPT-SoVITS | Colab でエンジン起動確認済み（synthesis には参照音声必須・default speaker モード非対応・`--gpt-sovits-prompt-wav` と `--gpt-sovits-prompt-text` を指定） | 中 / 英 / 日 / 韓 / 粤 |
 | Higgs-Audio-v2 | デフォルトで動作不可（HF 上の checkpoint が未リリースの `boson_multimodal` / transformers 5.x を要求。エンジンは起動するが audio tokenizer ロード時に上流コードと config schema が一致せず推論失敗） | 英語 |
 | DramaBox | Colab A100 動作確認済み（GPU 必須、VRAM ~24GB ピーク、**LTX-2 Community License — 非競合条項あり**） | 英語 |
+| Scenema | **Colab A100（40GB VRAM）必須**。初回起動時に約 38GB ダウンロード。音声モデルは LTX-2.3 派生のため **LTX-2 Community License**（DramaBox と同じ）。Gemma 3 12B IT 利用（HF gated、`HF_TOKEN` 必須） | 英語中心の多言語 |
 
 `MeloTTS`、`Style-Bert-VITS2` は Colab の uv + venv 環境で依存解決に問題があり、現時点では動作しません。
 
@@ -78,7 +79,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Irodori-TTS", "Kokoro", "Kyutai-TTS", "MaskGCT", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
+ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Irodori-TTS", "Kokoro", "Kyutai-TTS", "MaskGCT", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -342,6 +343,27 @@ DRAMABOX_DURATION_MULTIPLIER = 1.1  #@param {type:"number"}
 DRAMABOX_SEED = 42  #@param {type:"integer"}
 DRAMABOX_COMPILE = False  #@param {type:"boolean"}
 DRAMABOX_NO_BNB_4BIT = False  #@param {type:"boolean"}
+
+#@markdown ---
+#@markdown Scenema (A100 required, 40GB VRAM, English-centric multilingual, voice cloning)
+#@markdown - Zero-shot expressive voice cloning + speech generation (Scenema AI).
+#@markdown - Audio model is derived from LTX-2.3 → **LTX-2 Community License** (Lightricks, same as DramaBox).
+#@markdown - Uses Gemma 3 12B IT (gated): accept https://huggingface.co/google/gemma-3-12b-it and set `HF_TOKEN`.
+#@markdown - First-run downloads ~38GB (audio transformer + pipeline + Gemma 3 12B + SeedVC + BigVGAN + Whisper).
+#@markdown - Pass plain text → wrapped in `<speak voice="..." gender="...">` automatically.
+#@markdown   Or write the full `<speak>...<action>...</action>...</speak>` XML yourself for emotion control.
+SCENEMA_DEFAULT_VOICE = "default"  #@param ["default", "warm_male", "smoky_female", "child_girl", "elderly_male", "elderly_female", "clone"]
+SCENEMA_DEFAULT_GENDER = "male"  #@param ["male", "female"]
+SCENEMA_PROMPT_WAV = ""  #@param {type:"string"}
+SCENEMA_GEMMA_QUANTIZE = "nf4"  #@param ["nf4", ""]
+SCENEMA_SEED = -1  #@param {type:"integer"}
+SCENEMA_PACE = 1.5  #@param {type:"number"}
+SCENEMA_NO_VALIDATE = False  #@param {type:"boolean"}
+SCENEMA_MIN_MATCH_RATIO = 0.90  #@param {type:"number"}
+SCENEMA_SKIP_VC = False  #@param {type:"boolean"}
+SCENEMA_VC_STEPS = 25  #@param {type:"integer"}
+SCENEMA_VC_CFG_RATE = 0.5  #@param {type:"number"}
+SCENEMA_BACKGROUND_SFX = False  #@param {type:"boolean"}
 
 #@markdown ---
 #@markdown Supertonic (CPU OK, 31 languages incl JP/KO/EN, ONNX)
@@ -666,6 +688,24 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         str(DRAMABOX_DURATION_MULTIPLIER),
         "--dramabox-seed",
         str(DRAMABOX_SEED),
+        "--scenema-default-voice",
+        SCENEMA_DEFAULT_VOICE,
+        "--scenema-default-gender",
+        SCENEMA_DEFAULT_GENDER,
+        "--scenema-prompt-wav",
+        SCENEMA_PROMPT_WAV,
+        "--scenema-gemma-quantize",
+        SCENEMA_GEMMA_QUANTIZE,
+        "--scenema-seed",
+        str(SCENEMA_SEED),
+        "--scenema-pace",
+        str(SCENEMA_PACE),
+        "--scenema-min-match-ratio",
+        str(SCENEMA_MIN_MATCH_RATIO),
+        "--scenema-vc-steps",
+        str(SCENEMA_VC_STEPS),
+        "--scenema-vc-cfg-rate",
+        str(SCENEMA_VC_CFG_RATE),
     ]
     if SARASHINA_USE_VLLM:
         cmd.append("--sarashina-use-vllm")
@@ -675,6 +715,12 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         cmd.append("--dramabox-compile")
     if DRAMABOX_NO_BNB_4BIT:
         cmd.append("--dramabox-no-bnb-4bit")
+    if SCENEMA_NO_VALIDATE:
+        cmd.append("--scenema-no-validate")
+    if SCENEMA_SKIP_VC:
+        cmd.append("--scenema-skip-vc")
+    if SCENEMA_BACKGROUND_SFX:
+        cmd.append("--scenema-background-sfx")
     cmd.append("--expose-public-url" if EXPOSE_PUBLIC_URL else "--no-expose-public-url")
     return cmd
 
@@ -1123,6 +1169,34 @@ A woman speaks warmly, "Hello, how are you today?" She laughs, "Hahaha, it is so
 
 本リポジトリは Colab での個人・研究用途の評価ラッパーです。LTX-2 Community License が自身の用途に適合するかは利用者の責任で確認してください。
 
+### Scenema
+
+Scenema AI による zero-shot な表現力豊か / 演技指向 TTS です（[ScenemaAI/scenema-audio](https://github.com/ScenemaAI/scenema-audio)）。音声 diffusion transformer は Lightricks の LTX-2（22B 音声 + 映像モデル）から抽出した派生で、テキスト条件付けに Gemma 3 12B IT、声色変換に SeedVC、クリーン化に MelBandRoFormer を組み合わせています。最大の特徴は「演技」で、英語の自由記述で声色を描写すると、意図・ペーシング・息遣い・感情アークまで含めて発話します（参照話者が録音した感情でなくても再現可能）。
+
+**ハードウェア**: **Colab A100（40GB）必須**。本ラッパーは INT8 音声 transformer + NF4 Gemma プロファイル（常駐 VRAM ~13GB）を使用し、24GB GPU でも動作・40GB なら余裕。T4 / V100 ではモデルのホスト不可。初回起動時に合計約 38GB（audio transformer 約 5GB + pipeline 約 7GB + Gemma 3 12B 約 24GB + SeedVC 約 1.6GB + BigVGAN v2 + Whisper Small）をダウンロードします。
+
+**Gemma 3 アクセスが必須**: Hugging Face で [google/gemma-3-12b-it](https://huggingface.co/google/gemma-3-12b-it) の Gemma Terms of Use に同意し、Colab Secrets で `HF_TOKEN` を設定してからセルを実行してください。
+
+**OpenAI API へのマッピング**: 本リポジトリは Scenema を標準の `/v1/audio/speech` エンドポイントとして公開します。Scenema のネイティブ入力は `<action>` 演技指示を含む構造化 `<speak>` XML なので、入力方法は 2 通り対応します:
+
+1. **プレーンテキスト**（デフォルト）: `input` は `<speak voice="<プリセット description>" gender="<gender>">…</speak>` で自動的にラップされます。`voice` パラメータはプリセット名から description を引き、プリセット名でなければ文字列をそのまま voice description として使用します。OpenAI SDK クライアントはこの形式で利用します。
+2. **XML pass-through**（上級）: `input` が `<speak` で始まる場合、文字列はそのまま Scenema に渡されます。`<action>angry shout</action>` / `<sound>thunder</sound>` / 複数セグメントによる演技指示を活用できます。
+
+`voice` パラメータ:
+
+| voice | 説明 |
+|---|---|
+| `default` | 落ち着いた英国訛りの男性ナレーター（ベースライン中性ボイス）。 |
+| `warm_male` | 温かみのある中年男性ナレーター。深いがやわらかいトーン。 |
+| `smoky_female` | スモーキーで低音域の女性ボイス。親密で告白的なトーン。 |
+| `child_girl` | 明るく息せき切った 6 歳の女の子。 |
+| `elderly_male` | 渋い高齢男性の語り手。深いバリトン。 |
+| `elderly_female` | 70 代女性の柔らかいアルト。 |
+| `clone` | ゼロショット音声クローン。`--scenema-prompt-wav` 指定時のみ有効（10〜20 秒、感情変化のある参照音声推奨）。 |
+| `<任意の文字列>` | そのまま Scenema の voice description として使用（例: `"Male, mid 60s. Deep baritone with gravel. Slight Southern American inflection."`）。 |
+
+**ライセンス警告（重要）**: コードは MIT ですが、**音声 transformer の重みは LTX-2.3 派生のため LTX-2 Community License Agreement**（Lightricks）が継承されます — DramaBox と同じ制約の強いライセンスです。Gemma 3 12B IT は別途 Gemma Terms of Use（Google）の対象です。両方を自身の用途に対して遵守できるかは利用者の責任で確認してください。Acceptable use 制限は広範（なりすまし / ディープフェイク / 偽情報 / 軍事 / 医療助言など禁止）。
+
 ### MeloTTS (現在動作不可)
 
 [myshell-ai/MeloTTS](https://github.com/myshell-ai/MeloTTS) を使う構成ですが、依存パッケージ `tokenizers` のビルドに Rust コンパイラが必要なため、現在の Colab 環境ではインストールに失敗します。
@@ -1174,6 +1248,9 @@ A woman speaks warmly, "Hello, how are you today?" She laughs, "Hahaha, it is so
 | Higgs-Audio-v2 (code) | Apache 2.0 | — | — | LLM ベース音声基盤モデル。英語中心 |
 | Higgs-Audio-v2 (重み) | — | Boson Higgs Audio 2 Community License | 要注意 | Llama 派生 community license。MAU 10万超は追加ライセンス必須、出力で他 LLM 学習禁止 |
 | DramaBox | LTX-2 Community License (Lightricks) | LTX-2 Community License | **年商 $10M+ の組織は商用ライセンス必須** | 英語。非競合条項あり、再配布時は同ライセンス継承必須、Perth ウォーターマーク常時付与 |
+| Scenema (code) | MIT | — | — | リポジトリ: `ScenemaAI/scenema-audio` |
+| Scenema (音声重み) | — | LTX-2 Community License (Lightricks) | **年商 $10M+ の組織は商用ライセンス必須** | 音声 transformer は LTX-2.3 派生のため LTX-2 Community License が継承される。DramaBox と同じ注意点（非競合条項、acceptable use 制限、再配布時のライセンス継承） |
+| Scenema (Gemma 3 12B IT) | — | Gemma Terms of Use (Google) | 要注意 | HF gated。モデルカードで同意のうえ `HF_TOKEN` を設定。商用利用は Gemma 規約の prohibited use policy 遵守が条件 |
 
 **Piper について**: `piper-tts` パッケージは GPL-3.0 です。また、デフォルトの `en_US-lessac-medium` 音声は Lessac Technologies 提供の Blizzard 2013 データセットで学習されており、このデータセットのライセンスは商用利用を禁止しています。商用利用が必要な場合は、許容的なライセンスで学習された別の voice モデルを選択してください。
 
@@ -1263,3 +1340,7 @@ A woman speaks warmly, "Hello, how are you today?" She laughs, "Hahaha, it is so
   https://github.com/resemble-ai/DramaBox
 - DramaBox (Hugging Face)
   https://huggingface.co/ResembleAI/Dramabox
+- Scenema Audio
+  https://github.com/ScenemaAI/scenema-audio
+- Scenema Audio (Hugging Face)
+  https://huggingface.co/ScenemaAI/scenema-audio
