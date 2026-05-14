@@ -1173,9 +1173,17 @@ A woman speaks warmly, "Hello, how are you today?" She laughs, "Hahaha, it is so
 
 Scenema AI による zero-shot な表現力豊か / 演技指向 TTS です（[ScenemaAI/scenema-audio](https://github.com/ScenemaAI/scenema-audio)）。音声 diffusion transformer は Lightricks の LTX-2（22B 音声 + 映像モデル）から抽出した派生で、テキスト条件付けに Gemma 3 12B IT、声色変換に SeedVC、クリーン化に MelBandRoFormer を組み合わせています。最大の特徴は「演技」で、英語の自由記述で声色を描写すると、意図・ペーシング・息遣い・感情アークまで含めて発話します（参照話者が録音した感情でなくても再現可能）。
 
-**ハードウェア**: **Colab A100（40GB）必須**。本ラッパーは INT8 音声 transformer + NF4 Gemma プロファイル（常駐 VRAM ~13GB）を使用し、24GB GPU でも動作・40GB なら余裕。T4 / V100 ではモデルのホスト不可。初回起動時に合計約 38GB（audio transformer 約 5GB + pipeline 約 7GB + Gemma 3 12B 約 24GB + SeedVC 約 1.6GB + BigVGAN v2 + Whisper Small）をダウンロードします。
+**ステータス: Colab 未検証**。インストール / 配線 / API レイヤ（installer・app・voice プリセット・XML pass-through）は一通り実装済みですが、Scenema のテキストエンコーダは **HF gated な Gemma 3 12B IT** です。`HF_TOKEN` の設定と Google の Gemma Terms of Use 同意は本リポのデフォルト検証ワークフローの範囲外のため、Colab A100 での E2E 検証は保留しています。実際に Colab で動かしたい場合は、以下のセットアップを利用者側で行ってください。動作確認できた方からの trycloudflare ログ付き Issue / PR は歓迎です。
 
-**Gemma 3 アクセスが必須**: Hugging Face で [google/gemma-3-12b-it](https://huggingface.co/google/gemma-3-12b-it) の Gemma Terms of Use に同意し、Colab Secrets で `HF_TOKEN` を設定してからセルを実行してください。
+**起動前のセットアップ:**
+
+1. Hugging Face にサインインし、[google/gemma-3-12b-it](https://huggingface.co/google/gemma-3-12b-it) モデルカードの「Acknowledge license」で Gemma Terms of Use に同意。
+2. https://huggingface.co/settings/tokens で **Read** スコープのトークンを発行。
+3. Colab ノートブック左サイドバーの **🔑 Secrets** を開き、**名前 `HF_TOKEN`** で 2 のトークン値を保存、**ノートブックからのアクセスをオン**。
+
+未設定で起動すると lifespan の `snapshot_download("google/gemma-3-12b-it")` が `401 Unauthorized` で失敗し、`AudioProcessor` が ready にならず `/v1/audio/speech` は 503 を返します。
+
+**ハードウェア**: **Colab A100（40GB）必須**。本ラッパーは INT8 音声 transformer + NF4 Gemma プロファイル（常駐 VRAM ~13GB）を使用し、24GB GPU でも動作・40GB なら余裕。T4 / V100 ではモデルのホスト不可。初回起動時に合計約 38GB（audio transformer 約 5GB + pipeline 約 7GB + Gemma 3 12B 約 24GB + SeedVC 約 1.6GB + BigVGAN v2 + Whisper Small）をダウンロードします。
 
 **OpenAI API へのマッピング**: 本リポジトリは Scenema を標準の `/v1/audio/speech` エンドポイントとして公開します。Scenema のネイティブ入力は `<action>` 演技指示を含む構造化 `<speak>` XML なので、入力方法は 2 通り対応します:
 

@@ -45,7 +45,7 @@ Supported engines:
 | GPT-SoVITS | Engine starts on Colab — reference audio required for synthesis (no default speaker mode; pass `--gpt-sovits-prompt-wav` + `--gpt-sovits-prompt-text`) | Chinese / English / Japanese / Korean / Cantonese |
 | Higgs-Audio-v2 | Not working by default (upstream HF checkpoint requires unreleased `boson_multimodal` / transformers 5.x; engine starts but inference fails inside the audio tokenizer loader) | English |
 | DramaBox | Works on Colab A100 (GPU required, VRAM ~24GB peak, **LTX-2 Community License — non-compete clause**) | English |
-| Scenema | **Requires Colab A100 (40GB VRAM)**. First-run downloads ~38GB. Audio model derived from LTX-2.3 → **LTX-2 Community License** (same as DramaBox). Uses Gemma 3 12B IT (HF-gated, needs `HF_TOKEN`) | English-centric multilingual |
+| Scenema | **Not verified on Colab** — text encoder is Gemma 3 12B IT (HF-gated), so running this engine requires accepting the Gemma Terms of Use on Hugging Face and providing `HF_TOKEN` via Colab Secrets. Code paths are in place but end-to-end Colab verification was deferred because `HF_TOKEN` setup is out of scope for this repo's default workflow. **Requires Colab A100 (40GB VRAM)**. First-run downloads ~38GB. Audio model derived from LTX-2.3 → **LTX-2 Community License** (same as DramaBox) | English-centric multilingual |
 
 `MeloTTS` and `Style-Bert-VITS2` currently have dependency resolution issues under Colab's uv + venv environment and do not work.
 
@@ -1173,9 +1173,17 @@ This repository wraps DramaBox only for personal / research evaluation on Colab 
 
 A zero-shot expressive voice cloning / speech-generation engine from Scenema AI ([ScenemaAI/scenema-audio](https://github.com/ScenemaAI/scenema-audio)). Its audio diffusion transformer is extracted from Lightricks' LTX-2 (22B audiovisual model) and conditioned with Gemma 3 12B IT, paired with SeedVC for voice identity transfer and a MelBandRoFormer separator for clean speech. The marquee feature is "performance": describe a voice in free-form English and the model delivers it with intent, pacing, breath control, and emotional arcs — including emotions the reference speaker never recorded.
 
-**Hardware**: **Colab A100 (40 GB) is required.** The wrapper uses the INT8 audio transformer + NF4 Gemma profile (~13 GB resident VRAM, fits in 24 GB and comfortably on 40 GB). T4 / V100 cannot host this model. First run downloads ~38 GB total: audio transformer (~5 GB), pipeline checkpoint (~7 GB), Gemma 3 12B IT (~24 GB), SeedVC (~1.6 GB), BigVGAN v2 + Whisper Small.
+**Status: not verified on Colab.** The full install / wiring / API layer is implemented (installer, app, voice presets, XML pass-through), but Scenema's text encoder is **Gemma 3 12B IT, which is HF-gated**. End-to-end verification on Colab A100 was deferred because configuring `HF_TOKEN` and accepting Google's Gemma Terms of Use sits outside this repo's default verification workflow. If you want to actually run this engine on Colab, you need to do the setup yourself (see below). Confirmed-good Colab logs from a user would be welcome — please open an issue / PR with the trycloudflare evidence.
 
-**Gemma 3 access is required.** Visit [google/gemma-3-12b-it](https://huggingface.co/google/gemma-3-12b-it) on Hugging Face, accept the Gemma Terms of Use, then set `HF_TOKEN` from Colab Secrets before launching the cell.
+**Setup required before launch:**
+
+1. Sign in to Hugging Face and accept the Gemma Terms of Use on the [google/gemma-3-12b-it](https://huggingface.co/google/gemma-3-12b-it) model card ("Acknowledge license").
+2. Create a Read-scoped Hugging Face token at https://huggingface.co/settings/tokens.
+3. In the Colab notebook, open the left sidebar **🔑 Secrets** panel, add a new secret named **`HF_TOKEN`** with the token value, and **enable notebook access**.
+
+Without this, the lifespan startup `snapshot_download("google/gemma-3-12b-it")` returns `401 Unauthorized` and `AudioProcessor` never becomes ready — `/v1/audio/speech` will return 503.
+
+**Hardware**: **Colab A100 (40 GB) is required.** The wrapper uses the INT8 audio transformer + NF4 Gemma profile (~13 GB resident VRAM, fits in 24 GB and comfortably on 40 GB). T4 / V100 cannot host this model. First run downloads ~38 GB total: audio transformer (~5 GB), pipeline checkpoint (~7 GB), Gemma 3 12B IT (~24 GB), SeedVC (~1.6 GB), BigVGAN v2 + Whisper Small.
 
 **OpenAI API mapping.** This repo exposes Scenema through the standard `/v1/audio/speech` endpoint. Because Scenema's native input is a structured `<speak>` XML with `<action>` performance directions, two input paths are supported:
 
