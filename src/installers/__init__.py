@@ -24,6 +24,7 @@ from .piper import install as install_piper
 from .piper_plus import install as install_piper_plus
 from .pocket_tts import install as install_pocket_tts
 from .sarashina_tts import install as install_sarashina_tts
+from .scenema import install as install_scenema
 from .spark_tts import install as install_spark_tts
 from .style_bert import install as install_style_bert
 from .styletts2 import install as install_styletts2
@@ -65,6 +66,7 @@ INSTALLERS = {
     "Pocket-TTS": install_pocket_tts,
     "Qwen3-TTS": install_qwen3_tts,
     "Sarashina-TTS": install_sarashina_tts,
+    "Scenema": install_scenema,
     "Spark-TTS": install_spark_tts,
     "TinyTTS": install_tiny_tts,
     "VibeVoice": install_vibevoice,

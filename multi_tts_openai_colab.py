@@ -11,7 +11,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Irodori-TTS", "Kokoro", "Kyutai-TTS", "MaskGCT", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
+ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Irodori-TTS", "Kokoro", "Kyutai-TTS", "MaskGCT", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -275,6 +275,27 @@ DRAMABOX_DURATION_MULTIPLIER = 1.1  #@param {type:"number"}
 DRAMABOX_SEED = 42  #@param {type:"integer"}
 DRAMABOX_COMPILE = False  #@param {type:"boolean"}
 DRAMABOX_NO_BNB_4BIT = False  #@param {type:"boolean"}
+
+#@markdown ---
+#@markdown Scenema (A100 required, 40GB VRAM, English-centric multilingual, voice cloning)
+#@markdown - Zero-shot expressive voice cloning + speech generation (Scenema AI).
+#@markdown - Audio model is derived from LTX-2.3 → **LTX-2 Community License** (Lightricks, same as DramaBox).
+#@markdown - Uses Gemma 3 12B IT (gated): accept https://huggingface.co/google/gemma-3-12b-it and set `HF_TOKEN`.
+#@markdown - First-run downloads ~38GB (audio transformer + pipeline + Gemma 3 12B + SeedVC + BigVGAN + Whisper).
+#@markdown - Pass plain text → wrapped in `<speak voice="..." gender="...">` automatically.
+#@markdown   Or write the full `<speak>...<action>...</action>...</speak>` XML yourself for emotion control.
+SCENEMA_DEFAULT_VOICE = "default"  #@param ["default", "warm_male", "smoky_female", "child_girl", "elderly_male", "elderly_female", "clone"]
+SCENEMA_DEFAULT_GENDER = "male"  #@param ["male", "female"]
+SCENEMA_PROMPT_WAV = ""  #@param {type:"string"}
+SCENEMA_GEMMA_QUANTIZE = "nf4"  #@param ["nf4", ""]
+SCENEMA_SEED = -1  #@param {type:"integer"}
+SCENEMA_PACE = 1.5  #@param {type:"number"}
+SCENEMA_NO_VALIDATE = False  #@param {type:"boolean"}
+SCENEMA_MIN_MATCH_RATIO = 0.90  #@param {type:"number"}
+SCENEMA_SKIP_VC = False  #@param {type:"boolean"}
+SCENEMA_VC_STEPS = 25  #@param {type:"integer"}
+SCENEMA_VC_CFG_RATE = 0.5  #@param {type:"number"}
+SCENEMA_BACKGROUND_SFX = False  #@param {type:"boolean"}
 
 #@markdown ---
 #@markdown Supertonic (CPU OK, 31 languages incl JP/KO/EN, ONNX)
@@ -599,6 +620,24 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         str(DRAMABOX_DURATION_MULTIPLIER),
         "--dramabox-seed",
         str(DRAMABOX_SEED),
+        "--scenema-default-voice",
+        SCENEMA_DEFAULT_VOICE,
+        "--scenema-default-gender",
+        SCENEMA_DEFAULT_GENDER,
+        "--scenema-prompt-wav",
+        SCENEMA_PROMPT_WAV,
+        "--scenema-gemma-quantize",
+        SCENEMA_GEMMA_QUANTIZE,
+        "--scenema-seed",
+        str(SCENEMA_SEED),
+        "--scenema-pace",
+        str(SCENEMA_PACE),
+        "--scenema-min-match-ratio",
+        str(SCENEMA_MIN_MATCH_RATIO),
+        "--scenema-vc-steps",
+        str(SCENEMA_VC_STEPS),
+        "--scenema-vc-cfg-rate",
+        str(SCENEMA_VC_CFG_RATE),
     ]
     if SARASHINA_USE_VLLM:
         cmd.append("--sarashina-use-vllm")
@@ -608,6 +647,12 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         cmd.append("--dramabox-compile")
     if DRAMABOX_NO_BNB_4BIT:
         cmd.append("--dramabox-no-bnb-4bit")
+    if SCENEMA_NO_VALIDATE:
+        cmd.append("--scenema-no-validate")
+    if SCENEMA_SKIP_VC:
+        cmd.append("--scenema-skip-vc")
+    if SCENEMA_BACKGROUND_SFX:
+        cmd.append("--scenema-background-sfx")
     cmd.append("--expose-public-url" if EXPOSE_PUBLIC_URL else "--no-expose-public-url")
     return cmd
 

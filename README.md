@@ -45,6 +45,7 @@ Supported engines:
 | GPT-SoVITS | Engine starts on Colab — reference audio required for synthesis (no default speaker mode; pass `--gpt-sovits-prompt-wav` + `--gpt-sovits-prompt-text`) | Chinese / English / Japanese / Korean / Cantonese |
 | Higgs-Audio-v2 | Not working by default (upstream HF checkpoint requires unreleased `boson_multimodal` / transformers 5.x; engine starts but inference fails inside the audio tokenizer loader) | English |
 | DramaBox | Works on Colab A100 (GPU required, VRAM ~24GB peak, **LTX-2 Community License — non-compete clause**) | English |
+| Scenema | **Not verified on Colab** — text encoder is Gemma 3 12B IT (HF-gated), so running this engine requires accepting the Gemma Terms of Use on Hugging Face and providing `HF_TOKEN` via Colab Secrets. Code paths are in place but end-to-end Colab verification was deferred because `HF_TOKEN` setup is out of scope for this repo's default workflow. **Requires Colab A100 (40GB VRAM)**. First-run downloads ~38GB. Audio model derived from LTX-2.3 → **LTX-2 Community License** (same as DramaBox) | English-centric multilingual |
 
 `MeloTTS` and `Style-Bert-VITS2` currently have dependency resolution issues under Colab's uv + venv environment and do not work.
 
@@ -78,7 +79,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Irodori-TTS", "Kokoro", "Kyutai-TTS", "MaskGCT", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
+ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Irodori-TTS", "Kokoro", "Kyutai-TTS", "MaskGCT", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -342,6 +343,27 @@ DRAMABOX_DURATION_MULTIPLIER = 1.1  #@param {type:"number"}
 DRAMABOX_SEED = 42  #@param {type:"integer"}
 DRAMABOX_COMPILE = False  #@param {type:"boolean"}
 DRAMABOX_NO_BNB_4BIT = False  #@param {type:"boolean"}
+
+#@markdown ---
+#@markdown Scenema (A100 required, 40GB VRAM, English-centric multilingual, voice cloning)
+#@markdown - Zero-shot expressive voice cloning + speech generation (Scenema AI).
+#@markdown - Audio model is derived from LTX-2.3 → **LTX-2 Community License** (Lightricks, same as DramaBox).
+#@markdown - Uses Gemma 3 12B IT (gated): accept https://huggingface.co/google/gemma-3-12b-it and set `HF_TOKEN`.
+#@markdown - First-run downloads ~38GB (audio transformer + pipeline + Gemma 3 12B + SeedVC + BigVGAN + Whisper).
+#@markdown - Pass plain text → wrapped in `<speak voice="..." gender="...">` automatically.
+#@markdown   Or write the full `<speak>...<action>...</action>...</speak>` XML yourself for emotion control.
+SCENEMA_DEFAULT_VOICE = "default"  #@param ["default", "warm_male", "smoky_female", "child_girl", "elderly_male", "elderly_female", "clone"]
+SCENEMA_DEFAULT_GENDER = "male"  #@param ["male", "female"]
+SCENEMA_PROMPT_WAV = ""  #@param {type:"string"}
+SCENEMA_GEMMA_QUANTIZE = "nf4"  #@param ["nf4", ""]
+SCENEMA_SEED = -1  #@param {type:"integer"}
+SCENEMA_PACE = 1.5  #@param {type:"number"}
+SCENEMA_NO_VALIDATE = False  #@param {type:"boolean"}
+SCENEMA_MIN_MATCH_RATIO = 0.90  #@param {type:"number"}
+SCENEMA_SKIP_VC = False  #@param {type:"boolean"}
+SCENEMA_VC_STEPS = 25  #@param {type:"integer"}
+SCENEMA_VC_CFG_RATE = 0.5  #@param {type:"number"}
+SCENEMA_BACKGROUND_SFX = False  #@param {type:"boolean"}
 
 #@markdown ---
 #@markdown Supertonic (CPU OK, 31 languages incl JP/KO/EN, ONNX)
@@ -666,6 +688,24 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         str(DRAMABOX_DURATION_MULTIPLIER),
         "--dramabox-seed",
         str(DRAMABOX_SEED),
+        "--scenema-default-voice",
+        SCENEMA_DEFAULT_VOICE,
+        "--scenema-default-gender",
+        SCENEMA_DEFAULT_GENDER,
+        "--scenema-prompt-wav",
+        SCENEMA_PROMPT_WAV,
+        "--scenema-gemma-quantize",
+        SCENEMA_GEMMA_QUANTIZE,
+        "--scenema-seed",
+        str(SCENEMA_SEED),
+        "--scenema-pace",
+        str(SCENEMA_PACE),
+        "--scenema-min-match-ratio",
+        str(SCENEMA_MIN_MATCH_RATIO),
+        "--scenema-vc-steps",
+        str(SCENEMA_VC_STEPS),
+        "--scenema-vc-cfg-rate",
+        str(SCENEMA_VC_CFG_RATE),
     ]
     if SARASHINA_USE_VLLM:
         cmd.append("--sarashina-use-vllm")
@@ -675,6 +715,12 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         cmd.append("--dramabox-compile")
     if DRAMABOX_NO_BNB_4BIT:
         cmd.append("--dramabox-no-bnb-4bit")
+    if SCENEMA_NO_VALIDATE:
+        cmd.append("--scenema-no-validate")
+    if SCENEMA_SKIP_VC:
+        cmd.append("--scenema-skip-vc")
+    if SCENEMA_BACKGROUND_SFX:
+        cmd.append("--scenema-background-sfx")
     cmd.append("--expose-public-url" if EXPOSE_PUBLIC_URL else "--no-expose-public-url")
     return cmd
 
@@ -1123,6 +1169,42 @@ The `voice` parameter exposes:
 
 This repository wraps DramaBox only for personal / research evaluation on Colab — operators are responsible for confirming their own use case complies with the LTX-2 Community License.
 
+### Scenema
+
+A zero-shot expressive voice cloning / speech-generation engine from Scenema AI ([ScenemaAI/scenema-audio](https://github.com/ScenemaAI/scenema-audio)). Its audio diffusion transformer is extracted from Lightricks' LTX-2 (22B audiovisual model) and conditioned with Gemma 3 12B IT, paired with SeedVC for voice identity transfer and a MelBandRoFormer separator for clean speech. The marquee feature is "performance": describe a voice in free-form English and the model delivers it with intent, pacing, breath control, and emotional arcs — including emotions the reference speaker never recorded.
+
+**Status: not verified on Colab.** The full install / wiring / API layer is implemented (installer, app, voice presets, XML pass-through), but Scenema's text encoder is **Gemma 3 12B IT, which is HF-gated**. End-to-end verification on Colab A100 was deferred because configuring `HF_TOKEN` and accepting Google's Gemma Terms of Use sits outside this repo's default verification workflow. If you want to actually run this engine on Colab, you need to do the setup yourself (see below). Confirmed-good Colab logs from a user would be welcome — please open an issue / PR with the trycloudflare evidence.
+
+**Setup required before launch:**
+
+1. Sign in to Hugging Face and accept the Gemma Terms of Use on the [google/gemma-3-12b-it](https://huggingface.co/google/gemma-3-12b-it) model card ("Acknowledge license").
+2. Create a Read-scoped Hugging Face token at https://huggingface.co/settings/tokens.
+3. In the Colab notebook, open the left sidebar **🔑 Secrets** panel, add a new secret named **`HF_TOKEN`** with the token value, and **enable notebook access**.
+
+Without this, the lifespan startup `snapshot_download("google/gemma-3-12b-it")` returns `401 Unauthorized` and `AudioProcessor` never becomes ready — `/v1/audio/speech` will return 503.
+
+**Hardware**: **Colab A100 (40 GB) is required.** The wrapper uses the INT8 audio transformer + NF4 Gemma profile (~13 GB resident VRAM, fits in 24 GB and comfortably on 40 GB). T4 / V100 cannot host this model. First run downloads ~38 GB total: audio transformer (~5 GB), pipeline checkpoint (~7 GB), Gemma 3 12B IT (~24 GB), SeedVC (~1.6 GB), BigVGAN v2 + Whisper Small.
+
+**OpenAI API mapping.** This repo exposes Scenema through the standard `/v1/audio/speech` endpoint. Because Scenema's native input is a structured `<speak>` XML with `<action>` performance directions, two input paths are supported:
+
+1. **Plain text** (default): `input` is wrapped automatically as `<speak voice="<preset description>" gender="<gender>">…</speak>`. The `voice` parameter selects a preset or — for non-preset values — is used as the voice description verbatim. This is what OpenAI SDK clients will use.
+2. **XML pass-through** (advanced): if `input` begins with `<speak`, the string is forwarded to Scenema unchanged. Use this to add `<action>angry shout</action>` / `<sound>thunder</sound>` / multi-segment performance direction.
+
+The `voice` parameter exposes:
+
+| voice | description |
+|---|---|
+| `default` | Warm British-accented male narrator (baseline neutral voice). |
+| `warm_male` | Warm middle-aged male narrator. Deep but gentle tone. |
+| `smoky_female` | Smoky low-register female voice, intimate confessional tone. |
+| `child_girl` | Bright six-year-old girl, breathless and excited. |
+| `elderly_male` | Weathered elderly male storyteller, deep baritone. |
+| `elderly_female` | Soft alto, woman in her seventies. |
+| `clone` | Zero-shot voice cloning. Requires `--scenema-prompt-wav` (10–20 s of reference audio with some emotional variability). |
+| `<any other string>` | Used directly as a Scenema voice description (e.g. `"Male, mid 60s. Deep baritone with gravel. Slight Southern American inflection."`). |
+
+**License caveat (important):** code is MIT, but the **audio transformer weights inherit the LTX-2 Community License Agreement** (Lightricks) — the same restrictive license as DramaBox. Gemma 3 12B IT is additionally bound by the Gemma Terms of Use (Google). Operators are responsible for confirming their use case complies with both. Acceptable-use limits are extensive (no impersonation, no deepfakes, no disinformation, no military / weapons / medical-advice uses, etc.).
+
 ### MeloTTS (currently not working)
 
 Intended to use [myshell-ai/MeloTTS](https://github.com/myshell-ai/MeloTTS), but the dependency `tokenizers` requires a Rust compiler to build, so installation fails in the current Colab environment.
@@ -1174,6 +1256,9 @@ The license for each engine is as follows. When using them, always check each pr
 | Higgs-Audio-v2 (code) | Apache 2.0 | — | — | LLM-based audio foundation model. EN focus |
 | Higgs-Audio-v2 (weights) | — | Boson Higgs Audio 2 Community License | Caution | Llama-derived community license. Restricted: >100k MAU needs extra license; outputs cannot be used to train other LLMs |
 | DramaBox | LTX-2 Community License (Lightricks) | LTX-2 Community License | **Not allowed without commercial license** for orgs with annual revenue $10M+ | English. Non-compete clause; redistributions must propagate the same license. Perth watermark always applied |
+| Scenema (code) | MIT | — | — | Repo: `ScenemaAI/scenema-audio` |
+| Scenema (audio weights) | — | LTX-2 Community License (Lightricks) | **Not allowed without commercial license** for orgs with annual revenue $10M+ | Audio transformer is derived from LTX-2.3; the LTX-2 Community License flows through. Same caveats as DramaBox (non-compete, acceptable-use restrictions, propagation requirement) |
+| Scenema (Gemma 3 12B IT) | — | Gemma Terms of Use (Google) | Caution | HF-gated; accept on the model card and set `HF_TOKEN`. Commercial use is permitted under Gemma terms but the prohibited-use policy applies |
 
 **About Piper**: The `piper-tts` package is GPL-3.0. Also, the default `en_US-lessac-medium` voice is trained on the Blizzard 2013 dataset provided by Lessac Technologies, and its license prohibits commercial use. If you need commercial use, choose another voice model trained with a permissive license.
 
@@ -1263,3 +1348,7 @@ This repository itself is intended for short-term operational verification and t
   https://github.com/resemble-ai/DramaBox
 - DramaBox (Hugging Face)
   https://huggingface.co/ResembleAI/Dramabox
+- Scenema Audio
+  https://github.com/ScenemaAI/scenema-audio
+- Scenema Audio (Hugging Face)
+  https://huggingface.co/ScenemaAI/scenema-audio
