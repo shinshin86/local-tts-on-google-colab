@@ -44,6 +44,7 @@ Supported engines:
 | MaskGCT | Working on Colab (GPU required, ~10-12GB, **non-commercial weights**) | English / Chinese |
 | GPT-SoVITS | Engine starts on Colab — reference audio required for synthesis (no default speaker mode; pass `--gpt-sovits-prompt-wav` + `--gpt-sovits-prompt-text`) | Chinese / English / Japanese / Korean / Cantonese |
 | Higgs-Audio-v2 | Not working by default (upstream HF checkpoint requires unreleased `boson_multimodal` / transformers 5.x; engine starts but inference fails inside the audio tokenizer loader) | English |
+| DramaBox | Pending Colab A100 verification (GPU required, VRAM ~24GB peak, **LTX-2 Community License — non-compete clause**) | English |
 
 `MeloTTS` and `Style-Bert-VITS2` currently have dependency resolution issues under Colab's uv + venv environment and do not work.
 
@@ -77,7 +78,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Irodori-TTS", "Kokoro", "Kyutai-TTS", "MaskGCT", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
+ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Irodori-TTS", "Kokoro", "Kyutai-TTS", "MaskGCT", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -322,6 +323,25 @@ HIGGS_PROMPT_WAV = ""  #@param {type:"string"}
 HIGGS_PROMPT_TEXT = ""  #@param {type:"string"}
 HIGGS_MAX_NEW_TOKENS = 1024  #@param {type:"integer"}
 HIGGS_TEMPERATURE = 0.7  #@param {type:"number"}
+
+#@markdown ---
+#@markdown DramaBox (A100 required, VRAM ~24GB, English-only, voice cloning)
+#@markdown - Resemble AI's directable / expressive TTS (IC-LoRA fine-tune of LTX-2.3, paralinguistic cues like laughs/sighs).
+#@markdown - **License: LTX-2 Community License** (Lightricks). Non-compete clause; commercial license required for org revenue $10M+.
+#@markdown - Generated audio is **always watermarked** with Resemble Perth (imperceptible, non-removable per upstream).
+#@markdown - First-run downloads ~8.5GB (DramaBox) + Gemma 3 12B snapshot.
+DRAMABOX_HF_MODEL = "ResembleAI/Dramabox"  #@param {type:"string"}
+DRAMABOX_GEMMA_REPO = "unsloth/gemma-3-12b-it-bnb-4bit"  #@param {type:"string"}
+DRAMABOX_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+DRAMABOX_DEFAULT_REF_VOICE = "female_american"  #@param ["female_american", "female_shadowheart", "male_arnie", "male_conan", "male_harvey_keitel", "male_old_movie", "male_petergriffin", "male_samuel_j"]
+DRAMABOX_PROMPT_WAV = ""  #@param {type:"string"}
+DRAMABOX_DTYPE = "bf16"  #@param ["bf16", "fp16"]
+DRAMABOX_CFG_SCALE = 2.5  #@param {type:"number"}
+DRAMABOX_STG_SCALE = 1.5  #@param {type:"number"}
+DRAMABOX_DURATION_MULTIPLIER = 1.1  #@param {type:"number"}
+DRAMABOX_SEED = 42  #@param {type:"integer"}
+DRAMABOX_COMPILE = False  #@param {type:"boolean"}
+DRAMABOX_NO_BNB_4BIT = False  #@param {type:"boolean"}
 
 #@markdown ---
 #@markdown Supertonic (CPU OK, 31 languages incl JP/KO/EN, ONNX)
@@ -626,11 +646,35 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         SUPERTONIC_DEFAULT_LANG,
         "--supertonic-total-steps",
         str(SUPERTONIC_TOTAL_STEPS),
+        "--dramabox-hf-model",
+        DRAMABOX_HF_MODEL,
+        "--dramabox-gemma-repo",
+        DRAMABOX_GEMMA_REPO,
+        "--dramabox-default-voice",
+        DRAMABOX_DEFAULT_VOICE,
+        "--dramabox-default-ref-voice",
+        DRAMABOX_DEFAULT_REF_VOICE,
+        "--dramabox-prompt-wav",
+        DRAMABOX_PROMPT_WAV,
+        "--dramabox-dtype",
+        DRAMABOX_DTYPE,
+        "--dramabox-cfg-scale",
+        str(DRAMABOX_CFG_SCALE),
+        "--dramabox-stg-scale",
+        str(DRAMABOX_STG_SCALE),
+        "--dramabox-duration-multiplier",
+        str(DRAMABOX_DURATION_MULTIPLIER),
+        "--dramabox-seed",
+        str(DRAMABOX_SEED),
     ]
     if SARASHINA_USE_VLLM:
         cmd.append("--sarashina-use-vllm")
     if BARK_USE_SMALL_MODELS:
         cmd.append("--bark-use-small-models")
+    if DRAMABOX_COMPILE:
+        cmd.append("--dramabox-compile")
+    if DRAMABOX_NO_BNB_4BIT:
+        cmd.append("--dramabox-no-bnb-4bit")
     cmd.append("--expose-public-url" if EXPOSE_PUBLIC_URL else "--no-expose-public-url")
     return cmd
 
@@ -1046,6 +1090,39 @@ The `voice` parameter exposes:
 
 **Status (currently not working by default):** the published HF checkpoint expects an unreleased branch of `boson-ai/higgs-audio` plus transformers 5.x, while the released `boson_multimodal` PyPI package targets transformers 4.46.x. The engine wiring (install / venv / app / voice list / cloudflared) is correct and `/`, `/v1/models`, `/v1/voices` all return 200 on Colab L4, but `/v1/audio/speech` returns 500 because the audio tokenizer loader (`load_higgs_audio_tokenizer`) passes the flat HF config keys (`acoustic_model_config`, `semantic_model_config`) to a `HiggsAudioTokenizer.__init__` that does not accept them. Two earlier mismatches are already worked around in this wrapper (text-config defaults that broke `nn.Embedding(padding_idx=128001, num_embeddings=32000)`, and a `tokenizer_class=TokenizersBackend` reference that only exists in unreleased transformers 5.x) but the audio-tokenizer schema drift requires an upstream fix in `boson-ai/higgs-audio` itself. Once upstream realigns code with the published config, this engine should work without further changes here.
 
+### DramaBox
+
+A directable / expressive TTS from Resemble AI ([resemble-ai/DramaBox](https://github.com/resemble-ai/DramaBox)). It is an IC-LoRA fine-tune of Lightricks' LTX-2.3 audio-only branch, with a Gemma 3 12B text encoder; users can drive emotion, pacing, laughs, sighs, and other paralinguistic cues directly from the English text prompt. Voice cloning uses any 10+ second audio reference.
+
+**Hardware**: requires ~24 GB VRAM peak, so **Google Colab A100 (40 GB) is required**. T4 / V100 cannot host this model.
+
+The wrapper clones the upstream GitHub repo, installs `requirements.txt` (which pins `torch==2.8.0`, `pydantic==2.10.6`, `bitsandbytes`, `resemble-perth`, etc.), and points the FastAPI app at `<repo>/src` + `<repo>/ltx2` for module resolution. First run downloads ~8.5 GB from `ResembleAI/Dramabox` plus the `unsloth/gemma-3-12b-it-bnb-4bit` snapshot.
+
+Prompts work best in director-instruction English, for example:
+
+```
+A woman speaks warmly, "Hello, how are you today?" She laughs, "Hahaha, it is so good to see you!"
+```
+
+The `voice` parameter exposes:
+
+| voice | description |
+|---|---|
+| `default` | Uses preset `--dramabox-default-ref-voice` (default `female_american`). |
+| `clone` | Voice cloning. Only available when `--dramabox-prompt-wav` is configured (10+ seconds recommended). |
+| `<preset_name>` | Any bundled preset under `DramaBox/assets/voices/`: `female_american`, `female_shadowheart`, `male_arnie`, `male_conan`, `male_harvey_keitel`, `male_old_movie`, `male_petergriffin`, `male_samuel_j`. |
+
+**Watermarking**: Every generated audio file is invisibly watermarked with Resemble's **Perth** implicit watermarker (`perth.PerthImplicitWatermarker`). This is left enabled as the upstream design intends — do not patch it out. The watermark is imperceptible to humans but allows Resemble's tools to identify AI-generated audio.
+
+**License caveat (important):** code and weights are released under the **LTX-2 Community License Agreement** (Lightricks), which is materially more restrictive than Apache 2.0 / MIT / Llama Community License:
+
+- Free for non-commercial use, and free for organizations with annual revenue below USD 10 M; organizations above that threshold must obtain a paid commercial license from Lightricks.
+- A **non-compete clause** forbids using the model (or derivatives) to train other competing models or to build products that directly compete with Lightricks' offerings.
+- When redistributing derivatives, the same license must be propagated (use-restrictions and acceptable-use policy intact).
+- Acceptable-use restrictions are extensive: no deepfakes / impersonation without consent, no undisclosed AI-generated content, no misinformation, no medical advice, no automated legal decisions, no military / weapons / malware uses, etc.
+
+This repository wraps DramaBox only for personal / research evaluation on Colab — operators are responsible for confirming their own use case complies with the LTX-2 Community License.
+
 ### MeloTTS (currently not working)
 
 Intended to use [myshell-ai/MeloTTS](https://github.com/myshell-ai/MeloTTS), but the dependency `tokenizers` requires a Rust compiler to build, so installation fails in the current Colab environment.
@@ -1096,6 +1173,7 @@ The license for each engine is as follows. When using them, always check each pr
 | GPT-SoVITS | MIT | MIT | OK | ZH / EN / JA / KO / YUE few-shot voice cloning. Reference audio + transcript required |
 | Higgs-Audio-v2 (code) | Apache 2.0 | — | — | LLM-based audio foundation model. EN focus |
 | Higgs-Audio-v2 (weights) | — | Boson Higgs Audio 2 Community License | Caution | Llama-derived community license. Restricted: >100k MAU needs extra license; outputs cannot be used to train other LLMs |
+| DramaBox | LTX-2 Community License (Lightricks) | LTX-2 Community License | **Not allowed without commercial license** for orgs with annual revenue $10M+ | English. Non-compete clause; redistributions must propagate the same license. Perth watermark always applied |
 
 **About Piper**: The `piper-tts` package is GPL-3.0. Also, the default `en_US-lessac-medium` voice is trained on the Blizzard 2013 dataset provided by Lessac Technologies, and its license prohibits commercial use. If you need commercial use, choose another voice model trained with a permissive license.
 
@@ -1181,3 +1259,7 @@ This repository itself is intended for short-term operational verification and t
   https://github.com/RVC-Boss/GPT-SoVITS
 - Higgs Audio v2
   https://github.com/boson-ai/higgs-audio
+- DramaBox
+  https://github.com/resemble-ai/DramaBox
+- DramaBox (Hugging Face)
+  https://huggingface.co/ResembleAI/Dramabox

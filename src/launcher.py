@@ -70,6 +70,8 @@ def resolve_selected_voice(settings: Settings) -> str:
         return settings.higgs_default_voice
     if settings.engine == "Supertonic":
         return settings.supertonic_default_voice
+    if settings.engine == "DramaBox":
+        return settings.dramabox_default_voice
     return ""
 
 
@@ -389,6 +391,26 @@ def print_engine_voice_hints(settings: Settings):
         print("対応言語: 英語 / 中国語のみ（モデル規約上、それ以外の言語は禁止）")
         print("注意: ライセンスは MIT ですが、Microsoft 公式に「research purpose only」と明記されており、")
         print("      なりすまし・ディスインフォ・実時間音声変換などは禁止です。商用 / 実運用での利用は推奨されていません。")
+    elif settings.engine == "DramaBox":
+        print("DramaBox は Resemble AI の表現力豊か（directable）な TTS です（LTX-2.3 + IC-LoRA、英語中心）。")
+        print(f"モデル: {settings.dramabox_hf_model} + Gemma snapshot: {settings.dramabox_gemma_repo}")
+        print(f"デフォルト voice: {settings.dramabox_default_voice} / 参照プリセット: {settings.dramabox_default_ref_voice}")
+        print(f"cfg_scale: {settings.dramabox_cfg_scale} / stg_scale: {settings.dramabox_stg_scale} / duration_multiplier: {settings.dramabox_duration_multiplier}")
+        print(f"dtype: {settings.dramabox_dtype} / compile: {settings.dramabox_compile} / bnb_4bit: {settings.dramabox_bnb_4bit}")
+        print("voice 候補: default（assets/voices/<DRAMABOX_DEFAULT_REF_VOICE> を参照音声として使用）")
+        if settings.dramabox_prompt_wav:
+            print(f"             clone（参照音声: {settings.dramabox_prompt_wav}）")
+        else:
+            print("             clone は --dramabox-prompt-wav を指定すると有効になります（10秒以上の参照音声推奨）")
+        print("             同梱プリセット（female_american, female_shadowheart, male_arnie, male_conan,")
+        print("                          male_harvey_keitel, male_old_movie, male_petergriffin, male_samuel_j）も voice に直接指定可能です。")
+        print("プロンプト記法: ディレクター調の英語プロンプトを推奨。例:")
+        print("  'A woman speaks warmly, \"Hello, how are you today?\" She laughs, \"Hahaha, it is so good to see you!\"'")
+        print("対応言語: 英語中心（Gemma 3 12B エンベディング）。日本語等の非英語テキストは正しく発音されません。")
+        print("注意: A100 GPU 必須（VRAM ~24GB ピーク、T4/V100 では起動不可）。初回起動時に約 8.5GB のモデル + Gemma snapshot をダウンロードします。")
+        print("生成音声には Resemble Perth による不可聴ウォーターマークが常時付与されます（除去不可）。")
+        print("ライセンス警告: コードと重みは **LTX-2 Community License Agreement**（Lightricks）。")
+        print("                年商 $10M+ の組織は商用ライセンス必須。非競合条項・配布時の同ライセンス継承条項あり。")
     elif settings.engine == "Supertonic":
         print("Supertonic は Supertone Inc. の超軽量オンデバイス TTS です（ONNX、~99M params、CPU 動作可）。")
         print(f"モデル: {settings.supertonic_model}")

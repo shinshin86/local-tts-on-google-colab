@@ -44,6 +44,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | MaskGCT | Colab 動作確認済み (GPU必須・~10-12GB・**商用不可**) | 英語 / 中国語 |
 | GPT-SoVITS | Colab でエンジン起動確認済み（synthesis には参照音声必須・default speaker モード非対応・`--gpt-sovits-prompt-wav` と `--gpt-sovits-prompt-text` を指定） | 中 / 英 / 日 / 韓 / 粤 |
 | Higgs-Audio-v2 | デフォルトで動作不可（HF 上の checkpoint が未リリースの `boson_multimodal` / transformers 5.x を要求。エンジンは起動するが audio tokenizer ロード時に上流コードと config schema が一致せず推論失敗） | 英語 |
+| DramaBox | Colab A100 で検証予定（GPU 必須、VRAM ~24GB ピーク、**LTX-2 Community License — 非競合条項あり**） | 英語 |
 
 `MeloTTS`、`Style-Bert-VITS2` は Colab の uv + venv 環境で依存解決に問題があり、現時点では動作しません。
 
@@ -77,7 +78,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Irodori-TTS", "Kokoro", "Kyutai-TTS", "MaskGCT", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
+ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Irodori-TTS", "Kokoro", "Kyutai-TTS", "MaskGCT", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -322,6 +323,25 @@ HIGGS_PROMPT_WAV = ""  #@param {type:"string"}
 HIGGS_PROMPT_TEXT = ""  #@param {type:"string"}
 HIGGS_MAX_NEW_TOKENS = 1024  #@param {type:"integer"}
 HIGGS_TEMPERATURE = 0.7  #@param {type:"number"}
+
+#@markdown ---
+#@markdown DramaBox (A100 required, VRAM ~24GB, English-only, voice cloning)
+#@markdown - Resemble AI's directable / expressive TTS (IC-LoRA fine-tune of LTX-2.3, paralinguistic cues like laughs/sighs).
+#@markdown - **License: LTX-2 Community License** (Lightricks). Non-compete clause; commercial license required for org revenue $10M+.
+#@markdown - Generated audio is **always watermarked** with Resemble Perth (imperceptible, non-removable per upstream).
+#@markdown - First-run downloads ~8.5GB (DramaBox) + Gemma 3 12B snapshot.
+DRAMABOX_HF_MODEL = "ResembleAI/Dramabox"  #@param {type:"string"}
+DRAMABOX_GEMMA_REPO = "unsloth/gemma-3-12b-it-bnb-4bit"  #@param {type:"string"}
+DRAMABOX_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+DRAMABOX_DEFAULT_REF_VOICE = "female_american"  #@param ["female_american", "female_shadowheart", "male_arnie", "male_conan", "male_harvey_keitel", "male_old_movie", "male_petergriffin", "male_samuel_j"]
+DRAMABOX_PROMPT_WAV = ""  #@param {type:"string"}
+DRAMABOX_DTYPE = "bf16"  #@param ["bf16", "fp16"]
+DRAMABOX_CFG_SCALE = 2.5  #@param {type:"number"}
+DRAMABOX_STG_SCALE = 1.5  #@param {type:"number"}
+DRAMABOX_DURATION_MULTIPLIER = 1.1  #@param {type:"number"}
+DRAMABOX_SEED = 42  #@param {type:"integer"}
+DRAMABOX_COMPILE = False  #@param {type:"boolean"}
+DRAMABOX_NO_BNB_4BIT = False  #@param {type:"boolean"}
 
 #@markdown ---
 #@markdown Supertonic (CPU OK, 31 languages incl JP/KO/EN, ONNX)
@@ -626,11 +646,35 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         SUPERTONIC_DEFAULT_LANG,
         "--supertonic-total-steps",
         str(SUPERTONIC_TOTAL_STEPS),
+        "--dramabox-hf-model",
+        DRAMABOX_HF_MODEL,
+        "--dramabox-gemma-repo",
+        DRAMABOX_GEMMA_REPO,
+        "--dramabox-default-voice",
+        DRAMABOX_DEFAULT_VOICE,
+        "--dramabox-default-ref-voice",
+        DRAMABOX_DEFAULT_REF_VOICE,
+        "--dramabox-prompt-wav",
+        DRAMABOX_PROMPT_WAV,
+        "--dramabox-dtype",
+        DRAMABOX_DTYPE,
+        "--dramabox-cfg-scale",
+        str(DRAMABOX_CFG_SCALE),
+        "--dramabox-stg-scale",
+        str(DRAMABOX_STG_SCALE),
+        "--dramabox-duration-multiplier",
+        str(DRAMABOX_DURATION_MULTIPLIER),
+        "--dramabox-seed",
+        str(DRAMABOX_SEED),
     ]
     if SARASHINA_USE_VLLM:
         cmd.append("--sarashina-use-vllm")
     if BARK_USE_SMALL_MODELS:
         cmd.append("--bark-use-small-models")
+    if DRAMABOX_COMPILE:
+        cmd.append("--dramabox-compile")
+    if DRAMABOX_NO_BNB_4BIT:
+        cmd.append("--dramabox-no-bnb-4bit")
     cmd.append("--expose-public-url" if EXPOSE_PUBLIC_URL else "--no-expose-public-url")
     return cmd
 
@@ -1046,6 +1090,39 @@ GPT-SoVITS は本質的に few-shot cloning モデルで、内蔵の「default s
 
 **ステータス（現時点でデフォルト動作不可）:** HF 上の checkpoint は `boson-ai/higgs-audio` の未リリースブランチと transformers 5.x を要求しますが、PyPI の `boson_multimodal` は transformers 4.46.x ベースです。エンジンの組み込み（インストール / venv / app / voice list / cloudflared）は正しく動作し、Colab L4 で `/`、`/v1/models`、`/v1/voices` はすべて 200 を返しますが、`/v1/audio/speech` は audio tokenizer のロード（`load_higgs_audio_tokenizer`）で 500 になります。具体的には HF の flat config キー（`acoustic_model_config`、`semantic_model_config`）を `HiggsAudioTokenizer.__init__` がそのまま受け付けないためです。前段の 2 つの不一致（`text_config` のデフォルトが `padding_idx=128001 / num_embeddings=32000` を引き起こす問題、および未リリース transformers 5.x にしか存在しない `tokenizer_class=TokenizersBackend` 参照）はラッパー側で workaround 済みですが、audio tokenizer の schema drift は `boson-ai/higgs-audio` 上流の修正が必要です。上流が公開済み config に合わせてコードを更新すれば、本ラッパーはそのまま動作するはずです。
 
+### DramaBox
+
+[resemble-ai/DramaBox](https://github.com/resemble-ai/DramaBox) の Resemble AI による「ディレクション可能」な表現力豊か TTS です。Lightricks の LTX-2.3（音声専用 branch）を IC-LoRA で fine-tune し、テキストエンコーダに Gemma 3 12B を採用。英語プロンプトの中で感情・ペーシング・笑い声・ため息などのパラ言語的要素を直接ディレクション可能。ボイスクローンは 10 秒以上の参照音声で動作します。
+
+**ハードウェア**: VRAM ~24GB ピークが必要なため、**Google Colab A100（40GB）必須** です。T4 / V100 ではモデルのホスト不可。
+
+ラッパーは上流の GitHub repo を clone し、`requirements.txt`（`torch==2.8.0`、`pydantic==2.10.6`、`bitsandbytes`、`resemble-perth` など）をインストール、FastAPI app から `<repo>/src` と `<repo>/ltx2` を sys.path に挿入してモジュール解決します。初回起動時に `ResembleAI/Dramabox` から約 8.5GB、加えて `unsloth/gemma-3-12b-it-bnb-4bit` の snapshot をダウンロードします。
+
+プロンプトはディレクター指示風の英語が推奨です。例:
+
+```
+A woman speaks warmly, "Hello, how are you today?" She laughs, "Hahaha, it is so good to see you!"
+```
+
+`voice` パラメータ:
+
+| voice | 説明 |
+|---|---|
+| `default` | プリセット `--dramabox-default-ref-voice`（デフォルト `female_american`）を使用。 |
+| `clone` | 音声クローン。`--dramabox-prompt-wav` を指定したときのみ有効（10秒以上推奨）。 |
+| `<preset_name>` | `DramaBox/assets/voices/` 同梱プリセット: `female_american`、`female_shadowheart`、`male_arnie`、`male_conan`、`male_harvey_keitel`、`male_old_movie`、`male_petergriffin`、`male_samuel_j`。 |
+
+**ウォーターマーク**: 生成された音声には常に Resemble の **Perth** 不可聴ウォーターマーカー（`perth.PerthImplicitWatermarker`）が埋め込まれます。これは上流の設計通り保持しています（除去禁止）。人間の聴覚では判別できませんが、Resemble のツールで AI 生成音声として検出できます。
+
+**ライセンス警告（重要）:** コード・重みとも **LTX-2 Community License Agreement**（Lightricks）で配布されており、Apache 2.0 / MIT / Llama Community License よりも実質的に厳しいです:
+
+- 非商用は自由、年商 1,000 万米ドル未満の組織も商用可ですが、それを超える組織は Lightricks から有償ライセンスの取得が必要。
+- **非競合条項**: モデルや派生物を使って競合モデルを学習させたり、Lightricks の提供と直接競合する製品を構築することは禁止。
+- 派生物を再配布する場合、同じライセンス（使用制限・acceptable use policy 含む）を継承する必要あり。
+- Acceptable use 制限は広範: 同意のないディープフェイク・なりすまし禁止、AI 生成であることを開示しない使用禁止、誤情報禁止、医療助言禁止、自動法的判断禁止、軍事 / 武器 / マルウェア用途禁止 など。
+
+本リポジトリは Colab での個人・研究用途の評価ラッパーです。LTX-2 Community License が自身の用途に適合するかは利用者の責任で確認してください。
+
 ### MeloTTS (現在動作不可)
 
 [myshell-ai/MeloTTS](https://github.com/myshell-ai/MeloTTS) を使う構成ですが、依存パッケージ `tokenizers` のビルドに Rust コンパイラが必要なため、現在の Colab 環境ではインストールに失敗します。
@@ -1096,6 +1173,7 @@ GPT-SoVITS は本質的に few-shot cloning モデルで、内蔵の「default s
 | GPT-SoVITS | MIT | MIT | OK | 中 / 英 / 日 / 韓 / 粤 few-shot voice cloning。参照音声 + 書き起こし必須 |
 | Higgs-Audio-v2 (code) | Apache 2.0 | — | — | LLM ベース音声基盤モデル。英語中心 |
 | Higgs-Audio-v2 (重み) | — | Boson Higgs Audio 2 Community License | 要注意 | Llama 派生 community license。MAU 10万超は追加ライセンス必須、出力で他 LLM 学習禁止 |
+| DramaBox | LTX-2 Community License (Lightricks) | LTX-2 Community License | **年商 $10M+ の組織は商用ライセンス必須** | 英語。非競合条項あり、再配布時は同ライセンス継承必須、Perth ウォーターマーク常時付与 |
 
 **Piper について**: `piper-tts` パッケージは GPL-3.0 です。また、デフォルトの `en_US-lessac-medium` 音声は Lessac Technologies 提供の Blizzard 2013 データセットで学習されており、このデータセットのライセンスは商用利用を禁止しています。商用利用が必要な場合は、許容的なライセンスで学習された別の voice モデルを選択してください。
 
@@ -1181,3 +1259,7 @@ GPT-SoVITS は本質的に few-shot cloning モデルで、内蔵の「default s
   https://github.com/RVC-Boss/GPT-SoVITS
 - Higgs Audio v2
   https://github.com/boson-ai/higgs-audio
+- DramaBox
+  https://github.com/resemble-ai/DramaBox
+- DramaBox (Hugging Face)
+  https://huggingface.co/ResembleAI/Dramabox
