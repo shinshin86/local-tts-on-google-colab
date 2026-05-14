@@ -176,6 +176,18 @@ class Settings:
     supertonic_default_voice: str = "M1"
     supertonic_default_lang: str = "en"
     supertonic_total_steps: int = 5
+    dramabox_hf_model: str = "ResembleAI/Dramabox"
+    dramabox_gemma_repo: str = "unsloth/gemma-3-12b-it-bnb-4bit"
+    dramabox_default_voice: str = "default"
+    dramabox_default_ref_voice: str = "female_american"
+    dramabox_prompt_wav: str = ""
+    dramabox_dtype: str = "bf16"
+    dramabox_cfg_scale: float = 2.5
+    dramabox_stg_scale: float = 1.5
+    dramabox_duration_multiplier: float = 1.1
+    dramabox_seed: int = 42
+    dramabox_compile: bool = False
+    dramabox_bnb_4bit: bool = True
     root_dir: Path = Path("/content/openai-compatible-local-tts")
     repo_dir: Path = field(default_factory=default_repo_dir)
     app_port: int = 8000

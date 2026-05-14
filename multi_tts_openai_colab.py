@@ -11,7 +11,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Irodori-TTS", "Kokoro", "Kyutai-TTS", "MaskGCT", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
+ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Irodori-TTS", "Kokoro", "Kyutai-TTS", "MaskGCT", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -256,6 +256,25 @@ HIGGS_PROMPT_WAV = ""  #@param {type:"string"}
 HIGGS_PROMPT_TEXT = ""  #@param {type:"string"}
 HIGGS_MAX_NEW_TOKENS = 1024  #@param {type:"integer"}
 HIGGS_TEMPERATURE = 0.7  #@param {type:"number"}
+
+#@markdown ---
+#@markdown DramaBox (A100 required, VRAM ~24GB, English-only, voice cloning)
+#@markdown - Resemble AI's directable / expressive TTS (IC-LoRA fine-tune of LTX-2.3, paralinguistic cues like laughs/sighs).
+#@markdown - **License: LTX-2 Community License** (Lightricks). Non-compete clause; commercial license required for org revenue $10M+.
+#@markdown - Generated audio is **always watermarked** with Resemble Perth (imperceptible, non-removable per upstream).
+#@markdown - First-run downloads ~8.5GB (DramaBox) + Gemma 3 12B snapshot.
+DRAMABOX_HF_MODEL = "ResembleAI/Dramabox"  #@param {type:"string"}
+DRAMABOX_GEMMA_REPO = "unsloth/gemma-3-12b-it-bnb-4bit"  #@param {type:"string"}
+DRAMABOX_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+DRAMABOX_DEFAULT_REF_VOICE = "female_american"  #@param ["female_american", "female_shadowheart", "male_arnie", "male_conan", "male_harvey_keitel", "male_old_movie", "male_petergriffin", "male_samuel_j"]
+DRAMABOX_PROMPT_WAV = ""  #@param {type:"string"}
+DRAMABOX_DTYPE = "bf16"  #@param ["bf16", "fp16"]
+DRAMABOX_CFG_SCALE = 2.5  #@param {type:"number"}
+DRAMABOX_STG_SCALE = 1.5  #@param {type:"number"}
+DRAMABOX_DURATION_MULTIPLIER = 1.1  #@param {type:"number"}
+DRAMABOX_SEED = 42  #@param {type:"integer"}
+DRAMABOX_COMPILE = False  #@param {type:"boolean"}
+DRAMABOX_NO_BNB_4BIT = False  #@param {type:"boolean"}
 
 #@markdown ---
 #@markdown Supertonic (CPU OK, 31 languages incl JP/KO/EN, ONNX)
@@ -560,11 +579,35 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         SUPERTONIC_DEFAULT_LANG,
         "--supertonic-total-steps",
         str(SUPERTONIC_TOTAL_STEPS),
+        "--dramabox-hf-model",
+        DRAMABOX_HF_MODEL,
+        "--dramabox-gemma-repo",
+        DRAMABOX_GEMMA_REPO,
+        "--dramabox-default-voice",
+        DRAMABOX_DEFAULT_VOICE,
+        "--dramabox-default-ref-voice",
+        DRAMABOX_DEFAULT_REF_VOICE,
+        "--dramabox-prompt-wav",
+        DRAMABOX_PROMPT_WAV,
+        "--dramabox-dtype",
+        DRAMABOX_DTYPE,
+        "--dramabox-cfg-scale",
+        str(DRAMABOX_CFG_SCALE),
+        "--dramabox-stg-scale",
+        str(DRAMABOX_STG_SCALE),
+        "--dramabox-duration-multiplier",
+        str(DRAMABOX_DURATION_MULTIPLIER),
+        "--dramabox-seed",
+        str(DRAMABOX_SEED),
     ]
     if SARASHINA_USE_VLLM:
         cmd.append("--sarashina-use-vllm")
     if BARK_USE_SMALL_MODELS:
         cmd.append("--bark-use-small-models")
+    if DRAMABOX_COMPILE:
+        cmd.append("--dramabox-compile")
+    if DRAMABOX_NO_BNB_4BIT:
+        cmd.append("--dramabox-no-bnb-4bit")
     cmd.append("--expose-public-url" if EXPOSE_PUBLIC_URL else "--no-expose-public-url")
     return cmd
 

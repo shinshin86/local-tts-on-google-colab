@@ -157,6 +157,18 @@ def parse_args():
     parser.add_argument("--supertonic-default-voice", default="M1")
     parser.add_argument("--supertonic-default-lang", default="en")
     parser.add_argument("--supertonic-total-steps", type=int, default=5)
+    parser.add_argument("--dramabox-hf-model", default="ResembleAI/Dramabox")
+    parser.add_argument("--dramabox-gemma-repo", default="unsloth/gemma-3-12b-it-bnb-4bit")
+    parser.add_argument("--dramabox-default-voice", default="default")
+    parser.add_argument("--dramabox-default-ref-voice", default="female_american")
+    parser.add_argument("--dramabox-prompt-wav", default="")
+    parser.add_argument("--dramabox-dtype", default="bf16")
+    parser.add_argument("--dramabox-cfg-scale", type=float, default=2.5)
+    parser.add_argument("--dramabox-stg-scale", type=float, default=1.5)
+    parser.add_argument("--dramabox-duration-multiplier", type=float, default=1.1)
+    parser.add_argument("--dramabox-seed", type=int, default=42)
+    parser.add_argument("--dramabox-compile", action="store_true")
+    parser.add_argument("--dramabox-no-bnb-4bit", action="store_true")
     parser.add_argument("--root-dir", default="/content/openai-compatible-local-tts")
     return parser.parse_args()
 
@@ -300,6 +312,18 @@ def main():
         supertonic_default_voice=args.supertonic_default_voice,
         supertonic_default_lang=args.supertonic_default_lang,
         supertonic_total_steps=args.supertonic_total_steps,
+        dramabox_hf_model=args.dramabox_hf_model,
+        dramabox_gemma_repo=args.dramabox_gemma_repo,
+        dramabox_default_voice=args.dramabox_default_voice,
+        dramabox_default_ref_voice=args.dramabox_default_ref_voice,
+        dramabox_prompt_wav=args.dramabox_prompt_wav,
+        dramabox_dtype=args.dramabox_dtype,
+        dramabox_cfg_scale=args.dramabox_cfg_scale,
+        dramabox_stg_scale=args.dramabox_stg_scale,
+        dramabox_duration_multiplier=args.dramabox_duration_multiplier,
+        dramabox_seed=args.dramabox_seed,
+        dramabox_compile=args.dramabox_compile,
+        dramabox_bnb_4bit=not args.dramabox_no_bnb_4bit,
         root_dir=Path(args.root_dir),
         repo_dir=REPO_DIR,
     )
