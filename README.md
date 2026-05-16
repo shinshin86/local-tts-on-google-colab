@@ -97,14 +97,12 @@ FISH_SPEECH_MODEL = "fishaudio/s2-pro"  #@param {type:"string"}
 
 #@markdown ---
 #@markdown Irodori-TTS
-#@markdown - Default: v3 (Rectified Flow DiT, Duration Predictor + SilentCipher watermark).
+#@markdown - Default: v3 (Rectified Flow DiT, Duration Predictor + always-on SilentCipher watermark).
 #@markdown - Older variants: "Aratako/Irodori-TTS-500M-v2" or v1 ("Aratako/Irodori-TTS-500M" + codec_repo="facebook/dacvae-watermarked").
-#@markdown - IRODORI_ENABLE_WATERMARK: auto (on for v3, off for v1/v2), on, off.
 IRODORI_HF_CHECKPOINT = "Aratako/Irodori-TTS-500M-v3"  #@param ["Aratako/Irodori-TTS-500M-v3", "Aratako/Irodori-TTS-500M-v2", "Aratako/Irodori-TTS-500M"]
 IRODORI_CODEC_REPO = "Aratako/Semantic-DACVAE-Japanese-32dim"  #@param {type:"string"}
 IRODORI_MODEL_PRECISION = "fp32"  #@param ["fp32", "bf16", "fp16"]
 IRODORI_CODEC_PRECISION = "fp32"  #@param ["fp32", "bf16", "fp16"]
-IRODORI_ENABLE_WATERMARK = "auto"  #@param ["auto", "on", "off"]
 
 #@markdown ---
 #@markdown Kokoro
@@ -417,8 +415,6 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         IRODORI_MODEL_PRECISION,
         "--irodori-codec-precision",
         IRODORI_CODEC_PRECISION,
-        "--irodori-enable-watermark",
-        IRODORI_ENABLE_WATERMARK,
         "--kokoro-default-voice",
         KOKORO_DEFAULT_VOICE,
         "--kokoro-default-lang-code",
@@ -753,7 +749,7 @@ A Japanese TTS using [Aratako/Irodori-TTS](https://github.com/Aratako/Irodori-TT
 V3 adds two upstream changes that this wrapper handles automatically:
 
 - **Duration Predictor**: with V3 the wrapper passes `seconds=None`, letting the model estimate output length from the input text (V2 / V1 stay on the previous 30-second fixed slot).
-- **Integrated SilentCipher watermark**: V3 weights ship with [SilentCipher](https://github.com/sony/silentcipher) and the wrapper enables it by default. **Do not strip the watermark** — it is part of the model release. You can override via `IRODORI_ENABLE_WATERMARK={auto,on,off}` if you hit VRAM or extra-download issues on a constrained Colab runtime, but the default `auto` is recommended.
+- **Integrated SilentCipher watermark**: V3 weights ship with [SilentCipher](https://github.com/sony/silentcipher) and upstream initializes it unconditionally inside `InferenceRuntime` — there is no public kill-switch and `RuntimeKey` no longer accepts an `enable_watermark` flag. Generated audio is watermarked whenever the SilentCipher weights are importable. **Do not strip the watermark**; it is part of the model release.
 
 ### Piper
 

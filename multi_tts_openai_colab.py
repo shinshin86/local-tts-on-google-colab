@@ -30,14 +30,12 @@ FISH_SPEECH_MODEL = "fishaudio/s2-pro"  #@param {type:"string"}
 
 #@markdown ---
 #@markdown Irodori-TTS
-#@markdown - Default: v3 (Rectified Flow DiT, Duration Predictor + SilentCipher watermark).
+#@markdown - Default: v3 (Rectified Flow DiT, Duration Predictor + always-on SilentCipher watermark).
 #@markdown - Older variants: "Aratako/Irodori-TTS-500M-v2" or v1 ("Aratako/Irodori-TTS-500M" + codec_repo="facebook/dacvae-watermarked").
-#@markdown - IRODORI_ENABLE_WATERMARK: auto (on for v3, off for v1/v2), on, off.
 IRODORI_HF_CHECKPOINT = "Aratako/Irodori-TTS-500M-v3"  #@param ["Aratako/Irodori-TTS-500M-v3", "Aratako/Irodori-TTS-500M-v2", "Aratako/Irodori-TTS-500M"]
 IRODORI_CODEC_REPO = "Aratako/Semantic-DACVAE-Japanese-32dim"  #@param {type:"string"}
 IRODORI_MODEL_PRECISION = "fp32"  #@param ["fp32", "bf16", "fp16"]
 IRODORI_CODEC_PRECISION = "fp32"  #@param ["fp32", "bf16", "fp16"]
-IRODORI_ENABLE_WATERMARK = "auto"  #@param ["auto", "on", "off"]
 
 #@markdown ---
 #@markdown Kokoro
@@ -350,8 +348,6 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         IRODORI_MODEL_PRECISION,
         "--irodori-codec-precision",
         IRODORI_CODEC_PRECISION,
-        "--irodori-enable-watermark",
-        IRODORI_ENABLE_WATERMARK,
         "--kokoro-default-voice",
         KOKORO_DEFAULT_VOICE,
         "--kokoro-default-lang-code",

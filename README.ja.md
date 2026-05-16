@@ -97,14 +97,12 @@ FISH_SPEECH_MODEL = "fishaudio/s2-pro"  #@param {type:"string"}
 
 #@markdown ---
 #@markdown Irodori-TTS
-#@markdown - Default: v3 (Rectified Flow DiT, Duration Predictor + SilentCipher watermark).
+#@markdown - Default: v3 (Rectified Flow DiT, Duration Predictor + always-on SilentCipher watermark).
 #@markdown - Older variants: "Aratako/Irodori-TTS-500M-v2" or v1 ("Aratako/Irodori-TTS-500M" + codec_repo="facebook/dacvae-watermarked").
-#@markdown - IRODORI_ENABLE_WATERMARK: auto (on for v3, off for v1/v2), on, off.
 IRODORI_HF_CHECKPOINT = "Aratako/Irodori-TTS-500M-v3"  #@param ["Aratako/Irodori-TTS-500M-v3", "Aratako/Irodori-TTS-500M-v2", "Aratako/Irodori-TTS-500M"]
 IRODORI_CODEC_REPO = "Aratako/Semantic-DACVAE-Japanese-32dim"  #@param {type:"string"}
 IRODORI_MODEL_PRECISION = "fp32"  #@param ["fp32", "bf16", "fp16"]
 IRODORI_CODEC_PRECISION = "fp32"  #@param ["fp32", "bf16", "fp16"]
-IRODORI_ENABLE_WATERMARK = "auto"  #@param ["auto", "on", "off"]
 
 #@markdown ---
 #@markdown Kokoro
@@ -417,8 +415,6 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         IRODORI_MODEL_PRECISION,
         "--irodori-codec-precision",
         IRODORI_CODEC_PRECISION,
-        "--irodori-enable-watermark",
-        IRODORI_ENABLE_WATERMARK,
         "--kokoro-default-voice",
         KOKORO_DEFAULT_VOICE,
         "--kokoro-default-lang-code",
@@ -753,7 +749,7 @@ main()
 V3 では上流の以下の変更にラッパー側で自動追従します:
 
 - **Duration Predictor**: V3 では `seconds=None` を渡し、入力テキストから出力長を自動推定させます（V2 / V1 は従来通り 30 秒固定）。
-- **SilentCipher ウォーターマーク統合**: V3 重みには [SilentCipher](https://github.com/sony/silentcipher) が組み込まれており、ラッパー側でデフォルト有効化します。**ウォーターマークの除去は禁止**です（モデルリリースの一部として配布されています）。Colab の VRAM や追加ダウンロードで詰まった場合のみ `IRODORI_ENABLE_WATERMARK={auto,on,off}` で上書きできますが、デフォルトの `auto` 推奨です。
+- **SilentCipher ウォーターマーク統合**: V3 重みには [SilentCipher](https://github.com/sony/silentcipher) が同梱されており、上流の `InferenceRuntime` 内で常時初期化されます（`RuntimeKey` から `enable_watermark` 引数も削除されており、ユーザー側からの無効化スイッチは公開されていません）。SilentCipher の重みが読み込める限り、生成音声には常にウォーターマークが入ります。**ウォーターマークの除去は禁止**です（モデルリリースの一部として配布されています）。
 
 ### Piper
 

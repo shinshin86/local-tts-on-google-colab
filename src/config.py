@@ -55,7 +55,6 @@ class Settings:
     irodori_codec_repo: str = "Aratako/Semantic-DACVAE-Japanese-32dim"
     irodori_model_precision: str = "fp32"
     irodori_codec_precision: str = "fp32"
-    irodori_enable_watermark: str = "auto"
     kokoro_default_voice: str = "jf_alpha"
     kokoro_default_lang_code: str = "j"
     kyutai_hf_repo: str = "kyutai/tts-1.6b-en_fr"
