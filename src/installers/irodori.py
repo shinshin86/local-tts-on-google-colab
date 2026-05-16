@@ -29,6 +29,7 @@ def install(settings: Settings) -> dict:
         "IRODORI_CODEC_REPO": settings.irodori_codec_repo,
         "IRODORI_MODEL_PRECISION": settings.irodori_model_precision,
         "IRODORI_CODEC_PRECISION": settings.irodori_codec_precision,
+        "IRODORI_ENABLE_WATERMARK": settings.irodori_enable_watermark,
         "OPENAI_MODEL_ID": settings.openai_model_id or settings.irodori_hf_checkpoint,
     }
     proc = popen(

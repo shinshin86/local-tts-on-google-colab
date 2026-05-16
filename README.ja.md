@@ -97,11 +97,14 @@ FISH_SPEECH_MODEL = "fishaudio/s2-pro"  #@param {type:"string"}
 
 #@markdown ---
 #@markdown Irodori-TTS
-# V1を利用する場合: checkpoint="Aratako/Irodori-TTS-500M", codec_repo="facebook/dacvae-watermarked"
-IRODORI_HF_CHECKPOINT = "Aratako/Irodori-TTS-500M-v2"  #@param {type:"string"}
+#@markdown - Default: v3 (Rectified Flow DiT, Duration Predictor + SilentCipher watermark).
+#@markdown - Older variants: "Aratako/Irodori-TTS-500M-v2" or v1 ("Aratako/Irodori-TTS-500M" + codec_repo="facebook/dacvae-watermarked").
+#@markdown - IRODORI_ENABLE_WATERMARK: auto (on for v3, off for v1/v2), on, off.
+IRODORI_HF_CHECKPOINT = "Aratako/Irodori-TTS-500M-v3"  #@param ["Aratako/Irodori-TTS-500M-v3", "Aratako/Irodori-TTS-500M-v2", "Aratako/Irodori-TTS-500M"]
 IRODORI_CODEC_REPO = "Aratako/Semantic-DACVAE-Japanese-32dim"  #@param {type:"string"}
 IRODORI_MODEL_PRECISION = "fp32"  #@param ["fp32", "bf16", "fp16"]
 IRODORI_CODEC_PRECISION = "fp32"  #@param ["fp32", "bf16", "fp16"]
+IRODORI_ENABLE_WATERMARK = "auto"  #@param ["auto", "on", "off"]
 
 #@markdown ---
 #@markdown Kokoro
@@ -414,6 +417,8 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         IRODORI_MODEL_PRECISION,
         "--irodori-codec-precision",
         IRODORI_CODEC_PRECISION,
+        "--irodori-enable-watermark",
+        IRODORI_ENABLE_WATERMARK,
         "--kokoro-default-voice",
         KOKORO_DEFAULT_VOICE,
         "--kokoro-default-lang-code",
@@ -743,7 +748,12 @@ main()
 
 ### Irodori-TTS
 
-[Aratako/Irodori-TTS](https://github.com/Aratako/Irodori-TTS) を使った日本語 TTS です。デフォルトで Hugging Face の `Aratako/Irodori-TTS-500M-v2` モデルを使用します（V1 を利用する場合は `Aratako/Irodori-TTS-500M` に変更してください）。出力は 48kHz で高音質ですが、voice の切り替え機能はありません。
+[Aratako/Irodori-TTS](https://github.com/Aratako/Irodori-TTS) を使った日本語 TTS です。デフォルトで Hugging Face の `Aratako/Irodori-TTS-500M-v3`（スクラッチ学習の Rectified Flow DiT）を使用します。V2 にフォールバックする場合は `IRODORI_HF_CHECKPOINT=Aratako/Irodori-TTS-500M-v2`、V1 を利用する場合は `Aratako/Irodori-TTS-500M` を指定してください。出力は 48kHz で高音質ですが、voice の切り替え機能はありません。
+
+V3 では上流の以下の変更にラッパー側で自動追従します:
+
+- **Duration Predictor**: V3 では `seconds=None` を渡し、入力テキストから出力長を自動推定させます（V2 / V1 は従来通り 30 秒固定）。
+- **SilentCipher ウォーターマーク統合**: V3 重みには [SilentCipher](https://github.com/sony/silentcipher) が組み込まれており、ラッパー側でデフォルト有効化します。**ウォーターマークの除去は禁止**です（モデルリリースの一部として配布されています）。Colab の VRAM や追加ダウンロードで詰まった場合のみ `IRODORI_ENABLE_WATERMARK={auto,on,off}` で上書きできますが、デフォルトの `auto` 推奨です。
 
 ### Piper
 
@@ -1138,7 +1148,7 @@ A woman speaks warmly, "Hello, how are you today?" She laughs, "Hahaha, it is so
 | エンジン | コード | モデル重み | 商用利用 | 備考 |
 |---|---|---|---|---|
 | Kokoro | Apache 2.0 | Apache 2.0 | OK | |
-| Irodori-TTS | MIT | MIT | OK | なりすまし・ディープフェイク生成を禁止する倫理規定あり |
+| Irodori-TTS | MIT | MIT (v1 / v2 / v3) | OK | なりすまし・ディープフェイク生成を禁止する倫理規定あり。V3 は SilentCipher ウォーターマーク同梱（除去禁止） |
 | Piper | GPL-3.0 | MIT | 要注意 | デフォルト音声 `en_US-lessac-medium` の学習データ（Blizzard 2013）は研究目的限定・商用利用不可 |
 | Piper-Plus | MIT | MIT | OK | |
 | Qwen3-TTS | Apache 2.0 | Apache 2.0 | OK | |

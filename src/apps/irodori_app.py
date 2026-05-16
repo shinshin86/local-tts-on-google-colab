@@ -22,14 +22,26 @@ from irodori_tts.inference_runtime import (
 
 logger = logging.getLogger("uvicorn.error")
 
-# V1を利用する場合: checkpoint="Aratako/Irodori-TTS-500M", codec_repo="facebook/dacvae-watermarked"
-HF_CHECKPOINT = os.environ.get("IRODORI_HF_CHECKPOINT", "Aratako/Irodori-TTS-500M-v2")
+# V1: checkpoint="Aratako/Irodori-TTS-500M", codec_repo="facebook/dacvae-watermarked"
+# V2: checkpoint="Aratako/Irodori-TTS-500M-v2"
+HF_CHECKPOINT = os.environ.get("IRODORI_HF_CHECKPOINT", "Aratako/Irodori-TTS-500M-v3")
 MODEL_DEVICE = os.environ.get("IRODORI_MODEL_DEVICE", default_runtime_device())
 CODEC_DEVICE = os.environ.get("IRODORI_CODEC_DEVICE", default_runtime_device())
 MODEL_PRECISION = os.environ.get("IRODORI_MODEL_PRECISION", "fp32")
 CODEC_PRECISION = os.environ.get("IRODORI_CODEC_PRECISION", "fp32")
 CODEC_REPO = os.environ.get("IRODORI_CODEC_REPO", "Aratako/Semantic-DACVAE-Japanese-32dim")
+ENABLE_WATERMARK_MODE = os.environ.get("IRODORI_ENABLE_WATERMARK", "auto").lower()
 OPENAI_MODEL_ID = os.environ.get("OPENAI_MODEL_ID", HF_CHECKPOINT)
+
+IS_V3 = "v3" in HF_CHECKPOINT.lower()
+
+if ENABLE_WATERMARK_MODE == "on":
+    ENABLE_WATERMARK = True
+elif ENABLE_WATERMARK_MODE == "off":
+    ENABLE_WATERMARK = False
+else:
+    # SilentCipher is integrated into v3 weights and must not be stripped.
+    ENABLE_WATERMARK = IS_V3
 
 app = FastAPI(title="Irodori OpenAI Compatible TTS")
 
@@ -70,7 +82,7 @@ def get_runtime():
                 model_precision=MODEL_PRECISION,
                 codec_device=CODEC_DEVICE,
                 codec_precision=CODEC_PRECISION,
-                enable_watermark=False,
+                enable_watermark=ENABLE_WATERMARK,
                 compile_model=False,
                 compile_dynamic=False,
             )
@@ -124,6 +136,8 @@ async def audio_speech(payload: AudioSpeechRequest):
         cfg_scale=None,
     )
 
+    # v3 uses the Duration Predictor when seconds is None; v2/v1 require an explicit length.
+    seconds = None if IS_V3 else 30.0
     result = runtime.synthesize(
         SamplingRequest(
             text=payload.input,
@@ -134,7 +148,7 @@ async def audio_speech(payload: AudioSpeechRequest):
             ref_ensure_max=False,
             num_candidates=1,
             decode_mode="sequential",
-            seconds=30.0,
+            seconds=seconds,
             max_ref_seconds=30.0,
             max_text_len=None,
             num_steps=40,
