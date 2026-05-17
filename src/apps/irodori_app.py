@@ -22,14 +22,21 @@ from irodori_tts.inference_runtime import (
 
 logger = logging.getLogger("uvicorn.error")
 
-# V1を利用する場合: checkpoint="Aratako/Irodori-TTS-500M", codec_repo="facebook/dacvae-watermarked"
-HF_CHECKPOINT = os.environ.get("IRODORI_HF_CHECKPOINT", "Aratako/Irodori-TTS-500M-v2")
+# V1: checkpoint="Aratako/Irodori-TTS-500M", codec_repo="facebook/dacvae-watermarked"
+# V2: checkpoint="Aratako/Irodori-TTS-500M-v2"
+HF_CHECKPOINT = os.environ.get("IRODORI_HF_CHECKPOINT", "Aratako/Irodori-TTS-500M-v3")
 MODEL_DEVICE = os.environ.get("IRODORI_MODEL_DEVICE", default_runtime_device())
 CODEC_DEVICE = os.environ.get("IRODORI_CODEC_DEVICE", default_runtime_device())
 MODEL_PRECISION = os.environ.get("IRODORI_MODEL_PRECISION", "fp32")
 CODEC_PRECISION = os.environ.get("IRODORI_CODEC_PRECISION", "fp32")
 CODEC_REPO = os.environ.get("IRODORI_CODEC_REPO", "Aratako/Semantic-DACVAE-Japanese-32dim")
 OPENAI_MODEL_ID = os.environ.get("OPENAI_MODEL_ID", HF_CHECKPOINT)
+
+# v3 uses the Duration Predictor when seconds is None; v2/v1 need an explicit length.
+IS_V3 = "v3" in HF_CHECKPOINT.lower()
+# v3 upstream ships SilentCipher; it is initialized unconditionally inside InferenceRuntime
+# and applied automatically when the watermarker reports ready=True. There is no public
+# kill-switch and that is intentional — per the model release the watermark must remain.
 
 app = FastAPI(title="Irodori OpenAI Compatible TTS")
 
@@ -70,7 +77,6 @@ def get_runtime():
                 model_precision=MODEL_PRECISION,
                 codec_device=CODEC_DEVICE,
                 codec_precision=CODEC_PRECISION,
-                enable_watermark=False,
                 compile_model=False,
                 compile_dynamic=False,
             )
@@ -117,13 +123,16 @@ async def audio_speech(payload: AudioSpeechRequest):
         raise HTTPException(status_code=400, detail="This wrapper currently supports only wav.")
 
     runtime = get_runtime()
-    cfg_scale_text, cfg_scale_speaker, _ = resolve_cfg_scales(
+    cfg_scale_text, _cfg_scale_caption, cfg_scale_speaker, _ = resolve_cfg_scales(
         cfg_guidance_mode="independent",
         cfg_scale_text=3.0,
+        cfg_scale_caption=3.0,
         cfg_scale_speaker=5.0,
         cfg_scale=None,
     )
 
+    # v3 uses the Duration Predictor when seconds is None; v2/v1 require an explicit length.
+    seconds = None if IS_V3 else 30.0
     result = runtime.synthesize(
         SamplingRequest(
             text=payload.input,
@@ -134,7 +143,7 @@ async def audio_speech(payload: AudioSpeechRequest):
             ref_ensure_max=False,
             num_candidates=1,
             decode_mode="sequential",
-            seconds=30.0,
+            seconds=seconds,
             max_ref_seconds=30.0,
             max_text_len=None,
             num_steps=40,
