@@ -71,13 +71,22 @@ exercised on the developer's local machine.
    ```
 
    Run this any time you touch `multi_tts_openai_colab.py`.
-5. **Commit per engine**, with English commit messages. Mention the license
+5. **Regenerate the WebUI engine schema** by running
+
+   ```bash
+   python3 tools/sync_webui.py
+   ```
+
+   This re-emits `docs/engines.json`, which the GitHub Pages cell generator
+   (`docs/index.html`) consumes. Commit the regenerated JSON alongside the
+   engine change — never hand-edit `docs/engines.json`.
+6. **Commit per engine**, with English commit messages. Mention the license
    findings explicitly when they differ between code and weights, or between
    model sizes.
-6. **Push** the feature branch (`git push -u origin <branch>`) before testing.
+7. **Push** the feature branch (`git push -u origin <branch>`) before testing.
    Colab pulls from the remote, so verification can't run against unpushed
    commits.
-7. **Verify on Google Colab** using the Colab MCP. Do *not* attempt to run
+8. **Verify on Google Colab** using the Colab MCP. Do *not* attempt to run
    `bootstrap.py` or any engine locally — the engines target Linux + CUDA +
    Colab's preinstalled toolchain. Instead:
    - Call `mcp__colab-mcp__open_colab_browser_connection` to attach.
@@ -86,7 +95,7 @@ exercised on the developer's local machine.
      `/v1/audio/speech` against that public URL (this is the contract the repo
      is built around — local-only validation does not count).
    - Capture failures (logs, stack traces, OOM messages) before iterating.
-8. **Open a PR** with an English title and body summarizing the new engine,
+9. **Open a PR** with an English title and body summarizing the new engine,
    its license, and the Colab verification result. Always link the trycloudflare
    verification.
 

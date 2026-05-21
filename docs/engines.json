@@ -1,0 +1,1847 @@
+{
+  "repo_settings": [
+    {
+      "name": "REPO_URL",
+      "default": "https://github.com/shinshin86/local-tts-on-google-colab.git",
+      "type": "string"
+    },
+    {
+      "name": "REPO_REF",
+      "default": "main",
+      "type": "string"
+    },
+    {
+      "name": "WORKDIR",
+      "default": "/content/local-tts-on-google-colab",
+      "type": "string"
+    }
+  ],
+  "engine_selector": {
+    "name": "ENGINE",
+    "default": "Kokoro",
+    "type": "select",
+    "options": [
+      "Bark",
+      "ChatTTS",
+      "Chatterbox",
+      "CosyVoice2",
+      "CSM-1B",
+      "Dia",
+      "DramaBox",
+      "F5-TTS",
+      "Fish-Speech",
+      "GPT-SoVITS",
+      "Higgs-Audio-v2",
+      "Irodori-TTS",
+      "Irodori-TTS-Lite",
+      "Kokoro",
+      "Kyutai-TTS",
+      "MaskGCT",
+      "MeloTTS",
+      "MOSS-TTS-Nano",
+      "NeuTTS",
+      "OpenVoice-V2",
+      "Orpheus-TTS",
+      "OuteTTS",
+      "Piper",
+      "Piper-Plus",
+      "Pocket-TTS",
+      "Qwen3-TTS",
+      "Sarashina-TTS",
+      "Scenema",
+      "Spark-TTS",
+      "Style-Bert-VITS2",
+      "StyleTTS2",
+      "Supertonic",
+      "TinyTTS",
+      "VibeVoice",
+      "VoxCPM2",
+      "Voxtral-TTS",
+      "Zonos"
+    ]
+  },
+  "expose_setting": {
+    "name": "EXPOSE_PUBLIC_URL",
+    "default": true,
+    "type": "boolean",
+    "true_flag": "--expose-public-url",
+    "false_flag": "--no-expose-public-url"
+  },
+  "common_cli": [
+    {
+      "name": "TEST_TEXT",
+      "default": "こんにちは。これは OpenAI 互換 TTS の動作確認です。",
+      "type": "string",
+      "flag": "--test-text"
+    },
+    {
+      "name": "TEST_SPEED",
+      "default": 1.0,
+      "type": "number",
+      "flag": "--test-speed"
+    },
+    {
+      "name": "TEST_VOICE",
+      "default": "",
+      "type": "string",
+      "flag": "--test-voice"
+    },
+    {
+      "name": "OPENAI_MODEL_ID",
+      "default": "",
+      "type": "string",
+      "flag": "--openai-model-id"
+    }
+  ],
+  "engines": [
+    {
+      "id": "Bark",
+      "title": "Bark (GPU recommended, 13 languages, MIT)",
+      "status": "Working on Colab (GPU recommended, ~12GB / 8GB small)",
+      "languages": "English / Japanese / Chinese and 13 languages",
+      "notes": [
+        "- License: code & weights both MIT. Generative audio (laughter, sound effects)."
+      ],
+      "params": [
+        {
+          "name": "BARK_DEFAULT_VOICE",
+          "default": "v2/en_speaker_6",
+          "type": "select",
+          "options": [
+            "v2/en_speaker_0",
+            "v2/en_speaker_6",
+            "v2/en_speaker_9",
+            "v2/ja_speaker_0",
+            "v2/ja_speaker_6",
+            "v2/ja_speaker_9",
+            "v2/zh_speaker_0",
+            "v2/zh_speaker_6",
+            "v2/de_speaker_0",
+            "v2/es_speaker_0",
+            "v2/fr_speaker_0",
+            "v2/hi_speaker_0",
+            "v2/it_speaker_0",
+            "v2/ko_speaker_0",
+            "v2/pt_speaker_0",
+            "v2/ru_speaker_0"
+          ],
+          "flag": "--bark-default-voice"
+        },
+        {
+          "name": "BARK_USE_SMALL_MODELS",
+          "default": false,
+          "type": "boolean",
+          "true_flag": "--bark-use-small-models",
+          "false_flag": null
+        }
+      ]
+    },
+    {
+      "id": "ChatTTS",
+      "title": "ChatTTS (GPU recommended, EN/ZH, AGPL-3.0+ code / CC-BY-NC-4.0 weights)",
+      "status": "Working on Colab (GPU recommended, **non-commercial**)",
+      "languages": "English / Chinese",
+      "notes": [
+        "- **Non-commercial only.** Weights contain intentional high-frequency noise to deter misuse."
+      ],
+      "params": [
+        {
+          "name": "CHATTTS_DEFAULT_VOICE",
+          "default": "default",
+          "type": "select",
+          "options": [
+            "default",
+            "random"
+          ],
+          "flag": "--chattts-default-voice"
+        },
+        {
+          "name": "CHATTTS_SEED",
+          "default": 2,
+          "type": "integer",
+          "flag": "--chattts-seed"
+        },
+        {
+          "name": "CHATTTS_TEMPERATURE",
+          "default": 0.3,
+          "type": "number",
+          "flag": "--chattts-temperature"
+        }
+      ]
+    },
+    {
+      "id": "Chatterbox",
+      "title": "Chatterbox (GPU recommended, multilingual incl JP, voice cloning)",
+      "status": "Works (GPU recommended)",
+      "languages": "Japanese / English / Chinese and 23 languages",
+      "notes": [],
+      "params": [
+        {
+          "name": "CHATTERBOX_LANGUAGE",
+          "default": "ja",
+          "type": "select",
+          "options": [
+            "ar",
+            "da",
+            "de",
+            "el",
+            "en",
+            "es",
+            "fi",
+            "fr",
+            "he",
+            "hi",
+            "it",
+            "ja",
+            "ko",
+            "ms",
+            "nl",
+            "no",
+            "pl",
+            "pt",
+            "ru",
+            "sv",
+            "sw",
+            "tr",
+            "zh"
+          ],
+          "flag": "--chatterbox-language"
+        },
+        {
+          "name": "CHATTERBOX_PROMPT_WAV",
+          "default": "",
+          "type": "string",
+          "flag": "--chatterbox-prompt-wav"
+        },
+        {
+          "name": "CHATTERBOX_DEFAULT_VOICE",
+          "default": "default",
+          "type": "select",
+          "options": [
+            "default",
+            "clone"
+          ],
+          "flag": "--chatterbox-default-voice"
+        }
+      ]
+    },
+    {
+      "id": "CosyVoice2",
+      "title": "CosyVoice2 (GPU recommended, multilingual incl JP, Apache 2.0)",
+      "status": "Works (GPU recommended, Python 3.10 venv)",
+      "languages": "Japanese / English / Chinese / Korean / German and 9 languages",
+      "notes": [
+        "- Forces a Python 3.10 venv because upstream pins (torch 2.3.1, openai-whisper 20231117, etc.) do not resolve under Python 3.12."
+      ],
+      "params": [
+        {
+          "name": "COSYVOICE_HF_MODEL",
+          "default": "FunAudioLLM/CosyVoice2-0.5B",
+          "type": "string",
+          "flag": "--cosyvoice-hf-model"
+        },
+        {
+          "name": "COSYVOICE_PROMPT_WAV",
+          "default": "",
+          "type": "string",
+          "flag": "--cosyvoice-prompt-wav"
+        },
+        {
+          "name": "COSYVOICE_PROMPT_TEXT",
+          "default": "",
+          "type": "string",
+          "flag": "--cosyvoice-prompt-text"
+        },
+        {
+          "name": "COSYVOICE_DEFAULT_VOICE",
+          "default": "default",
+          "type": "select",
+          "options": [
+            "default",
+            "clone"
+          ],
+          "flag": "--cosyvoice-default-voice"
+        }
+      ]
+    },
+    {
+      "id": "CSM-1B",
+      "title": "Sesame CSM-1B (GPU required, English-only, Apache 2.0)",
+      "status": "Not working by default (HF-gated weights for `sesame/csm-1b` + `meta-llama/Llama-3.2-1B`, requires accepting both licenses + `HF_TOKEN`)",
+      "languages": "English (Llama-3.2-1B base + Mimi codec)",
+      "notes": [
+        "- **HF gated**: accept terms for `sesame/csm-1b` AND `meta-llama/Llama-3.2-1B`, then set `HF_TOKEN`."
+      ],
+      "params": [
+        {
+          "name": "CSM_HF_MODEL",
+          "default": "sesame/csm-1b",
+          "type": "string",
+          "flag": "--csm-hf-model"
+        },
+        {
+          "name": "CSM_LLAMA_MODEL",
+          "default": "meta-llama/Llama-3.2-1B",
+          "type": "string",
+          "flag": "--csm-llama-model"
+        },
+        {
+          "name": "CSM_DEFAULT_VOICE",
+          "default": "default",
+          "type": "string",
+          "flag": "--csm-default-voice"
+        },
+        {
+          "name": "CSM_DEFAULT_SPEAKER",
+          "default": 0,
+          "type": "integer",
+          "flag": "--csm-default-speaker"
+        },
+        {
+          "name": "CSM_MAX_AUDIO_LENGTH_MS",
+          "default": 10000,
+          "type": "integer",
+          "flag": "--csm-max-audio-length-ms"
+        },
+        {
+          "name": "CSM_TEMPERATURE",
+          "default": 0.9,
+          "type": "number",
+          "flag": "--csm-temperature"
+        }
+      ]
+    },
+    {
+      "id": "Dia",
+      "title": "Dia (GPU recommended, English-only, [S1]/[S2] dialogue, Apache 2.0)",
+      "status": "Works (GPU recommended)",
+      "languages": "English (multi-speaker dialogue)",
+      "notes": [],
+      "params": [
+        {
+          "name": "DIA_HF_MODEL",
+          "default": "nari-labs/Dia-1.6B-0626",
+          "type": "string",
+          "flag": "--dia-hf-model"
+        },
+        {
+          "name": "DIA_COMPUTE_DTYPE",
+          "default": "float16",
+          "type": "select",
+          "options": [
+            "float16",
+            "bfloat16",
+            "float32"
+          ],
+          "flag": "--dia-compute-dtype"
+        },
+        {
+          "name": "DIA_PROMPT_WAV",
+          "default": "",
+          "type": "string",
+          "flag": "--dia-prompt-wav"
+        },
+        {
+          "name": "DIA_PROMPT_TEXT",
+          "default": "",
+          "type": "string",
+          "flag": "--dia-prompt-text"
+        },
+        {
+          "name": "DIA_DEFAULT_VOICE",
+          "default": "default",
+          "type": "select",
+          "options": [
+            "default",
+            "clone"
+          ],
+          "flag": "--dia-default-voice"
+        }
+      ]
+    },
+    {
+      "id": "DramaBox",
+      "title": "DramaBox (A100 required, VRAM ~24GB, English-only, voice cloning)",
+      "status": "Works on Colab A100 (GPU required, VRAM ~24GB peak, **LTX-2 Community License — non-compete clause**)",
+      "languages": "English",
+      "notes": [
+        "- Resemble AI's directable / expressive TTS (IC-LoRA fine-tune of LTX-2.3, paralinguistic cues like laughs/sighs).",
+        "- **License: LTX-2 Community License** (Lightricks). Non-compete clause; commercial license required for org revenue $10M+.",
+        "- Generated audio is **always watermarked** with Resemble Perth (imperceptible, non-removable per upstream).",
+        "- First-run downloads ~8.5GB (DramaBox) + Gemma 3 12B snapshot."
+      ],
+      "params": [
+        {
+          "name": "DRAMABOX_HF_MODEL",
+          "default": "ResembleAI/Dramabox",
+          "type": "string",
+          "flag": "--dramabox-hf-model"
+        },
+        {
+          "name": "DRAMABOX_GEMMA_REPO",
+          "default": "unsloth/gemma-3-12b-it-bnb-4bit",
+          "type": "string",
+          "flag": "--dramabox-gemma-repo"
+        },
+        {
+          "name": "DRAMABOX_DEFAULT_VOICE",
+          "default": "default",
+          "type": "select",
+          "options": [
+            "default",
+            "clone"
+          ],
+          "flag": "--dramabox-default-voice"
+        },
+        {
+          "name": "DRAMABOX_DEFAULT_REF_VOICE",
+          "default": "female_american",
+          "type": "select",
+          "options": [
+            "female_american",
+            "female_shadowheart",
+            "male_arnie",
+            "male_conan",
+            "male_harvey_keitel",
+            "male_old_movie",
+            "male_petergriffin",
+            "male_samuel_j"
+          ],
+          "flag": "--dramabox-default-ref-voice"
+        },
+        {
+          "name": "DRAMABOX_PROMPT_WAV",
+          "default": "",
+          "type": "string",
+          "flag": "--dramabox-prompt-wav"
+        },
+        {
+          "name": "DRAMABOX_DTYPE",
+          "default": "bf16",
+          "type": "select",
+          "options": [
+            "bf16",
+            "fp16"
+          ],
+          "flag": "--dramabox-dtype"
+        },
+        {
+          "name": "DRAMABOX_CFG_SCALE",
+          "default": 2.5,
+          "type": "number",
+          "flag": "--dramabox-cfg-scale"
+        },
+        {
+          "name": "DRAMABOX_STG_SCALE",
+          "default": 1.5,
+          "type": "number",
+          "flag": "--dramabox-stg-scale"
+        },
+        {
+          "name": "DRAMABOX_DURATION_MULTIPLIER",
+          "default": 1.1,
+          "type": "number",
+          "flag": "--dramabox-duration-multiplier"
+        },
+        {
+          "name": "DRAMABOX_SEED",
+          "default": 42,
+          "type": "integer",
+          "flag": "--dramabox-seed"
+        },
+        {
+          "name": "DRAMABOX_COMPILE",
+          "default": false,
+          "type": "boolean",
+          "true_flag": "--dramabox-compile",
+          "false_flag": null
+        },
+        {
+          "name": "DRAMABOX_NO_BNB_4BIT",
+          "default": false,
+          "type": "boolean",
+          "true_flag": "--dramabox-no-bnb-4bit",
+          "false_flag": null
+        }
+      ]
+    },
+    {
+      "id": "F5-TTS",
+      "title": "F5-TTS (GPU required)",
+      "status": "Works (GPU required)",
+      "languages": "English / Chinese (Japanese via separate model)",
+      "notes": [],
+      "params": [
+        {
+          "name": "F5TTS_MODEL",
+          "default": "F5TTS_v1_Base",
+          "type": "string",
+          "flag": "--f5tts-model"
+        },
+        {
+          "name": "F5TTS_CKPT_FILE",
+          "default": "",
+          "type": "string",
+          "flag": "--f5tts-ckpt-file"
+        },
+        {
+          "name": "F5TTS_VOCAB_FILE",
+          "default": "",
+          "type": "string",
+          "flag": "--f5tts-vocab-file"
+        }
+      ]
+    },
+    {
+      "id": "Fish-Speech",
+      "title": "Fish-Speech (A100/L4 GPU required, VRAM 24GB+)",
+      "status": "Not working",
+      "languages": "Japanese / English / Chinese and 80+ languages",
+      "notes": [],
+      "params": [
+        {
+          "name": "FISH_SPEECH_MODEL",
+          "default": "fishaudio/s2-pro",
+          "type": "string",
+          "flag": "--fish-speech-model"
+        }
+      ]
+    },
+    {
+      "id": "GPT-SoVITS",
+      "title": "GPT-SoVITS (GPU recommended, ZH/EN/JA/KO/YUE, MIT)",
+      "status": "Engine starts on Colab — reference audio required for synthesis (no default speaker mode; pass `--gpt-sovits-prompt-wav` + `--gpt-sovits-prompt-text`)",
+      "languages": "Chinese / English / Japanese / Korean / Cantonese",
+      "notes": [
+        "- Few-shot voice cloning (5-second reference). Reference audio + transcript required."
+      ],
+      "params": [
+        {
+          "name": "GPT_SOVITS_VERSION",
+          "default": "v2",
+          "type": "select",
+          "options": [
+            "v1",
+            "v2",
+            "v2Pro",
+            "v2ProPlus",
+            "v3",
+            "v4"
+          ],
+          "flag": "--gpt-sovits-version"
+        },
+        {
+          "name": "GPT_SOVITS_DEFAULT_VOICE",
+          "default": "default",
+          "type": "select",
+          "options": [
+            "default",
+            "clone"
+          ],
+          "flag": "--gpt-sovits-default-voice"
+        },
+        {
+          "name": "GPT_SOVITS_PROMPT_WAV",
+          "default": "",
+          "type": "string",
+          "flag": "--gpt-sovits-prompt-wav"
+        },
+        {
+          "name": "GPT_SOVITS_PROMPT_TEXT",
+          "default": "",
+          "type": "string",
+          "flag": "--gpt-sovits-prompt-text"
+        },
+        {
+          "name": "GPT_SOVITS_PROMPT_LANG",
+          "default": "en",
+          "type": "select",
+          "options": [
+            "en",
+            "zh",
+            "ja",
+            "ko",
+            "yue",
+            "auto"
+          ],
+          "flag": "--gpt-sovits-prompt-lang"
+        },
+        {
+          "name": "GPT_SOVITS_TARGET_LANG",
+          "default": "en",
+          "type": "select",
+          "options": [
+            "en",
+            "zh",
+            "ja",
+            "ko",
+            "yue",
+            "auto"
+          ],
+          "flag": "--gpt-sovits-target-lang"
+        }
+      ]
+    },
+    {
+      "id": "Higgs-Audio-v2",
+      "title": "Higgs Audio v2 (A100/L4 required, VRAM 24GB+, voice cloning)",
+      "status": "Not working by default (upstream HF checkpoint requires unreleased `boson_multimodal` / transformers 5.x; engine starts but inference fails inside the audio tokenizer loader)",
+      "languages": "English",
+      "notes": [
+        "- Code: Apache-2.0. **Weights: Boson Higgs Audio 2 Community License** (Llama-derived).",
+        "- Restrictions: >100k MAU requires extra license; outputs cannot be used to train other LLMs."
+      ],
+      "params": [
+        {
+          "name": "HIGGS_HF_MODEL",
+          "default": "bosonai/higgs-audio-v2-generation-3B-base",
+          "type": "string",
+          "flag": "--higgs-hf-model"
+        },
+        {
+          "name": "HIGGS_HF_TOKENIZER",
+          "default": "bosonai/higgs-audio-v2-tokenizer",
+          "type": "string",
+          "flag": "--higgs-hf-tokenizer"
+        },
+        {
+          "name": "HIGGS_DEFAULT_VOICE",
+          "default": "default",
+          "type": "string",
+          "flag": "--higgs-default-voice"
+        },
+        {
+          "name": "HIGGS_DEFAULT_REF_VOICE",
+          "default": "belinda",
+          "type": "string",
+          "flag": "--higgs-default-ref-voice"
+        },
+        {
+          "name": "HIGGS_PROMPT_WAV",
+          "default": "",
+          "type": "string",
+          "flag": "--higgs-prompt-wav"
+        },
+        {
+          "name": "HIGGS_PROMPT_TEXT",
+          "default": "",
+          "type": "string",
+          "flag": "--higgs-prompt-text"
+        },
+        {
+          "name": "HIGGS_MAX_NEW_TOKENS",
+          "default": 1024,
+          "type": "integer",
+          "flag": "--higgs-max-new-tokens"
+        },
+        {
+          "name": "HIGGS_TEMPERATURE",
+          "default": 0.7,
+          "type": "number",
+          "flag": "--higgs-temperature"
+        }
+      ]
+    },
+    {
+      "id": "Irodori-TTS",
+      "title": "Irodori-TTS",
+      "status": "Works",
+      "languages": "Japanese",
+      "notes": [
+        "- Default: v3 (Rectified Flow DiT, Duration Predictor + always-on SilentCipher watermark).",
+        "- Older variants: \"Aratako/Irodori-TTS-500M-v2\" or v1 (\"Aratako/Irodori-TTS-500M\" + codec_repo=\"facebook/dacvae-watermarked\")."
+      ],
+      "params": [
+        {
+          "name": "IRODORI_HF_CHECKPOINT",
+          "default": "Aratako/Irodori-TTS-500M-v3",
+          "type": "select",
+          "options": [
+            "Aratako/Irodori-TTS-500M-v3",
+            "Aratako/Irodori-TTS-500M-v2",
+            "Aratako/Irodori-TTS-500M"
+          ],
+          "flag": "--irodori-hf-checkpoint"
+        },
+        {
+          "name": "IRODORI_CODEC_REPO",
+          "default": "Aratako/Semantic-DACVAE-Japanese-32dim",
+          "type": "string",
+          "flag": "--irodori-codec-repo"
+        },
+        {
+          "name": "IRODORI_MODEL_PRECISION",
+          "default": "fp32",
+          "type": "select",
+          "options": [
+            "fp32",
+            "bf16",
+            "fp16"
+          ],
+          "flag": "--irodori-model-precision"
+        },
+        {
+          "name": "IRODORI_CODEC_PRECISION",
+          "default": "fp32",
+          "type": "select",
+          "options": [
+            "fp32",
+            "bf16",
+            "fp16"
+          ],
+          "flag": "--irodori-codec-precision"
+        }
+      ]
+    },
+    {
+      "id": "Irodori-TTS-Lite",
+      "title": "Irodori-TTS-Lite (int4-quantized Irodori-TTS, ~1GB VRAM, MIT)",
+      "status": "Works (GPU required, ~1GB VRAM, int4-quantized)",
+      "languages": "Japanese",
+      "notes": [
+        "- Default checkpoint is voice-design int4 (speaker baked in, seconds derived from text via pyopenjtalk).",
+        "- For the v3-derived int4 with built-in Duration Predictor, switch to",
+        "\"kizuna-intelligence/Irodori-TTS-500M-v3-int4\" AND set IRODORI_LITE_CHECKPOINT_FILE=\"model.safetensors\"."
+      ],
+      "params": [
+        {
+          "name": "IRODORI_LITE_HF_CHECKPOINT",
+          "default": "kizuna-intelligence/Irodori-TTS-Lite-int4",
+          "type": "select",
+          "options": [
+            "kizuna-intelligence/Irodori-TTS-Lite-int4",
+            "kizuna-intelligence/Irodori-TTS-500M-v3-int4"
+          ],
+          "flag": "--irodori-lite-hf-checkpoint"
+        },
+        {
+          "name": "IRODORI_LITE_CHECKPOINT_FILE",
+          "default": "dit_int4.safetensors",
+          "type": "select",
+          "options": [
+            "dit_int4.safetensors",
+            "model.safetensors"
+          ],
+          "flag": "--irodori-lite-checkpoint-file"
+        },
+        {
+          "name": "IRODORI_LITE_CODEC_REPO",
+          "default": "Aratako/Semantic-DACVAE-Japanese-32dim",
+          "type": "string",
+          "flag": "--irodori-lite-codec-repo"
+        },
+        {
+          "name": "IRODORI_LITE_CODEC_INT4",
+          "default": false,
+          "type": "boolean",
+          "true_flag": "--irodori-lite-codec-int4",
+          "false_flag": null
+        }
+      ]
+    },
+    {
+      "id": "Kokoro",
+      "title": "Kokoro",
+      "status": "Works",
+      "languages": "Japanese / English / Chinese and more",
+      "notes": [],
+      "params": [
+        {
+          "name": "KOKORO_DEFAULT_VOICE",
+          "default": "jf_alpha",
+          "type": "select",
+          "options": [
+            "jf_alpha",
+            "jf_gongitsune",
+            "jm_kumo",
+            "af_heart",
+            "af_bella",
+            "am_adam",
+            "bf_emma",
+            "bm_george",
+            "zf_xiaobei"
+          ],
+          "flag": "--kokoro-default-voice"
+        },
+        {
+          "name": "KOKORO_DEFAULT_LANG_CODE",
+          "default": "j",
+          "type": "select",
+          "options": [
+            "j",
+            "a",
+            "b",
+            "e",
+            "f",
+            "h",
+            "i",
+            "p",
+            "z"
+          ],
+          "flag": "--kokoro-default-lang-code"
+        }
+      ]
+    },
+    {
+      "id": "Kyutai-TTS",
+      "title": "Kyutai-TTS (GPU recommended, English/French only, CC-BY-4.0 weights)",
+      "status": "Works (GPU recommended)",
+      "languages": "English / French",
+      "notes": [],
+      "params": [
+        {
+          "name": "KYUTAI_HF_REPO",
+          "default": "kyutai/tts-1.6b-en_fr",
+          "type": "string",
+          "flag": "--kyutai-hf-repo"
+        },
+        {
+          "name": "KYUTAI_VOICE_REPO",
+          "default": "kyutai/tts-voices",
+          "type": "string",
+          "flag": "--kyutai-voice-repo"
+        },
+        {
+          "name": "KYUTAI_VOICE",
+          "default": "expresso/ex03-ex01_happy_001_channel1_334s.wav",
+          "type": "string",
+          "flag": "--kyutai-voice"
+        },
+        {
+          "name": "KYUTAI_PROMPT_WAV",
+          "default": "",
+          "type": "string",
+          "flag": "--kyutai-prompt-wav"
+        },
+        {
+          "name": "KYUTAI_DEFAULT_VOICE",
+          "default": "default",
+          "type": "select",
+          "options": [
+            "default",
+            "clone"
+          ],
+          "flag": "--kyutai-default-voice"
+        }
+      ]
+    },
+    {
+      "id": "MaskGCT",
+      "title": "MaskGCT (GPU required, EN/ZH, MIT code / CC-BY-NC-4.0 weights)",
+      "status": "Working on Colab (GPU required, ~10-12GB, **non-commercial weights**)",
+      "languages": "English / Chinese",
+      "notes": [
+        "- **Non-commercial only.** Zero-shot voice cloning — always uses a reference audio."
+      ],
+      "params": [
+        {
+          "name": "MASKGCT_DEFAULT_VOICE",
+          "default": "default",
+          "type": "select",
+          "options": [
+            "default",
+            "clone"
+          ],
+          "flag": "--maskgct-default-voice"
+        },
+        {
+          "name": "MASKGCT_PROMPT_WAV",
+          "default": "",
+          "type": "string",
+          "flag": "--maskgct-prompt-wav"
+        },
+        {
+          "name": "MASKGCT_PROMPT_TEXT",
+          "default": "",
+          "type": "string",
+          "flag": "--maskgct-prompt-text"
+        },
+        {
+          "name": "MASKGCT_PROMPT_LANG",
+          "default": "en",
+          "type": "select",
+          "options": [
+            "en",
+            "zh",
+            "ja",
+            "ko",
+            "fr",
+            "de"
+          ],
+          "flag": "--maskgct-prompt-lang"
+        },
+        {
+          "name": "MASKGCT_TARGET_LANG",
+          "default": "en",
+          "type": "select",
+          "options": [
+            "en",
+            "zh",
+            "ja",
+            "ko",
+            "fr",
+            "de"
+          ],
+          "flag": "--maskgct-target-lang"
+        }
+      ]
+    },
+    {
+      "id": "MeloTTS",
+      "title": "MeloTTS",
+      "status": "Not working",
+      "languages": "-",
+      "notes": [],
+      "params": [
+        {
+          "name": "MELO_LANGUAGE",
+          "default": "JP",
+          "type": "select",
+          "options": [
+            "JP",
+            "EN",
+            "ZH",
+            "ES",
+            "FR",
+            "KR"
+          ],
+          "flag": "--melo-language"
+        },
+        {
+          "name": "MELO_DEFAULT_VOICE",
+          "default": "JP",
+          "type": "select",
+          "options": [
+            "JP",
+            "EN-Default",
+            "EN-US",
+            "EN-BR",
+            "EN_INDIA",
+            "EN-AU",
+            "ZH",
+            "ES",
+            "FR",
+            "KR"
+          ],
+          "flag": "--melo-default-voice"
+        }
+      ]
+    },
+    {
+      "id": "MOSS-TTS-Nano",
+      "title": "MOSS-TTS-Nano (CPU OK)",
+      "status": "Works (output truncated to ~2s)",
+      "languages": "Japanese / English / Chinese and 20 languages",
+      "notes": [],
+      "params": [
+        {
+          "name": "MOSS_TTS_NANO_HF_MODEL",
+          "default": "OpenMOSS-Team/MOSS-TTS-Nano-100M",
+          "type": "string",
+          "flag": "--moss-tts-nano-hf-model"
+        },
+        {
+          "name": "MOSS_TTS_NANO_MODE",
+          "default": "continuation",
+          "type": "select",
+          "options": [
+            "continuation",
+            "voice_clone"
+          ],
+          "flag": "--moss-tts-nano-mode"
+        }
+      ]
+    },
+    {
+      "id": "NeuTTS",
+      "title": "NeuTTS (CPU OK, EN/ES/DE/FR, voice cloning)",
+      "status": "Works (CPU OK, voice cloning)",
+      "languages": "English / Spanish / German / French",
+      "notes": [],
+      "params": [
+        {
+          "name": "NEUTTS_BACKBONE_REPO",
+          "default": "neuphonic/neutts-air",
+          "type": "select",
+          "options": [
+            "neuphonic/neutts-air",
+            "neuphonic/neutts-nano",
+            "neuphonic/neutts-nano-french",
+            "neuphonic/neutts-nano-german",
+            "neuphonic/neutts-nano-spanish"
+          ],
+          "flag": "--neutts-backbone-repo"
+        },
+        {
+          "name": "NEUTTS_CODEC_REPO",
+          "default": "neuphonic/neucodec",
+          "type": "string",
+          "flag": "--neutts-codec-repo"
+        },
+        {
+          "name": "NEUTTS_DEFAULT_VOICE",
+          "default": "jo",
+          "type": "select",
+          "options": [
+            "dave",
+            "jo",
+            "greta",
+            "juliette",
+            "mateo"
+          ],
+          "flag": "--neutts-default-voice"
+        }
+      ]
+    },
+    {
+      "id": "OpenVoice-V2",
+      "title": "OpenVoice V2 (GPU recommended, multilingual incl JP, voice cloning, MIT)",
+      "status": "Not working (Python 3.13 / `av==10` build failure)",
+      "languages": "Japanese / English / Spanish / French / Chinese / Korean",
+      "notes": [
+        "- Pipeline: MeloTTS base TTS -> ToneColorConverter (V2 checkpoints).",
+        "- May hit the same MeloTTS dependency issue that breaks the standalone MeloTTS engine."
+      ],
+      "params": [
+        {
+          "name": "OPENVOICE_LANGUAGE",
+          "default": "JP",
+          "type": "select",
+          "options": [
+            "EN",
+            "ES",
+            "FR",
+            "ZH",
+            "JP",
+            "KR"
+          ],
+          "flag": "--openvoice-language"
+        },
+        {
+          "name": "OPENVOICE_PROMPT_WAV",
+          "default": "",
+          "type": "string",
+          "flag": "--openvoice-prompt-wav"
+        },
+        {
+          "name": "OPENVOICE_DEFAULT_VOICE",
+          "default": "default",
+          "type": "select",
+          "options": [
+            "default",
+            "clone"
+          ],
+          "flag": "--openvoice-default-voice"
+        }
+      ]
+    },
+    {
+      "id": "Orpheus-TTS",
+      "title": "Orpheus-TTS (currently not working — HF-gated weights)",
+      "status": "Not working (HF-gated weights, requires Llama 3.2 license acceptance + `HF_TOKEN`)",
+      "languages": "English (Llama-3.2-3B base, vLLM)",
+      "notes": [
+        "- Code: Apache 2.0. Weights: Apache 2.0 + Llama 3.2 Community License (base model).",
+        "- Pinned to vllm==0.7.3 due to a known regression in newer vLLM 0.7.x.",
+        "- **Before running**: request access to canopylabs/orpheus-3b-0.1-ft AND",
+        "meta-llama/Llama-3.2-3B-Instruct on HF, accept the Llama 3.2 license,",
+        "then set `HF_TOKEN` (Colab Secrets → New secret with notebook access).",
+        "See the README \"Orpheus-TTS\" section for the full setup."
+      ],
+      "params": [
+        {
+          "name": "ORPHEUS_HF_MODEL",
+          "default": "canopylabs/orpheus-tts-0.1-finetune-prod",
+          "type": "string",
+          "flag": "--orpheus-hf-model"
+        },
+        {
+          "name": "ORPHEUS_DEFAULT_VOICE",
+          "default": "tara",
+          "type": "select",
+          "options": [
+            "tara",
+            "leah",
+            "jess",
+            "leo",
+            "dan",
+            "mia",
+            "zac",
+            "zoe"
+          ],
+          "flag": "--orpheus-default-voice"
+        },
+        {
+          "name": "ORPHEUS_MAX_MODEL_LEN",
+          "default": 2048,
+          "type": "integer",
+          "flag": "--orpheus-max-model-len"
+        }
+      ]
+    },
+    {
+      "id": "OuteTTS",
+      "title": "OuteTTS (CPU OK, multilingual incl JP, voice cloning)",
+      "status": "Works (CPU OK)",
+      "languages": "Japanese / English / Chinese and many languages",
+      "notes": [
+        "- 0.6B: code/weights both Apache 2.0 (commercial use OK).",
+        "- 1B: weights are CC-BY-NC-SA-4.0 + Llama 3.2 Community License (non-commercial only)."
+      ],
+      "params": [
+        {
+          "name": "OUTETTS_MODEL_SIZE",
+          "default": "0.6B",
+          "type": "select",
+          "options": [
+            "0.6B",
+            "1B"
+          ],
+          "flag": "--outetts-model-size"
+        },
+        {
+          "name": "OUTETTS_BACKEND",
+          "default": "HF",
+          "type": "select",
+          "options": [
+            "HF",
+            "LLAMACPP"
+          ],
+          "flag": "--outetts-backend"
+        },
+        {
+          "name": "OUTETTS_DEFAULT_SPEAKER",
+          "default": "EN-FEMALE-1-NEUTRAL",
+          "type": "string",
+          "flag": "--outetts-default-speaker"
+        },
+        {
+          "name": "OUTETTS_PROMPT_WAV",
+          "default": "",
+          "type": "string",
+          "flag": "--outetts-prompt-wav"
+        },
+        {
+          "name": "OUTETTS_PROMPT_TEXT",
+          "default": "",
+          "type": "string",
+          "flag": "--outetts-prompt-text"
+        },
+        {
+          "name": "OUTETTS_DEFAULT_VOICE",
+          "default": "default",
+          "type": "select",
+          "options": [
+            "default",
+            "clone"
+          ],
+          "flag": "--outetts-default-voice"
+        }
+      ]
+    },
+    {
+      "id": "Piper",
+      "title": "Piper",
+      "status": "Works",
+      "languages": "English (default) / multilingual",
+      "notes": [],
+      "params": [
+        {
+          "name": "PIPER_VOICE",
+          "default": "en_US-lessac-medium",
+          "type": "string",
+          "flag": "--piper-voice"
+        },
+        {
+          "name": "PIPER_SPEAKER_ID",
+          "default": -1,
+          "type": "integer",
+          "flag": "--piper-speaker-id"
+        }
+      ]
+    },
+    {
+      "id": "Piper-Plus",
+      "title": "Piper-Plus",
+      "status": "Works",
+      "languages": "Japanese / English / Chinese and 6 languages",
+      "notes": [],
+      "params": [
+        {
+          "name": "PIPER_PLUS_MODEL",
+          "default": "tsukuyomi",
+          "type": "string",
+          "flag": "--piper-plus-model"
+        }
+      ]
+    },
+    {
+      "id": "Pocket-TTS",
+      "title": "Pocket-TTS (CPU-only, EN/FR/DE/IT/PT/ES, MIT code, CC-BY-4.0 weights)",
+      "status": "Works (CPU OK, ~6x real-time)",
+      "languages": "English / French / German / Italian / Portuguese / Spanish",
+      "notes": [],
+      "params": [
+        {
+          "name": "POCKET_LANGUAGE",
+          "default": "english",
+          "type": "select",
+          "options": [
+            "english",
+            "english_2026-01",
+            "english_2026-04",
+            "french_24l",
+            "german_24l",
+            "italian",
+            "portuguese",
+            "spanish_24l"
+          ],
+          "flag": "--pocket-language"
+        },
+        {
+          "name": "POCKET_DEFAULT_SPEAKER",
+          "default": "alba",
+          "type": "select",
+          "options": [
+            "alba",
+            "anna",
+            "azelma",
+            "bill_boerst",
+            "caro_davy",
+            "charles",
+            "cosette",
+            "eponine",
+            "eve",
+            "fantine",
+            "george",
+            "jane",
+            "jean",
+            "javert",
+            "marius",
+            "mary",
+            "michael",
+            "paul",
+            "peter_yearsley",
+            "stuart_bell",
+            "vera"
+          ],
+          "flag": "--pocket-default-speaker"
+        },
+        {
+          "name": "POCKET_PROMPT_WAV",
+          "default": "",
+          "type": "string",
+          "flag": "--pocket-prompt-wav"
+        },
+        {
+          "name": "POCKET_DEFAULT_VOICE",
+          "default": "default",
+          "type": "select",
+          "options": [
+            "default",
+            "clone"
+          ],
+          "flag": "--pocket-default-voice"
+        }
+      ]
+    },
+    {
+      "id": "Qwen3-TTS",
+      "title": "Qwen3-TTS (GPU required)",
+      "status": "Works (GPU required)",
+      "languages": "Japanese / English / Chinese and 10 languages",
+      "notes": [],
+      "params": [
+        {
+          "name": "QWEN3_HF_MODEL",
+          "default": "Qwen/Qwen3-TTS-12Hz-0.6B-CustomVoice",
+          "type": "select",
+          "options": [
+            "Qwen/Qwen3-TTS-12Hz-0.6B-CustomVoice",
+            "Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice"
+          ],
+          "flag": "--qwen3-hf-model"
+        },
+        {
+          "name": "QWEN3_LANGUAGE",
+          "default": "Japanese",
+          "type": "select",
+          "options": [
+            "Chinese",
+            "English",
+            "Japanese",
+            "Korean",
+            "German",
+            "French",
+            "Russian",
+            "Portuguese",
+            "Spanish",
+            "Italian"
+          ],
+          "flag": "--qwen3-language"
+        },
+        {
+          "name": "QWEN3_DEFAULT_SPEAKER",
+          "default": "ono_anna",
+          "type": "select",
+          "options": [
+            "aiden",
+            "dylan",
+            "eric",
+            "ono_anna",
+            "ryan",
+            "serena",
+            "sohee",
+            "uncle_fu",
+            "vivian"
+          ],
+          "flag": "--qwen3-default-speaker"
+        }
+      ]
+    },
+    {
+      "id": "Sarashina-TTS",
+      "title": "Sarashina-TTS (GPU required, ~6GB VRAM, JP/EN, NonCommercial)",
+      "status": "Works (GPU required, ~6GB VRAM)",
+      "languages": "Japanese / English",
+      "notes": [],
+      "params": [
+        {
+          "name": "SARASHINA_HF_MODEL",
+          "default": "sbintuitions/sarashina2.2-tts",
+          "type": "string",
+          "flag": "--sarashina-hf-model"
+        },
+        {
+          "name": "SARASHINA_USE_VLLM",
+          "default": false,
+          "type": "boolean",
+          "true_flag": "--sarashina-use-vllm",
+          "false_flag": null
+        },
+        {
+          "name": "SARASHINA_PROMPT_WAV",
+          "default": "",
+          "type": "string",
+          "flag": "--sarashina-prompt-wav"
+        },
+        {
+          "name": "SARASHINA_PROMPT_TEXT",
+          "default": "",
+          "type": "string",
+          "flag": "--sarashina-prompt-text"
+        },
+        {
+          "name": "SARASHINA_DEFAULT_VOICE",
+          "default": "default",
+          "type": "select",
+          "options": [
+            "default",
+            "clone"
+          ],
+          "flag": "--sarashina-default-voice"
+        }
+      ]
+    },
+    {
+      "id": "Scenema",
+      "title": "Scenema (A100 required, 40GB VRAM, English-centric multilingual, voice cloning)",
+      "status": "**Not verified on Colab** — text encoder is Gemma 3 12B IT (HF-gated), so running this engine requires accepting the Gemma Terms of Use on Hugging Face and providing `HF_TOKEN` via Colab Secrets. Code paths are in place but end-to-end Colab verification was deferred because `HF_TOKEN` setup is out of scope for this repo's default workflow. **Requires Colab A100 (40GB VRAM)**. First-run downloads ~38GB. Audio model derived from LTX-2.3 → **LTX-2 Community License** (same as DramaBox)",
+      "languages": "English-centric multilingual",
+      "notes": [
+        "- Zero-shot expressive voice cloning + speech generation (Scenema AI).",
+        "- Audio model is derived from LTX-2.3 → **LTX-2 Community License** (Lightricks, same as DramaBox).",
+        "- Uses Gemma 3 12B IT (gated): accept https://huggingface.co/google/gemma-3-12b-it and set `HF_TOKEN`.",
+        "- First-run downloads ~38GB (audio transformer + pipeline + Gemma 3 12B + SeedVC + BigVGAN + Whisper).",
+        "- Pass plain text → wrapped in `<speak voice=\"...\" gender=\"...\">` automatically.",
+        "Or write the full `<speak>...<action>...</action>...</speak>` XML yourself for emotion control."
+      ],
+      "params": [
+        {
+          "name": "SCENEMA_DEFAULT_VOICE",
+          "default": "default",
+          "type": "select",
+          "options": [
+            "default",
+            "warm_male",
+            "smoky_female",
+            "child_girl",
+            "elderly_male",
+            "elderly_female",
+            "clone"
+          ],
+          "flag": "--scenema-default-voice"
+        },
+        {
+          "name": "SCENEMA_DEFAULT_GENDER",
+          "default": "male",
+          "type": "select",
+          "options": [
+            "male",
+            "female"
+          ],
+          "flag": "--scenema-default-gender"
+        },
+        {
+          "name": "SCENEMA_PROMPT_WAV",
+          "default": "",
+          "type": "string",
+          "flag": "--scenema-prompt-wav"
+        },
+        {
+          "name": "SCENEMA_GEMMA_QUANTIZE",
+          "default": "nf4",
+          "type": "select",
+          "options": [
+            "nf4",
+            ""
+          ],
+          "flag": "--scenema-gemma-quantize"
+        },
+        {
+          "name": "SCENEMA_SEED",
+          "default": -1,
+          "type": "integer",
+          "flag": "--scenema-seed"
+        },
+        {
+          "name": "SCENEMA_PACE",
+          "default": 1.5,
+          "type": "number",
+          "flag": "--scenema-pace"
+        },
+        {
+          "name": "SCENEMA_NO_VALIDATE",
+          "default": false,
+          "type": "boolean",
+          "true_flag": "--scenema-no-validate",
+          "false_flag": null
+        },
+        {
+          "name": "SCENEMA_MIN_MATCH_RATIO",
+          "default": 0.9,
+          "type": "number",
+          "flag": "--scenema-min-match-ratio"
+        },
+        {
+          "name": "SCENEMA_SKIP_VC",
+          "default": false,
+          "type": "boolean",
+          "true_flag": "--scenema-skip-vc",
+          "false_flag": null
+        },
+        {
+          "name": "SCENEMA_VC_STEPS",
+          "default": 25,
+          "type": "integer",
+          "flag": "--scenema-vc-steps"
+        },
+        {
+          "name": "SCENEMA_VC_CFG_RATE",
+          "default": 0.5,
+          "type": "number",
+          "flag": "--scenema-vc-cfg-rate"
+        },
+        {
+          "name": "SCENEMA_BACKGROUND_SFX",
+          "default": false,
+          "type": "boolean",
+          "true_flag": "--scenema-background-sfx",
+          "false_flag": null
+        }
+      ]
+    },
+    {
+      "id": "Spark-TTS",
+      "title": "Spark-TTS (GPU recommended, EN/ZH only, voice cloning + gender/pitch/speed control)",
+      "status": "Works (GPU recommended)",
+      "languages": "English / Chinese (non-commercial weights)",
+      "notes": [
+        "- Code: Apache 2.0. Weights: CC BY-NC-SA 4.0 (non-commercial only) due to training data license."
+      ],
+      "params": [
+        {
+          "name": "SPARK_HF_MODEL",
+          "default": "SparkAudio/Spark-TTS-0.5B",
+          "type": "string",
+          "flag": "--spark-hf-model"
+        },
+        {
+          "name": "SPARK_DEFAULT_VOICE",
+          "default": "default",
+          "type": "select",
+          "options": [
+            "default",
+            "clone"
+          ],
+          "flag": "--spark-default-voice"
+        },
+        {
+          "name": "SPARK_DEFAULT_GENDER",
+          "default": "female",
+          "type": "select",
+          "options": [
+            "male",
+            "female"
+          ],
+          "flag": "--spark-default-gender"
+        },
+        {
+          "name": "SPARK_DEFAULT_PITCH",
+          "default": "moderate",
+          "type": "select",
+          "options": [
+            "very_low",
+            "low",
+            "moderate",
+            "high",
+            "very_high"
+          ],
+          "flag": "--spark-default-pitch"
+        },
+        {
+          "name": "SPARK_DEFAULT_SPEED",
+          "default": "moderate",
+          "type": "select",
+          "options": [
+            "very_low",
+            "low",
+            "moderate",
+            "high",
+            "very_high"
+          ],
+          "flag": "--spark-default-speed"
+        },
+        {
+          "name": "SPARK_PROMPT_WAV",
+          "default": "",
+          "type": "string",
+          "flag": "--spark-prompt-wav"
+        },
+        {
+          "name": "SPARK_PROMPT_TEXT",
+          "default": "",
+          "type": "string",
+          "flag": "--spark-prompt-text"
+        }
+      ]
+    },
+    {
+      "id": "Style-Bert-VITS2",
+      "title": "Style-Bert-VITS2",
+      "status": "Not working",
+      "languages": "-",
+      "notes": [],
+      "params": [
+        {
+          "name": "STYLE_BERT_MODEL_REPO",
+          "default": "litagin/style_bert_vits2_jvnv",
+          "type": "string",
+          "flag": "--style-bert-model-repo"
+        },
+        {
+          "name": "STYLE_BERT_MODEL_SUBDIR",
+          "default": "jvnv-F2-jp",
+          "type": "string",
+          "flag": "--style-bert-model-subdir"
+        },
+        {
+          "name": "STYLE_BERT_MODEL_NAME",
+          "default": "jvnv-F2-jp",
+          "type": "string",
+          "flag": "--style-bert-model-name"
+        },
+        {
+          "name": "STYLE_BERT_SPEAKER_ID",
+          "default": 0,
+          "type": "integer",
+          "flag": "--style-bert-speaker-id"
+        },
+        {
+          "name": "STYLE_BERT_STYLE",
+          "default": "Neutral",
+          "type": "string",
+          "flag": "--style-bert-style"
+        }
+      ]
+    },
+    {
+      "id": "StyleTTS2",
+      "title": "StyleTTS 2 (GPU recommended, English-only, MIT code / Custom weights)",
+      "status": "Working on Colab (GPU recommended, Python 3.11 venv)",
+      "languages": "English",
+      "notes": [
+        "- Uses sidharthrajaram/StyleTTS2 (MIT, gruut-based — GPL-free).",
+        "- Weights from yl4579/StyleTTS2-LibriTTS require disclosing that audio is synthesized."
+      ],
+      "params": [
+        {
+          "name": "STYLETTS2_DEFAULT_VOICE",
+          "default": "default",
+          "type": "select",
+          "options": [
+            "default",
+            "clone"
+          ],
+          "flag": "--styletts2-default-voice"
+        },
+        {
+          "name": "STYLETTS2_PROMPT_WAV",
+          "default": "",
+          "type": "string",
+          "flag": "--styletts2-prompt-wav"
+        },
+        {
+          "name": "STYLETTS2_ALPHA",
+          "default": 0.3,
+          "type": "number",
+          "flag": "--styletts2-alpha"
+        },
+        {
+          "name": "STYLETTS2_BETA",
+          "default": 0.7,
+          "type": "number",
+          "flag": "--styletts2-beta"
+        },
+        {
+          "name": "STYLETTS2_DIFFUSION_STEPS",
+          "default": 5,
+          "type": "integer",
+          "flag": "--styletts2-diffusion-steps"
+        },
+        {
+          "name": "STYLETTS2_EMBEDDING_SCALE",
+          "default": 1.0,
+          "type": "number",
+          "flag": "--styletts2-embedding-scale"
+        }
+      ]
+    },
+    {
+      "id": "Supertonic",
+      "title": "Supertonic (CPU OK, 31 languages incl JP/KO/EN, ONNX)",
+      "status": "Works (CPU OK, ONNX, ~99M params)",
+      "languages": "English / Japanese / Korean and 31 languages",
+      "notes": [
+        "- Code: MIT. Weights: OpenRAIL-M (commercial OK, use-based ethical restrictions).",
+        "- Voice presets only (no voice cloning). Language is auto-detected for CJK text."
+      ],
+      "params": [
+        {
+          "name": "SUPERTONIC_MODEL",
+          "default": "supertonic-3",
+          "type": "select",
+          "options": [
+            "supertonic-3",
+            "supertonic-2",
+            "supertonic"
+          ],
+          "flag": "--supertonic-model"
+        },
+        {
+          "name": "SUPERTONIC_DEFAULT_VOICE",
+          "default": "M1",
+          "type": "select",
+          "options": [
+            "M1",
+            "M2",
+            "M3",
+            "M4",
+            "M5",
+            "F1",
+            "F2",
+            "F3",
+            "F4",
+            "F5"
+          ],
+          "flag": "--supertonic-default-voice"
+        },
+        {
+          "name": "SUPERTONIC_DEFAULT_LANG",
+          "default": "en",
+          "type": "select",
+          "options": [
+            "en",
+            "ja",
+            "ko",
+            "ar",
+            "bg",
+            "cs",
+            "da",
+            "de",
+            "el",
+            "es",
+            "et",
+            "fi",
+            "fr",
+            "hi",
+            "hr",
+            "hu",
+            "id",
+            "it",
+            "lt",
+            "lv",
+            "nl",
+            "pl",
+            "pt",
+            "ro",
+            "ru",
+            "sk",
+            "sl",
+            "sv",
+            "tr",
+            "uk",
+            "vi",
+            "na"
+          ],
+          "flag": "--supertonic-default-lang"
+        },
+        {
+          "name": "SUPERTONIC_TOTAL_STEPS",
+          "default": 5,
+          "type": "integer",
+          "flag": "--supertonic-total-steps"
+        }
+      ]
+    },
+    {
+      "id": "TinyTTS",
+      "title": "TinyTTS",
+      "status": "Works",
+      "languages": "English",
+      "notes": [],
+      "params": []
+    },
+    {
+      "id": "VibeVoice",
+      "title": "VibeVoice (GPU required, English/Chinese, long-form multi-speaker)",
+      "status": "Not working (upstream API churn)",
+      "languages": "English / Chinese (long-form, up to 4 speakers)",
+      "notes": [
+        "- License: MIT, but Microsoft tags this as \"research purpose only\".",
+        "- Non-EN/ZH languages, voice impersonation, and disinformation use are prohibited."
+      ],
+      "params": [
+        {
+          "name": "VIBEVOICE_HF_MODEL",
+          "default": "microsoft/VibeVoice-1.5B",
+          "type": "string",
+          "flag": "--vibevoice-hf-model"
+        },
+        {
+          "name": "VIBEVOICE_DEFAULT_SPEAKER",
+          "default": "en-Alice_woman",
+          "type": "string",
+          "flag": "--vibevoice-default-speaker"
+        },
+        {
+          "name": "VIBEVOICE_PROMPT_WAV",
+          "default": "",
+          "type": "string",
+          "flag": "--vibevoice-prompt-wav"
+        },
+        {
+          "name": "VIBEVOICE_DEFAULT_VOICE",
+          "default": "default",
+          "type": "select",
+          "options": [
+            "default",
+            "clone"
+          ],
+          "flag": "--vibevoice-default-voice"
+        },
+        {
+          "name": "VIBEVOICE_DDPM_STEPS",
+          "default": 10,
+          "type": "integer",
+          "flag": "--vibevoice-ddpm-steps"
+        },
+        {
+          "name": "VIBEVOICE_CFG_SCALE",
+          "default": 1.3,
+          "type": "number",
+          "flag": "--vibevoice-cfg-scale"
+        }
+      ]
+    },
+    {
+      "id": "VoxCPM2",
+      "title": "VoxCPM2 (GPU required)",
+      "status": "Works (GPU required)",
+      "languages": "Japanese / English / Chinese and 30 languages",
+      "notes": [],
+      "params": [
+        {
+          "name": "VOXCPM_HF_MODEL",
+          "default": "openbmb/VoxCPM2",
+          "type": "string",
+          "flag": "--voxcpm-hf-model"
+        },
+        {
+          "name": "VOXCPM_CFG_VALUE",
+          "default": 2.0,
+          "type": "number",
+          "flag": "--voxcpm-cfg-value"
+        },
+        {
+          "name": "VOXCPM_INFERENCE_TIMESTEPS",
+          "default": 10,
+          "type": "integer",
+          "flag": "--voxcpm-inference-timesteps"
+        }
+      ]
+    },
+    {
+      "id": "Voxtral-TTS",
+      "title": "Voxtral-TTS",
+      "status": "Works (GPU required, VRAM 16GB+)",
+      "languages": "English / French / Spanish and 9 languages",
+      "notes": [],
+      "params": []
+    },
+    {
+      "id": "Zonos",
+      "title": "Zonos (GPU recommended, JP/EN/ZH/FR/DE, voice cloning, Apache 2.0)",
+      "status": "Works (GPU required, ~6GB VRAM)",
+      "languages": "Japanese / English / Chinese / French / German",
+      "notes": [],
+      "params": [
+        {
+          "name": "ZONOS_HF_MODEL",
+          "default": "Zyphra/Zonos-v0.1-transformer",
+          "type": "string",
+          "flag": "--zonos-hf-model"
+        },
+        {
+          "name": "ZONOS_LANGUAGE",
+          "default": "ja",
+          "type": "select",
+          "options": [
+            "en",
+            "ja",
+            "zh",
+            "fr",
+            "de"
+          ],
+          "flag": "--zonos-language"
+        },
+        {
+          "name": "ZONOS_PROMPT_WAV",
+          "default": "",
+          "type": "string",
+          "flag": "--zonos-prompt-wav"
+        },
+        {
+          "name": "ZONOS_DEFAULT_VOICE",
+          "default": "default",
+          "type": "select",
+          "options": [
+            "default",
+            "clone"
+          ],
+          "flag": "--zonos-default-voice"
+        }
+      ]
+    }
+  ]
+}

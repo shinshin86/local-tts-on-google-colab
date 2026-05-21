@@ -56,7 +56,25 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 
 ## 使い方
 
-### 最短手順
+### 最短手順 — WebUI コマンドジェネレーター
+
+`#@param` フォームを手で触りたくない場合は、GitHub Pages の
+**Colab セルジェネレーター**を使ってください:
+
+👉 **<https://shinshin86.github.io/local-tts-on-google-colab/>**
+
+エンジンを選択し、必要なオプションをフォームで設定（選んだエンジンに関係する
+項目だけが表示されます）し、**Copy cell** を押します。
+[新しい Colab ノートブック](https://colab.research.google.com/#create=true) を開いて
+貼り付け・実行するだけです。各エンジンの Colab 動作状況、対応言語、
+ライセンス上の注意点も画面に表示されるので、起動前に確認できます。
+
+WebUI は静的サイト (`docs/`) で、
+[multi_tts_openai_colab.py](multi_tts_openai_colab.py) から
+`tools/sync_webui.py` 経由で生成されます。生成されるセルは下の正準セルと
+同じ `colab/bootstrap.py` を呼び出します。
+
+### 手動セル（正準フォーム）
 
 Colab では、以下のコードを 1 つのコードセルにそのまま貼り付けて実行するのを推奨します。
 

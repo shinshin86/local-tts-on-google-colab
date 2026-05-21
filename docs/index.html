@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Local TTS on Google Colab — Cell Generator</title>
+  <meta name="description" content="Generate a ready-to-paste Google Colab cell for the local-tts-on-google-colab project. Pick a TTS engine and its options through a friendly UI." />
+  <link rel="stylesheet" href="./style.css" />
+  <script src="https://unpkg.com/vue@3.5.13/dist/vue.global.prod.js"></script>
+</head>
+<body>
+  <div id="app" v-cloak>
+    <header class="page-header">
+      <h1>Local TTS on Google Colab</h1>
+      <p class="tagline">
+        Pick a TTS engine, configure it visually, and copy a ready-to-paste Colab cell.
+        The cell exposes an OpenAI-compatible <code>/v1/audio/speech</code> endpoint over a public cloudflared URL.
+      </p>
+      <p class="links">
+        <a :href="repoUrl" target="_blank" rel="noopener">GitHub repository</a>
+        <span class="dot">·</span>
+        <a href="https://colab.research.google.com/#create=true" target="_blank" rel="noopener">Open blank Colab notebook</a>
+      </p>
+    </header>
+
+    <main v-if="data">
+      <section class="card">
+        <h2>1. Engine</h2>
+        <div class="field">
+          <label>TTS engine</label>
+          <select v-model="state.engineId">
+            <option v-for="e in data.engines" :key="e.id" :value="e.id">
+              {{ engineLabel(e) }}
+            </option>
+          </select>
+          <p class="hint">{{ data.engines.length }} engines available.</p>
+        </div>
+
+        <div v-if="selectedEngine" class="engine-meta">
+          <div class="badges">
+            <span :class="['badge', statusClass(selectedEngine.status)]">{{ statusShort(selectedEngine.status) }}</span>
+            <span class="badge badge-info" v-if="selectedEngine.languages">Languages: {{ selectedEngine.languages }}</span>
+          </div>
+          <details v-if="selectedEngine.status" class="callout">
+            <summary>Full Colab status</summary>
+            <p>{{ selectedEngine.status }}</p>
+          </details>
+          <details v-if="selectedEngine.notes.length" class="callout" open>
+            <summary>Engine notes &amp; license</summary>
+            <ul>
+              <li v-for="(note, idx) in selectedEngine.notes" :key="idx">{{ note.replace(/^- /, '') }}</li>
+            </ul>
+          </details>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>2. Repository</h2>
+        <div class="grid">
+          <div class="field" v-for="p in data.repo_settings" :key="p.name">
+            <label>{{ niceLabel(p.name) }}</label>
+            <input type="text" v-model="state.values[p.name]" :placeholder="String(p.default)" />
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>3. Common settings</h2>
+        <div class="field">
+          <label>
+            <input type="checkbox" v-model="state.values[data.expose_setting.name]" />
+            Expose a public cloudflared URL (recommended)
+          </label>
+          <p class="hint">When off, the server is only reachable from inside the Colab runtime.</p>
+        </div>
+        <div class="grid">
+          <div class="field" v-for="p in data.common_cli" :key="p.name">
+            <label>{{ niceLabel(p.name) }}</label>
+            <input
+              v-if="p.type === 'number'"
+              type="number"
+              step="any"
+              v-model.number="state.values[p.name]"
+            />
+            <input
+              v-else-if="p.type === 'integer'"
+              type="number"
+              step="1"
+              v-model.number="state.values[p.name]"
+            />
+            <input
+              v-else
+              type="text"
+              v-model="state.values[p.name]"
+              :placeholder="String(p.default)"
+            />
+          </div>
+        </div>
+      </section>
+
+      <section class="card" v-if="selectedEngine">
+        <h2>4. {{ selectedEngine.id }} options</h2>
+        <p v-if="!selectedEngine.params.length" class="hint">
+          This engine has no extra options to configure here — the cell will use the defaults baked into
+          <code>colab/bootstrap.py</code>.
+        </p>
+        <div v-else class="grid">
+          <div class="field" v-for="p in selectedEngine.params" :key="p.name">
+            <label>{{ niceLabel(p.name) }}</label>
+
+            <select v-if="p.type === 'select'" v-model="state.values[p.name]">
+              <option v-for="opt in p.options" :key="opt" :value="opt">{{ opt }}</option>
+            </select>
+
+            <label v-else-if="p.type === 'boolean'" class="inline-check">
+              <input type="checkbox" v-model="state.values[p.name]" />
+              <span>Enable <code>{{ p.true_flag }}</code></span>
+            </label>
+
+            <input
+              v-else-if="p.type === 'number'"
+              type="number"
+              step="any"
+              v-model.number="state.values[p.name]"
+            />
+
+            <input
+              v-else-if="p.type === 'integer'"
+              type="number"
+              step="1"
+              v-model.number="state.values[p.name]"
+            />
+
+            <input
+              v-else
+              type="text"
+              v-model="state.values[p.name]"
+              :placeholder="String(p.default)"
+            />
+          </div>
+        </div>
+      </section>
+
+      <section class="card sticky">
+        <h2>5. Copy &amp; paste into Colab</h2>
+        <div class="actions">
+          <button @click="copyCell" :class="['btn', 'btn-primary', copyState]">
+            <span v-if="copyState === 'copied'">Copied ✓</span>
+            <span v-else>Copy cell</span>
+          </button>
+          <a class="btn" href="https://colab.research.google.com/#create=true" target="_blank" rel="noopener">
+            Open blank Colab
+          </a>
+          <button @click="downloadCell" class="btn">Download .py</button>
+          <button @click="resetDefaults" class="btn btn-ghost">Reset to defaults</button>
+        </div>
+        <p class="hint">
+          Click <strong>Copy cell</strong>, open a fresh Colab notebook, paste into a code cell, and run it.
+          The first run clones the repo and installs the engine; subsequent runs reuse the cached install.
+        </p>
+        <details class="preview">
+          <summary>Preview generated cell ({{ generatedLines }} lines)</summary>
+          <pre><code>{{ generatedCell }}</code></pre>
+        </details>
+      </section>
+    </main>
+
+    <p v-else class="loading">Loading engines.json…</p>
+
+    <footer class="page-footer">
+      <p>
+        This WebUI is generated from
+        <a :href="repoUrl + '/blob/main/multi_tts_openai_colab.py'" target="_blank" rel="noopener">multi_tts_openai_colab.py</a>
+        via <code>tools/sync_webui.py</code>.
+        See <a :href="repoUrl" target="_blank" rel="noopener">the repo</a> for license details per engine.
+      </p>
+    </footer>
+  </div>
+
+  <script src="./app.js"></script>
+</body>
+</html>

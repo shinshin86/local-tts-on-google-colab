@@ -56,7 +56,25 @@ Supported engines:
 
 ## Usage
 
-### Quickest path
+### Quickest path — WebUI cell generator
+
+If you would rather not edit the `#@param` form fields by hand, use the
+**Colab cell generator** on GitHub Pages:
+
+👉 **<https://shinshin86.github.io/local-tts-on-google-colab/>**
+
+Pick an engine, configure the options through a friendly form (only the
+fields relevant to the selected engine are shown), and click **Copy cell**.
+Then open a fresh [Colab notebook](https://colab.research.google.com/#create=true),
+paste, and run. The page also surfaces each engine's Colab status, languages,
+and license caveats so you know what to expect before you launch.
+
+The WebUI is a static site (`docs/`) generated from
+[multi_tts_openai_colab.py](multi_tts_openai_colab.py) via
+`tools/sync_webui.py` — the cell it emits invokes the same `colab/bootstrap.py`
+as the canonical cell below.
+
+### Manual cell (canonical form)
 
 On Colab, it is recommended to paste the following code into a single cell and run it.
 
