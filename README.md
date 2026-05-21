@@ -12,6 +12,7 @@ Supported engines:
 |---|---|---|
 | Kokoro | Works | Japanese / English / Chinese and more |
 | Irodori-TTS | Works | Japanese |
+| Irodori-TTS-Lite | Works (GPU required, ~1GB VRAM, int4-quantized) | Japanese |
 | Piper | Works | English (default) / multilingual |
 | Piper-Plus | Works | Japanese / English / Chinese and 6 languages |
 | Qwen3-TTS | Works (GPU required) | Japanese / English / Chinese and 10 languages |
@@ -79,7 +80,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Irodori-TTS", "Kokoro", "Kyutai-TTS", "MaskGCT", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
+ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Irodori-TTS", "Irodori-TTS-Lite", "Kokoro", "Kyutai-TTS", "MaskGCT", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -104,6 +105,16 @@ IRODORI_HF_CHECKPOINT = "Aratako/Irodori-TTS-500M-v3"  #@param ["Aratako/Irodori
 IRODORI_CODEC_REPO = "Aratako/Semantic-DACVAE-Japanese-32dim"  #@param {type:"string"}
 IRODORI_MODEL_PRECISION = "fp32"  #@param ["fp32", "bf16", "fp16"]
 IRODORI_CODEC_PRECISION = "fp32"  #@param ["fp32", "bf16", "fp16"]
+
+#@markdown ---
+#@markdown Irodori-TTS-Lite (int4-quantized Irodori-TTS, ~1GB VRAM, MIT)
+#@markdown - Default checkpoint is voice-design int4 (speaker baked in, seconds derived from text via pyopenjtalk).
+#@markdown - For the v3-derived int4 with built-in Duration Predictor, switch to
+#@markdown   "kizuna-intelligence/Irodori-TTS-500M-v3-int4" AND set IRODORI_LITE_CHECKPOINT_FILE="model.safetensors".
+IRODORI_LITE_HF_CHECKPOINT = "kizuna-intelligence/Irodori-TTS-Lite-int4"  #@param ["kizuna-intelligence/Irodori-TTS-Lite-int4", "kizuna-intelligence/Irodori-TTS-500M-v3-int4"]
+IRODORI_LITE_CHECKPOINT_FILE = "dit_int4.safetensors"  #@param ["dit_int4.safetensors", "model.safetensors"]
+IRODORI_LITE_CODEC_REPO = "Aratako/Semantic-DACVAE-Japanese-32dim"  #@param {type:"string"}
+IRODORI_LITE_CODEC_INT4 = False  #@param {type:"boolean"}
 
 #@markdown ---
 #@markdown Kokoro
@@ -437,6 +448,12 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         IRODORI_MODEL_PRECISION,
         "--irodori-codec-precision",
         IRODORI_CODEC_PRECISION,
+        "--irodori-lite-hf-checkpoint",
+        IRODORI_LITE_HF_CHECKPOINT,
+        "--irodori-lite-checkpoint-file",
+        IRODORI_LITE_CHECKPOINT_FILE,
+        "--irodori-lite-codec-repo",
+        IRODORI_LITE_CODEC_REPO,
         "--kokoro-default-voice",
         KOKORO_DEFAULT_VOICE,
         "--kokoro-default-lang-code",
@@ -708,6 +725,8 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         "--scenema-vc-cfg-rate",
         str(SCENEMA_VC_CFG_RATE),
     ]
+    if IRODORI_LITE_CODEC_INT4:
+        cmd.append("--irodori-lite-codec-int4")
     if SARASHINA_USE_VLLM:
         cmd.append("--sarashina-use-vllm")
     if BARK_USE_SMALL_MODELS:
@@ -796,6 +815,19 @@ V3 adds two upstream changes that this wrapper handles automatically:
 
 - **Duration Predictor**: with V3 the wrapper passes `seconds=None`, letting the model estimate output length from the input text (V2 / V1 stay on the previous 30-second fixed slot).
 - **Integrated SilentCipher watermark**: V3 weights ship with [SilentCipher](https://github.com/sony/silentcipher) and upstream initializes it unconditionally inside `InferenceRuntime` — there is no public kill-switch and `RuntimeKey` no longer accepts an `enable_watermark` flag. Generated audio is watermarked whenever the SilentCipher weights are importable. **Do not strip the watermark**; it is part of the model release.
+
+### Irodori-TTS-Lite
+
+An int4-quantized inference runtime for Irodori-TTS using [kizuna-intelligence/Irodori-TTS-Lite](https://github.com/kizuna-intelligence/Irodori-TTS-Lite). The runtime monkey-patches `irodori_tts.inference_runtime.InferenceRuntime.from_key` so the standard Irodori-TTS pipeline can load 4-bit safetensors with a Triton `FusedInt4Linear` kernel. End-to-end peak VRAM is ~1 GB (vs. ~2 GB for the fp32 path) at essentially unchanged audio quality.
+
+Two checkpoint repositories are available:
+
+- **`kizuna-intelligence/Irodori-TTS-Lite-int4`** (default): voice-design int4 (speaker baked in, no Duration Predictor). The wrapper derives `seconds` from phoneme count via `pyopenjtalk`.
+- **`kizuna-intelligence/Irodori-TTS-500M-v3-int4`** (v3 int4): includes the Duration Predictor. Switch by setting `IRODORI_LITE_HF_CHECKPOINT=kizuna-intelligence/Irodori-TTS-500M-v3-int4` **and** `IRODORI_LITE_CHECKPOINT_FILE=model.safetensors`.
+
+Voice switching is not exposed (same as Irodori-TTS — the speaker is baked into the checkpoint). The DACVAE codec defaults to `Aratako/Semantic-DACVAE-Japanese-32dim` (fp16). Set `IRODORI_LITE_CODEC_INT4=1` to additionally int4-quantize the codec, which trades ~150 ms of decode latency for ~500 MB less peak VRAM.
+
+GPU is required: the int4 path relies on the Triton kernel, so this engine must run on Linux + CUDA (i.e. Colab GPU runtime).
 
 ### Piper
 
@@ -1227,6 +1259,7 @@ The license for each engine is as follows. When using them, always check each pr
 |---|---|---|---|---|
 | Kokoro | Apache 2.0 | Apache 2.0 | OK | |
 | Irodori-TTS | MIT | MIT (v1 / v2 / v3) | OK | Ethical policy prohibits impersonation / deepfake generation. V3 ships with SilentCipher watermarking — do not strip |
+| Irodori-TTS-Lite | MIT | MIT (`kizuna-intelligence/Irodori-TTS-Lite-int4`, `kizuna-intelligence/Irodori-TTS-500M-v3-int4`) | OK | int4-quantized runtime over Irodori-TTS. Triton kernel requires Linux + CUDA. `fused_int4_linear.py` vendored from OneCompression (Fujitsu Ltd., MIT) |
 | Piper | GPL-3.0 | MIT | Caution | The default voice `en_US-lessac-medium` is trained on the Blizzard 2013 dataset (Lessac Technologies), which is research-only and prohibits commercial use |
 | Piper-Plus | MIT | MIT | OK | |
 | Qwen3-TTS | Apache 2.0 | Apache 2.0 | OK | |
@@ -1282,6 +1315,8 @@ This repository itself is intended for short-term operational verification and t
   https://developers.openai.com/api/reference/resources/audio/subresources/speech/methods/create
 - Irodori-TTS
   https://github.com/Aratako/Irodori-TTS
+- Irodori-TTS-Lite
+  https://github.com/kizuna-intelligence/Irodori-TTS-Lite
 - Kokoro
   https://github.com/hexgrad/kokoro
 - MeloTTS

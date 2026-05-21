@@ -448,6 +448,19 @@ def print_engine_voice_hints(settings: Settings):
         print("  id, it, lt, lv, nl, pl, pt, ro, ru, sk, sl, sv, tr, uk, vi, na")
         print("注意: GPU 不要（ONNX Runtime で CPU 動作）。Voice cloning は未対応（preset のみ）。")
         print("ライセンス: コードは MIT、重みは OpenRAIL-M（商用 OK、ディープフェイク等の use-based 制限あり）。")
+    elif settings.engine == "Irodori-TTS-Lite":
+        print("Irodori-TTS-Lite は Irodori-TTS の int4 量子化ランタイムです（~1GB VRAM、音質ほぼ無劣化、MIT）。")
+        print(f"モデル: {settings.irodori_lite_hf_checkpoint} / file: {settings.irodori_lite_checkpoint_file}")
+        print(f"コーデック: {settings.irodori_lite_codec_repo}")
+        print(f"codec int4: {'有効（VRAM さらに節約）' if settings.irodori_lite_codec_int4 else '無効（fp16 codec）'}")
+        print("voice パラメータは現在 'default'（voice-design に焼き込まれた話者）のみ対応です。")
+        if "v3" in settings.irodori_lite_hf_checkpoint.lower():
+            print("v3 int4: Duration Predictor を使用するため seconds は自動推定されます。")
+        else:
+            print("voice-design int4: Duration Predictor を持たないため pyopenjtalk の音素数から seconds を導出します。")
+        print("注意: GPU 推奨（VRAM ~1GB）。Triton カーネル使用のため Linux + CUDA 必須。")
+        print("ライセンス: コード（runtime / patch）と重み（kizuna-intelligence/*-int4）はいずれも MIT。")
+        print("           ベースの Aratako/Irodori-TTS と DACVAE コーデックも MIT。")
     else:
         print("Irodori-TTS は現状 voice 切り替えを持たない想定です。")
 
