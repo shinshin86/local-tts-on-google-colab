@@ -55,6 +55,14 @@ class Settings:
     irodori_codec_repo: str = "Aratako/Semantic-DACVAE-Japanese-32dim"
     irodori_model_precision: str = "fp32"
     irodori_codec_precision: str = "fp32"
+    # Irodori-TTS-Lite: int4-quantized runtime that monkey-patches the upstream Irodori-TTS.
+    # Default: voice-design int4 (no Duration Predictor; seconds derived from text).
+    # Switch to "kizuna-intelligence/Irodori-TTS-500M-v3-int4" with checkpoint_file="model.safetensors"
+    # to use the v3 int4 (with Duration Predictor).
+    irodori_lite_hf_checkpoint: str = "kizuna-intelligence/Irodori-TTS-Lite-int4"
+    irodori_lite_checkpoint_file: str = "dit_int4.safetensors"
+    irodori_lite_codec_repo: str = "Aratako/Semantic-DACVAE-Japanese-32dim"
+    irodori_lite_codec_int4: bool = False
     kokoro_default_voice: str = "jf_alpha"
     kokoro_default_lang_code: str = "j"
     kyutai_hf_repo: str = "kyutai/tts-1.6b-en_fr"

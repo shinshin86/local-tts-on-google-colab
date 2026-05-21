@@ -12,6 +12,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 |---|---|---|
 | Kokoro | 動作OK | 日本語 / 英語 / 中国語 他 |
 | Irodori-TTS | 動作OK | 日本語 |
+| Irodori-TTS-Lite | 動作OK（GPU 必須、VRAM ~1GB、int4 量子化） | 日本語 |
 | Piper | 動作OK | 英語（デフォルト）/ 多言語 |
 | Piper-Plus | 動作OK | 日本語 / 英語 / 中国語 他 6言語 |
 | Qwen3-TTS | 動作OK (GPU必須) | 日本語 / 英語 / 中国語 他 10言語 |
@@ -79,7 +80,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Irodori-TTS", "Kokoro", "Kyutai-TTS", "MaskGCT", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
+ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Irodori-TTS", "Irodori-TTS-Lite", "Kokoro", "Kyutai-TTS", "MaskGCT", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -104,6 +105,16 @@ IRODORI_HF_CHECKPOINT = "Aratako/Irodori-TTS-500M-v3"  #@param ["Aratako/Irodori
 IRODORI_CODEC_REPO = "Aratako/Semantic-DACVAE-Japanese-32dim"  #@param {type:"string"}
 IRODORI_MODEL_PRECISION = "fp32"  #@param ["fp32", "bf16", "fp16"]
 IRODORI_CODEC_PRECISION = "fp32"  #@param ["fp32", "bf16", "fp16"]
+
+#@markdown ---
+#@markdown Irodori-TTS-Lite (int4-quantized Irodori-TTS, ~1GB VRAM, MIT)
+#@markdown - Default checkpoint is voice-design int4 (speaker baked in, seconds derived from text via pyopenjtalk).
+#@markdown - For the v3-derived int4 with built-in Duration Predictor, switch to
+#@markdown   "kizuna-intelligence/Irodori-TTS-500M-v3-int4" AND set IRODORI_LITE_CHECKPOINT_FILE="model.safetensors".
+IRODORI_LITE_HF_CHECKPOINT = "kizuna-intelligence/Irodori-TTS-Lite-int4"  #@param ["kizuna-intelligence/Irodori-TTS-Lite-int4", "kizuna-intelligence/Irodori-TTS-500M-v3-int4"]
+IRODORI_LITE_CHECKPOINT_FILE = "dit_int4.safetensors"  #@param ["dit_int4.safetensors", "model.safetensors"]
+IRODORI_LITE_CODEC_REPO = "Aratako/Semantic-DACVAE-Japanese-32dim"  #@param {type:"string"}
+IRODORI_LITE_CODEC_INT4 = False  #@param {type:"boolean"}
 
 #@markdown ---
 #@markdown Kokoro
@@ -437,6 +448,12 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         IRODORI_MODEL_PRECISION,
         "--irodori-codec-precision",
         IRODORI_CODEC_PRECISION,
+        "--irodori-lite-hf-checkpoint",
+        IRODORI_LITE_HF_CHECKPOINT,
+        "--irodori-lite-checkpoint-file",
+        IRODORI_LITE_CHECKPOINT_FILE,
+        "--irodori-lite-codec-repo",
+        IRODORI_LITE_CODEC_REPO,
         "--kokoro-default-voice",
         KOKORO_DEFAULT_VOICE,
         "--kokoro-default-lang-code",
@@ -708,6 +725,8 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         "--scenema-vc-cfg-rate",
         str(SCENEMA_VC_CFG_RATE),
     ]
+    if IRODORI_LITE_CODEC_INT4:
+        cmd.append("--irodori-lite-codec-int4")
     if SARASHINA_USE_VLLM:
         cmd.append("--sarashina-use-vllm")
     if BARK_USE_SMALL_MODELS:
@@ -796,6 +815,19 @@ V3 では上流の以下の変更にラッパー側で自動追従します:
 
 - **Duration Predictor**: V3 では `seconds=None` を渡し、入力テキストから出力長を自動推定させます（V2 / V1 は従来通り 30 秒固定）。
 - **SilentCipher ウォーターマーク統合**: V3 重みには [SilentCipher](https://github.com/sony/silentcipher) が同梱されており、上流の `InferenceRuntime` 内で常時初期化されます（`RuntimeKey` から `enable_watermark` 引数も削除されており、ユーザー側からの無効化スイッチは公開されていません）。SilentCipher の重みが読み込める限り、生成音声には常にウォーターマークが入ります。**ウォーターマークの除去は禁止**です（モデルリリースの一部として配布されています）。
+
+### Irodori-TTS-Lite
+
+[kizuna-intelligence/Irodori-TTS-Lite](https://github.com/kizuna-intelligence/Irodori-TTS-Lite) を使った Irodori-TTS の int4 量子化推論ランタイムです。`irodori_tts.inference_runtime.InferenceRuntime.from_key` をモンキーパッチして、4-bit safetensors を Triton の `FusedInt4Linear` カーネルで直接読み込めるようにします。エンドツーエンドのピーク VRAM は約 1 GB（fp32 パスの ~2 GB から削減）で、音質はほぼ劣化しません。
+
+利用可能な int4 チェックポイントは 2 種類:
+
+- **`kizuna-intelligence/Irodori-TTS-Lite-int4`**（デフォルト）: voice-design int4（話者は重みに焼き込み、Duration Predictor なし）。ラッパー側で `pyopenjtalk` の音素数から `seconds` を導出します。
+- **`kizuna-intelligence/Irodori-TTS-500M-v3-int4`**: v3 ベースの int4（Duration Predictor 付き）。利用するには `IRODORI_LITE_HF_CHECKPOINT=kizuna-intelligence/Irodori-TTS-500M-v3-int4` **かつ** `IRODORI_LITE_CHECKPOINT_FILE=model.safetensors` を指定してください。
+
+voice 切り替えは未対応（話者は重みに焼き込まれているため、Irodori-TTS 本体と同じ挙動）。DACVAE コーデックは `Aratako/Semantic-DACVAE-Japanese-32dim`（fp16）をデフォルトで使用します。`IRODORI_LITE_CODEC_INT4=1` を指定するとコーデックも int4 化され、デコード遅延が約 150 ms 増える代わりにピーク VRAM が約 500 MB 削減されます。
+
+GPU 必須: int4 パスは Triton カーネルを使用するため、Linux + CUDA（= Colab GPU ランタイム）が必要です。
 
 ### Piper
 
@@ -1227,6 +1259,7 @@ Scenema AI による zero-shot な表現力豊か / 演技指向 TTS です（[S
 |---|---|---|---|---|
 | Kokoro | Apache 2.0 | Apache 2.0 | OK | |
 | Irodori-TTS | MIT | MIT (v1 / v2 / v3) | OK | なりすまし・ディープフェイク生成を禁止する倫理規定あり。V3 は SilentCipher ウォーターマーク同梱（除去禁止） |
+| Irodori-TTS-Lite | MIT | MIT (`kizuna-intelligence/Irodori-TTS-Lite-int4`, `kizuna-intelligence/Irodori-TTS-500M-v3-int4`) | OK | Irodori-TTS 用の int4 量子化ランタイム。Triton カーネル使用のため Linux + CUDA 必須。`fused_int4_linear.py` は OneCompression（Fujitsu Ltd., MIT）からベンダリング |
 | Piper | GPL-3.0 | MIT | 要注意 | デフォルト音声 `en_US-lessac-medium` の学習データ（Blizzard 2013）は研究目的限定・商用利用不可 |
 | Piper-Plus | MIT | MIT | OK | |
 | Qwen3-TTS | Apache 2.0 | Apache 2.0 | OK | |
@@ -1282,6 +1315,8 @@ Scenema AI による zero-shot な表現力豊か / 演技指向 TTS です（[S
   https://developers.openai.com/api/reference/resources/audio/subresources/speech/methods/create
 - Irodori-TTS
   https://github.com/Aratako/Irodori-TTS
+- Irodori-TTS-Lite
+  https://github.com/kizuna-intelligence/Irodori-TTS-Lite
 - Kokoro
   https://github.com/hexgrad/kokoro
 - MeloTTS

@@ -10,6 +10,7 @@ from .fish_speech import install as install_fish_speech
 from .gpt_sovits import install as install_gpt_sovits
 from .higgs_audio import install as install_higgs_audio
 from .irodori import install as install_irodori
+from .irodori_lite import install as install_irodori_lite
 from .qwen3_tts import install as install_qwen3_tts
 from .kokoro import install as install_kokoro
 from .kyutai_tts import install as install_kyutai_tts
@@ -49,6 +50,7 @@ INSTALLERS = {
     "GPT-SoVITS": install_gpt_sovits,
     "Higgs-Audio-v2": install_higgs_audio,
     "Irodori-TTS": install_irodori,
+    "Irodori-TTS-Lite": install_irodori_lite,
     "Kokoro": install_kokoro,
     "Kyutai-TTS": install_kyutai_tts,
     "MaskGCT": install_maskgct,

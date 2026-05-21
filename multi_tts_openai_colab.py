@@ -11,7 +11,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Irodori-TTS", "Kokoro", "Kyutai-TTS", "MaskGCT", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
+ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Irodori-TTS", "Irodori-TTS-Lite", "Kokoro", "Kyutai-TTS", "MaskGCT", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -36,6 +36,16 @@ IRODORI_HF_CHECKPOINT = "Aratako/Irodori-TTS-500M-v3"  #@param ["Aratako/Irodori
 IRODORI_CODEC_REPO = "Aratako/Semantic-DACVAE-Japanese-32dim"  #@param {type:"string"}
 IRODORI_MODEL_PRECISION = "fp32"  #@param ["fp32", "bf16", "fp16"]
 IRODORI_CODEC_PRECISION = "fp32"  #@param ["fp32", "bf16", "fp16"]
+
+#@markdown ---
+#@markdown Irodori-TTS-Lite (int4-quantized Irodori-TTS, ~1GB VRAM, MIT)
+#@markdown - Default checkpoint is voice-design int4 (speaker baked in, seconds derived from text via pyopenjtalk).
+#@markdown - For the v3-derived int4 with built-in Duration Predictor, switch to
+#@markdown   "kizuna-intelligence/Irodori-TTS-500M-v3-int4" AND set IRODORI_LITE_CHECKPOINT_FILE="model.safetensors".
+IRODORI_LITE_HF_CHECKPOINT = "kizuna-intelligence/Irodori-TTS-Lite-int4"  #@param ["kizuna-intelligence/Irodori-TTS-Lite-int4", "kizuna-intelligence/Irodori-TTS-500M-v3-int4"]
+IRODORI_LITE_CHECKPOINT_FILE = "dit_int4.safetensors"  #@param ["dit_int4.safetensors", "model.safetensors"]
+IRODORI_LITE_CODEC_REPO = "Aratako/Semantic-DACVAE-Japanese-32dim"  #@param {type:"string"}
+IRODORI_LITE_CODEC_INT4 = False  #@param {type:"boolean"}
 
 #@markdown ---
 #@markdown Kokoro
@@ -369,6 +379,12 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         IRODORI_MODEL_PRECISION,
         "--irodori-codec-precision",
         IRODORI_CODEC_PRECISION,
+        "--irodori-lite-hf-checkpoint",
+        IRODORI_LITE_HF_CHECKPOINT,
+        "--irodori-lite-checkpoint-file",
+        IRODORI_LITE_CHECKPOINT_FILE,
+        "--irodori-lite-codec-repo",
+        IRODORI_LITE_CODEC_REPO,
         "--kokoro-default-voice",
         KOKORO_DEFAULT_VOICE,
         "--kokoro-default-lang-code",
@@ -640,6 +656,8 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         "--scenema-vc-cfg-rate",
         str(SCENEMA_VC_CFG_RATE),
     ]
+    if IRODORI_LITE_CODEC_INT4:
+        cmd.append("--irodori-lite-codec-int4")
     if SARASHINA_USE_VLLM:
         cmd.append("--sarashina-use-vllm")
     if BARK_USE_SMALL_MODELS:

@@ -34,6 +34,14 @@ def parse_args():
     parser.add_argument("--irodori-codec-repo", default="Aratako/Semantic-DACVAE-Japanese-32dim")
     parser.add_argument("--irodori-model-precision", default="fp32")
     parser.add_argument("--irodori-codec-precision", default="fp32")
+    parser.add_argument(
+        "--irodori-lite-hf-checkpoint", default="kizuna-intelligence/Irodori-TTS-Lite-int4"
+    )
+    parser.add_argument("--irodori-lite-checkpoint-file", default="dit_int4.safetensors")
+    parser.add_argument(
+        "--irodori-lite-codec-repo", default="Aratako/Semantic-DACVAE-Japanese-32dim"
+    )
+    parser.add_argument("--irodori-lite-codec-int4", action="store_true")
     parser.add_argument("--kokoro-default-voice", default="jf_alpha")
     parser.add_argument("--kokoro-default-lang-code", default="j")
     parser.add_argument("--kyutai-hf-repo", default="kyutai/tts-1.6b-en_fr")
@@ -203,6 +211,10 @@ def main():
         irodori_codec_repo=args.irodori_codec_repo,
         irodori_model_precision=args.irodori_model_precision,
         irodori_codec_precision=args.irodori_codec_precision,
+        irodori_lite_hf_checkpoint=args.irodori_lite_hf_checkpoint,
+        irodori_lite_checkpoint_file=args.irodori_lite_checkpoint_file,
+        irodori_lite_codec_repo=args.irodori_lite_codec_repo,
+        irodori_lite_codec_int4=args.irodori_lite_codec_int4,
         kokoro_default_voice=args.kokoro_default_voice,
         kokoro_default_lang_code=args.kokoro_default_lang_code,
         kyutai_hf_repo=args.kyutai_hf_repo,
