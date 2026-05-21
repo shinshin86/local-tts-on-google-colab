@@ -238,7 +238,8 @@
       "languages": "Japanese / English / Chinese / Korean / German and 9 languages",
       "description": "A multilingual zero-shot voice cloning TTS using [FunAudioLLM/CosyVoice](https://github.com/FunAudioLLM/CosyVoice). The 0.5B-parameter v2 checkpoint (`FunAudioLLM/CosyVoice2-0.5B`) supports 9 common languages — **Japanese**, English, Chinese, Korean, German, Spanish, French, Italian, Russian — plus 18+ Chinese dialects, with cross-lingual zero-shot cloning. The wrapper forces a **Python 3.10 venv** (`uv venv --python 3.10`) because upstream pins (`torch==2.3.1`, `openai-whisper==20231117`, `onnxruntime-gpu==1.18.0`, etc.) do not resolve under Colab's default Python 3.12. The repo is cloned with `--recursive` to pick up the `Matcha-TTS` submodule. A GPU is recommended (VRAM ~4GB).",
       "notes": [
-        "- Forces a Python 3.10 venv because upstream pins (torch 2.3.1, openai-whisper 20231117, etc.) do not resolve under Python 3.12."
+        "- Forces a Python 3.10 venv because upstream pins (torch 2.3.1, openai-whisper 20231117, etc.) do not resolve under Python 3.12.",
+        "- License: Apache 2.0 for both code ([FunAudioLLM/CosyVoice](https://github.com/FunAudioLLM/CosyVoice)) and weights ([FunAudioLLM/CosyVoice2-0.5B](https://huggingface.co/FunAudioLLM/CosyVoice2-0.5B)). Commercial use OK. The model card adds a non-binding academic-purpose / takedown request."
       ],
       "prefix": "COSYVOICE",
       "params": [
@@ -279,7 +280,8 @@
       "languages": "English (Llama-3.2-1B base + Mimi codec)",
       "description": "A conversational speech model from Sesame using [SesameAILabs/csm](https://github.com/SesameAILabs/csm). The architecture is a Llama-3.2-1B backbone plus an audio decoder that produces Mimi codec audio (the same codec lineage as Kyutai-TTS). EN only.",
       "notes": [
-        "- **HF gated**: accept terms for `sesame/csm-1b` AND `meta-llama/Llama-3.2-1B`, then set `HF_TOKEN`."
+        "- **HF gated**: accept terms for `sesame/csm-1b` AND `meta-llama/Llama-3.2-1B`, then set `HF_TOKEN`.",
+        "- License: CSM weights ([sesame/csm-1b](https://huggingface.co/sesame/csm-1b)) and code ([SesameAILabs/csm](https://github.com/SesameAILabs/csm)) are Apache 2.0, but the **effective stack is governed by the Llama 3.2 Community License** because of the meta-llama/Llama-3.2-1B backbone. Commercial use is OK below ~700M MAU and requires \"Built with Llama\" attribution + Meta's Acceptable Use Policy compliance."
       ],
       "prefix": "CSM",
       "params": [
@@ -532,7 +534,8 @@
       "languages": "Chinese / English / Japanese / Korean / Cantonese",
       "description": "A few-shot voice cloning TTS from RVC-Boss using [RVC-Boss/GPT-SoVITS](https://github.com/RVC-Boss/GPT-SoVITS). 5 seconds of reference audio is enough for zero-shot inference; 1 minute can be used for fine-tuning. Supports **Chinese, English, Japanese, Korean, Cantonese**. Multiple model versions (v1, v2, v2Pro, v2ProPlus, v3, v4) are exposed via `--gpt-sovits-version` (default `v2`).",
       "notes": [
-        "- Few-shot voice cloning (5-second reference). Reference audio + transcript required."
+        "- Few-shot voice cloning (5-second reference). Reference audio + transcript required.",
+        "- License: MIT for both code ([RVC-Boss/GPT-SoVITS](https://github.com/RVC-Boss/GPT-SoVITS)) and pretrained weights (`lj1995/GPT-SoVITS`). Commercial use OK. Per-version (v1/v2/v3/v4) licenses are not individually attested upstream — verify before shipping a commercial product."
       ],
       "prefix": "GPT_SOVITS",
       "params": [
@@ -672,7 +675,8 @@
       "description": "A Japanese TTS using [Aratako/Irodori-TTS](https://github.com/Aratako/Irodori-TTS). By default it uses the Hugging Face model `Aratako/Irodori-TTS-500M-v3` (a Rectified Flow DiT trained from scratch). To fall back to V2 set `IRODORI_HF_CHECKPOINT=Aratako/Irodori-TTS-500M-v2`; for V1 use `Aratako/Irodori-TTS-500M`. Output is high-quality 48 kHz, but there is no voice switching.",
       "notes": [
         "- Default: v3 (Rectified Flow DiT, Duration Predictor + always-on SilentCipher watermark).",
-        "- Older variants: \"Aratako/Irodori-TTS-500M-v2\" or v1 (\"Aratako/Irodori-TTS-500M\" + codec_repo=\"facebook/dacvae-watermarked\")."
+        "- Older variants: \"Aratako/Irodori-TTS-500M-v2\" or v1 (\"Aratako/Irodori-TTS-500M\" + codec_repo=\"facebook/dacvae-watermarked\").",
+        "- License: MIT for code ([Aratako/Irodori-TTS](https://github.com/Aratako/Irodori-TTS)), all weight variants (v1/v2/v3), and the Aratako/Semantic-DACVAE-Japanese-32dim codec. Commercial use OK. The author requests ethical use (no impersonation/deepfake)."
       ],
       "prefix": "IRODORI",
       "params": [
@@ -726,7 +730,8 @@
       "notes": [
         "- Default checkpoint is voice-design int4 (speaker baked in, seconds derived from text via pyopenjtalk).",
         "- For the v3-derived int4 with built-in Duration Predictor, switch to",
-        "\"kizuna-intelligence/Irodori-TTS-500M-v3-int4\" AND set IRODORI_LITE_CHECKPOINT_FILE=\"model.safetensors\"."
+        "\"kizuna-intelligence/Irodori-TTS-500M-v3-int4\" AND set IRODORI_LITE_CHECKPOINT_FILE=\"model.safetensors\".",
+        "- License: MIT for the default `kizuna-intelligence/Irodori-TTS-Lite-int4` weights, inherited from upstream `Aratako/Irodori-TTS` (MIT). The alternate `kizuna-intelligence/Irodori-TTS-500M-v3-int4` HF card declares no license — confirm with upstream before commercial use."
       ],
       "prefix": "IRODORI_LITE",
       "params": [
@@ -771,7 +776,9 @@
       "status": "Works",
       "languages": "Japanese / English / Chinese and more",
       "description": "A lightweight TTS using [hexgrad/kokoro](https://github.com/hexgrad/kokoro), supporting Japanese, English, and Chinese. The default voice is the Japanese `jf_alpha`, and 9 voices can be selected from the form.",
-      "notes": [],
+      "notes": [
+        "- License: Apache 2.0 for both code ([hexgrad/kokoro](https://github.com/hexgrad/kokoro)) and weights ([hexgrad/Kokoro-82M](https://huggingface.co/hexgrad/Kokoro-82M)). Commercial use OK."
+      ],
       "prefix": "KOKORO_DEFAULT",
       "params": [
         {
@@ -924,7 +931,9 @@
       "status": "Not working",
       "languages": "-",
       "description": "Intended to use [myshell-ai/MeloTTS](https://github.com/myshell-ai/MeloTTS), but the dependency `tokenizers` requires a Rust compiler to build, so installation fails in the current Colab environment.",
-      "notes": [],
+      "notes": [
+        "- License: MIT for both code ([myshell-ai/MeloTTS](https://github.com/myshell-ai/MeloTTS)) and the per-language weight repos. Commercial use OK."
+      ],
       "prefix": "MELO",
       "params": [
         {
@@ -994,7 +1003,13 @@
       "status": "Works (CPU OK, voice cloning)",
       "languages": "English / Spanish / German / French",
       "description": "An on-device TTS using [neuphonic/neutts](https://github.com/neuphonic/neutts). Uses **instant voice cloning** — every request is rendered in the voice of a reference audio file, so there is no preset speaker concept. Five reference voices bundled in the upstream repo are exposed via the OpenAI `voice` parameter:",
-      "notes": [],
+      "notes": [
+        "- License is **split** across backbones:",
+        "- Code [neuphonic/neutts](https://github.com/neuphonic/neutts): Apache 2.0.",
+        "- Weights `neuphonic/neutts-air` and codec `neuphonic/neucodec`: Apache 2.0 (commercial use OK).",
+        "- Weights `neuphonic/neutts-nano` and the per-language Nano variants (`-french` / `-german` / `-spanish`): **NeuTTS Open License v1.0** — commercial use OK only if your annual revenue is below USD $5M; above that, a paid license from Neuphonic is required.",
+        "- All outputs include a Resemble Perth (imperceptible) watermark."
+      ],
       "prefix": "NEUTTS",
       "params": [
         {
@@ -1189,7 +1204,9 @@
       "status": "Works",
       "languages": "English (default) / multilingual",
       "description": "Launches the [piper-tts](https://github.com/OHF-Voice/piper1-gpl) built-in HTTP server as a backend and puts an OpenAI-compatible wrapper in front of it. The default is the English `en_US-lessac-medium`. Dependencies are light and setup is stable.",
-      "notes": [],
+      "notes": [
+        "- License: code is MIT ([rhasspy/piper](https://github.com/rhasspy/piper)). The default `rhasspy/piper-voices` repo is MIT at the repo level, but **each individual voice has its own license** (MIT / CC0 / CC-BY / CC-BY-SA / etc.) depending on dataset provenance. Before commercial deployment, check the specific voice's MODEL_CARD inside the voice repo."
+      ],
       "prefix": "PIPER",
       "params": [
         {
@@ -1590,7 +1607,9 @@
       "status": "Not working",
       "languages": "-",
       "description": "Intended to use [litagin02/Style-Bert-VITS2](https://github.com/litagin02/Style-Bert-VITS2), but `setuptools` / `torch` / `scipy` dependency conflicts cannot be resolved, and speech synthesis is not reachable in the current Colab environment.",
-      "notes": [],
+      "notes": [
+        "- License: code is **AGPL-3.0** ([litagin02/Style-Bert-VITS2](https://github.com/litagin02/Style-Bert-VITS2)); default weights are **CC-BY-SA-4.0** (`litagin/style_bert_vits2_jvnv`, inherited from the JVNV corpus). Commercial use is permitted only under copyleft obligations: AGPL §13 requires source disclosure to network users; CC-BY-SA requires attribution + share-alike on any derivative."
+      ],
       "prefix": "STYLE_BERT",
       "params": [
         {
