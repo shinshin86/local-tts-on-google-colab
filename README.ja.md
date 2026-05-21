@@ -65,7 +65,8 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 
 エンジンを選択し、必要なオプションをフォームで設定（選んだエンジンに関係する
 項目だけが表示されます）し、**Copy cell** を押します。
-[新しい Colab ノートブック](https://colab.research.google.com/#create=true) を開いて
+[Colab スクラッチパッド](https://colab.research.google.com/notebooks/empty.ipynb)
+（ファイルは Drive に自動保存されない一時ノートブック）を開いて
 貼り付け・実行するだけです。各エンジンの Colab 動作状況、対応言語、
 ライセンス上の注意点も画面に表示されるので、起動前に確認できます。
 

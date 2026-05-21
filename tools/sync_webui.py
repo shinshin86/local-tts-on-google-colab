@@ -219,6 +219,33 @@ def _extract_append_constant(stmt: ast.AST) -> str | None:
     return call.args[0].value
 
 
+def _common_python_prefix(names: list[str]) -> str:
+    """Longest underscore-bounded prefix shared by every Python var name.
+
+    Used to strip the engine prefix from labels in the WebUI (e.g.
+    KOKORO_DEFAULT_VOICE -> "Voice", since both Kokoro params start with
+    KOKORO_DEFAULT). Returns "" when fewer than 2 names share a meaningful
+    prefix.
+    """
+    if not names:
+        return ""
+    if len(names) == 1:
+        # Single param: strip everything up to the last underscore.
+        i = names[0].rfind("_")
+        return names[0][:i] if i > 0 else ""
+    prefix = names[0]
+    for n in names[1:]:
+        while not n.startswith(prefix):
+            prefix = prefix[:-1]
+            if not prefix:
+                return ""
+    # Trim to the last underscore boundary so we never cut a word mid-character.
+    if not prefix.endswith("_"):
+        i = prefix.rfind("_")
+        return prefix[:i] if i > 0 else ""
+    return prefix.rstrip("_")
+
+
 def parse_readme_status(readme_text: str) -> dict[str, dict]:
     """Extract {engine_name: {status, languages}} from the 'Supported engines' table."""
     result: dict[str, dict] = {}
@@ -239,6 +266,54 @@ def parse_readme_status(readme_text: str) -> dict[str, dict]:
     return result
 
 
+# Heading → engine id overrides for cases where the README heading text
+# diverges from the INSTALLERS engine id beyond a trailing parenthetical.
+HEADING_TO_ENGINE = {
+    "CSM-1B": "CSM-1B",
+}
+
+
+def parse_readme_descriptions(readme_text: str) -> dict[str, str]:
+    """Extract {engine_id: first paragraph} from README's per-engine '### ...' headings.
+
+    Used to give the WebUI's "Status & license details" panel some context for
+    engines whose multi_tts_openai_colab.py #@markdown block is empty or terse.
+    The first paragraph after the heading (until the first blank line) is used.
+    """
+    result: dict[str, str] = {}
+    current_engine: str | None = None
+    para_lines: list[str] = []
+
+    def flush():
+        nonlocal current_engine, para_lines
+        if current_engine and para_lines and current_engine not in result:
+            text = " ".join(p.strip() for p in para_lines).strip()
+            if text:
+                result[current_engine] = text
+        para_lines = []
+
+    for line in readme_text.splitlines():
+        if line.startswith("### "):
+            flush()
+            heading = line[4:].strip()
+            normalized = re.sub(r"\s*\([^)]*\)\s*$", "", heading).strip()
+            current_engine = HEADING_TO_ENGINE.get(normalized, normalized)
+            para_lines = []
+            continue
+        if current_engine is None:
+            continue
+        if line.strip() == "":
+            if para_lines:
+                flush()
+                # Skip subsequent paragraphs under this heading.
+                current_engine = None
+            continue
+        para_lines.append(line)
+
+    flush()
+    return result
+
+
 def build_engines_json() -> dict:
     source = COLAB_SCRIPT.read_text(encoding="utf-8")
     readme = README.read_text(encoding="utf-8")
@@ -246,6 +321,7 @@ def build_engines_json() -> dict:
     sections = parse_sections(source)
     var_to_flag, bool_flags = parse_cmd_mapping(source)
     status_map = parse_readme_status(readme)
+    description_map = parse_readme_descriptions(readme)
 
     # Section 0 holds REPO_URL/REPO_REF/WORKDIR + ENGINE + EXPOSE_PUBLIC_URL +
     # TEST_TEXT/TEST_SPEED/TEST_VOICE/OPENAI_MODEL_ID.
@@ -309,7 +385,9 @@ def build_engines_json() -> dict:
             "title": raw_title,
             "status": status_info.get("status", ""),
             "languages": status_info.get("languages", ""),
+            "description": description_map.get(engine_id, ""),
             "notes": section["notes"],
+            "prefix": _common_python_prefix([p["name"] for p in params]),
             "params": params,
         }
 
@@ -327,7 +405,9 @@ def build_engines_json() -> dict:
                     "title": engine_id,
                     "status": status_info.get("status", ""),
                     "languages": status_info.get("languages", ""),
+                    "description": description_map.get(engine_id, ""),
                     "notes": [],
+                    "prefix": "",
                     "params": [],
                 }
             )

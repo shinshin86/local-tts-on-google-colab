@@ -65,8 +65,8 @@ If you would rather not edit the `#@param` form fields by hand, use the
 
 Pick an engine, configure the options through a friendly form (only the
 fields relevant to the selected engine are shown), and click **Copy cell**.
-Then open a fresh [Colab notebook](https://colab.research.google.com/#create=true),
-paste, and run. The page also surfaces each engine's Colab status, languages,
+Then open a [Colab scratchpad](https://colab.research.google.com/notebooks/empty.ipynb)
+(ephemeral — not saved to Drive unless you explicitly save), paste, and run. The page also surfaces each engine's Colab status, languages,
 and license caveats so you know what to expect before you launch.
 
 The WebUI is a static site (`docs/`) generated from

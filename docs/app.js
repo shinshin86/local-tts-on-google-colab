@@ -2,11 +2,75 @@ const { createApp, reactive, computed, watch, onMounted, ref } = Vue;
 
 const REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab";
 
-function niceLabel(name) {
-  return name
-    .toLowerCase()
-    .replace(/_/g, " ")
-    .replace(/\b\w/g, (c) => c.toUpperCase());
+const ACRONYMS = {
+  hf: "HF",
+  vllm: "vLLM",
+  wav: "(.wav)",
+  id: "ID",
+  lang: "language",
+  cfg: "CFG",
+  stg: "STG",
+  vc: "VC",
+  ddpm: "DDPM",
+  sfx: "SFX",
+  ckpt: "checkpoint",
+  sovits: "SoVITS",
+  url: "URL",
+  api: "API",
+  openai: "OpenAI",
+  fp32: "fp32",
+  bf16: "bf16",
+  fp16: "fp16",
+  int4: "int4",
+  int8: "int8",
+  bnb: "bnb",
+  dtype: "dtype",
+};
+
+const COMMON_CLI_LABELS = {
+  TEST_TEXT: "Sample text to synthesize",
+  TEST_SPEED: "Playback speed",
+  TEST_VOICE: "Voice override (optional)",
+  OPENAI_MODEL_ID: "OpenAI model ID (optional)",
+};
+
+function niceLabel(name, prefix) {
+  let s = name;
+  if (prefix && s.startsWith(prefix + "_")) s = s.slice(prefix.length + 1);
+  if (!s) return name;
+  const words = s.toLowerCase().split("_").filter(Boolean);
+  if (!words.length) return name;
+  const labeled = words.map((w) => (ACRONYMS[w] ? ACRONYMS[w] : w));
+  let label = labeled.join(" ");
+  // Capitalize the first letter unless that letter belongs to an acronym mapping.
+  const firstWord = labeled[0];
+  if (!/^[A-Z]/.test(firstWord) && !/^\(/.test(firstWord)) {
+    label = label.charAt(0).toUpperCase() + label.slice(1);
+  }
+  return label;
+}
+
+function commonCliLabel(name) {
+  return COMMON_CLI_LABELS[name] || niceLabel(name);
+}
+
+function escapeHtml(s) {
+  return String(s)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+function renderInlineMd(text) {
+  if (!text) return "";
+  let s = escapeHtml(text);
+  s = s.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+  s = s.replace(
+    /\[([^\]]+)\]\(([^)]+)\)/g,
+    '<a href="$2" target="_blank" rel="noopener">$1</a>'
+  );
+  s = s.replace(/`([^`]+)`/g, "<code>$1</code>");
+  return s;
 }
 
 function statusShort(status) {
@@ -170,6 +234,60 @@ createApp({
       return data.value.engines.find((e) => e.id === state.engineId) || null;
     });
 
+    const primaryParam = computed(() => {
+      const e = selectedEngine.value;
+      if (!e || !e.params.length) return null;
+      // Heuristic: prefer the most user-facing voice/speaker/model selector.
+      const selects = e.params.filter((p) => p.type === "select");
+      if (!selects.length) return null;
+      const preference = [
+        (p) => /_DEFAULT_VOICE$/.test(p.name),
+        (p) => /_DEFAULT_SPEAKER$/.test(p.name),
+        (p) => /_VOICE$/.test(p.name),
+        (p) => /_DEFAULT_LANG/.test(p.name),
+        (p) => /_LANGUAGE$/.test(p.name),
+        (p) => /_HF_CHECKPOINT$/.test(p.name),
+        (p) => /_MODEL$/.test(p.name),
+      ];
+      for (const pred of preference) {
+        const hit = selects.find(pred);
+        if (hit) return hit;
+      }
+      return selects[0];
+    });
+
+    const primaryLabel = computed(() => {
+      const p = primaryParam.value;
+      if (!p) return "";
+      if (/_VOICE$/.test(p.name)) return "Voice / speaker";
+      if (/_SPEAKER$/.test(p.name)) return "Speaker";
+      if (/_LANGUAGE$/.test(p.name) || /_LANG$/.test(p.name)) return "Language";
+      if (/_CHECKPOINT$/.test(p.name) || /_MODEL$/.test(p.name)) return "Model";
+      return niceLabel(p.name);
+    });
+
+    const advancedEngineParams = computed(() => {
+      const e = selectedEngine.value;
+      if (!e) return [];
+      const primary = primaryParam.value;
+      return e.params.filter((p) => !primary || p.name !== primary.name);
+    });
+
+    const hasEngineDetails = computed(() => {
+      const e = selectedEngine.value;
+      if (!e) return false;
+      return Boolean(e.status) || Boolean(e.description) || (e.notes && e.notes.length > 0);
+    });
+
+    const hasLicenseInNotes = computed(() => {
+      const e = selectedEngine.value;
+      if (!e) return false;
+      const blob = (e.notes || []).join(" ") + " " + (e.description || "");
+      return /licens|apache|mit\b|cc[-\s]?by|community license|openrail|noncommercial|non[-\s]?commercial/i.test(
+        blob
+      );
+    });
+
     const generatedCell = computed(() =>
       data.value ? generateCell(data.value, selectedEngine.value, state.values) : ""
     );
@@ -231,6 +349,11 @@ createApp({
       data,
       state,
       selectedEngine,
+      primaryParam,
+      primaryLabel,
+      advancedEngineParams,
+      hasEngineDetails,
+      hasLicenseInNotes,
       generatedCell,
       generatedLines,
       copyState,
@@ -239,6 +362,8 @@ createApp({
       downloadCell,
       resetDefaults,
       niceLabel,
+      commonCliLabel,
+      renderInlineMd,
       statusShort,
       statusClass,
       engineLabel,
