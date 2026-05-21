@@ -56,7 +56,26 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 
 ## 使い方
 
-### 最短手順
+### 最短手順 — WebUI コマンドジェネレーター
+
+`#@param` フォームを手で触りたくない場合は、GitHub Pages の
+**Colab セルジェネレーター**を使ってください:
+
+👉 **<https://shinshin86.github.io/local-tts-on-google-colab/>**
+
+エンジンを選択し、必要なオプションをフォームで設定（選んだエンジンに関係する
+項目だけが表示されます）し、**Copy cell** を押します。
+[Colab スクラッチパッド](https://colab.research.google.com/notebooks/empty.ipynb)
+（ファイルは Drive に自動保存されない一時ノートブック）を開いて
+貼り付け・実行するだけです。各エンジンの Colab 動作状況、対応言語、
+ライセンス上の注意点も画面に表示されるので、起動前に確認できます。
+
+WebUI は静的サイト (`docs/`) で、
+[multi_tts_openai_colab.py](multi_tts_openai_colab.py) から
+`tools/sync_webui.py` 経由で生成されます。生成されるセルは下の正準セルと
+同じ `colab/bootstrap.py` を呼び出します。
+
+### 手動セル（正準フォーム）
 
 Colab では、以下のコードを 1 つのコードセルにそのまま貼り付けて実行するのを推奨します。
 
@@ -101,6 +120,7 @@ FISH_SPEECH_MODEL = "fishaudio/s2-pro"  #@param {type:"string"}
 #@markdown Irodori-TTS
 #@markdown - Default: v3 (Rectified Flow DiT, Duration Predictor + always-on SilentCipher watermark).
 #@markdown - Older variants: "Aratako/Irodori-TTS-500M-v2" or v1 ("Aratako/Irodori-TTS-500M" + codec_repo="facebook/dacvae-watermarked").
+#@markdown - License: MIT for code ([Aratako/Irodori-TTS](https://github.com/Aratako/Irodori-TTS)), all weight variants (v1/v2/v3), and the Aratako/Semantic-DACVAE-Japanese-32dim codec. Commercial use OK. The author requests ethical use (no impersonation/deepfake).
 IRODORI_HF_CHECKPOINT = "Aratako/Irodori-TTS-500M-v3"  #@param ["Aratako/Irodori-TTS-500M-v3", "Aratako/Irodori-TTS-500M-v2", "Aratako/Irodori-TTS-500M"]
 IRODORI_CODEC_REPO = "Aratako/Semantic-DACVAE-Japanese-32dim"  #@param {type:"string"}
 IRODORI_MODEL_PRECISION = "fp32"  #@param ["fp32", "bf16", "fp16"]
@@ -111,6 +131,7 @@ IRODORI_CODEC_PRECISION = "fp32"  #@param ["fp32", "bf16", "fp16"]
 #@markdown - Default checkpoint is voice-design int4 (speaker baked in, seconds derived from text via pyopenjtalk).
 #@markdown - For the v3-derived int4 with built-in Duration Predictor, switch to
 #@markdown   "kizuna-intelligence/Irodori-TTS-500M-v3-int4" AND set IRODORI_LITE_CHECKPOINT_FILE="model.safetensors".
+#@markdown - License: MIT for the default `kizuna-intelligence/Irodori-TTS-Lite-int4` weights, inherited from upstream `Aratako/Irodori-TTS` (MIT). The alternate `kizuna-intelligence/Irodori-TTS-500M-v3-int4` HF card declares no license — confirm with upstream before commercial use.
 IRODORI_LITE_HF_CHECKPOINT = "kizuna-intelligence/Irodori-TTS-Lite-int4"  #@param ["kizuna-intelligence/Irodori-TTS-Lite-int4", "kizuna-intelligence/Irodori-TTS-500M-v3-int4"]
 IRODORI_LITE_CHECKPOINT_FILE = "dit_int4.safetensors"  #@param ["dit_int4.safetensors", "model.safetensors"]
 IRODORI_LITE_CODEC_REPO = "Aratako/Semantic-DACVAE-Japanese-32dim"  #@param {type:"string"}
@@ -118,6 +139,7 @@ IRODORI_LITE_CODEC_INT4 = False  #@param {type:"boolean"}
 
 #@markdown ---
 #@markdown Kokoro
+#@markdown - License: Apache 2.0 for both code ([hexgrad/kokoro](https://github.com/hexgrad/kokoro)) and weights ([hexgrad/Kokoro-82M](https://huggingface.co/hexgrad/Kokoro-82M)). Commercial use OK.
 KOKORO_DEFAULT_VOICE = "jf_alpha"  #@param ["jf_alpha", "jf_gongitsune", "jm_kumo", "af_heart", "af_bella", "am_adam", "bf_emma", "bm_george", "zf_xiaobei"]
 KOKORO_DEFAULT_LANG_CODE = "j"  #@param ["j", "a", "b", "e", "f", "h", "i", "p", "z"]
 
@@ -138,11 +160,13 @@ POCKET_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
 
 #@markdown ---
 #@markdown MeloTTS
+#@markdown - License: MIT for both code ([myshell-ai/MeloTTS](https://github.com/myshell-ai/MeloTTS)) and the per-language weight repos. Commercial use OK.
 MELO_LANGUAGE = "JP"  #@param ["JP", "EN", "ZH", "ES", "FR", "KR"]
 MELO_DEFAULT_VOICE = "JP"  #@param ["JP", "EN-Default", "EN-US", "EN-BR", "EN_INDIA", "EN-AU", "ZH", "ES", "FR", "KR"]
 
 #@markdown ---
 #@markdown Style-Bert-VITS2
+#@markdown - License: code is **AGPL-3.0** ([litagin02/Style-Bert-VITS2](https://github.com/litagin02/Style-Bert-VITS2)); default weights are **CC-BY-SA-4.0** (`litagin/style_bert_vits2_jvnv`, inherited from the JVNV corpus). Commercial use is permitted only under copyleft obligations: AGPL §13 requires source disclosure to network users; CC-BY-SA requires attribution + share-alike on any derivative.
 STYLE_BERT_MODEL_REPO = "litagin/style_bert_vits2_jvnv"  #@param {type:"string"}
 STYLE_BERT_MODEL_SUBDIR = "jvnv-F2-jp"  #@param {type:"string"}
 STYLE_BERT_MODEL_NAME = "jvnv-F2-jp"  #@param {type:"string"}
@@ -151,6 +175,7 @@ STYLE_BERT_STYLE = "Neutral"  #@param {type:"string"}
 
 #@markdown ---
 #@markdown Piper
+#@markdown - License: code is MIT ([rhasspy/piper](https://github.com/rhasspy/piper)). The default `rhasspy/piper-voices` repo is MIT at the repo level, but **each individual voice has its own license** (MIT / CC0 / CC-BY / CC-BY-SA / etc.) depending on dataset provenance. Before commercial deployment, check the specific voice's MODEL_CARD inside the voice repo.
 PIPER_VOICE = "en_US-lessac-medium"  #@param {type:"string"}
 PIPER_SPEAKER_ID = -1  #@param {type:"integer"}
 
@@ -177,6 +202,11 @@ MOSS_TTS_NANO_MODE = "continuation"  #@param ["continuation", "voice_clone"]
 
 #@markdown ---
 #@markdown NeuTTS (CPU OK, EN/ES/DE/FR, voice cloning)
+#@markdown - License is **split** across backbones:
+#@markdown   - Code [neuphonic/neutts](https://github.com/neuphonic/neutts): Apache 2.0.
+#@markdown   - Weights `neuphonic/neutts-air` and codec `neuphonic/neucodec`: Apache 2.0 (commercial use OK).
+#@markdown   - Weights `neuphonic/neutts-nano` and the per-language Nano variants (`-french` / `-german` / `-spanish`): **NeuTTS Open License v1.0** — commercial use OK only if your annual revenue is below USD $5M; above that, a paid license from Neuphonic is required.
+#@markdown - All outputs include a Resemble Perth (imperceptible) watermark.
 NEUTTS_BACKBONE_REPO = "neuphonic/neutts-air"  #@param ["neuphonic/neutts-air", "neuphonic/neutts-nano", "neuphonic/neutts-nano-french", "neuphonic/neutts-nano-german", "neuphonic/neutts-nano-spanish"]
 NEUTTS_CODEC_REPO = "neuphonic/neucodec"  #@param {type:"string"}
 NEUTTS_DEFAULT_VOICE = "jo"  #@param ["dave", "jo", "greta", "juliette", "mateo"]
@@ -232,6 +262,7 @@ OPENVOICE_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
 #@markdown ---
 #@markdown CosyVoice2 (GPU recommended, multilingual incl JP, Apache 2.0)
 #@markdown - Forces a Python 3.10 venv because upstream pins (torch 2.3.1, openai-whisper 20231117, etc.) do not resolve under Python 3.12.
+#@markdown - License: Apache 2.0 for both code ([FunAudioLLM/CosyVoice](https://github.com/FunAudioLLM/CosyVoice)) and weights ([FunAudioLLM/CosyVoice2-0.5B](https://huggingface.co/FunAudioLLM/CosyVoice2-0.5B)). Commercial use OK. The model card adds a non-binding academic-purpose / takedown request.
 COSYVOICE_HF_MODEL = "FunAudioLLM/CosyVoice2-0.5B"  #@param {type:"string"}
 COSYVOICE_PROMPT_WAV = ""  #@param {type:"string"}
 COSYVOICE_PROMPT_TEXT = ""  #@param {type:"string"}
@@ -287,6 +318,7 @@ CHATTTS_TEMPERATURE = 0.3  #@param {type:"number"}
 #@markdown ---
 #@markdown Sesame CSM-1B (GPU required, English-only, Apache 2.0)
 #@markdown - **HF gated**: accept terms for `sesame/csm-1b` AND `meta-llama/Llama-3.2-1B`, then set `HF_TOKEN`.
+#@markdown - License: CSM weights ([sesame/csm-1b](https://huggingface.co/sesame/csm-1b)) and code ([SesameAILabs/csm](https://github.com/SesameAILabs/csm)) are Apache 2.0, but the **effective stack is governed by the Llama 3.2 Community License** because of the meta-llama/Llama-3.2-1B backbone. Commercial use is OK below ~700M MAU and requires "Built with Llama" attribution + Meta's Acceptable Use Policy compliance.
 CSM_HF_MODEL = "sesame/csm-1b"  #@param {type:"string"}
 CSM_LLAMA_MODEL = "meta-llama/Llama-3.2-1B"  #@param {type:"string"}
 CSM_DEFAULT_VOICE = "default"  #@param {type:"string"}
@@ -317,6 +349,7 @@ MASKGCT_TARGET_LANG = "en"  #@param ["en", "zh", "ja", "ko", "fr", "de"]
 #@markdown ---
 #@markdown GPT-SoVITS (GPU recommended, ZH/EN/JA/KO/YUE, MIT)
 #@markdown - Few-shot voice cloning (5-second reference). Reference audio + transcript required.
+#@markdown - License: MIT for both code ([RVC-Boss/GPT-SoVITS](https://github.com/RVC-Boss/GPT-SoVITS)) and pretrained weights (`lj1995/GPT-SoVITS`). Commercial use OK. Per-version (v1/v2/v3/v4) licenses are not individually attested upstream — verify before shipping a commercial product.
 GPT_SOVITS_VERSION = "v2"  #@param ["v1", "v2", "v2Pro", "v2ProPlus", "v3", "v4"]
 GPT_SOVITS_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
 GPT_SOVITS_PROMPT_WAV = ""  #@param {type:"string"}
