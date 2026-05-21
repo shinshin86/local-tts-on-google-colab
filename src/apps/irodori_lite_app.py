@@ -96,9 +96,9 @@ def get_runtime():
                 checkpoint=checkpoint_path,
                 model_device=MODEL_DEVICE,
                 codec_repo=CODEC_REPO,
-                model_precision="fp16",
+                model_precision="fp32",
                 codec_device=CODEC_DEVICE,
-                codec_precision="fp16",
+                codec_precision="fp32",
                 compile_model=False,
                 compile_dynamic=False,
             )
