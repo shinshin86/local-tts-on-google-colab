@@ -27,8 +27,16 @@ a:hover { text-decoration: underline; }
 .page-header { margin-bottom: 24px; text-align: center; }
 .page-header h1 {
   font-size: 1.75rem;
-  margin: 0 0 8px;
+  margin: 0 0 14px;
   letter-spacing: -0.01em;
+}
+.page-logo {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 520px;
+  margin: 0 auto 16px;
+  border-radius: 12px;
 }
 .tagline {
   margin: 0;
