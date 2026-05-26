@@ -89,6 +89,12 @@ class Settings:
     qwen3_default_speaker: str = "ono_anna"
     moss_tts_nano_hf_model: str = "OpenMOSS-Team/MOSS-TTS-Nano-100M"
     moss_tts_nano_mode: str = "continuation"
+    moss_tts_v1_5_hf_model: str = "OpenMOSS-Team/MOSS-TTS-v1.5"
+    moss_tts_v1_5_language: str = "Japanese"
+    moss_tts_v1_5_prompt_wav: str = ""
+    moss_tts_v1_5_default_voice: str = "default"
+    moss_tts_v1_5_attn_impl: str = "sdpa"
+    moss_tts_v1_5_max_new_tokens: int = 4096
     neutts_backbone_repo: str = "neuphonic/neutts-air"
     neutts_codec_repo: str = "neuphonic/neucodec"
     neutts_default_voice: str = "jo"

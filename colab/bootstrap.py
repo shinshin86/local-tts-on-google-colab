@@ -70,6 +70,12 @@ def parse_args():
     parser.add_argument("--qwen3-default-speaker", default="ono_anna")
     parser.add_argument("--moss-tts-nano-hf-model", default="OpenMOSS-Team/MOSS-TTS-Nano-100M")
     parser.add_argument("--moss-tts-nano-mode", default="continuation")
+    parser.add_argument("--moss-tts-v1-5-hf-model", default="OpenMOSS-Team/MOSS-TTS-v1.5")
+    parser.add_argument("--moss-tts-v1-5-language", default="Japanese")
+    parser.add_argument("--moss-tts-v1-5-prompt-wav", default="")
+    parser.add_argument("--moss-tts-v1-5-default-voice", default="default")
+    parser.add_argument("--moss-tts-v1-5-attn-impl", default="sdpa")
+    parser.add_argument("--moss-tts-v1-5-max-new-tokens", type=int, default=4096)
     parser.add_argument("--neutts-backbone-repo", default="neuphonic/neutts-air")
     parser.add_argument("--neutts-codec-repo", default="neuphonic/neucodec")
     parser.add_argument("--neutts-default-voice", default="jo")
@@ -241,6 +247,12 @@ def main():
         qwen3_default_speaker=args.qwen3_default_speaker,
         moss_tts_nano_hf_model=args.moss_tts_nano_hf_model,
         moss_tts_nano_mode=args.moss_tts_nano_mode,
+        moss_tts_v1_5_hf_model=args.moss_tts_v1_5_hf_model,
+        moss_tts_v1_5_language=args.moss_tts_v1_5_language,
+        moss_tts_v1_5_prompt_wav=args.moss_tts_v1_5_prompt_wav,
+        moss_tts_v1_5_default_voice=args.moss_tts_v1_5_default_voice,
+        moss_tts_v1_5_attn_impl=args.moss_tts_v1_5_attn_impl,
+        moss_tts_v1_5_max_new_tokens=args.moss_tts_v1_5_max_new_tokens,
         neutts_backbone_repo=args.neutts_backbone_repo,
         neutts_codec_repo=args.neutts_codec_repo,
         neutts_default_voice=args.neutts_default_voice,

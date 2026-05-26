@@ -99,7 +99,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Irodori-TTS", "Irodori-TTS-Lite", "Kokoro", "Kyutai-TTS", "MaskGCT", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
+ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Irodori-TTS", "Irodori-TTS-Lite", "Kokoro", "Kyutai-TTS", "MaskGCT", "MeloTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -199,6 +199,18 @@ VOXCPM_INFERENCE_TIMESTEPS = 10  #@param {type:"integer"}
 #@markdown MOSS-TTS-Nano (CPU OK)
 MOSS_TTS_NANO_HF_MODEL = "OpenMOSS-Team/MOSS-TTS-Nano-100M"  #@param {type:"string"}
 MOSS_TTS_NANO_MODE = "continuation"  #@param ["continuation", "voice_clone"]
+
+#@markdown ---
+#@markdown MOSS-TTS-v1.5 (A100/L4 GPU recommended, VRAM ~16GB, 31 languages, Apache 2.0)
+#@markdown - 8B-parameter LLM-based TTS from [OpenMOSS/MOSS-TTS](https://github.com/OpenMOSS/MOSS-TTS) with zero-shot voice cloning.
+#@markdown - Installs with the upstream `[torch-runtime]` extra (`torch==2.9.1+cu128`, `transformers==5.0.0`) under a dedicated Python 3.12 venv.
+#@markdown - License: code and weights are both Apache 2.0. Commercial use OK.
+MOSS_TTS_V1_5_HF_MODEL = "OpenMOSS-Team/MOSS-TTS-v1.5"  #@param {type:"string"}
+MOSS_TTS_V1_5_LANGUAGE = "Japanese"  #@param ["Chinese", "Cantonese", "English", "Arabic", "Czech", "Danish", "Dutch", "Finnish", "French", "German", "Greek", "Hebrew", "Hindi", "Hungarian", "Italian", "Japanese", "Korean", "Macedonian", "Malay", "Persian", "Polish", "Portuguese", "Romanian", "Russian", "Spanish", "Swahili", "Swedish", "Tagalog", "Thai", "Turkish", "Vietnamese"]
+MOSS_TTS_V1_5_PROMPT_WAV = ""  #@param {type:"string"}
+MOSS_TTS_V1_5_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+MOSS_TTS_V1_5_ATTN_IMPL = "sdpa"  #@param ["sdpa", "eager", "flash_attention_2"]
+MOSS_TTS_V1_5_MAX_NEW_TOKENS = 4096  #@param {type:"integer"}
 
 #@markdown ---
 #@markdown NeuTTS (CPU OK, EN/ES/DE/FR, voice cloning)
@@ -545,6 +557,18 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         MOSS_TTS_NANO_HF_MODEL,
         "--moss-tts-nano-mode",
         MOSS_TTS_NANO_MODE,
+        "--moss-tts-v1-5-hf-model",
+        MOSS_TTS_V1_5_HF_MODEL,
+        "--moss-tts-v1-5-language",
+        MOSS_TTS_V1_5_LANGUAGE,
+        "--moss-tts-v1-5-prompt-wav",
+        MOSS_TTS_V1_5_PROMPT_WAV,
+        "--moss-tts-v1-5-default-voice",
+        MOSS_TTS_V1_5_DEFAULT_VOICE,
+        "--moss-tts-v1-5-attn-impl",
+        MOSS_TTS_V1_5_ATTN_IMPL,
+        "--moss-tts-v1-5-max-new-tokens",
+        str(MOSS_TTS_V1_5_MAX_NEW_TOKENS),
         "--neutts-backbone-repo",
         NEUTTS_BACKBONE_REPO,
         "--neutts-codec-repo",
@@ -881,6 +905,10 @@ GPU 必須: int4 パスは Triton カーネルを使用するため、Linux + CU
 ### MOSS-TTS-Nano
 
 [OpenMOSS/MOSS-TTS-Nano](https://github.com/OpenMOSS/MOSS-TTS-Nano) を使った軽量多言語 TTS です。わずか 0.1B（100M）パラメータで、日本語・英語・中国語を含む 20 言語に対応し、GPU 不要・CPU のみで動作します。デフォルトの Hugging Face モデルは `OpenMOSS-Team/MOSS-TTS-Nano-100M`。`continuation` モード（プロンプト音声なしの plain TTS）で起動します。出力は 48 kHz ステレオ。ライセンス: Apache-2.0。注意: 音声自体は正常に生成されますが、現状では入力テキストの長さに関わらず出力が先頭 2 秒程度で切れてしまいます。ラッパーは MOSS-TTS-Nano の `model.inference()` に生成を委譲しているだけなので、修正には上流 `inference()` API 側で生成長パラメータを露出させる必要がありそうです。
+
+### MOSS-TTS-v1.5
+
+[OpenMOSS/MOSS-TTS](https://github.com/OpenMOSS/MOSS-TTS) の 8B パラメータ LLM ベース多言語 TTS で、Hugging Face の `OpenMOSS-Team/MOSS-TTS-v1.5` を使用します。中国語、広東語、英語、アラビア語、チェコ語、デンマーク語、オランダ語、フィンランド語、フランス語、ドイツ語、ギリシャ語、ヘブライ語、ヒンディー語、ハンガリー語、イタリア語、**日本語**、韓国語、マケドニア語、マレー語、ペルシャ語、ポーランド語、ポルトガル語、ルーマニア語、ロシア語、スペイン語、スワヒリ語、スウェーデン語、タガログ語、タイ語、トルコ語、ベトナム語の **31 言語**に対応します。フォームの `MOSS_TTS_V1_5_LANGUAGE` で言語タグを明示できます。`MOSS_TTS_V1_5_PROMPT_WAV` に参照音声を指定して `voice="clone"` を選ぶことでゼロショット voice cloning も使えます。GPU 必須（bf16 重みで VRAM 約 16GB）のため、**Colab Pro の L4 / A100 推奨**（T4 は OOM の可能性が高い）です。インストーラは専用の Python 3.12 venv を作成し、上流の `[torch-runtime]` extra（`torch==2.9.1+cu128` / `transformers==5.0.0` をピン留め）を導入します。`attn_implementation` のデフォルトは `sdpa` で、compute capability 8.0 以上（L4 / A100 / H100）なら `flash_attention_2` に切り替え可能です。出力サンプリングレートは `processor.model_config.sampling_rate` に従います。ライセンス: コード・重みとも **Apache 2.0**（商用利用 OK）。
 
 ### NeuTTS
 
@@ -1298,6 +1326,7 @@ Scenema AI による zero-shot な表現力豊か / 演技指向 TTS です（[S
 | Qwen3-TTS | Apache 2.0 | Apache 2.0 | OK | |
 | VoxCPM2 | Apache 2.0 | Apache 2.0 | OK | |
 | MOSS-TTS-Nano | Apache 2.0 | Apache 2.0 | OK | 100M パラメータ、CPU 動作可 |
+| MOSS-TTS-v1.5 | Apache 2.0 | Apache 2.0 | OK | 8B パラメータ、GPU 必須（VRAM ~16GB）。31言語（日本語含む）。ゼロショット voice cloning |
 | NeuTTS | Apache 2.0 | Apache 2.0 (Air) / NeuTTS Open License 1.0 (Nano) | OK (Air) / 規約要確認 (Nano) | ボイスクローン。英 / 西 / 独 / 仏 |
 | TinyTTS | Apache 2.0 | Apache 2.0 | OK | |
 | Supertonic | MIT | OpenRAIL-M | OK | 31言語（日 / 韓 / 英含む）。CPU 動作（ONNX）。なりすまし・ディープフェイク等の use-based ethical restrictions あり |
@@ -1370,6 +1399,8 @@ Scenema AI による zero-shot な表現力豊か / 演技指向 TTS です（[S
   https://github.com/supertone-inc/supertonic
 - MOSS-TTS-Nano
   https://github.com/OpenMOSS/MOSS-TTS-Nano
+- MOSS-TTS-v1.5
+  https://github.com/OpenMOSS/MOSS-TTS
 - NeuTTS
   https://github.com/neuphonic/neutts
 - Voxtral-TTS
