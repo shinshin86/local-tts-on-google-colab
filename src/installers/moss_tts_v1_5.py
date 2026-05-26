@@ -45,7 +45,9 @@ def install(settings: Settings) -> dict:
             f"{repo_dir}[torch-runtime]",
         ],
     )
-    uv_pip_install(python_bin, ["fastapi", "uvicorn", "soundfile"])
+    # `accelerate` is needed by transformers when `device_map=...` is used to
+    # stream weights directly to GPU (see the model app's get_pipeline).
+    uv_pip_install(python_bin, ["fastapi", "uvicorn", "soundfile", "accelerate"])
 
     write_text(engine_dir / "app.py", settings.read_repo_text("src/apps/moss_tts_v1_5_app.py"))
 
