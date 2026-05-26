@@ -30,9 +30,20 @@ def install(settings: Settings) -> dict:
 
     # Install the upstream `torch-runtime` extra. This pulls torch==2.9.1+cu128,
     # torchaudio, torchcodec, transformers==5.0.0 from the cu128 wheel index.
+    # `--index-strategy unsafe-best-match` is required because the pytorch wheel
+    # index hosts a partial mirror of common packages (e.g. tqdm) at versions
+    # that don't match the upstream pin; without this flag, uv refuses to fall
+    # back to pypi for those.
     uv_pip_install(
         python_bin,
-        ["--extra-index-url", CU128_INDEX, "-e", f"{repo_dir}[torch-runtime]"],
+        [
+            "--index-strategy",
+            "unsafe-best-match",
+            "--extra-index-url",
+            CU128_INDEX,
+            "-e",
+            f"{repo_dir}[torch-runtime]",
+        ],
     )
     uv_pip_install(python_bin, ["fastapi", "uvicorn", "soundfile"])
 
