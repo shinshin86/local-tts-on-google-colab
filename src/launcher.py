@@ -171,7 +171,8 @@ def print_engine_voice_hints(settings: Settings):
         print("           German / Greek / Hebrew / Hindi / Hungarian / Italian / Japanese / Korean / Macedonian /")
         print("           Malay / Persian / Polish / Portuguese / Romanian / Russian / Spanish / Swahili /")
         print("           Swedish / Tagalog / Thai / Turkish / Vietnamese（計 31 言語）")
-        print("注意: A100 / L4 GPU 推奨（VRAM ~16GB、bf16）。Python 3.12 venv で torch 2.9.1+cu128 / transformers 5.0.0 を導入します。")
+        print("注意: A100 必須（VRAM ~22GB resident + audio tokenizer。L4 22GB は不足し OOM 確認済み）。")
+        print("      Python 3.12 venv で torch 2.9.1+cu128 / transformers 5.0.0 / accelerate を導入します。")
         print("ライセンス: コード / 重みとも Apache 2.0（商用 OK）。")
     elif settings.engine == "TinyTTS":
         print("TinyTTS は超軽量（~3.4MB）の英語専用 TTS です（CPU 動作、GPU 不要）。")

@@ -113,9 +113,10 @@ MOSS_TTS_NANO_HF_MODEL = "OpenMOSS-Team/MOSS-TTS-Nano-100M"  #@param {type:"stri
 MOSS_TTS_NANO_MODE = "continuation"  #@param ["continuation", "voice_clone"]
 
 #@markdown ---
-#@markdown MOSS-TTS-v1.5 (A100/L4 GPU recommended, VRAM ~16GB, 31 languages, Apache 2.0)
+#@markdown MOSS-TTS-v1.5 (A100 required — L4 22GB is insufficient, 31 languages, Apache 2.0)
 #@markdown - 8B-parameter LLM-based TTS from [OpenMOSS/MOSS-TTS](https://github.com/OpenMOSS/MOSS-TTS) with zero-shot voice cloning.
-#@markdown - Installs with the upstream `[torch-runtime]` extra (`torch==2.9.1+cu128`, `transformers==5.0.0`) under a dedicated Python 3.12 venv.
+#@markdown - Verified on Colab A100; OOM-confirmed on Colab L4 (22GB) — transformers device_map pre-allocates ~22GB at load before the audio tokenizer is moved to GPU.
+#@markdown - Installs with the upstream `[torch-runtime]` extra (`torch==2.9.1+cu128`, `transformers==5.0.0`) plus `accelerate` under a dedicated Python 3.12 venv.
 #@markdown - License: code and weights are both Apache 2.0. Commercial use OK.
 MOSS_TTS_V1_5_HF_MODEL = "OpenMOSS-Team/MOSS-TTS-v1.5"  #@param {type:"string"}
 MOSS_TTS_V1_5_LANGUAGE = "Japanese"  #@param ["Chinese", "Cantonese", "English", "Arabic", "Czech", "Danish", "Dutch", "Finnish", "French", "German", "Greek", "Hebrew", "Hindi", "Hungarian", "Italian", "Japanese", "Korean", "Macedonian", "Malay", "Persian", "Polish", "Portuguese", "Romanian", "Russian", "Spanish", "Swahili", "Swedish", "Tagalog", "Thai", "Turkish", "Vietnamese"]

@@ -18,7 +18,7 @@ Supported engines:
 | Qwen3-TTS | Works (GPU required) | Japanese / English / Chinese and 10 languages |
 | VoxCPM2 | Works (GPU required) | Japanese / English / Chinese and 30 languages |
 | MOSS-TTS-Nano | Works (output truncated to ~2s) | Japanese / English / Chinese and 20 languages |
-| MOSS-TTS-v1.5 | Pending Colab verification (GPU required, ~16GB VRAM, L4 / A100) | Japanese / English / Chinese / Korean and 31 languages |
+| MOSS-TTS-v1.5 | Works on A100 (L4 22GB is insufficient — model + activations + audio tokenizer exceed 22GB) | Japanese / English / Chinese / Korean and 31 languages |
 | NeuTTS | Works (CPU OK, voice cloning) | English / Spanish / German / French |
 | TinyTTS | Works | English |
 | Supertonic | Works (CPU OK, ONNX, ~99M params) | English / Japanese / Korean and 31 languages |
@@ -201,9 +201,10 @@ MOSS_TTS_NANO_HF_MODEL = "OpenMOSS-Team/MOSS-TTS-Nano-100M"  #@param {type:"stri
 MOSS_TTS_NANO_MODE = "continuation"  #@param ["continuation", "voice_clone"]
 
 #@markdown ---
-#@markdown MOSS-TTS-v1.5 (A100/L4 GPU recommended, VRAM ~16GB, 31 languages, Apache 2.0)
+#@markdown MOSS-TTS-v1.5 (A100 required — L4 22GB is insufficient, 31 languages, Apache 2.0)
 #@markdown - 8B-parameter LLM-based TTS from [OpenMOSS/MOSS-TTS](https://github.com/OpenMOSS/MOSS-TTS) with zero-shot voice cloning.
-#@markdown - Installs with the upstream `[torch-runtime]` extra (`torch==2.9.1+cu128`, `transformers==5.0.0`) under a dedicated Python 3.12 venv.
+#@markdown - Verified on Colab A100; OOM-confirmed on Colab L4 (22GB) — transformers device_map pre-allocates ~22GB at load before the audio tokenizer is moved to GPU.
+#@markdown - Installs with the upstream `[torch-runtime]` extra (`torch==2.9.1+cu128`, `transformers==5.0.0`) plus `accelerate` under a dedicated Python 3.12 venv.
 #@markdown - License: code and weights are both Apache 2.0. Commercial use OK.
 MOSS_TTS_V1_5_HF_MODEL = "OpenMOSS-Team/MOSS-TTS-v1.5"  #@param {type:"string"}
 MOSS_TTS_V1_5_LANGUAGE = "Japanese"  #@param ["Chinese", "Cantonese", "English", "Arabic", "Czech", "Danish", "Dutch", "Finnish", "French", "German", "Greek", "Hebrew", "Hindi", "Hungarian", "Italian", "Japanese", "Korean", "Macedonian", "Malay", "Persian", "Polish", "Portuguese", "Romanian", "Russian", "Spanish", "Swahili", "Swedish", "Tagalog", "Thai", "Turkish", "Vietnamese"]
@@ -908,7 +909,7 @@ A lightweight multilingual TTS using [OpenMOSS/MOSS-TTS-Nano](https://github.com
 
 ### MOSS-TTS-v1.5
 
-An 8B-parameter LLM-based multilingual TTS using [OpenMOSS/MOSS-TTS](https://github.com/OpenMOSS/MOSS-TTS) with the `OpenMOSS-Team/MOSS-TTS-v1.5` weights on Hugging Face. Supports **31 languages** (Chinese, Cantonese, English, Arabic, Czech, Danish, Dutch, Finnish, French, German, Greek, Hebrew, Hindi, Hungarian, Italian, **Japanese**, Korean, Macedonian, Malay, Persian, Polish, Portuguese, Romanian, Russian, Spanish, Swahili, Swedish, Tagalog, Thai, Turkish, Vietnamese) with explicit language tagging via the `MOSS_TTS_V1_5_LANGUAGE` form field. Zero-shot voice cloning is supported by pointing `MOSS_TTS_V1_5_PROMPT_WAV` at a reference audio file and selecting `voice="clone"`. A GPU runtime is required — bf16 weights occupy roughly 16 GB of VRAM, so **Colab Pro with an L4 or A100 GPU is recommended** (T4 is likely OOM). The installer creates a dedicated Python 3.12 venv and installs the upstream `[torch-runtime]` extra, which pins `torch==2.9.1+cu128` and `transformers==5.0.0`. Default `attn_implementation` is `sdpa`; switch to `flash_attention_2` if your GPU has compute capability 8.0 or higher (L4, A100, H100). Output sample rate is whatever the processor reports via `processor.model_config.sampling_rate`. License: code and weights are both **Apache 2.0** (commercial use OK).
+An 8B-parameter LLM-based multilingual TTS using [OpenMOSS/MOSS-TTS](https://github.com/OpenMOSS/MOSS-TTS) with the `OpenMOSS-Team/MOSS-TTS-v1.5` weights on Hugging Face. Supports **31 languages** (Chinese, Cantonese, English, Arabic, Czech, Danish, Dutch, Finnish, French, German, Greek, Hebrew, Hindi, Hungarian, Italian, **Japanese**, Korean, Macedonian, Malay, Persian, Polish, Portuguese, Romanian, Russian, Spanish, Swahili, Swedish, Tagalog, Thai, Turkish, Vietnamese) with explicit language tagging via the `MOSS_TTS_V1_5_LANGUAGE` form field. Zero-shot voice cloning is supported by pointing `MOSS_TTS_V1_5_PROMPT_WAV` at a reference audio file and selecting `voice="clone"`. **Colab A100 is required** — although the bf16 weights are nominally ~16 GB, transformers' `device_map=` path pre-allocates KV cache and attention buffers that push the resident GPU footprint to ~22 GB *before* the audio tokenizer is moved to GPU, which exceeds L4's 22 GB total VRAM (verified end-to-end on Colab A100, OOM-confirmed on Colab L4). On A100 the full pipeline loads and synth completes in ~4 s per request at 24 kHz mono. The installer creates a dedicated Python 3.12 venv and installs the upstream `[torch-runtime]` extra (`torch==2.9.1+cu128`, `transformers==5.0.0`) plus `accelerate` (required by `device_map=`). Default `attn_implementation` is `sdpa`; switch to `flash_attention_2` only if you've installed `flash-attn` first. License: code and weights are both **Apache 2.0** (commercial use OK).
 
 ### NeuTTS
 
@@ -1326,7 +1327,7 @@ The license for each engine is as follows. When using them, always check each pr
 | Qwen3-TTS | Apache 2.0 | Apache 2.0 | OK | |
 | VoxCPM2 | Apache 2.0 | Apache 2.0 | OK | |
 | MOSS-TTS-Nano | Apache 2.0 | Apache 2.0 | OK | 100M params, CPU OK |
-| MOSS-TTS-v1.5 | Apache 2.0 | Apache 2.0 | OK | 8B params, GPU required (~16GB VRAM). 31 languages incl JP. Zero-shot voice cloning |
+| MOSS-TTS-v1.5 | Apache 2.0 | Apache 2.0 | OK | 8B params, **A100 required** (~22GB resident at load + audio tokenizer; L4 22GB is insufficient). 31 languages incl JP. Zero-shot voice cloning |
 | NeuTTS | Apache 2.0 | Apache 2.0 (Air) / NeuTTS Open License 1.0 (Nano) | OK (Air) / Check terms (Nano) | Voice cloning. EN / ES / DE / FR |
 | TinyTTS | Apache 2.0 | Apache 2.0 | OK | |
 | Supertonic | MIT | OpenRAIL-M | OK | 31 languages incl JP/KO/EN. CPU OK (ONNX). Use-based ethical restrictions (no impersonation/deepfakes) |

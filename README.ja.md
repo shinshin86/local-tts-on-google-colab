@@ -18,6 +18,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | Qwen3-TTS | 動作OK (GPU必須) | 日本語 / 英語 / 中国語 他 10言語 |
 | VoxCPM2 | 動作OK (GPU必須) | 日本語 / 英語 / 中国語 他 30言語 |
 | MOSS-TTS-Nano | 動作（出力が約2秒で切れる） | 日本語 / 英語 / 中国語 他 20言語 |
+| MOSS-TTS-v1.5 | A100 で動作確認（L4 22GB は VRAM 不足：モデル+activation+音声トークナイザーで超過） | 日本語 / 英語 / 中国語 / 韓国語 他 31言語 |
 | NeuTTS | 動作OK (CPU可・voice cloning) | 英語 / スペイン語 / ドイツ語 / フランス語 |
 | TinyTTS | 動作OK | 英語 |
 | Supertonic | 動作OK (CPU可・ONNX・~99M params) | 英語 / 日本語 / 韓国語 他 31言語 |
@@ -201,9 +202,10 @@ MOSS_TTS_NANO_HF_MODEL = "OpenMOSS-Team/MOSS-TTS-Nano-100M"  #@param {type:"stri
 MOSS_TTS_NANO_MODE = "continuation"  #@param ["continuation", "voice_clone"]
 
 #@markdown ---
-#@markdown MOSS-TTS-v1.5 (A100/L4 GPU recommended, VRAM ~16GB, 31 languages, Apache 2.0)
+#@markdown MOSS-TTS-v1.5 (A100 required — L4 22GB is insufficient, 31 languages, Apache 2.0)
 #@markdown - 8B-parameter LLM-based TTS from [OpenMOSS/MOSS-TTS](https://github.com/OpenMOSS/MOSS-TTS) with zero-shot voice cloning.
-#@markdown - Installs with the upstream `[torch-runtime]` extra (`torch==2.9.1+cu128`, `transformers==5.0.0`) under a dedicated Python 3.12 venv.
+#@markdown - Verified on Colab A100; OOM-confirmed on Colab L4 (22GB) — transformers device_map pre-allocates ~22GB at load before the audio tokenizer is moved to GPU.
+#@markdown - Installs with the upstream `[torch-runtime]` extra (`torch==2.9.1+cu128`, `transformers==5.0.0`) plus `accelerate` under a dedicated Python 3.12 venv.
 #@markdown - License: code and weights are both Apache 2.0. Commercial use OK.
 MOSS_TTS_V1_5_HF_MODEL = "OpenMOSS-Team/MOSS-TTS-v1.5"  #@param {type:"string"}
 MOSS_TTS_V1_5_LANGUAGE = "Japanese"  #@param ["Chinese", "Cantonese", "English", "Arabic", "Czech", "Danish", "Dutch", "Finnish", "French", "German", "Greek", "Hebrew", "Hindi", "Hungarian", "Italian", "Japanese", "Korean", "Macedonian", "Malay", "Persian", "Polish", "Portuguese", "Romanian", "Russian", "Spanish", "Swahili", "Swedish", "Tagalog", "Thai", "Turkish", "Vietnamese"]
@@ -908,7 +910,7 @@ GPU 必須: int4 パスは Triton カーネルを使用するため、Linux + CU
 
 ### MOSS-TTS-v1.5
 
-[OpenMOSS/MOSS-TTS](https://github.com/OpenMOSS/MOSS-TTS) の 8B パラメータ LLM ベース多言語 TTS で、Hugging Face の `OpenMOSS-Team/MOSS-TTS-v1.5` を使用します。中国語、広東語、英語、アラビア語、チェコ語、デンマーク語、オランダ語、フィンランド語、フランス語、ドイツ語、ギリシャ語、ヘブライ語、ヒンディー語、ハンガリー語、イタリア語、**日本語**、韓国語、マケドニア語、マレー語、ペルシャ語、ポーランド語、ポルトガル語、ルーマニア語、ロシア語、スペイン語、スワヒリ語、スウェーデン語、タガログ語、タイ語、トルコ語、ベトナム語の **31 言語**に対応します。フォームの `MOSS_TTS_V1_5_LANGUAGE` で言語タグを明示できます。`MOSS_TTS_V1_5_PROMPT_WAV` に参照音声を指定して `voice="clone"` を選ぶことでゼロショット voice cloning も使えます。GPU 必須（bf16 重みで VRAM 約 16GB）のため、**Colab Pro の L4 / A100 推奨**（T4 は OOM の可能性が高い）です。インストーラは専用の Python 3.12 venv を作成し、上流の `[torch-runtime]` extra（`torch==2.9.1+cu128` / `transformers==5.0.0` をピン留め）を導入します。`attn_implementation` のデフォルトは `sdpa` で、compute capability 8.0 以上（L4 / A100 / H100）なら `flash_attention_2` に切り替え可能です。出力サンプリングレートは `processor.model_config.sampling_rate` に従います。ライセンス: コード・重みとも **Apache 2.0**（商用利用 OK）。
+[OpenMOSS/MOSS-TTS](https://github.com/OpenMOSS/MOSS-TTS) の 8B パラメータ LLM ベース多言語 TTS で、Hugging Face の `OpenMOSS-Team/MOSS-TTS-v1.5` を使用します。中国語、広東語、英語、アラビア語、チェコ語、デンマーク語、オランダ語、フィンランド語、フランス語、ドイツ語、ギリシャ語、ヘブライ語、ヒンディー語、ハンガリー語、イタリア語、**日本語**、韓国語、マケドニア語、マレー語、ペルシャ語、ポーランド語、ポルトガル語、ルーマニア語、ロシア語、スペイン語、スワヒリ語、スウェーデン語、タガログ語、タイ語、トルコ語、ベトナム語の **31 言語**に対応します。フォームの `MOSS_TTS_V1_5_LANGUAGE` で言語タグを明示できます。`MOSS_TTS_V1_5_PROMPT_WAV` に参照音声を指定して `voice="clone"` を選ぶことでゼロショット voice cloning も使えます。**Colab A100 が必須**です — bf16 重みは公称 16 GB ですが、transformers の `device_map=` 経由ロードで KV cache / attention buffer まで先取り確保される結果、音声トークナイザーを GPU に移す前で既に約 22 GB を占有し、L4 (22 GB) ではこの段階で OOM します（Colab A100 で end-to-end 確認済み、L4 で OOM 再現済み）。A100 では合成は 1 リクエストあたり約 4 秒（24 kHz mono）で完了します。インストーラは専用の Python 3.12 venv を作成し、上流の `[torch-runtime]` extra（`torch==2.9.1+cu128` / `transformers==5.0.0`）と `accelerate`（`device_map=` に必要）を導入します。`attn_implementation` のデフォルトは `sdpa` で、`flash_attention_2` に切り替える場合は別途 `flash-attn` のインストールが必要です。ライセンス: コード・重みとも **Apache 2.0**（商用利用 OK）。
 
 ### NeuTTS
 
@@ -1326,7 +1328,7 @@ Scenema AI による zero-shot な表現力豊か / 演技指向 TTS です（[S
 | Qwen3-TTS | Apache 2.0 | Apache 2.0 | OK | |
 | VoxCPM2 | Apache 2.0 | Apache 2.0 | OK | |
 | MOSS-TTS-Nano | Apache 2.0 | Apache 2.0 | OK | 100M パラメータ、CPU 動作可 |
-| MOSS-TTS-v1.5 | Apache 2.0 | Apache 2.0 | OK | 8B パラメータ、GPU 必須（VRAM ~16GB）。31言語（日本語含む）。ゼロショット voice cloning |
+| MOSS-TTS-v1.5 | Apache 2.0 | Apache 2.0 | OK | 8B パラメータ、**A100 必須**（ロード時 ~22GB + 音声トークナイザー。L4 22GB は不足）。31言語（日本語含む）。ゼロショット voice cloning |
 | NeuTTS | Apache 2.0 | Apache 2.0 (Air) / NeuTTS Open License 1.0 (Nano) | OK (Air) / 規約要確認 (Nano) | ボイスクローン。英 / 西 / 独 / 仏 |
 | TinyTTS | Apache 2.0 | Apache 2.0 | OK | |
 | Supertonic | MIT | OpenRAIL-M | OK | 31言語（日 / 韓 / 英含む）。CPU 動作（ONNX）。なりすまし・ディープフェイク等の use-based ethical restrictions あり |
