@@ -62,14 +62,24 @@ def get_pipeline():
             MOSS_ATTN_IMPL,
         )
         processor = AutoProcessor.from_pretrained(MOSS_HF_MODEL, trust_remote_code=True)
-        processor.audio_tokenizer = processor.audio_tokenizer.to(_device)
-        model = AutoModel.from_pretrained(
-            MOSS_HF_MODEL,
-            trust_remote_code=True,
-            attn_implementation=MOSS_ATTN_IMPL,
-            torch_dtype=_dtype,
-        ).to(_device)
+        # Load the main 8B model first. device_map=_device streams weights
+        # directly to the target device instead of going CPU->GPU, which is the
+        # difference between fitting in L4's 22 GB and OOM (the .to(device)
+        # path keeps a CPU copy live during the transfer and peaks near 2x).
+        load_kwargs = {
+            "trust_remote_code": True,
+            "attn_implementation": MOSS_ATTN_IMPL,
+            "torch_dtype": _dtype,
+        }
+        if _device == "cuda":
+            load_kwargs["device_map"] = _device
+        model = AutoModel.from_pretrained(MOSS_HF_MODEL, **load_kwargs)
+        if _device != "cuda":
+            model = model.to(_device)
         model.eval()
+        # Move the audio tokenizer after the main model so its VRAM
+        # reservation doesn't eat into the budget during the big load.
+        processor.audio_tokenizer = processor.audio_tokenizer.to(_device)
         _processor = processor
         _model = model
         logger.info("MOSS-TTS-v1.5 loaded")
