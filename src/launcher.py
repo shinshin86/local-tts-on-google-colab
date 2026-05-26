@@ -74,6 +74,8 @@ def resolve_selected_voice(settings: Settings) -> str:
         return settings.dramabox_default_voice
     if settings.engine == "Scenema":
         return settings.scenema_default_voice
+    if settings.engine == "MOSS-TTS-v1.5":
+        return settings.moss_tts_v1_5_default_voice
     return ""
 
 
@@ -154,6 +156,24 @@ def print_engine_voice_hints(settings: Settings):
         print(f"mode: {settings.moss_tts_nano_mode}")
         print("voice パラメータは現在 'default'（プロンプトなしの plain TTS）のみ対応です。")
         print("注意: GPU 不要。ライセンス: Apache-2.0")
+    elif settings.engine == "MOSS-TTS-v1.5":
+        print("MOSS-TTS-v1.5 は OpenMOSS の 8B 多言語 TTS です（31言語、ゼロショット voice cloning、Apache-2.0）。")
+        print(f"モデル: {settings.moss_tts_v1_5_hf_model}")
+        print(f"language: {settings.moss_tts_v1_5_language}")
+        print(f"attn_impl: {settings.moss_tts_v1_5_attn_impl} / max_new_tokens: {settings.moss_tts_v1_5_max_new_tokens}")
+        print(f"デフォルト voice: {settings.moss_tts_v1_5_default_voice}")
+        print("voice 候補: default（参照音声なし、language タグのみ）")
+        if settings.moss_tts_v1_5_prompt_wav:
+            print(f"             clone（参照音声: {settings.moss_tts_v1_5_prompt_wav}）")
+        else:
+            print("             clone は --moss-tts-v1-5-prompt-wav を指定すると有効になります")
+        print("対応言語: Chinese / Cantonese / English / Arabic / Czech / Danish / Dutch / Finnish / French /")
+        print("           German / Greek / Hebrew / Hindi / Hungarian / Italian / Japanese / Korean / Macedonian /")
+        print("           Malay / Persian / Polish / Portuguese / Romanian / Russian / Spanish / Swahili /")
+        print("           Swedish / Tagalog / Thai / Turkish / Vietnamese（計 31 言語）")
+        print("注意: A100 必須（VRAM ~22GB resident + audio tokenizer。L4 22GB は不足し OOM 確認済み）。")
+        print("      Python 3.12 venv で torch 2.9.1+cu128 / transformers 5.0.0 / accelerate を導入します。")
+        print("ライセンス: コード / 重みとも Apache 2.0（商用 OK）。")
     elif settings.engine == "TinyTTS":
         print("TinyTTS は超軽量（~3.4MB）の英語専用 TTS です（CPU 動作、GPU 不要）。")
         print("voice パラメータは現在 'default' のみ対応です。")

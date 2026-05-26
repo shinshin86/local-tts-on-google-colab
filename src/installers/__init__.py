@@ -17,6 +17,7 @@ from .kyutai_tts import install as install_kyutai_tts
 from .maskgct import install as install_maskgct
 from .melo import install as install_melo
 from .moss_tts_nano import install as install_moss_tts_nano
+from .moss_tts_v1_5 import install as install_moss_tts_v1_5
 from .neutts import install as install_neutts
 from .openvoice_v2 import install as install_openvoice_v2
 from .orpheus import install as install_orpheus
@@ -56,6 +57,7 @@ INSTALLERS = {
     "MaskGCT": install_maskgct,
     "MeloTTS": install_melo,
     "MOSS-TTS-Nano": install_moss_tts_nano,
+    "MOSS-TTS-v1.5": install_moss_tts_v1_5,
     "NeuTTS": install_neutts,
     "OpenVoice-V2": install_openvoice_v2,
     "Orpheus-TTS": install_orpheus,

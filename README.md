@@ -18,6 +18,7 @@ Supported engines:
 | Qwen3-TTS | Works (GPU required) | Japanese / English / Chinese and 10 languages |
 | VoxCPM2 | Works (GPU required) | Japanese / English / Chinese and 30 languages |
 | MOSS-TTS-Nano | Works (output truncated to ~2s) | Japanese / English / Chinese and 20 languages |
+| MOSS-TTS-v1.5 | Works on A100 (L4 22GB is insufficient — model + activations + audio tokenizer exceed 22GB) | Japanese / English / Chinese / Korean and 31 languages |
 | NeuTTS | Works (CPU OK, voice cloning) | English / Spanish / German / French |
 | TinyTTS | Works | English |
 | Supertonic | Works (CPU OK, ONNX, ~99M params) | English / Japanese / Korean and 31 languages |
@@ -98,7 +99,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Irodori-TTS", "Irodori-TTS-Lite", "Kokoro", "Kyutai-TTS", "MaskGCT", "MeloTTS", "MOSS-TTS-Nano", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
+ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Irodori-TTS", "Irodori-TTS-Lite", "Kokoro", "Kyutai-TTS", "MaskGCT", "MeloTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -198,6 +199,19 @@ VOXCPM_INFERENCE_TIMESTEPS = 10  #@param {type:"integer"}
 #@markdown MOSS-TTS-Nano (CPU OK)
 MOSS_TTS_NANO_HF_MODEL = "OpenMOSS-Team/MOSS-TTS-Nano-100M"  #@param {type:"string"}
 MOSS_TTS_NANO_MODE = "continuation"  #@param ["continuation", "voice_clone"]
+
+#@markdown ---
+#@markdown MOSS-TTS-v1.5 (A100 required — L4 22GB is insufficient, 31 languages, Apache 2.0)
+#@markdown - 8B-parameter LLM-based TTS from [OpenMOSS/MOSS-TTS](https://github.com/OpenMOSS/MOSS-TTS) with zero-shot voice cloning.
+#@markdown - Verified on Colab A100; OOM-confirmed on Colab L4 (22GB) — transformers device_map pre-allocates ~22GB at load before the audio tokenizer is moved to GPU.
+#@markdown - Installs with the upstream `[torch-runtime]` extra (`torch==2.9.1+cu128`, `transformers==5.0.0`) plus `accelerate` under a dedicated Python 3.12 venv.
+#@markdown - License: code and weights are both Apache 2.0. Commercial use OK.
+MOSS_TTS_V1_5_HF_MODEL = "OpenMOSS-Team/MOSS-TTS-v1.5"  #@param {type:"string"}
+MOSS_TTS_V1_5_LANGUAGE = "Japanese"  #@param ["Chinese", "Cantonese", "English", "Arabic", "Czech", "Danish", "Dutch", "Finnish", "French", "German", "Greek", "Hebrew", "Hindi", "Hungarian", "Italian", "Japanese", "Korean", "Macedonian", "Malay", "Persian", "Polish", "Portuguese", "Romanian", "Russian", "Spanish", "Swahili", "Swedish", "Tagalog", "Thai", "Turkish", "Vietnamese"]
+MOSS_TTS_V1_5_PROMPT_WAV = ""  #@param {type:"string"}
+MOSS_TTS_V1_5_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+MOSS_TTS_V1_5_ATTN_IMPL = "sdpa"  #@param ["sdpa", "eager", "flash_attention_2"]
+MOSS_TTS_V1_5_MAX_NEW_TOKENS = 4096  #@param {type:"integer"}
 
 #@markdown ---
 #@markdown NeuTTS (CPU OK, EN/ES/DE/FR, voice cloning)
@@ -544,6 +558,18 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         MOSS_TTS_NANO_HF_MODEL,
         "--moss-tts-nano-mode",
         MOSS_TTS_NANO_MODE,
+        "--moss-tts-v1-5-hf-model",
+        MOSS_TTS_V1_5_HF_MODEL,
+        "--moss-tts-v1-5-language",
+        MOSS_TTS_V1_5_LANGUAGE,
+        "--moss-tts-v1-5-prompt-wav",
+        MOSS_TTS_V1_5_PROMPT_WAV,
+        "--moss-tts-v1-5-default-voice",
+        MOSS_TTS_V1_5_DEFAULT_VOICE,
+        "--moss-tts-v1-5-attn-impl",
+        MOSS_TTS_V1_5_ATTN_IMPL,
+        "--moss-tts-v1-5-max-new-tokens",
+        str(MOSS_TTS_V1_5_MAX_NEW_TOKENS),
         "--neutts-backbone-repo",
         NEUTTS_BACKBONE_REPO,
         "--neutts-codec-repo",
@@ -880,6 +906,10 @@ A high-quality TTS using [OpenBMB/VoxCPM](https://github.com/OpenBMB/VoxCPM). A 
 ### MOSS-TTS-Nano
 
 A lightweight multilingual TTS using [OpenMOSS/MOSS-TTS-Nano](https://github.com/OpenMOSS/MOSS-TTS-Nano). Only 0.1B (100M) parameters, supports 20 languages including Japanese / English / Chinese, and runs on CPU without a GPU. Default Hugging Face model: `OpenMOSS-Team/MOSS-TTS-Nano-100M`. Launched in `continuation` mode (plain TTS without a prompt audio). Output is 48 kHz stereo. License: Apache-2.0. Note: audio is generated successfully, but output is currently truncated to roughly the first ~2 seconds regardless of input length. The wrapper delegates generation to MOSS-TTS-Nano's `model.inference()`; exposing a length parameter on the upstream `inference()` API is likely needed to fix this.
+
+### MOSS-TTS-v1.5
+
+An 8B-parameter LLM-based multilingual TTS using [OpenMOSS/MOSS-TTS](https://github.com/OpenMOSS/MOSS-TTS) with the `OpenMOSS-Team/MOSS-TTS-v1.5` weights on Hugging Face. Supports **31 languages** (Chinese, Cantonese, English, Arabic, Czech, Danish, Dutch, Finnish, French, German, Greek, Hebrew, Hindi, Hungarian, Italian, **Japanese**, Korean, Macedonian, Malay, Persian, Polish, Portuguese, Romanian, Russian, Spanish, Swahili, Swedish, Tagalog, Thai, Turkish, Vietnamese) with explicit language tagging via the `MOSS_TTS_V1_5_LANGUAGE` form field. Zero-shot voice cloning is supported by pointing `MOSS_TTS_V1_5_PROMPT_WAV` at a reference audio file and selecting `voice="clone"`. **Colab A100 is required** — although the bf16 weights are nominally ~16 GB, transformers' `device_map=` path pre-allocates KV cache and attention buffers that push the resident GPU footprint to ~22 GB *before* the audio tokenizer is moved to GPU, which exceeds L4's 22 GB total VRAM (verified end-to-end on Colab A100, OOM-confirmed on Colab L4). On A100 the full pipeline loads and synth completes in ~4 s per request at 24 kHz mono. The installer creates a dedicated Python 3.12 venv and installs the upstream `[torch-runtime]` extra (`torch==2.9.1+cu128`, `transformers==5.0.0`) plus `accelerate` (required by `device_map=`). Default `attn_implementation` is `sdpa`; switch to `flash_attention_2` only if you've installed `flash-attn` first. License: code and weights are both **Apache 2.0** (commercial use OK).
 
 ### NeuTTS
 
@@ -1297,6 +1327,7 @@ The license for each engine is as follows. When using them, always check each pr
 | Qwen3-TTS | Apache 2.0 | Apache 2.0 | OK | |
 | VoxCPM2 | Apache 2.0 | Apache 2.0 | OK | |
 | MOSS-TTS-Nano | Apache 2.0 | Apache 2.0 | OK | 100M params, CPU OK |
+| MOSS-TTS-v1.5 | Apache 2.0 | Apache 2.0 | OK | 8B params, **A100 required** (~22GB resident at load + audio tokenizer; L4 22GB is insufficient). 31 languages incl JP. Zero-shot voice cloning |
 | NeuTTS | Apache 2.0 | Apache 2.0 (Air) / NeuTTS Open License 1.0 (Nano) | OK (Air) / Check terms (Nano) | Voice cloning. EN / ES / DE / FR |
 | TinyTTS | Apache 2.0 | Apache 2.0 | OK | |
 | Supertonic | MIT | OpenRAIL-M | OK | 31 languages incl JP/KO/EN. CPU OK (ONNX). Use-based ethical restrictions (no impersonation/deepfakes) |
@@ -1369,6 +1400,8 @@ This repository itself is intended for short-term operational verification and t
   https://github.com/supertone-inc/supertonic
 - MOSS-TTS-Nano
   https://github.com/OpenMOSS/MOSS-TTS-Nano
+- MOSS-TTS-v1.5
+  https://github.com/OpenMOSS/MOSS-TTS
 - NeuTTS
   https://github.com/neuphonic/neutts
 - Voxtral-TTS
