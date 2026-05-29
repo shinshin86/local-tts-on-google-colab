@@ -13,6 +13,7 @@ from .irodori import install as install_irodori
 from .irodori_lite import install as install_irodori_lite
 from .qwen3_tts import install as install_qwen3_tts
 from .kokoro import install as install_kokoro
+from .kokoro_onnx import install as install_kokoro_onnx
 from .kyutai_tts import install as install_kyutai_tts
 from .maskgct import install as install_maskgct
 from .melo import install as install_melo
@@ -53,6 +54,7 @@ INSTALLERS = {
     "Irodori-TTS": install_irodori,
     "Irodori-TTS-Lite": install_irodori_lite,
     "Kokoro": install_kokoro,
+    "Kokoro-ONNX": install_kokoro_onnx,
     "Kyutai-TTS": install_kyutai_tts,
     "MaskGCT": install_maskgct,
     "MeloTTS": install_melo,

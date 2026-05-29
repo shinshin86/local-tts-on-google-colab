@@ -44,6 +44,10 @@ def parse_args():
     parser.add_argument("--irodori-lite-codec-int4", action="store_true")
     parser.add_argument("--kokoro-default-voice", default="jf_alpha")
     parser.add_argument("--kokoro-default-lang-code", default="j")
+    parser.add_argument("--kokoro-onnx-hf-model", default="nvidia/kokoro-82M-onnx-opt")
+    parser.add_argument("--kokoro-onnx-default-voice", default="jf_alpha")
+    parser.add_argument("--kokoro-onnx-default-lang-code", default="j")
+    parser.add_argument("--kokoro-onnx-provider", default="auto", choices=["auto", "cuda", "cpu"])
     parser.add_argument("--kyutai-hf-repo", default="kyutai/tts-1.6b-en_fr")
     parser.add_argument("--kyutai-voice-repo", default="kyutai/tts-voices")
     parser.add_argument(
@@ -223,6 +227,10 @@ def main():
         irodori_lite_codec_int4=args.irodori_lite_codec_int4,
         kokoro_default_voice=args.kokoro_default_voice,
         kokoro_default_lang_code=args.kokoro_default_lang_code,
+        kokoro_onnx_hf_model=args.kokoro_onnx_hf_model,
+        kokoro_onnx_default_voice=args.kokoro_onnx_default_voice,
+        kokoro_onnx_default_lang_code=args.kokoro_onnx_default_lang_code,
+        kokoro_onnx_provider=args.kokoro_onnx_provider,
         kyutai_hf_repo=args.kyutai_hf_repo,
         kyutai_voice_repo=args.kyutai_voice_repo,
         kyutai_voice=args.kyutai_voice,

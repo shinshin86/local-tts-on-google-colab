@@ -35,6 +35,7 @@
       "Irodori-TTS",
       "Irodori-TTS-Lite",
       "Kokoro",
+      "Kokoro-ONNX",
       "Kyutai-TTS",
       "MaskGCT",
       "MeloTTS",
@@ -815,6 +816,79 @@
             "z"
           ],
           "flag": "--kokoro-default-lang-code"
+        }
+      ]
+    },
+    {
+      "id": "Kokoro-ONNX",
+      "title": "Kokoro-ONNX (NVIDIA-optimized Kokoro-82M, onnxruntime, GPU/CPU)",
+      "status": "Works",
+      "languages": "Japanese / English / Chinese and more",
+      "description": "NVIDIA's ONNX build of Kokoro-82M ([nvidia/kokoro-82M-onnx-opt](https://huggingface.co/nvidia/kokoro-82M-onnx-opt)), run through `onnxruntime` instead of PyTorch. It exposes all 53 preset voices from the model's `voices.bin` and supports the same 9 languages as Kokoro (American/British English, Spanish, French, Hindi, Italian, Japanese, Brazilian Portuguese, Mandarin Chinese). The language is inferred from the voice-name prefix (`a`/`b`=English, `e`=Spanish, `f`=French, `h`=Hindi, `i`=Italian, `j`=Japanese, `p`=Portuguese, `z`=Chinese).",
+      "notes": [
+        "- NVIDIA's ONNX build of hexgrad/Kokoro-82M, run via onnxruntime with misaki G2P. 53 preset voices, 9 languages.",
+        "- provider: auto/cuda prefer GPU and fall back to CPU; cpu forces CPU-only.",
+        "- License: Apache 2.0 for both code and weights ([nvidia/kokoro-82M-onnx-opt](https://huggingface.co/nvidia/kokoro-82M-onnx-opt), base [hexgrad/Kokoro-82M](https://huggingface.co/hexgrad/Kokoro-82M)). Commercial use OK."
+      ],
+      "prefix": "KOKORO_ONNX",
+      "params": [
+        {
+          "name": "KOKORO_ONNX_HF_MODEL",
+          "default": "nvidia/kokoro-82M-onnx-opt",
+          "type": "string",
+          "flag": "--kokoro-onnx-hf-model"
+        },
+        {
+          "name": "KOKORO_ONNX_DEFAULT_VOICE",
+          "default": "jf_alpha",
+          "type": "select",
+          "options": [
+            "jf_alpha",
+            "jf_gongitsune",
+            "jm_kumo",
+            "af_heart",
+            "af_bella",
+            "am_adam",
+            "am_michael",
+            "bf_emma",
+            "bm_george",
+            "zf_xiaobei",
+            "zm_yunjian",
+            "ef_dora",
+            "ff_siwis",
+            "hf_alpha",
+            "if_sara",
+            "pf_dora"
+          ],
+          "flag": "--kokoro-onnx-default-voice"
+        },
+        {
+          "name": "KOKORO_ONNX_DEFAULT_LANG_CODE",
+          "default": "j",
+          "type": "select",
+          "options": [
+            "j",
+            "a",
+            "b",
+            "e",
+            "f",
+            "h",
+            "i",
+            "p",
+            "z"
+          ],
+          "flag": "--kokoro-onnx-default-lang-code"
+        },
+        {
+          "name": "KOKORO_ONNX_PROVIDER",
+          "default": "auto",
+          "type": "select",
+          "options": [
+            "auto",
+            "cuda",
+            "cpu"
+          ],
+          "flag": "--kokoro-onnx-provider"
         }
       ]
     },

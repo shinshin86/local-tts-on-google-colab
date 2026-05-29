@@ -11,7 +11,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Irodori-TTS", "Irodori-TTS-Lite", "Kokoro", "Kyutai-TTS", "MaskGCT", "MeloTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
+ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Irodori-TTS", "Irodori-TTS-Lite", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "MaskGCT", "MeloTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -54,6 +54,16 @@ IRODORI_LITE_CODEC_INT4 = False  #@param {type:"boolean"}
 #@markdown - License: Apache 2.0 for both code ([hexgrad/kokoro](https://github.com/hexgrad/kokoro)) and weights ([hexgrad/Kokoro-82M](https://huggingface.co/hexgrad/Kokoro-82M)). Commercial use OK.
 KOKORO_DEFAULT_VOICE = "jf_alpha"  #@param ["jf_alpha", "jf_gongitsune", "jm_kumo", "af_heart", "af_bella", "am_adam", "bf_emma", "bm_george", "zf_xiaobei"]
 KOKORO_DEFAULT_LANG_CODE = "j"  #@param ["j", "a", "b", "e", "f", "h", "i", "p", "z"]
+
+#@markdown ---
+#@markdown Kokoro-ONNX (NVIDIA-optimized Kokoro-82M, onnxruntime, GPU/CPU)
+#@markdown - NVIDIA's ONNX build of hexgrad/Kokoro-82M, run via onnxruntime with misaki G2P. 53 preset voices, 9 languages.
+#@markdown - provider: auto/cuda prefer GPU and fall back to CPU; cpu forces CPU-only.
+#@markdown - License: Apache 2.0 for both code and weights ([nvidia/kokoro-82M-onnx-opt](https://huggingface.co/nvidia/kokoro-82M-onnx-opt), base [hexgrad/Kokoro-82M](https://huggingface.co/hexgrad/Kokoro-82M)). Commercial use OK.
+KOKORO_ONNX_HF_MODEL = "nvidia/kokoro-82M-onnx-opt"  #@param {type:"string"}
+KOKORO_ONNX_DEFAULT_VOICE = "jf_alpha"  #@param ["jf_alpha", "jf_gongitsune", "jm_kumo", "af_heart", "af_bella", "am_adam", "am_michael", "bf_emma", "bm_george", "zf_xiaobei", "zm_yunjian", "ef_dora", "ff_siwis", "hf_alpha", "if_sara", "pf_dora"]
+KOKORO_ONNX_DEFAULT_LANG_CODE = "j"  #@param ["j", "a", "b", "e", "f", "h", "i", "p", "z"]
+KOKORO_ONNX_PROVIDER = "auto"  #@param ["auto", "cuda", "cpu"]
 
 #@markdown ---
 #@markdown Kyutai-TTS (GPU recommended, English/French only, CC-BY-4.0 weights)
@@ -416,6 +426,14 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         KOKORO_DEFAULT_VOICE,
         "--kokoro-default-lang-code",
         KOKORO_DEFAULT_LANG_CODE,
+        "--kokoro-onnx-hf-model",
+        KOKORO_ONNX_HF_MODEL,
+        "--kokoro-onnx-default-voice",
+        KOKORO_ONNX_DEFAULT_VOICE,
+        "--kokoro-onnx-default-lang-code",
+        KOKORO_ONNX_DEFAULT_LANG_CODE,
+        "--kokoro-onnx-provider",
+        KOKORO_ONNX_PROVIDER,
         "--kyutai-hf-repo",
         KYUTAI_HF_REPO,
         "--kyutai-voice-repo",

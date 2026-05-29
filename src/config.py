@@ -16,6 +16,25 @@ KOKORO_VOICE_PRESETS = [
     "zf_xiaobei",
 ]
 
+KOKORO_ONNX_VOICE_PRESETS = [
+    "af_heart",
+    "af_bella",
+    "am_adam",
+    "am_michael",
+    "bf_emma",
+    "bm_george",
+    "jf_alpha",
+    "jf_gongitsune",
+    "jm_kumo",
+    "zf_xiaobei",
+    "zm_yunjian",
+    "ef_dora",
+    "ff_siwis",
+    "hf_alpha",
+    "if_sara",
+    "pf_dora",
+]
+
 NEUTTS_VOICE_PRESETS = ["dave", "jo", "greta", "juliette", "mateo"]
 
 MELO_VOICE_PRESETS = [
@@ -65,6 +84,10 @@ class Settings:
     irodori_lite_codec_int4: bool = False
     kokoro_default_voice: str = "jf_alpha"
     kokoro_default_lang_code: str = "j"
+    kokoro_onnx_hf_model: str = "nvidia/kokoro-82M-onnx-opt"
+    kokoro_onnx_default_voice: str = "jf_alpha"
+    kokoro_onnx_default_lang_code: str = "j"
+    kokoro_onnx_provider: str = "auto"
     kyutai_hf_repo: str = "kyutai/tts-1.6b-en_fr"
     kyutai_voice_repo: str = "kyutai/tts-voices"
     kyutai_voice: str = "expresso/ex03-ex01_happy_001_channel1_334s.wav"
