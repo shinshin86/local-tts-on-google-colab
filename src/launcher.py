@@ -8,7 +8,13 @@ import subprocess
 import sys
 import time
 
-from src.config import KOKORO_VOICE_PRESETS, MELO_VOICE_PRESETS, NEUTTS_VOICE_PRESETS, Settings
+from src.config import (
+    KOKORO_ONNX_VOICE_PRESETS,
+    KOKORO_VOICE_PRESETS,
+    MELO_VOICE_PRESETS,
+    NEUTTS_VOICE_PRESETS,
+    Settings,
+)
 from src.installers import INSTALLERS
 from src.runtime import (
     ensure_cloudflared,
@@ -26,6 +32,8 @@ def resolve_selected_voice(settings: Settings) -> str:
         return settings.test_voice
     if settings.engine == "Kokoro":
         return settings.kokoro_default_voice
+    if settings.engine == "Kokoro-ONNX":
+        return settings.kokoro_onnx_default_voice
     if settings.engine == "MeloTTS":
         return settings.melo_default_voice
     if settings.engine == "NeuTTS":
@@ -96,6 +104,18 @@ def print_engine_voice_hints(settings: Settings):
     elif settings.engine == "Kokoro":
         print("Kokoro はフォームで音声を選択できます。")
         print("候補:", ", ".join(KOKORO_VOICE_PRESETS))
+    elif settings.engine == "Kokoro-ONNX":
+        print("Kokoro-ONNX は NVIDIA が最適化した Kokoro-82M の ONNX 版です（onnxruntime で実行、GPU/CPU 両対応）。")
+        print(f"モデル: {settings.kokoro_onnx_hf_model}")
+        print(f"provider: {settings.kokoro_onnx_provider}（auto/cuda は GPU 優先・CPU フォールバック、cpu は CPU 強制）")
+        print(f"デフォルト voice: {settings.kokoro_onnx_default_voice}")
+        print("候補(代表例):", ", ".join(KOKORO_ONNX_VOICE_PRESETS))
+        print("全 53 voice は起動後の /v1/voices を参照してください。")
+        print("言語は voice 名の接頭辞から自動判定します:")
+        print("  a/b=英語(米/英), e=西語, f=仏語, h=ヒンディー, i=伊語, j=日本語, p=ポルトガル語(ブラジル), z=中国語")
+        print("音素化は misaki（j=ja, z=zh, a/b=en+espeak fallback, e/f/h/i/p=espeak）で行います。")
+        print("注意: GPU 不要でも動作（82M と軽量）。Voice cloning は未対応（preset のみ）。")
+        print("ライセンス: コード / 重みとも Apache-2.0（商用 OK）。ベースは hexgrad/Kokoro-82M。")
     elif settings.engine == "MeloTTS":
         print("MeloTTS はフォームで代表的な voice を選択できます。")
         print("候補:", ", ".join(MELO_VOICE_PRESETS))

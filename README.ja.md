@@ -11,6 +11,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | エンジン | Colab 動作確認 | 言語 |
 |---|---|---|
 | Kokoro | 動作OK | 日本語 / 英語 / 中国語 他 |
+| Kokoro-ONNX | 動作OK | 日本語 / 英語 / 中国語 他 |
 | Irodori-TTS | 動作OK | 日本語 |
 | Irodori-TTS-Lite | 動作OK（GPU 必須、VRAM ~1GB、int4 量子化） | 日本語 |
 | Piper | 動作OK | 英語（デフォルト）/ 多言語 |
@@ -100,7 +101,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Irodori-TTS", "Irodori-TTS-Lite", "Kokoro", "Kyutai-TTS", "MaskGCT", "MeloTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
+ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Irodori-TTS", "Irodori-TTS-Lite", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "MaskGCT", "MeloTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -143,6 +144,16 @@ IRODORI_LITE_CODEC_INT4 = False  #@param {type:"boolean"}
 #@markdown - License: Apache 2.0 for both code ([hexgrad/kokoro](https://github.com/hexgrad/kokoro)) and weights ([hexgrad/Kokoro-82M](https://huggingface.co/hexgrad/Kokoro-82M)). Commercial use OK.
 KOKORO_DEFAULT_VOICE = "jf_alpha"  #@param ["jf_alpha", "jf_gongitsune", "jm_kumo", "af_heart", "af_bella", "am_adam", "bf_emma", "bm_george", "zf_xiaobei"]
 KOKORO_DEFAULT_LANG_CODE = "j"  #@param ["j", "a", "b", "e", "f", "h", "i", "p", "z"]
+
+#@markdown ---
+#@markdown Kokoro-ONNX (NVIDIA-optimized Kokoro-82M, onnxruntime, GPU/CPU)
+#@markdown - NVIDIA's ONNX build of hexgrad/Kokoro-82M, run via onnxruntime with misaki G2P. 53 preset voices, 9 languages.
+#@markdown - provider: auto/cuda prefer GPU and fall back to CPU; cpu forces CPU-only.
+#@markdown - License: Apache 2.0 for both code and weights ([nvidia/kokoro-82M-onnx-opt](https://huggingface.co/nvidia/kokoro-82M-onnx-opt), base [hexgrad/Kokoro-82M](https://huggingface.co/hexgrad/Kokoro-82M)). Commercial use OK.
+KOKORO_ONNX_HF_MODEL = "nvidia/kokoro-82M-onnx-opt"  #@param {type:"string"}
+KOKORO_ONNX_DEFAULT_VOICE = "jf_alpha"  #@param ["jf_alpha", "jf_gongitsune", "jm_kumo", "af_heart", "af_bella", "am_adam", "am_michael", "bf_emma", "bm_george", "zf_xiaobei", "zm_yunjian", "ef_dora", "ff_siwis", "hf_alpha", "if_sara", "pf_dora"]
+KOKORO_ONNX_DEFAULT_LANG_CODE = "j"  #@param ["j", "a", "b", "e", "f", "h", "i", "p", "z"]
+KOKORO_ONNX_PROVIDER = "auto"  #@param ["auto", "cuda", "cpu"]
 
 #@markdown ---
 #@markdown Kyutai-TTS (GPU recommended, English/French only, CC-BY-4.0 weights)
@@ -505,6 +516,14 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         KOKORO_DEFAULT_VOICE,
         "--kokoro-default-lang-code",
         KOKORO_DEFAULT_LANG_CODE,
+        "--kokoro-onnx-hf-model",
+        KOKORO_ONNX_HF_MODEL,
+        "--kokoro-onnx-default-voice",
+        KOKORO_ONNX_DEFAULT_VOICE,
+        "--kokoro-onnx-default-lang-code",
+        KOKORO_ONNX_DEFAULT_LANG_CODE,
+        "--kokoro-onnx-provider",
+        KOKORO_ONNX_PROVIDER,
         "--kyutai-hf-repo",
         KYUTAI_HF_REPO,
         "--kyutai-voice-repo",
@@ -865,6 +884,14 @@ main()
 ### Kokoro
 
 [hexgrad/kokoro](https://github.com/hexgrad/kokoro) を使った日本語・英語・中国語対応の軽量 TTS です。デフォルト voice は日本語の `jf_alpha` で、フォームから 9 種類の voice を選べます。
+
+### Kokoro-ONNX
+
+NVIDIA が Kokoro-82M を ONNX 化したモデル（[nvidia/kokoro-82M-onnx-opt](https://huggingface.co/nvidia/kokoro-82M-onnx-opt)）を、PyTorch ではなく `onnxruntime` で実行するエンジンです。モデル同梱の `voices.bin` から 53 種類すべての preset voice を公開し、Kokoro と同じ 9 言語（米/英英語・スペイン語・フランス語・ヒンディー語・イタリア語・日本語・ブラジルポルトガル語・中国語）に対応します。言語は voice 名の接頭辞（`a`/`b`=英語, `e`=西語, `f`=仏語, `h`=ヒンディー, `i`=伊語, `j`=日本語, `p`=ポルトガル語, `z`=中国語）から自動判定します。
+
+音素化には Kokoro 公式の G2P である [misaki](https://github.com/hexgrad/misaki) を使用します（日本語=`ja`、中国語=`zh`、英語=`en`+espeak-ng フォールバック、スペイン/フランス/ヒンディー/イタリア/ポルトガル=espeak-ng）。NVIDIA は本モデルを Windows/ONNXRuntime-EP 向けの独自フォニマイザ資産付きで配布しているため、本ラッパーは ONNX グラフ（`tokens` / `style` / `speed` → `audio`）を直接駆動し、音素は misaki から供給することで Colab(Linux) で動く形にしています。
+
+`KOKORO_ONNX_PROVIDER` で実行プロバイダを選べます。`auto`（デフォルト）と `cuda` は GPU 優先・CPU フォールバック、`cpu` は CPU 強制です。82M と軽量なため GPU でも CPU でも快適に動作します。デフォルト voice は日本語の `jf_alpha` で、全 voice は `/v1/voices` で確認できます。Voice cloning は非対応（preset のみ）です。PyTorch 版の `Kokoro` とは別エンジンなので、両方を個別に選択できます。
 
 ### Irodori-TTS
 
@@ -1321,6 +1348,7 @@ Scenema AI による zero-shot な表現力豊か / 演技指向 TTS です（[S
 | エンジン | コード | モデル重み | 商用利用 | 備考 |
 |---|---|---|---|---|
 | Kokoro | Apache 2.0 | Apache 2.0 | OK | |
+| Kokoro-ONNX | Apache 2.0 | Apache 2.0 | OK | NVIDIA による hexgrad/Kokoro-82M の ONNX 再配布。コード・重みとも Apache 2.0 |
 | Irodori-TTS | MIT | MIT (v1 / v2 / v3) | OK | なりすまし・ディープフェイク生成を禁止する倫理規定あり。V3 は SilentCipher ウォーターマーク同梱（除去禁止） |
 | Irodori-TTS-Lite | MIT | MIT (`kizuna-intelligence/Irodori-TTS-Lite-int4`, `kizuna-intelligence/Irodori-TTS-500M-v3-int4`) | OK | Irodori-TTS 用の int4 量子化ランタイム。Triton カーネル使用のため Linux + CUDA 必須。`fused_int4_linear.py` は OneCompression（Fujitsu Ltd., MIT）からベンダリング |
 | Piper | GPL-3.0 | MIT | 要注意 | デフォルト音声 `en_US-lessac-medium` の学習データ（Blizzard 2013）は研究目的限定・商用利用不可 |
@@ -1383,6 +1411,8 @@ Scenema AI による zero-shot な表現力豊か / 演技指向 TTS です（[S
   https://github.com/kizuna-intelligence/Irodori-TTS-Lite
 - Kokoro
   https://github.com/hexgrad/kokoro
+- Kokoro-ONNX
+  https://huggingface.co/nvidia/kokoro-82M-onnx-opt
 - MeloTTS
   https://github.com/myshell-ai/MeloTTS
 - Style-Bert-VITS2
