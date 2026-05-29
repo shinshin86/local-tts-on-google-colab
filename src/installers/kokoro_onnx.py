@@ -27,6 +27,17 @@ def install(settings: Settings) -> dict:
             "unidic",
         ],
     )
+    # misaki's English G2P (en.G2P) requires the spaCy en_core_web_sm model for
+    # POS tagging. It is not pulled by misaki[en], and `spacy download` does not
+    # target a pip-less uv venv, so install the matching wheel explicitly
+    # (spaCy 3.8.x -> en_core_web_sm 3.8.0).
+    uv_pip_install(
+        python_bin,
+        [
+            "https://github.com/explosion/spacy-models/releases/download/"
+            "en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl"
+        ],
+    )
     # JAG2P (Japanese) needs the full UniDic dictionary, not just unidic-lite.
     run([str(python_bin), "-m", "unidic", "download"], cwd=str(engine_dir))
     write_text(engine_dir / "app.py", settings.read_repo_text("src/apps/kokoro_onnx_app.py"))
