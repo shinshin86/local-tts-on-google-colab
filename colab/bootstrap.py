@@ -154,6 +154,7 @@ def parse_args():
     parser.add_argument("--misotts-max-audio-length-ms", type=int, default=30000)
     parser.add_argument("--misotts-temperature", type=float, default=0.9)
     parser.add_argument("--misotts-topk", type=int, default=50)
+    parser.add_argument("--misotts-tokenizer-repo", default="unsloth/Llama-3.2-1B")
     parser.add_argument("--styletts2-default-voice", default="default")
     parser.add_argument("--styletts2-prompt-wav", default="")
     parser.add_argument("--styletts2-alpha", type=float, default=0.3)
@@ -343,6 +344,7 @@ def main():
         misotts_max_audio_length_ms=args.misotts_max_audio_length_ms,
         misotts_temperature=args.misotts_temperature,
         misotts_topk=args.misotts_topk,
+        misotts_tokenizer_repo=args.misotts_tokenizer_repo,
         styletts2_default_voice=args.styletts2_default_voice,
         styletts2_prompt_wav=args.styletts2_prompt_wav,
         styletts2_alpha=args.styletts2_alpha,

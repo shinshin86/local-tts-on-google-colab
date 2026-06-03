@@ -57,6 +57,7 @@ def install(settings: Settings) -> dict:
         "MISOTTS_MAX_AUDIO_LENGTH_MS": str(settings.misotts_max_audio_length_ms),
         "MISOTTS_TEMPERATURE": str(settings.misotts_temperature),
         "MISOTTS_TOPK": str(settings.misotts_topk),
+        "MISOTTS_TOKENIZER_REPO": settings.misotts_tokenizer_repo,
     }
     proc = popen(
         [

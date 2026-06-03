@@ -263,8 +263,8 @@ CSM_TEMPERATURE = 0.9  #@param {type:"number"}
 
 #@markdown ---
 #@markdown MisoTTS (A100 required — Sesame CSM fork, 8B, English-centric, Modified MIT)
-#@markdown - **HF gated**: the tokenizer loads `meta-llama/Llama-3.2-1B`. Accept the Llama 3.2 Community License at https://huggingface.co/meta-llama/Llama-3.2-1B and set `HF_TOKEN` in Colab Secrets, or the first request fails with `OSError: gated repo ... 401`.
-#@markdown - License: MisoTTS code & weights are **Modified MIT** ([MisoLabsAI/MisoTTS](https://github.com/MisoLabsAI/MisoTTS), [MisoLabs/MisoTTS](https://huggingface.co/MisoLabs/MisoTTS)) — commercial use OK, but products with >50M MAU or >$10M/month revenue must display "Miso Labs" in the UI. The gated Llama-3.2-1B tokenizer adds the **Llama 3.2 Community License**. Output carries an inaudible SilentCipher watermark applied inside `generate()` (do not remove).
+#@markdown - **No HF_TOKEN needed**: `generator.py` hardcodes the gated `meta-llama/Llama-3.2-1B` tokenizer, so the wrapper redirects it to the ungated, byte-identical `MISOTTS_TOKENIZER_REPO` (default `unsloth/Llama-3.2-1B`). Set it to `meta-llama/Llama-3.2-1B` (with `HF_TOKEN` + license acceptance) to use the official source instead.
+#@markdown - License: MisoTTS code & weights are **Modified MIT** ([MisoLabsAI/MisoTTS](https://github.com/MisoLabsAI/MisoTTS), [MisoLabs/MisoTTS](https://huggingface.co/MisoLabs/MisoTTS)) — commercial use OK, but products with >50M MAU or >$10M/month revenue must display "Miso Labs" in the UI. The Llama 3.2 tokenizer (ungated mirror or official) is governed by the **Llama 3.2 Community License**. Output carries an inaudible SilentCipher watermark applied inside `generate()` (do not remove).
 #@markdown - The ~32GB F32 checkpoint loads as bf16 (~16GB on GPU). `voice="clone"` needs `MISOTTS_PROMPT_WAV` (optionally `MISOTTS_PROMPT_TEXT`); otherwise use `voice="default"` / `speaker_<int>`.
 MISOTTS_HF_MODEL = "MisoLabs/MisoTTS"  #@param {type:"string"}
 MISOTTS_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
@@ -274,6 +274,7 @@ MISOTTS_PROMPT_TEXT = ""  #@param {type:"string"}
 MISOTTS_MAX_AUDIO_LENGTH_MS = 30000  #@param {type:"integer"}
 MISOTTS_TEMPERATURE = 0.9  #@param {type:"number"}
 MISOTTS_TOPK = 50  #@param {type:"integer"}
+MISOTTS_TOKENIZER_REPO = "unsloth/Llama-3.2-1B"  #@param {type:"string"}
 
 #@markdown ---
 #@markdown StyleTTS 2 (GPU recommended, English-only, MIT code / Custom weights)
@@ -646,6 +647,8 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         str(MISOTTS_TEMPERATURE),
         "--misotts-topk",
         str(MISOTTS_TOPK),
+        "--misotts-tokenizer-repo",
+        MISOTTS_TOKENIZER_REPO,
         "--styletts2-default-voice",
         STYLETTS2_DEFAULT_VOICE,
         "--styletts2-prompt-wav",

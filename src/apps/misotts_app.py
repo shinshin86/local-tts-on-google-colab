@@ -30,6 +30,29 @@ PROMPT_TEXT = os.environ.get("MISOTTS_PROMPT_TEXT", "")
 MAX_AUDIO_LENGTH_MS = float(os.environ.get("MISOTTS_MAX_AUDIO_LENGTH_MS", "30000"))
 TEMPERATURE = float(os.environ.get("MISOTTS_TEMPERATURE", "0.9"))
 TOPK = int(os.environ.get("MISOTTS_TOPK", "50"))
+# Upstream generator.py hardcodes AutoTokenizer.from_pretrained("meta-llama/Llama-3.2-1B"),
+# which is HF-gated. Redirect it to an ungated mirror that ships byte-identical tokenizer
+# files (same 128k Llama 3 vocab, same special-token ids) so the engine runs without the HF
+# access-request gate / HF_TOKEN. The Llama 3.2 Community License still governs the tokenizer.
+# Set MISOTTS_TOKENIZER_REPO="meta-llama/Llama-3.2-1B" (with HF_TOKEN) to use the official source.
+TOKENIZER_REPO = os.environ.get("MISOTTS_TOKENIZER_REPO", "unsloth/Llama-3.2-1B")
+
+
+def _redirect_llama_tokenizer():
+    if not TOKENIZER_REPO or TOKENIZER_REPO == "meta-llama/Llama-3.2-1B":
+        return
+    import transformers
+
+    _orig = transformers.AutoTokenizer.from_pretrained
+
+    def _patched(name, *args, **kwargs):
+        if name == "meta-llama/Llama-3.2-1B":
+            logger.info("Redirecting Llama tokenizer %s -> %s", name, TOKENIZER_REPO)
+            name = TOKENIZER_REPO
+        return _orig(name, *args, **kwargs)
+
+    transformers.AutoTokenizer.from_pretrained = _patched
+
 
 app = FastAPI(title="MisoTTS 8B OpenAI Compatible TTS")
 
@@ -59,6 +82,7 @@ def get_generator():
     global _generator
     if _generator is None:
         device = "cuda" if torch.cuda.is_available() else "cpu"
+        _redirect_llama_tokenizer()
         logger.info("Loading MisoTTS 8B (%s) on %s", HF_MODEL, device)
         _generator = load_miso_8b(device=device, model_path_or_repo_id=HF_MODEL)
         logger.info("MisoTTS 8B loaded (sample_rate=%d)", _generator.sample_rate)

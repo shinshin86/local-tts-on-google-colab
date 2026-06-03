@@ -192,6 +192,9 @@ class Settings:
     misotts_max_audio_length_ms: int = 30000
     misotts_temperature: float = 0.9
     misotts_topk: int = 50
+    # Ungated mirror of the Llama 3.2 tokenizer (byte-identical to the gated
+    # meta-llama/Llama-3.2-1B). Set to "meta-llama/Llama-3.2-1B" (+ HF_TOKEN) for the official source.
+    misotts_tokenizer_repo: str = "unsloth/Llama-3.2-1B"
     styletts2_default_voice: str = "default"
     styletts2_prompt_wav: str = ""
     styletts2_alpha: float = 0.3
