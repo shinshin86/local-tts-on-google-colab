@@ -68,6 +68,8 @@ def resolve_selected_voice(settings: Settings) -> str:
         return settings.chattts_default_voice
     if settings.engine == "CSM-1B":
         return settings.csm_default_voice
+    if settings.engine == "MisoTTS":
+        return settings.misotts_default_voice
     if settings.engine == "StyleTTS2":
         return settings.styletts2_default_voice
     if settings.engine == "MaskGCT":
@@ -403,6 +405,21 @@ def print_engine_voice_hints(settings: Settings):
         print("HF gated: 初回利用時に sesame/csm-1b と meta-llama/Llama-3.2-1B 双方の同意が必要です。")
         print("          Colab Secrets で HF_TOKEN を設定してください。")
         print("ライセンス: コードと重みとも Apache 2.0（商用 OK）。Llama-3.2-1B は Llama 3.2 Community License。")
+    elif settings.engine == "MisoTTS":
+        print("MisoTTS は Miso Labs の対話特化 8B TTS です（Sesame CSM フォーク、Llama 8B backbone + 300M audio decoder + Mimi codec）。")
+        print(f"モデル: {settings.misotts_hf_model}")
+        print(f"デフォルト voice: {settings.misotts_default_voice} / speaker_id: {settings.misotts_default_speaker}")
+        print(f"max_audio_length_ms: {settings.misotts_max_audio_length_ms} / temperature: {settings.misotts_temperature} / topk: {settings.misotts_topk}")
+        print("voice 候補: default, speaker_0, speaker_1, ...（任意の整数 speaker_id）")
+        if settings.misotts_prompt_wav:
+            print(f"             clone（参照音声: {settings.misotts_prompt_wav} / 書き起こし: {settings.misotts_prompt_text}）")
+        else:
+            print("             clone は --misotts-prompt-wav を指定すると有効になります（任意で --misotts-prompt-text も併用）")
+        print("対応言語: 英語中心（CSM / Llama 系譜）。対応言語は upstream で明記されていません。")
+        print("注意: 8B モデルのため A100 必須（bf16 重み ~16GB + Mimi codec/活性化。T4/L4 では OOM の想定）。")
+        print("      Python 3.11 venv を作成し torch==2.4.0（CSM と同じ pin）をインストールします。")
+        print("生成音声には SilentCipher による不可聴ウォーターマークが generate() 内で常時付与されます（除去禁止）。")
+        print("ライセンス: コード / 重みとも Modified MIT（商用 OK。MAU 5,000万超 or 月商 $1,000万超の製品は UI に 'Miso Labs' 表示義務）。")
     elif settings.engine == "ChatTTS":
         print("ChatTTS は 2noise の対話特化 TTS です（笑い声 / ためらい / ポーズなどを表現）。")
         print(f"デフォルト voice: {settings.chattts_default_voice}")

@@ -146,6 +146,14 @@ def parse_args():
     parser.add_argument("--csm-default-speaker", type=int, default=0)
     parser.add_argument("--csm-max-audio-length-ms", type=int, default=10000)
     parser.add_argument("--csm-temperature", type=float, default=0.9)
+    parser.add_argument("--misotts-hf-model", default="MisoLabs/MisoTTS")
+    parser.add_argument("--misotts-default-voice", default="default")
+    parser.add_argument("--misotts-default-speaker", type=int, default=0)
+    parser.add_argument("--misotts-prompt-wav", default="")
+    parser.add_argument("--misotts-prompt-text", default="")
+    parser.add_argument("--misotts-max-audio-length-ms", type=int, default=30000)
+    parser.add_argument("--misotts-temperature", type=float, default=0.9)
+    parser.add_argument("--misotts-topk", type=int, default=50)
     parser.add_argument("--styletts2-default-voice", default="default")
     parser.add_argument("--styletts2-prompt-wav", default="")
     parser.add_argument("--styletts2-alpha", type=float, default=0.3)
@@ -327,6 +335,14 @@ def main():
         csm_default_speaker=args.csm_default_speaker,
         csm_max_audio_length_ms=args.csm_max_audio_length_ms,
         csm_temperature=args.csm_temperature,
+        misotts_hf_model=args.misotts_hf_model,
+        misotts_default_voice=args.misotts_default_voice,
+        misotts_default_speaker=args.misotts_default_speaker,
+        misotts_prompt_wav=args.misotts_prompt_wav,
+        misotts_prompt_text=args.misotts_prompt_text,
+        misotts_max_audio_length_ms=args.misotts_max_audio_length_ms,
+        misotts_temperature=args.misotts_temperature,
+        misotts_topk=args.misotts_topk,
         styletts2_default_voice=args.styletts2_default_voice,
         styletts2_prompt_wav=args.styletts2_prompt_wav,
         styletts2_alpha=args.styletts2_alpha,

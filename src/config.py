@@ -184,6 +184,14 @@ class Settings:
     csm_default_speaker: int = 0
     csm_max_audio_length_ms: int = 10000
     csm_temperature: float = 0.9
+    misotts_hf_model: str = "MisoLabs/MisoTTS"
+    misotts_default_voice: str = "default"
+    misotts_default_speaker: int = 0
+    misotts_prompt_wav: str = ""
+    misotts_prompt_text: str = ""
+    misotts_max_audio_length_ms: int = 30000
+    misotts_temperature: float = 0.9
+    misotts_topk: int = 50
     styletts2_default_voice: str = "default"
     styletts2_prompt_wav: str = ""
     styletts2_alpha: float = 0.3

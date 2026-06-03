@@ -43,6 +43,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | Bark | Colab 動作確認済み (GPU推奨・~12GB / small=8GB) | 英語 / 日本語 / 中国語 他 13言語 |
 | ChatTTS | Colab 動作確認済み (GPU推奨・**商用不可**) | 英語 / 中国語 |
 | CSM-1B | デフォルトで動作不可（`sesame/csm-1b` と `meta-llama/Llama-3.2-1B` の HF gated。両方のライセンス同意 + `HF_TOKEN` が必要） | 英語（Llama-3.2-1B ベース + Mimi codec） |
+| MisoTTS | A100 で動作（8B の Sesame-CSM フォーク、bf16 重み ~16GB。T4/L4 は OOM の想定） | 英語中心（Llama 8B ベース + Mimi codec。その他言語は upstream 未記載） |
 | StyleTTS2 | Colab 動作確認済み (GPU推奨・Python 3.11 venv) | 英語 |
 | MaskGCT | Colab 動作確認済み (GPU必須・~10-12GB・**商用不可**) | 英語 / 中国語 |
 | GPT-SoVITS | Colab でエンジン起動確認済み（synthesis には参照音声必須・default speaker モード非対応・`--gpt-sovits-prompt-wav` と `--gpt-sovits-prompt-text` を指定） | 中 / 英 / 日 / 韓 / 粤 |
@@ -101,7 +102,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Irodori-TTS", "Irodori-TTS-Lite", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "MaskGCT", "MeloTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
+ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Irodori-TTS", "Irodori-TTS-Lite", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "MaskGCT", "MeloTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -350,6 +351,19 @@ CSM_DEFAULT_VOICE = "default"  #@param {type:"string"}
 CSM_DEFAULT_SPEAKER = 0  #@param {type:"integer"}
 CSM_MAX_AUDIO_LENGTH_MS = 10000  #@param {type:"integer"}
 CSM_TEMPERATURE = 0.9  #@param {type:"number"}
+
+#@markdown ---
+#@markdown MisoTTS (A100 required — Sesame CSM fork, 8B, English-centric, Modified MIT)
+#@markdown - License: code & weights are **Modified MIT** ([MisoLabsAI/MisoTTS](https://github.com/MisoLabsAI/MisoTTS), [MisoLabs/MisoTTS](https://huggingface.co/MisoLabs/MisoTTS)). Commercial use is OK; products with >50M MAU or >$10M/month revenue must display "Miso Labs" in the UI. Output carries an inaudible SilentCipher watermark applied inside `generate()` (do not remove).
+#@markdown - `voice="clone"` needs `MISOTTS_PROMPT_WAV` (optionally `MISOTTS_PROMPT_TEXT`); otherwise use `voice="default"` / `speaker_<int>`.
+MISOTTS_HF_MODEL = "MisoLabs/MisoTTS"  #@param {type:"string"}
+MISOTTS_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+MISOTTS_DEFAULT_SPEAKER = 0  #@param {type:"integer"}
+MISOTTS_PROMPT_WAV = ""  #@param {type:"string"}
+MISOTTS_PROMPT_TEXT = ""  #@param {type:"string"}
+MISOTTS_MAX_AUDIO_LENGTH_MS = 30000  #@param {type:"integer"}
+MISOTTS_TEMPERATURE = 0.9  #@param {type:"number"}
+MISOTTS_TOPK = 50  #@param {type:"integer"}
 
 #@markdown ---
 #@markdown StyleTTS 2 (GPU recommended, English-only, MIT code / Custom weights)
@@ -706,6 +720,22 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         str(CSM_MAX_AUDIO_LENGTH_MS),
         "--csm-temperature",
         str(CSM_TEMPERATURE),
+        "--misotts-hf-model",
+        MISOTTS_HF_MODEL,
+        "--misotts-default-voice",
+        MISOTTS_DEFAULT_VOICE,
+        "--misotts-default-speaker",
+        str(MISOTTS_DEFAULT_SPEAKER),
+        "--misotts-prompt-wav",
+        MISOTTS_PROMPT_WAV,
+        "--misotts-prompt-text",
+        MISOTTS_PROMPT_TEXT,
+        "--misotts-max-audio-length-ms",
+        str(MISOTTS_MAX_AUDIO_LENGTH_MS),
+        "--misotts-temperature",
+        str(MISOTTS_TEMPERATURE),
+        "--misotts-topk",
+        str(MISOTTS_TOPK),
         "--styletts2-default-voice",
         STYLETTS2_DEFAULT_VOICE,
         "--styletts2-prompt-wav",
@@ -1189,6 +1219,24 @@ voice cloning では、必ず権利を持つ参照音声（話者本人の同意
 
 ライセンス: コードと CSM-1B の重みは Apache 2.0、Llama-3.2-1B ベースは Llama 3.2 Community License。
 
+### MisoTTS
+
+[MisoLabsAI/MisoTTS](https://github.com/MisoLabsAI/MisoTTS) を使った Miso Labs の対話特化 8B TTS で、Hugging Face の `MisoLabs/MisoTTS` 重みを利用します。**Sesame CSM のフォーク**であり、Llama 系の 8B backbone + ~300M の音声デコーダが 24kHz の Mimi codec 音声を出力します。そのため API は CSM と同型です（`load_miso_8b` / `Segment` / `generate(text, speaker, context, max_audio_length_ms, temperature, topk)`）。
+
+本ラッパーは CSM と同じ上流 pin（`torch==2.4.0`、`torchtune==0.4.0`、`torchao==0.9.0`、加えて `moshi` / `silentcipher`）に合わせて **Python 3.11 の venv** を強制し、上流 run スクリプトに従って `NO_TORCH_COMPILE=1` を設定します。**Colab A100 必須** — bf16 重みは ~16GB で、Mimi codec と活性化を合わせると T4/L4 の VRAM を超えます（小型 Colab GPU では OOM の想定）。重みは公開（HF gating なし、`HF_TOKEN` 不要）。
+
+`voice` パラメータ:
+
+| voice | 説明 |
+|---|---|
+| `default` | `--misotts-default-speaker`（デフォルト 0）の speaker_id で合成。 |
+| `speaker_<int>` | speaker_id を直接指定（例: `speaker_1`）。 |
+| `clone` | ゼロショット音声クローン。`--misotts-prompt-wav`（任意で参照書き起こし `--misotts-prompt-text`）が必須。未指定の場合は 400 を返します。 |
+
+Sesame CSM 同様、`generate()` は出力に **不可聴の SilentCipher ウォーターマーク**（`MISO_TTS_WATERMARK`）を埋め込み、AI 生成であることを示します。このウォーターマークは除去禁止です。
+
+ライセンス: コード / 重みとも **Modified MIT**（標準 MIT に 1 条項追加 — MAU 5,000万超 または 月商 $1,000万超の製品は UI に "Miso Labs" を明示する義務）。それ以外は商用利用可。
+
 ### StyleTTS2
 
 [yl4579/StyleTTS2](https://github.com/yl4579/StyleTTS2) の拡散 + SLM 敵対学習による高品質 TTS です。本ラッパーは [sidharthrajaram/StyleTTS2](https://github.com/sidharthrajaram/StyleTTS2) の pip パッケージを使用し、上流の **phonemizer (GPL-3.0)** ではなく **gruut (MIT)** に置き換えることで GPL の伝播を回避しています。
@@ -1380,6 +1428,7 @@ Scenema AI による zero-shot な表現力豊か / 演技指向 TTS です（[S
 | Bark | MIT | MIT | OK | 13言語（日本語含む）。生成的（笑い声 / SFX）。著者は重みを research-oriented と表記 |
 | ChatTTS | AGPL-3.0+ | CC BY-NC 4.0 | **不可** | 英 / 中 の対話 TTS。重みには乱用防止用の高周波ノイズが意図的に入っている |
 | CSM-1B | Apache 2.0 | Apache 2.0 | OK | 英のみ。対話型。Llama-3.2-1B も依存（Llama 3.2 Community License）。HF gated |
+| MisoTTS | Modified MIT | Modified MIT | OK | 8B の Sesame-CSM フォーク、**A100 必須**（bf16 ~16GB）。英語中心。ゼロショット音声クローン。出力に SilentCipher ウォーターマーク。MAU 5,000万超 or 月商 $1,000万超は UI に "Miso Labs" 表示義務 |
 | StyleTTS2 (code) | MIT | — | — | sidharthrajaram/StyleTTS2 を使用（MIT、gruut ベース — upstream の GPL phonemizer を回避） |
 | StyleTTS2 (LibriTTS 重み) | — | Custom (yl4579/StyleTTS2-LibriTTS) | 要注意 | 合成であることの開示が必要。voice cloning には話者の明示的同意が必要 |
 | MaskGCT | MIT | CC BY-NC 4.0 | **不可** | 英 / 中 ゼロショット音声クローン。重みは非商用 |
@@ -1471,6 +1520,8 @@ Scenema AI による zero-shot な表現力豊か / 演技指向 TTS です（[S
   https://github.com/2noise/ChatTTS
 - CSM (Conversational Speech Model)
   https://github.com/SesameAILabs/csm
+- MisoTTS
+  https://github.com/MisoLabsAI/MisoTTS
 - StyleTTS 2 (upstream)
   https://github.com/yl4579/StyleTTS2
 - StyleTTS 2 (pip 化フォーク)
