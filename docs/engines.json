@@ -1049,12 +1049,13 @@
     {
       "id": "MisoTTS",
       "title": "MisoTTS (A100 required — Sesame CSM fork, 8B, English-centric, Modified MIT)",
-      "status": "Works on A100 (8B Sesame-CSM fork, bf16 weights ~16GB; T4/L4 expected to OOM)",
+      "status": "Works on A100 with `HF_TOKEN` (the tokenizer loads gated `meta-llama/Llama-3.2-1B`; 8B Sesame-CSM fork, ~32GB F32 checkpoint → ~16GB bf16 on GPU; T4/L4 expected to OOM)",
       "languages": "English-centric (Llama 8B base + Mimi codec; upstream does not document other languages)",
       "description": "An 8B conversational speech model from Miso Labs using [MisoLabsAI/MisoTTS](https://github.com/MisoLabsAI/MisoTTS) with the `MisoLabs/MisoTTS` weights on Hugging Face. It is a **fork of Sesame CSM** — a Llama-style 8B backbone plus a ~300M audio decoder that produces Mimi codec audio at 24 kHz, so the API mirrors CSM (`load_miso_8b` / `Segment` / `generate(text, speaker, context, max_audio_length_ms, temperature, topk)`).",
       "notes": [
-        "- License: code & weights are **Modified MIT** ([MisoLabsAI/MisoTTS](https://github.com/MisoLabsAI/MisoTTS), [MisoLabs/MisoTTS](https://huggingface.co/MisoLabs/MisoTTS)). Commercial use is OK; products with >50M MAU or >$10M/month revenue must display \"Miso Labs\" in the UI. Output carries an inaudible SilentCipher watermark applied inside `generate()` (do not remove).",
-        "- `voice=\"clone\"` needs `MISOTTS_PROMPT_WAV` (optionally `MISOTTS_PROMPT_TEXT`); otherwise use `voice=\"default\"` / `speaker_<int>`."
+        "- **HF gated**: the tokenizer loads `meta-llama/Llama-3.2-1B`. Accept the Llama 3.2 Community License at https://huggingface.co/meta-llama/Llama-3.2-1B and set `HF_TOKEN` in Colab Secrets, or the first request fails with `OSError: gated repo ... 401`.",
+        "- License: MisoTTS code & weights are **Modified MIT** ([MisoLabsAI/MisoTTS](https://github.com/MisoLabsAI/MisoTTS), [MisoLabs/MisoTTS](https://huggingface.co/MisoLabs/MisoTTS)) — commercial use OK, but products with >50M MAU or >$10M/month revenue must display \"Miso Labs\" in the UI. The gated Llama-3.2-1B tokenizer adds the **Llama 3.2 Community License**. Output carries an inaudible SilentCipher watermark applied inside `generate()` (do not remove).",
+        "- The ~32GB F32 checkpoint loads as bf16 (~16GB on GPU). `voice=\"clone\"` needs `MISOTTS_PROMPT_WAV` (optionally `MISOTTS_PROMPT_TEXT`); otherwise use `voice=\"default\"` / `speaker_<int>`."
       ],
       "prefix": "MISOTTS",
       "params": [

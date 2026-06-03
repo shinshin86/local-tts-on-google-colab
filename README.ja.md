@@ -43,7 +43,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | Bark | Colab 動作確認済み (GPU推奨・~12GB / small=8GB) | 英語 / 日本語 / 中国語 他 13言語 |
 | ChatTTS | Colab 動作確認済み (GPU推奨・**商用不可**) | 英語 / 中国語 |
 | CSM-1B | デフォルトで動作不可（`sesame/csm-1b` と `meta-llama/Llama-3.2-1B` の HF gated。両方のライセンス同意 + `HF_TOKEN` が必要） | 英語（Llama-3.2-1B ベース + Mimi codec） |
-| MisoTTS | A100 で動作（8B の Sesame-CSM フォーク、bf16 重み ~16GB。T4/L4 は OOM の想定） | 英語中心（Llama 8B ベース + Mimi codec。その他言語は upstream 未記載） |
+| MisoTTS | `HF_TOKEN` 設定で A100 動作（トークナイザが gated な `meta-llama/Llama-3.2-1B` を読み込む。8B の Sesame-CSM フォーク、~32GB F32 ckpt → GPU 上 bf16 ~16GB。T4/L4 は OOM 想定） | 英語中心（Llama 8B ベース + Mimi codec。その他言語は upstream 未記載） |
 | StyleTTS2 | Colab 動作確認済み (GPU推奨・Python 3.11 venv) | 英語 |
 | MaskGCT | Colab 動作確認済み (GPU必須・~10-12GB・**商用不可**) | 英語 / 中国語 |
 | GPT-SoVITS | Colab でエンジン起動確認済み（synthesis には参照音声必須・default speaker モード非対応・`--gpt-sovits-prompt-wav` と `--gpt-sovits-prompt-text` を指定） | 中 / 英 / 日 / 韓 / 粤 |
@@ -354,8 +354,9 @@ CSM_TEMPERATURE = 0.9  #@param {type:"number"}
 
 #@markdown ---
 #@markdown MisoTTS (A100 required — Sesame CSM fork, 8B, English-centric, Modified MIT)
-#@markdown - License: code & weights are **Modified MIT** ([MisoLabsAI/MisoTTS](https://github.com/MisoLabsAI/MisoTTS), [MisoLabs/MisoTTS](https://huggingface.co/MisoLabs/MisoTTS)). Commercial use is OK; products with >50M MAU or >$10M/month revenue must display "Miso Labs" in the UI. Output carries an inaudible SilentCipher watermark applied inside `generate()` (do not remove).
-#@markdown - `voice="clone"` needs `MISOTTS_PROMPT_WAV` (optionally `MISOTTS_PROMPT_TEXT`); otherwise use `voice="default"` / `speaker_<int>`.
+#@markdown - **HF gated**: the tokenizer loads `meta-llama/Llama-3.2-1B`. Accept the Llama 3.2 Community License at https://huggingface.co/meta-llama/Llama-3.2-1B and set `HF_TOKEN` in Colab Secrets, or the first request fails with `OSError: gated repo ... 401`.
+#@markdown - License: MisoTTS code & weights are **Modified MIT** ([MisoLabsAI/MisoTTS](https://github.com/MisoLabsAI/MisoTTS), [MisoLabs/MisoTTS](https://huggingface.co/MisoLabs/MisoTTS)) — commercial use OK, but products with >50M MAU or >$10M/month revenue must display "Miso Labs" in the UI. The gated Llama-3.2-1B tokenizer adds the **Llama 3.2 Community License**. Output carries an inaudible SilentCipher watermark applied inside `generate()` (do not remove).
+#@markdown - The ~32GB F32 checkpoint loads as bf16 (~16GB on GPU). `voice="clone"` needs `MISOTTS_PROMPT_WAV` (optionally `MISOTTS_PROMPT_TEXT`); otherwise use `voice="default"` / `speaker_<int>`.
 MISOTTS_HF_MODEL = "MisoLabs/MisoTTS"  #@param {type:"string"}
 MISOTTS_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
 MISOTTS_DEFAULT_SPEAKER = 0  #@param {type:"integer"}
@@ -1223,7 +1224,12 @@ voice cloning では、必ず権利を持つ参照音声（話者本人の同意
 
 [MisoLabsAI/MisoTTS](https://github.com/MisoLabsAI/MisoTTS) を使った Miso Labs の対話特化 8B TTS で、Hugging Face の `MisoLabs/MisoTTS` 重みを利用します。**Sesame CSM のフォーク**であり、Llama 系の 8B backbone + ~300M の音声デコーダが 24kHz の Mimi codec 音声を出力します。そのため API は CSM と同型です（`load_miso_8b` / `Segment` / `generate(text, speaker, context, max_audio_length_ms, temperature, topk)`）。
 
-本ラッパーは CSM と同じ上流 pin（`torch==2.4.0`、`torchtune==0.4.0`、`torchao==0.9.0`、加えて `moshi` / `silentcipher`）に合わせて **Python 3.11 の venv** を強制し、上流 run スクリプトに従って `NO_TORCH_COMPILE=1` を設定します。**Colab A100 必須** — bf16 重みは ~16GB で、Mimi codec と活性化を合わせると T4/L4 の VRAM を超えます（小型 Colab GPU では OOM の想定）。重みは公開（HF gating なし、`HF_TOKEN` 不要）。
+本ラッパーは CSM と同じ上流 pin（`torch==2.4.0`、`torchtune==0.4.0`、`torchao==0.9.0`、加えて `moshi` / `silentcipher`）に合わせて **Python 3.11 の venv** を強制し、上流 run スクリプトに従って `NO_TORCH_COMPILE=1` を設定します。**Colab A100 必須** — チェックポイントはディスク上 ~32GB（F32 の `model.safetensors`）で、bf16（~16GB）としてロードされ、Mimi codec と活性化を合わせると T4/L4 の VRAM を超えます（小型 Colab GPU では OOM の想定）。
+
+**HF gated 依存** — `MisoLabs/MisoTTS` の重み自体は公開ですが、`generator.py` がテキストトークナイザを `meta-llama/Llama-3.2-1B` から読み込みます（`AutoTokenizer.from_pretrained("meta-llama/Llama-3.2-1B")`）。これは Llama 3.2 Community License で gated されており、アクセス権が無いと初回リクエストで `OSError: gated repo ... 401` で失敗します。Colab で利用する場合:
+
+1. `https://huggingface.co/meta-llama/Llama-3.2-1B` で Llama 3.2 Community License に同意。
+2. Colab Secrets で `HF_TOKEN` を設定（notebook access 有効化）。
 
 `voice` パラメータ:
 
@@ -1235,7 +1241,7 @@ voice cloning では、必ず権利を持つ参照音声（話者本人の同意
 
 Sesame CSM 同様、`generate()` は出力に **不可聴の SilentCipher ウォーターマーク**（`MISO_TTS_WATERMARK`）を埋め込み、AI 生成であることを示します。このウォーターマークは除去禁止です。
 
-ライセンス: コード / 重みとも **Modified MIT**（標準 MIT に 1 条項追加 — MAU 5,000万超 または 月商 $1,000万超の製品は UI に "Miso Labs" を明示する義務）。それ以外は商用利用可。
+ライセンス: MisoTTS のコード / 重みとも **Modified MIT**（標準 MIT に 1 条項追加 — MAU 5,000万超 または 月商 $1,000万超の製品は UI に "Miso Labs" を明示する義務）。それ以外は商用利用可。なお実行時に読み込む gated な `meta-llama/Llama-3.2-1B` トークナイザは **Llama 3.2 Community License** の対象であり、実効スタックにはこのライセンスも適用されます。
 
 ### StyleTTS2
 
@@ -1428,7 +1434,7 @@ Scenema AI による zero-shot な表現力豊か / 演技指向 TTS です（[S
 | Bark | MIT | MIT | OK | 13言語（日本語含む）。生成的（笑い声 / SFX）。著者は重みを research-oriented と表記 |
 | ChatTTS | AGPL-3.0+ | CC BY-NC 4.0 | **不可** | 英 / 中 の対話 TTS。重みには乱用防止用の高周波ノイズが意図的に入っている |
 | CSM-1B | Apache 2.0 | Apache 2.0 | OK | 英のみ。対話型。Llama-3.2-1B も依存（Llama 3.2 Community License）。HF gated |
-| MisoTTS | Modified MIT | Modified MIT | OK | 8B の Sesame-CSM フォーク、**A100 必須**（bf16 ~16GB）。英語中心。ゼロショット音声クローン。出力に SilentCipher ウォーターマーク。MAU 5,000万超 or 月商 $1,000万超は UI に "Miso Labs" 表示義務 |
+| MisoTTS | Modified MIT | Modified MIT | OK | 8B の Sesame-CSM フォーク、**A100 必須**（~32GB F32 ckpt → bf16 ~16GB）。英語中心。トークナイザが gated な `meta-llama/Llama-3.2-1B` を読込（Llama 3.2 Community License、`HF_TOKEN` 必須）。ゼロショット音声クローン。SilentCipher ウォーターマーク。MAU 5,000万超 or 月商 $1,000万超は UI に "Miso Labs" 表示義務 |
 | StyleTTS2 (code) | MIT | — | — | sidharthrajaram/StyleTTS2 を使用（MIT、gruut ベース — upstream の GPL phonemizer を回避） |
 | StyleTTS2 (LibriTTS 重み) | — | Custom (yl4579/StyleTTS2-LibriTTS) | 要注意 | 合成であることの開示が必要。voice cloning には話者の明示的同意が必要 |
 | MaskGCT | MIT | CC BY-NC 4.0 | **不可** | 英 / 中 ゼロショット音声クローン。重みは非商用 |

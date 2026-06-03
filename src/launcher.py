@@ -416,10 +416,14 @@ def print_engine_voice_hints(settings: Settings):
         else:
             print("             clone は --misotts-prompt-wav を指定すると有効になります（任意で --misotts-prompt-text も併用）")
         print("対応言語: 英語中心（CSM / Llama 系譜）。対応言語は upstream で明記されていません。")
-        print("注意: 8B モデルのため A100 必須（bf16 重み ~16GB + Mimi codec/活性化。T4/L4 では OOM の想定）。")
+        print("注意: 8B モデルのため A100 必須（~32GB F32 ckpt → bf16 ~16GB + Mimi codec/活性化。T4/L4 では OOM の想定）。")
         print("      Python 3.11 venv を作成し torch==2.4.0（CSM と同じ pin）をインストールします。")
+        print("HF gated: トークナイザを meta-llama/Llama-3.2-1B から読み込みます。")
+        print("          https://huggingface.co/meta-llama/Llama-3.2-1B で Llama 3.2 Community License に同意し、")
+        print("          Colab Secrets で HF_TOKEN を設定してください（未設定だと初回リクエストで 401 になります）。")
         print("生成音声には SilentCipher による不可聴ウォーターマークが generate() 内で常時付与されます（除去禁止）。")
-        print("ライセンス: コード / 重みとも Modified MIT（商用 OK。MAU 5,000万超 or 月商 $1,000万超の製品は UI に 'Miso Labs' 表示義務）。")
+        print("ライセンス: MisoTTS のコード / 重みとも Modified MIT（商用 OK。MAU 5,000万超 or 月商 $1,000万超の製品は UI に 'Miso Labs' 表示義務）。")
+        print("          実行時に読む gated な Llama-3.2-1B トークナイザは Llama 3.2 Community License の対象です。")
     elif settings.engine == "ChatTTS":
         print("ChatTTS は 2noise の対話特化 TTS です（笑い声 / ためらい / ポーズなどを表現）。")
         print(f"デフォルト voice: {settings.chattts_default_voice}")
