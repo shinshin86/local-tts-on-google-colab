@@ -11,7 +11,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Irodori-TTS", "Irodori-TTS-Lite", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "MaskGCT", "MeloTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
+ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Irodori-TTS", "Irodori-TTS-Lite", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "MaskGCT", "MeloTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -260,6 +260,21 @@ CSM_DEFAULT_VOICE = "default"  #@param {type:"string"}
 CSM_DEFAULT_SPEAKER = 0  #@param {type:"integer"}
 CSM_MAX_AUDIO_LENGTH_MS = 10000  #@param {type:"integer"}
 CSM_TEMPERATURE = 0.9  #@param {type:"number"}
+
+#@markdown ---
+#@markdown MisoTTS (A100 required — Sesame CSM fork, 8B, English-centric, Modified MIT)
+#@markdown - **No HF_TOKEN needed**: `generator.py` hardcodes the gated `meta-llama/Llama-3.2-1B` tokenizer, so the wrapper redirects it to the ungated, byte-identical `MISOTTS_TOKENIZER_REPO` (default `unsloth/Llama-3.2-1B`). Set it to `meta-llama/Llama-3.2-1B` (with `HF_TOKEN` + license acceptance) to use the official source instead.
+#@markdown - License: MisoTTS code & weights are **Modified MIT** ([MisoLabsAI/MisoTTS](https://github.com/MisoLabsAI/MisoTTS), [MisoLabs/MisoTTS](https://huggingface.co/MisoLabs/MisoTTS)) — commercial use OK, but products with >50M MAU or >$10M/month revenue must display "Miso Labs" in the UI. The Llama 3.2 tokenizer (ungated mirror or official) is governed by the **Llama 3.2 Community License**. Output carries an inaudible SilentCipher watermark applied inside `generate()` (do not remove).
+#@markdown - The ~32GB F32 checkpoint loads as bf16 (~16GB on GPU). `voice="clone"` needs `MISOTTS_PROMPT_WAV` (optionally `MISOTTS_PROMPT_TEXT`); otherwise use `voice="default"` / `speaker_<int>`.
+MISOTTS_HF_MODEL = "MisoLabs/MisoTTS"  #@param {type:"string"}
+MISOTTS_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+MISOTTS_DEFAULT_SPEAKER = 0  #@param {type:"integer"}
+MISOTTS_PROMPT_WAV = ""  #@param {type:"string"}
+MISOTTS_PROMPT_TEXT = ""  #@param {type:"string"}
+MISOTTS_MAX_AUDIO_LENGTH_MS = 30000  #@param {type:"integer"}
+MISOTTS_TEMPERATURE = 0.9  #@param {type:"number"}
+MISOTTS_TOPK = 50  #@param {type:"integer"}
+MISOTTS_TOKENIZER_REPO = "unsloth/Llama-3.2-1B"  #@param {type:"string"}
 
 #@markdown ---
 #@markdown StyleTTS 2 (GPU recommended, English-only, MIT code / Custom weights)
@@ -616,6 +631,24 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         str(CSM_MAX_AUDIO_LENGTH_MS),
         "--csm-temperature",
         str(CSM_TEMPERATURE),
+        "--misotts-hf-model",
+        MISOTTS_HF_MODEL,
+        "--misotts-default-voice",
+        MISOTTS_DEFAULT_VOICE,
+        "--misotts-default-speaker",
+        str(MISOTTS_DEFAULT_SPEAKER),
+        "--misotts-prompt-wav",
+        MISOTTS_PROMPT_WAV,
+        "--misotts-prompt-text",
+        MISOTTS_PROMPT_TEXT,
+        "--misotts-max-audio-length-ms",
+        str(MISOTTS_MAX_AUDIO_LENGTH_MS),
+        "--misotts-temperature",
+        str(MISOTTS_TEMPERATURE),
+        "--misotts-topk",
+        str(MISOTTS_TOPK),
+        "--misotts-tokenizer-repo",
+        MISOTTS_TOKENIZER_REPO,
         "--styletts2-default-voice",
         STYLETTS2_DEFAULT_VOICE,
         "--styletts2-prompt-wav",

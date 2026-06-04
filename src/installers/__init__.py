@@ -17,6 +17,7 @@ from .kokoro_onnx import install as install_kokoro_onnx
 from .kyutai_tts import install as install_kyutai_tts
 from .maskgct import install as install_maskgct
 from .melo import install as install_melo
+from .misotts import install as install_misotts
 from .moss_tts_nano import install as install_moss_tts_nano
 from .moss_tts_v1_5 import install as install_moss_tts_v1_5
 from .neutts import install as install_neutts
@@ -58,6 +59,7 @@ INSTALLERS = {
     "Kyutai-TTS": install_kyutai_tts,
     "MaskGCT": install_maskgct,
     "MeloTTS": install_melo,
+    "MisoTTS": install_misotts,
     "MOSS-TTS-Nano": install_moss_tts_nano,
     "MOSS-TTS-v1.5": install_moss_tts_v1_5,
     "NeuTTS": install_neutts,

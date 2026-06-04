@@ -39,6 +39,7 @@
       "Kyutai-TTS",
       "MaskGCT",
       "MeloTTS",
+      "MisoTTS",
       "MOSS-TTS-Nano",
       "MOSS-TTS-v1.5",
       "NeuTTS",
@@ -1042,6 +1043,79 @@
             "KR"
           ],
           "flag": "--melo-default-voice"
+        }
+      ]
+    },
+    {
+      "id": "MisoTTS",
+      "title": "MisoTTS (A100 required — Sesame CSM fork, 8B, English-centric, Modified MIT)",
+      "status": "Works on A100, no `HF_TOKEN` needed (Llama 3.2 tokenizer sourced from the ungated `unsloth/Llama-3.2-1B` mirror; 8B Sesame-CSM fork, ~32GB F32 checkpoint → ~16GB bf16 on GPU; T4/L4 expected to OOM)",
+      "languages": "English-centric (Llama 8B base + Mimi codec; upstream does not document other languages)",
+      "description": "An 8B conversational speech model from Miso Labs using [MisoLabsAI/MisoTTS](https://github.com/MisoLabsAI/MisoTTS) with the `MisoLabs/MisoTTS` weights on Hugging Face. It is a **fork of Sesame CSM** — a Llama-style 8B backbone plus a ~300M audio decoder that produces Mimi codec audio at 24 kHz, so the API mirrors CSM (`load_miso_8b` / `Segment` / `generate(text, speaker, context, max_audio_length_ms, temperature, topk)`).",
+      "notes": [
+        "- **No HF_TOKEN needed**: `generator.py` hardcodes the gated `meta-llama/Llama-3.2-1B` tokenizer, so the wrapper redirects it to the ungated, byte-identical `MISOTTS_TOKENIZER_REPO` (default `unsloth/Llama-3.2-1B`). Set it to `meta-llama/Llama-3.2-1B` (with `HF_TOKEN` + license acceptance) to use the official source instead.",
+        "- License: MisoTTS code & weights are **Modified MIT** ([MisoLabsAI/MisoTTS](https://github.com/MisoLabsAI/MisoTTS), [MisoLabs/MisoTTS](https://huggingface.co/MisoLabs/MisoTTS)) — commercial use OK, but products with >50M MAU or >$10M/month revenue must display \"Miso Labs\" in the UI. The Llama 3.2 tokenizer (ungated mirror or official) is governed by the **Llama 3.2 Community License**. Output carries an inaudible SilentCipher watermark applied inside `generate()` (do not remove).",
+        "- The ~32GB F32 checkpoint loads as bf16 (~16GB on GPU). `voice=\"clone\"` needs `MISOTTS_PROMPT_WAV` (optionally `MISOTTS_PROMPT_TEXT`); otherwise use `voice=\"default\"` / `speaker_<int>`."
+      ],
+      "prefix": "MISOTTS",
+      "params": [
+        {
+          "name": "MISOTTS_HF_MODEL",
+          "default": "MisoLabs/MisoTTS",
+          "type": "string",
+          "flag": "--misotts-hf-model"
+        },
+        {
+          "name": "MISOTTS_DEFAULT_VOICE",
+          "default": "default",
+          "type": "select",
+          "options": [
+            "default",
+            "clone"
+          ],
+          "flag": "--misotts-default-voice"
+        },
+        {
+          "name": "MISOTTS_DEFAULT_SPEAKER",
+          "default": 0,
+          "type": "integer",
+          "flag": "--misotts-default-speaker"
+        },
+        {
+          "name": "MISOTTS_PROMPT_WAV",
+          "default": "",
+          "type": "string",
+          "flag": "--misotts-prompt-wav"
+        },
+        {
+          "name": "MISOTTS_PROMPT_TEXT",
+          "default": "",
+          "type": "string",
+          "flag": "--misotts-prompt-text"
+        },
+        {
+          "name": "MISOTTS_MAX_AUDIO_LENGTH_MS",
+          "default": 30000,
+          "type": "integer",
+          "flag": "--misotts-max-audio-length-ms"
+        },
+        {
+          "name": "MISOTTS_TEMPERATURE",
+          "default": 0.9,
+          "type": "number",
+          "flag": "--misotts-temperature"
+        },
+        {
+          "name": "MISOTTS_TOPK",
+          "default": 50,
+          "type": "integer",
+          "flag": "--misotts-topk"
+        },
+        {
+          "name": "MISOTTS_TOKENIZER_REPO",
+          "default": "unsloth/Llama-3.2-1B",
+          "type": "string",
+          "flag": "--misotts-tokenizer-repo"
         }
       ]
     },
