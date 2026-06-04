@@ -85,6 +85,14 @@ def get_generator():
         _redirect_llama_tokenizer()
         logger.info("Loading MisoTTS 8B (%s) on %s", HF_MODEL, device)
         _generator = load_miso_8b(device=device, model_path_or_repo_id=HF_MODEL)
+        if device == "cuda":
+            # The Generator ctor calls setup_caches() AFTER the model was already
+            # moved to CUDA, and torchtune's KVCache allocates k_cache/v_cache/
+            # cache_pos with dtype only (no device) -> they land on CPU and trigger
+            # "Expected all tensors to be on the same device" in kv_cache.update.
+            # Re-issue .to(device) to relocate those cache buffers (params and the
+            # causal masks are already on device, so this is a no-op for them).
+            _generator._model.to(device)
         logger.info("MisoTTS 8B loaded (sample_rate=%d)", _generator.sample_rate)
     return _generator
 
