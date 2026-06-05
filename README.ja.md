@@ -48,6 +48,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | MaskGCT | Colab 動作確認済み (GPU必須・~10-12GB・**商用不可**) | 英語 / 中国語 |
 | GPT-SoVITS | Colab でエンジン起動確認済み（synthesis には参照音声必須・default speaker モード非対応・`--gpt-sovits-prompt-wav` と `--gpt-sovits-prompt-text` を指定） | 中 / 英 / 日 / 韓 / 粤 |
 | Higgs-Audio-v2 | デフォルトで動作不可（HF 上の checkpoint が未リリースの `boson_multimodal` / transformers 5.x を要求。エンジンは起動するが audio tokenizer ロード時に上流コードと config schema が一致せず推論失敗） | 英語 |
+| Higgs-Audio-v3 | Colab L4 / A100 動作確認済み（GPU 必須、ロード時 ~19.9GB。T4 非対応、SGLang-Omni 経由で初回起動が遅い ~10-12 分、**非商用の重み — hosted API 不可**） | 100+ 言語（日本語含む） |
 | DramaBox | Colab A100 動作確認済み（GPU 必須、VRAM ~24GB ピーク、**LTX-2 Community License — 非競合条項あり**） | 英語 |
 | Scenema | **Colab A100（40GB VRAM）必須**。初回起動時に約 38GB ダウンロード。音声モデルは LTX-2.3 派生のため **LTX-2 Community License**（DramaBox と同じ）。Gemma 3 12B IT 利用（HF gated、`HF_TOKEN` 必須） | 英語中心の多言語 |
 
@@ -102,7 +103,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Irodori-TTS", "Irodori-TTS-Lite", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "MaskGCT", "MeloTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
+ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "Irodori-TTS", "Irodori-TTS-Lite", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "MaskGCT", "MeloTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -410,6 +411,20 @@ HIGGS_PROMPT_WAV = ""  #@param {type:"string"}
 HIGGS_PROMPT_TEXT = ""  #@param {type:"string"}
 HIGGS_MAX_NEW_TOKENS = 1024  #@param {type:"integer"}
 HIGGS_TEMPERATURE = 0.7  #@param {type:"number"}
+
+#@markdown ---
+#@markdown Higgs Audio v3 (A100/L4 required, 100+ languages incl. Japanese, voice cloning)
+#@markdown - Separate 4B chat-native TTS (Qwen3-4B backbone) served by **SGLang-Omni**, which natively exposes `/v1/audio/speech`. Distinct from Higgs Audio v2.
+#@markdown - **No HF_TOKEN needed**: weights ([bosonai/higgs-audio-v3-tts-4b](https://huggingface.co/bosonai/higgs-audio-v3-tts-4b)) are ungated.
+#@markdown - L4 (24GB) verified (~19.9GB at load). T4 unsupported (sgl-kernel/flash-attn need sm_80+). First launch is slow (~10-12 min: download + torch.compile / CUDA-graph capture). Python 3.12 venv builds sglang-omni from source.
+#@markdown - License: GitHub code is Apache-2.0, but **weights are under the Boson Higgs Audio v3 Research and Non-Commercial License** ([LICENSE](https://huggingface.co/bosonai/higgs-audio-v3-tts-4b/blob/main/LICENSE)). Personal use / short-term evaluation is permitted; hosted API, production, or revenue-generating use needs a separate commercial license. `voice="clone"` needs `HIGGS_V3_PROMPT_WAV` (optionally `HIGGS_V3_PROMPT_TEXT`); otherwise use `voice="default"`.
+HIGGS_V3_HF_MODEL = "bosonai/higgs-audio-v3-tts-4b"  #@param {type:"string"}
+HIGGS_V3_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+HIGGS_V3_PROMPT_WAV = ""  #@param {type:"string"}
+HIGGS_V3_PROMPT_TEXT = ""  #@param {type:"string"}
+HIGGS_V3_TEMPERATURE = 0.7  #@param {type:"number"}
+HIGGS_V3_TOP_K = 50  #@param {type:"integer"}
+HIGGS_V3_MAX_NEW_TOKENS = 2048  #@param {type:"integer"}
 
 #@markdown ---
 #@markdown DramaBox (A100 required, VRAM ~24GB, English-only, voice cloning)
@@ -790,6 +805,20 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         str(HIGGS_MAX_NEW_TOKENS),
         "--higgs-temperature",
         str(HIGGS_TEMPERATURE),
+        "--higgs-v3-hf-model",
+        HIGGS_V3_HF_MODEL,
+        "--higgs-v3-default-voice",
+        HIGGS_V3_DEFAULT_VOICE,
+        "--higgs-v3-prompt-wav",
+        HIGGS_V3_PROMPT_WAV,
+        "--higgs-v3-prompt-text",
+        HIGGS_V3_PROMPT_TEXT,
+        "--higgs-v3-temperature",
+        str(HIGGS_V3_TEMPERATURE),
+        "--higgs-v3-top-k",
+        str(HIGGS_V3_TOP_K),
+        "--higgs-v3-max-new-tokens",
+        str(HIGGS_V3_MAX_NEW_TOKENS),
         "--supertonic-model",
         SUPERTONIC_MODEL,
         "--supertonic-default-voice",
@@ -1318,6 +1347,32 @@ GPT-SoVITS は本質的に few-shot cloning モデルで、内蔵の「default s
 
 **ステータス（現時点でデフォルト動作不可）:** HF 上の checkpoint は `boson-ai/higgs-audio` の未リリースブランチと transformers 5.x を要求しますが、PyPI の `boson_multimodal` は transformers 4.46.x ベースです。エンジンの組み込み（インストール / venv / app / voice list / cloudflared）は正しく動作し、Colab L4 で `/`、`/v1/models`、`/v1/voices` はすべて 200 を返しますが、`/v1/audio/speech` は audio tokenizer のロード（`load_higgs_audio_tokenizer`）で 500 になります。具体的には HF の flat config キー（`acoustic_model_config`、`semantic_model_config`）を `HiggsAudioTokenizer.__init__` がそのまま受け付けないためです。前段の 2 つの不一致（`text_config` のデフォルトが `padding_idx=128001 / num_embeddings=32000` を引き起こす問題、および未リリース transformers 5.x にしか存在しない `tokenizer_class=TokenizersBackend` 参照）はラッパー側で workaround 済みですが、audio tokenizer の schema drift は `boson-ai/higgs-audio` 上流の修正が必要です。上流が公開済み config に合わせてコードを更新すれば、本ラッパーはそのまま動作するはずです。
 
+### Higgs-Audio-v3
+
+Boson AI による別系統の新しいモデルで、表現力豊かな会話音声向けの 4B chat-native TTS（Qwen3-4B backbone、`HiggsMultimodalQwen3ForConditionalGeneration`）です。100+ 言語に対応し、ゼロショット voice cloning が可能です。上記の v2 とは**無関係**で、`boson-ai/higgs-audio` の GitHub リポジトリは使いません（同リポは v2 専用で「Higgs Audio v3 is a standalone release」と明記）。v3 は **SGLang-Omni**（[sgl-project/sglang-omni](https://github.com/sgl-project/sglang-omni)）が配信し、OpenAI 互換の `/v1/audio/speech` をネイティブに公開します。本ラッパーはそのバックエンドを `--higgs-v3-backend-port`（既定 5002）で起動し、プロキシします。
+
+**重みは gated ではありません**（`bosonai/higgs-audio-v3-tts-4b`、約 9.3GB）。`HF_TOKEN`・ログイン・ライセンス同意クリックのいずれもなしでダウンロードできます。
+
+**ハードウェア**: **Colab L4（24GB）で動作確認済み**。ロード時に約 19.9GB を使用し L4 の上限に近いため、余裕を見て **A100 推奨**。**T4（無料枠）は非対応**です（`sgl-kernel` / flash-attn が compute capability sm_80+ を要求、T4 は sm_75）。初回起動は遅く（~10-12 分）、モデル DL・重みロード・torch.compile / CUDA グラフキャプチャに時間がかかります。
+
+ラッパーは **Python 3.12 venv で sglang-omni をソースからビルド**します（コミット固定）。インストールには素の `pip` ではなく **`uv` が必須**です。`descript-audiotools` と `grpcio` の間の protobuf バージョン衝突は、sglang-omni の `pyproject.toml` にある `[tool.uv] override-dependencies` でのみ解決できます。隔離 venv で動かすことで、Colab プリインストールの TensorFlow（同梱 protobuf が descriptor を二重登録しバックエンドを起動時にクラッシュさせる）も回避します。
+
+`voice` パラメータ:
+
+| voice | 説明 |
+|---|---|
+| `default` | 参照音声なしの内蔵スピーカー。 |
+| `clone` | ゼロショット voice cloning。`--higgs-v3-prompt-wav`（任意で `--higgs-v3-prompt-text`）を指定した場合のみ有効。未指定なら 400 を返します。 |
+
+**ライセンス警告（重要）:** GitHub コード（SGLang-Omni）は Apache-2.0 ですが、**重みは Boson Higgs Audio v3 Research and Non-Commercial License** です（[LICENSE](https://huggingface.co/bosonai/higgs-audio-v3-tts-4b/blob/main/LICENSE)）。
+
+- **許可**: 研究、個人 / 趣味利用、短期の評価・テスト。本エンジンを Colab で自分の検証のために動かすのはこの範囲に該当します。
+- **別途商用ライセンスが必要（禁止）**: hosted use（API・SaaS・プラグイン・組織外のエンドユーザーに提供する用途）、production 運用、収益化。
+- 同意のない voice cloning・なりすまし・違法利用は禁止。
+- 再配布時はライセンスと帰属表示の同梱が必要。
+
+本リポジトリは重みをダウンロードするだけ（ダウンロード時にユーザーが Boson のライセンスに同意）で、重みの再配布は行いません。
+
 ### DramaBox
 
 [resemble-ai/DramaBox](https://github.com/resemble-ai/DramaBox) の Resemble AI による「ディレクション可能」な表現力豊か TTS です。Lightricks の LTX-2.3（音声専用 branch）を IC-LoRA で fine-tune し、テキストエンコーダに Gemma 3 12B を採用。英語プロンプトの中で感情・ペーシング・笑い声・ため息などのパラ言語的要素を直接ディレクション可能。ボイスクローンは 10 秒以上の参照音声で動作します。
@@ -1441,6 +1496,8 @@ Scenema AI による zero-shot な表現力豊か / 演技指向 TTS です（[S
 | GPT-SoVITS | MIT | MIT | OK | 中 / 英 / 日 / 韓 / 粤 few-shot voice cloning。参照音声 + 書き起こし必須 |
 | Higgs-Audio-v2 (code) | Apache 2.0 | — | — | LLM ベース音声基盤モデル。英語中心 |
 | Higgs-Audio-v2 (重み) | — | Boson Higgs Audio 2 Community License | 要注意 | Llama 派生 community license。MAU 10万超は追加ライセンス必須、出力で他 LLM 学習禁止 |
+| Higgs-Audio-v3 (code) | Apache 2.0 | — | — | SGLang-Omni が配信。4B chat-native TTS、100+ 言語（日本語含む） |
+| Higgs-Audio-v3 (重み) | — | Boson Higgs Audio v3 Research and Non-Commercial License | 要注意 | **非商用のみ。** 個人利用 / 短期評価は許可、hosted API / production / 収益化は別途商用ライセンス必須。ダウンロードは gated ではない（HF_TOKEN 不要） |
 | DramaBox | LTX-2 Community License (Lightricks) | LTX-2 Community License | **年商 $10M+ の組織は商用ライセンス必須** | 英語。非競合条項あり、再配布時は同ライセンス継承必須、Perth ウォーターマーク常時付与 |
 | Scenema (code) | MIT | — | — | リポジトリ: `ScenemaAI/scenema-audio` |
 | Scenema (音声重み) | — | LTX-2 Community License (Lightricks) | **年商 $10M+ の組織は商用ライセンス必須** | 音声 transformer は LTX-2.3 派生のため LTX-2 Community License が継承される。DramaBox と同じ注意点（非競合条項、acceptable use 制限、再配布時のライセンス継承） |
@@ -1538,6 +1595,10 @@ Scenema AI による zero-shot な表現力豊か / 演技指向 TTS です（[S
   https://github.com/RVC-Boss/GPT-SoVITS
 - Higgs Audio v2
   https://github.com/boson-ai/higgs-audio
+- Higgs Audio v3 (Hugging Face)
+  https://huggingface.co/bosonai/higgs-audio-v3-tts-4b
+- SGLang-Omni (Higgs Audio v3 backend)
+  https://github.com/sgl-project/sglang-omni
 - DramaBox
   https://github.com/resemble-ai/DramaBox
 - DramaBox (Hugging Face)

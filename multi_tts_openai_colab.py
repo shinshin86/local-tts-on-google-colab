@@ -11,7 +11,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Irodori-TTS", "Irodori-TTS-Lite", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "MaskGCT", "MeloTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
+ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "Irodori-TTS", "Irodori-TTS-Lite", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "MaskGCT", "MeloTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -319,6 +319,20 @@ HIGGS_PROMPT_WAV = ""  #@param {type:"string"}
 HIGGS_PROMPT_TEXT = ""  #@param {type:"string"}
 HIGGS_MAX_NEW_TOKENS = 1024  #@param {type:"integer"}
 HIGGS_TEMPERATURE = 0.7  #@param {type:"number"}
+
+#@markdown ---
+#@markdown Higgs Audio v3 (A100/L4 required, 100+ languages incl. Japanese, voice cloning)
+#@markdown - Separate 4B chat-native TTS (Qwen3-4B backbone) served by **SGLang-Omni**, which natively exposes `/v1/audio/speech`. Distinct from Higgs Audio v2.
+#@markdown - **No HF_TOKEN needed**: weights ([bosonai/higgs-audio-v3-tts-4b](https://huggingface.co/bosonai/higgs-audio-v3-tts-4b)) are ungated.
+#@markdown - L4 (24GB) verified (~19.9GB at load). T4 unsupported (sgl-kernel/flash-attn need sm_80+). First launch is slow (~10-12 min: download + torch.compile / CUDA-graph capture). Python 3.12 venv builds sglang-omni from source.
+#@markdown - License: GitHub code is Apache-2.0, but **weights are under the Boson Higgs Audio v3 Research and Non-Commercial License** ([LICENSE](https://huggingface.co/bosonai/higgs-audio-v3-tts-4b/blob/main/LICENSE)). Personal use / short-term evaluation is permitted; hosted API, production, or revenue-generating use needs a separate commercial license. `voice="clone"` needs `HIGGS_V3_PROMPT_WAV` (optionally `HIGGS_V3_PROMPT_TEXT`); otherwise use `voice="default"`.
+HIGGS_V3_HF_MODEL = "bosonai/higgs-audio-v3-tts-4b"  #@param {type:"string"}
+HIGGS_V3_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+HIGGS_V3_PROMPT_WAV = ""  #@param {type:"string"}
+HIGGS_V3_PROMPT_TEXT = ""  #@param {type:"string"}
+HIGGS_V3_TEMPERATURE = 0.7  #@param {type:"number"}
+HIGGS_V3_TOP_K = 50  #@param {type:"integer"}
+HIGGS_V3_MAX_NEW_TOKENS = 2048  #@param {type:"integer"}
 
 #@markdown ---
 #@markdown DramaBox (A100 required, VRAM ~24GB, English-only, voice cloning)
@@ -699,6 +713,20 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         str(HIGGS_MAX_NEW_TOKENS),
         "--higgs-temperature",
         str(HIGGS_TEMPERATURE),
+        "--higgs-v3-hf-model",
+        HIGGS_V3_HF_MODEL,
+        "--higgs-v3-default-voice",
+        HIGGS_V3_DEFAULT_VOICE,
+        "--higgs-v3-prompt-wav",
+        HIGGS_V3_PROMPT_WAV,
+        "--higgs-v3-prompt-text",
+        HIGGS_V3_PROMPT_TEXT,
+        "--higgs-v3-temperature",
+        str(HIGGS_V3_TEMPERATURE),
+        "--higgs-v3-top-k",
+        str(HIGGS_V3_TOP_K),
+        "--higgs-v3-max-new-tokens",
+        str(HIGGS_V3_MAX_NEW_TOKENS),
         "--supertonic-model",
         SUPERTONIC_MODEL,
         "--supertonic-default-voice",

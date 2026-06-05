@@ -34,6 +34,7 @@ SECTION_TO_ENGINE = {
     "Sesame CSM-1B": "CSM-1B",
     "StyleTTS 2": "StyleTTS2",
     "Higgs Audio v2": "Higgs-Audio-v2",
+    "Higgs Audio v3": "Higgs-Audio-v3",
 }
 
 
