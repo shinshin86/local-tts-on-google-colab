@@ -78,6 +78,8 @@ def resolve_selected_voice(settings: Settings) -> str:
         return settings.gpt_sovits_default_voice
     if settings.engine == "Higgs-Audio-v2":
         return settings.higgs_default_voice
+    if settings.engine == "Higgs-Audio-v3":
+        return settings.higgs_v3_default_voice
     if settings.engine == "Supertonic":
         return settings.supertonic_default_voice
     if settings.engine == "DramaBox":
@@ -353,6 +355,23 @@ def print_engine_voice_hints(settings: Settings):
         print("ライセンス警告: コードは Apache-2.0 ですが、重み（bosonai/higgs-audio-v2-generation-3B-base）は")
         print("                 **Boson Higgs Audio 2 Community License**（Llama 系派生）で、")
         print("                 商用利用には MAU 10万人以下の制限と、出力で他 LLM を学習させる用途の禁止があります。")
+    elif settings.engine == "Higgs-Audio-v3":
+        print("Higgs Audio v3 は Boson AI の chat-native TTS です（4B、Qwen3-4B backbone、100+言語、SGLang-Omni バックエンド）。")
+        print(f"モデル: {settings.higgs_v3_hf_model}")
+        print(f"デフォルト voice: {settings.higgs_v3_default_voice}")
+        print(f"temperature: {settings.higgs_v3_temperature} / top_k: {settings.higgs_v3_top_k} / max_new_tokens: {settings.higgs_v3_max_new_tokens}")
+        print("voice 候補: default（参照なしの内蔵スピーカー）")
+        if settings.higgs_v3_prompt_wav:
+            print(f"             clone（参照音声: {settings.higgs_v3_prompt_wav}）")
+        else:
+            print("             clone は --higgs-v3-prompt-wav を指定すると有効になります（任意で --higgs-v3-prompt-text も併用）")
+        print("対応言語: 100+ 言語（日本語含む、英語・日本語とも Colab で生成を確認）。出力は 24kHz。")
+        print("**HF gated ではありません**: 重みはトークン / ログインなしでダウンロードできます。")
+        print("注意: L4（24GB）で動作確認（ロード時 ~19.9GB、ほぼ上限）。T4 では sgl-kernel / flash-attn の世代要件（sm_80+）で起動不可の想定。A100 推奨。")
+        print("      初回起動が遅い（~10-12 分）: モデル DL に加え torch.compile / CUDA グラフキャプチャに時間がかかります。Python 3.12 venv で sglang-omni をソースから導入します。")
+        print("ライセンス警告: GitHub コードは Apache-2.0 ですが、重み（bosonai/higgs-audio-v3-tts-4b）は")
+        print("                 **Boson Higgs Audio v3 Research and Non-Commercial License** です。")
+        print("                 個人利用 / 短期評価・テストは許可されますが、hosted API・production・収益化は別途商用ライセンスが必要です。")
     elif settings.engine == "GPT-SoVITS":
         print("GPT-SoVITS は RVC-Boss の few-shot voice cloning TTS です（5秒の参照音声で zero-shot 推論）。")
         print(f"version: {settings.gpt_sovits_version}")

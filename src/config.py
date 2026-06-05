@@ -220,6 +220,17 @@ class Settings:
     higgs_prompt_text: str = ""
     higgs_max_new_tokens: int = 1024
     higgs_temperature: float = 0.7
+    # Higgs Audio v3: a separate 4B chat-native TTS served by SGLang-Omni
+    # (Qwen3-4B backbone). Weights are ungated (no HF_TOKEN). Research /
+    # non-commercial license only — see the README license table.
+    higgs_v3_hf_model: str = "bosonai/higgs-audio-v3-tts-4b"
+    higgs_v3_default_voice: str = "default"
+    higgs_v3_prompt_wav: str = ""
+    higgs_v3_prompt_text: str = ""
+    higgs_v3_temperature: float = 0.7
+    higgs_v3_top_k: int = 50
+    higgs_v3_max_new_tokens: int = 2048
+    higgs_v3_backend_port: int = 5002
     supertonic_model: str = "supertonic-3"
     supertonic_default_voice: str = "M1"
     supertonic_default_lang: str = "en"

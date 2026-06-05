@@ -32,6 +32,7 @@
       "Fish-Speech",
       "GPT-SoVITS",
       "Higgs-Audio-v2",
+      "Higgs-Audio-v3",
       "Irodori-TTS",
       "Irodori-TTS-Lite",
       "Kokoro",
@@ -667,6 +668,68 @@
           "default": 0.7,
           "type": "number",
           "flag": "--higgs-temperature"
+        }
+      ]
+    },
+    {
+      "id": "Higgs-Audio-v3",
+      "title": "Higgs Audio v3 (A100/L4 required, 100+ languages incl. Japanese, voice cloning)",
+      "status": "Works on Colab L4 / A100 (GPU required, ~19.9GB at load; T4 unsupported, slow first launch ~10-12 min via SGLang-Omni, **non-commercial weights — no hosted API**)",
+      "languages": "100+ languages (incl. Japanese)",
+      "description": "A separate, newer model from Boson AI — a 4B chat-native TTS (Qwen3-4B backbone, `HiggsMultimodalQwen3ForConditionalGeneration`) built for expressive conversational speech across 100+ languages, with zero-shot voice cloning. It is **not** related to the v2 engine above and does **not** use the `boson-ai/higgs-audio` GitHub repo (that repo is v2-only and explicitly states \"Higgs Audio v3 is a standalone release\"). v3 is served by **SGLang-Omni** ([sgl-project/sglang-omni](https://github.com/sgl-project/sglang-omni)), which natively exposes an OpenAI-compatible `/v1/audio/speech`; this wrapper runs that backend on `--higgs-v3-backend-port` (default 5002) and proxies to it.",
+      "notes": [
+        "- Separate 4B chat-native TTS (Qwen3-4B backbone) served by **SGLang-Omni**, which natively exposes `/v1/audio/speech`. Distinct from Higgs Audio v2.",
+        "- **No HF_TOKEN needed**: weights ([bosonai/higgs-audio-v3-tts-4b](https://huggingface.co/bosonai/higgs-audio-v3-tts-4b)) are ungated.",
+        "- L4 (24GB) verified (~19.9GB at load). T4 unsupported (sgl-kernel/flash-attn need sm_80+). First launch is slow (~10-12 min: download + torch.compile / CUDA-graph capture). Python 3.12 venv builds sglang-omni from source.",
+        "- License: GitHub code is Apache-2.0, but **weights are under the Boson Higgs Audio v3 Research and Non-Commercial License** ([LICENSE](https://huggingface.co/bosonai/higgs-audio-v3-tts-4b/blob/main/LICENSE)). Personal use / short-term evaluation is permitted; hosted API, production, or revenue-generating use needs a separate commercial license. `voice=\"clone\"` needs `HIGGS_V3_PROMPT_WAV` (optionally `HIGGS_V3_PROMPT_TEXT`); otherwise use `voice=\"default\"`."
+      ],
+      "prefix": "HIGGS_V3",
+      "params": [
+        {
+          "name": "HIGGS_V3_HF_MODEL",
+          "default": "bosonai/higgs-audio-v3-tts-4b",
+          "type": "string",
+          "flag": "--higgs-v3-hf-model"
+        },
+        {
+          "name": "HIGGS_V3_DEFAULT_VOICE",
+          "default": "default",
+          "type": "select",
+          "options": [
+            "default",
+            "clone"
+          ],
+          "flag": "--higgs-v3-default-voice"
+        },
+        {
+          "name": "HIGGS_V3_PROMPT_WAV",
+          "default": "",
+          "type": "string",
+          "flag": "--higgs-v3-prompt-wav"
+        },
+        {
+          "name": "HIGGS_V3_PROMPT_TEXT",
+          "default": "",
+          "type": "string",
+          "flag": "--higgs-v3-prompt-text"
+        },
+        {
+          "name": "HIGGS_V3_TEMPERATURE",
+          "default": 0.7,
+          "type": "number",
+          "flag": "--higgs-v3-temperature"
+        },
+        {
+          "name": "HIGGS_V3_TOP_K",
+          "default": 50,
+          "type": "integer",
+          "flag": "--higgs-v3-top-k"
+        },
+        {
+          "name": "HIGGS_V3_MAX_NEW_TOKENS",
+          "default": 2048,
+          "type": "integer",
+          "flag": "--higgs-v3-max-new-tokens"
         }
       ]
     },

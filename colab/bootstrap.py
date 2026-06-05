@@ -180,6 +180,14 @@ def parse_args():
     parser.add_argument("--higgs-prompt-text", default="")
     parser.add_argument("--higgs-max-new-tokens", type=int, default=1024)
     parser.add_argument("--higgs-temperature", type=float, default=0.7)
+    parser.add_argument("--higgs-v3-hf-model", default="bosonai/higgs-audio-v3-tts-4b")
+    parser.add_argument("--higgs-v3-default-voice", default="default")
+    parser.add_argument("--higgs-v3-prompt-wav", default="")
+    parser.add_argument("--higgs-v3-prompt-text", default="")
+    parser.add_argument("--higgs-v3-temperature", type=float, default=0.7)
+    parser.add_argument("--higgs-v3-top-k", type=int, default=50)
+    parser.add_argument("--higgs-v3-max-new-tokens", type=int, default=2048)
+    parser.add_argument("--higgs-v3-backend-port", type=int, default=5002)
     parser.add_argument("--supertonic-model", default="supertonic-3")
     parser.add_argument("--supertonic-default-voice", default="M1")
     parser.add_argument("--supertonic-default-lang", default="en")
@@ -370,6 +378,14 @@ def main():
         higgs_prompt_text=args.higgs_prompt_text,
         higgs_max_new_tokens=args.higgs_max_new_tokens,
         higgs_temperature=args.higgs_temperature,
+        higgs_v3_hf_model=args.higgs_v3_hf_model,
+        higgs_v3_default_voice=args.higgs_v3_default_voice,
+        higgs_v3_prompt_wav=args.higgs_v3_prompt_wav,
+        higgs_v3_prompt_text=args.higgs_v3_prompt_text,
+        higgs_v3_temperature=args.higgs_v3_temperature,
+        higgs_v3_top_k=args.higgs_v3_top_k,
+        higgs_v3_max_new_tokens=args.higgs_v3_max_new_tokens,
+        higgs_v3_backend_port=args.higgs_v3_backend_port,
         supertonic_model=args.supertonic_model,
         supertonic_default_voice=args.supertonic_default_voice,
         supertonic_default_lang=args.supertonic_default_lang,
