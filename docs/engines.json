@@ -381,7 +381,7 @@
     {
       "id": "dots.tts",
       "title": "dots.tts (L4 required, 24 languages incl. Japanese, voice cloning)",
-      "status": "Colab L4 verification pending (GPU required, bf16 load ~5GB; ungated weights, no `HF_TOKEN`; zero-shot cloning model — `default` is a random speaker, use `clone` for a stable voice)",
+      "status": "Works on Colab L4 (GPU required, bf16 resident ~5.4GB, 48 kHz output; ungated weights, no `HF_TOKEN`; zero-shot cloning model — `default` is a random speaker, use `clone` for a stable voice)",
       "languages": "24 languages (incl. Japanese)",
       "description": "A 2B-parameter fully continuous, end-to-end autoregressive TTS from rednote-hilab ([rednote-hilab/dots.tts](https://github.com/rednote-hilab/dots.tts)). The backbone pairs a semantic encoder, a **Qwen2.5-1.5B-Base** LLM that consumes BPE text directly (no phonemes), and an autoregressive flow-matching (DiT) acoustic head over a 48 kHz AudioVAE — there are no discrete codec tokens anywhere in the pipeline. It reports open-source SOTA on Seed-TTS-Eval and the highest average speaker similarity on the 24-language MiniMax multilingual benchmark.",
       "notes": [
