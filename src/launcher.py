@@ -399,6 +399,18 @@ def print_engine_voice_hints(settings: Settings):
         print("      初回起動時に ~9.5GB の重みをダウンロードします（ungated、HF_TOKEN 不要）。")
         print("ライセンス: コード / 重みとも Apache-2.0（商用 OK）。LLM backbone は Qwen2.5-1.5B-Base。")
         print("乱用防止: 高品質なゼロショット cloning が可能です。なりすまし・詐欺・偽情報への利用は禁止（上流の利用規約）。")
+    elif settings.engine == "LFM2.5-Audio-JP":
+        print("LFM2.5-Audio-JP は Liquid AI の end-to-end speech-text モデルです（1.5B、音声対話 / ASR / TTS、日本語特化）。")
+        print(f"モデル: {settings.lfm2_audio_jp_hf_model}")
+        print(f"system prompt: {settings.lfm2_audio_jp_system_prompt}")
+        print(f"max_new_tokens: {settings.lfm2_audio_jp_max_new_tokens} / audio_temperature: {settings.lfm2_audio_jp_audio_temperature} / audio_top_k: {settings.lfm2_audio_jp_audio_top_k}")
+        print("voice パラメータは 'default'（内蔵の日本語ボイス1種）のみ。参照音声 / voice cloning は非対応です。")
+        print("対応言語: 日本語のみ（英語 base モデル LiquidAI/LFM2.5-Audio-1.5B は US/UK の male/female ボイスを持ちますが、本 JP モデルは日本語1ボイス）。出力は 24kHz。")
+        print("構成: LFM2.5-1.2B backbone + FastConformer audio encoder + RQ-transformer + Mimi codec(8 codebooks)。sequential generation で TTS。")
+        print("**HF gated ではありません**: 重みはトークン / ログインなしでダウンロードできます。Python 3.12 venv で liquid-audio + torch>=2.8 を導入します。")
+        print("flash-attn は任意（未導入時は torch SDPA に自動フォールバック）。GPU 推奨（L4 で動作想定）。")
+        print("ライセンス: コード / 重みは **LFM Open License v1.0**（年商 $10M 未満は商用 OK、超過は別途商用ライセンスが必要）。")
+        print("           audio encoder は Apache-2.0（NVIDIA NeMo 由来）、audio codec(Mimi) は CC-BY-4.0（Kyutai）。")
     elif settings.engine == "GPT-SoVITS":
         print("GPT-SoVITS は RVC-Boss の few-shot voice cloning TTS です（5秒の参照音声で zero-shot 推論）。")
         print(f"version: {settings.gpt_sovits_version}")

@@ -17,6 +17,7 @@ from .qwen3_tts import install as install_qwen3_tts
 from .kokoro import install as install_kokoro
 from .kokoro_onnx import install as install_kokoro_onnx
 from .kyutai_tts import install as install_kyutai_tts
+from .lfm2_audio_jp import install as install_lfm2_audio_jp
 from .maskgct import install as install_maskgct
 from .melo import install as install_melo
 from .misotts import install as install_misotts
@@ -61,6 +62,7 @@ INSTALLERS = {
     "Kokoro": install_kokoro,
     "Kokoro-ONNX": install_kokoro_onnx,
     "Kyutai-TTS": install_kyutai_tts,
+    "LFM2.5-Audio-JP": install_lfm2_audio_jp,
     "MaskGCT": install_maskgct,
     "MeloTTS": install_melo,
     "MisoTTS": install_misotts,

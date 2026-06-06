@@ -39,6 +39,7 @@
       "Kokoro",
       "Kokoro-ONNX",
       "Kyutai-TTS",
+      "LFM2.5-Audio-JP",
       "MaskGCT",
       "MeloTTS",
       "MisoTTS",
@@ -1073,6 +1074,52 @@
             "clone"
           ],
           "flag": "--kyutai-default-voice"
+        }
+      ]
+    },
+    {
+      "id": "LFM2.5-Audio-JP",
+      "title": "LFM2.5-Audio-JP (L4 required, Japanese-only, no voice cloning)",
+      "status": "Colab L4 verification pending (GPU required; ungated weights, no `HF_TOKEN`; single built-in Japanese voice, no cloning; 24 kHz output)",
+      "languages": "Japanese",
+      "description": "A Japanese-only build of Liquid AI's [LFM2.5-Audio](https://huggingface.co/LiquidAI/LFM2.5-Audio-1.5B-JP) — an end-to-end multimodal speech-text model (not a dedicated TTS). It pairs an LFM2.5-1.2B backbone with a FastConformer audio encoder, an RQ-transformer for discrete audio-token generation, and a lightweight LFM2-based audio detokenizer (Mimi codec, 8 codebooks, 24 kHz). The model can do speech-to-speech, ASR, and TTS; this wrapper drives the **TTS path** only.",
+      "notes": [
+        "- Liquid AI's end-to-end speech-text model (1.5B): speech-to-speech / ASR / TTS. This JP checkpoint is Japanese-only with a single built-in voice (no reference / cloning). Runs in-process via the `liquid-audio` library; output is 24 kHz.",
+        "- **No HF_TOKEN needed**: weights ([LiquidAI/LFM2.5-Audio-1.5B-JP](https://huggingface.co/LiquidAI/LFM2.5-Audio-1.5B-JP)) are ungated. Python 3.12 venv installs liquid-audio + torch>=2.8 (flash-attn optional, falls back to torch SDPA).",
+        "- TTS uses sequential generation with the system prompt below. Tune length with `LFM2_AUDIO_JP_MAX_NEW_TOKENS` (counts text+audio tokens; audio is ~12.5 frames/sec).",
+        "- License: code and weights are **LFM Open License v1.0** (commercial OK for orgs under $10M annual revenue; above that needs a separate commercial license). Audio encoder is Apache-2.0 (NVIDIA NeMo); audio codec (Mimi) is CC-BY-4.0 (Kyutai)."
+      ],
+      "prefix": "LFM2_AUDIO_JP",
+      "params": [
+        {
+          "name": "LFM2_AUDIO_JP_HF_MODEL",
+          "default": "LiquidAI/LFM2.5-Audio-1.5B-JP",
+          "type": "string",
+          "flag": "--lfm2-audio-jp-hf-model"
+        },
+        {
+          "name": "LFM2_AUDIO_JP_SYSTEM_PROMPT",
+          "default": "Perform TTS in japanese.",
+          "type": "string",
+          "flag": "--lfm2-audio-jp-system-prompt"
+        },
+        {
+          "name": "LFM2_AUDIO_JP_MAX_NEW_TOKENS",
+          "default": 1024,
+          "type": "integer",
+          "flag": "--lfm2-audio-jp-max-new-tokens"
+        },
+        {
+          "name": "LFM2_AUDIO_JP_AUDIO_TEMPERATURE",
+          "default": 0.8,
+          "type": "number",
+          "flag": "--lfm2-audio-jp-audio-temperature"
+        },
+        {
+          "name": "LFM2_AUDIO_JP_AUDIO_TOP_K",
+          "default": 64,
+          "type": "integer",
+          "flag": "--lfm2-audio-jp-audio-top-k"
         }
       ]
     },

@@ -198,6 +198,11 @@ def parse_args():
     parser.add_argument("--dots-tts-guidance-scale", type=float, default=1.2)
     parser.add_argument("--dots-tts-speaker-scale", type=float, default=1.5)
     parser.add_argument("--dots-tts-max-generate-length", type=int, default=500)
+    parser.add_argument("--lfm2-audio-jp-hf-model", default="LiquidAI/LFM2.5-Audio-1.5B-JP")
+    parser.add_argument("--lfm2-audio-jp-system-prompt", default="Perform TTS in japanese.")
+    parser.add_argument("--lfm2-audio-jp-max-new-tokens", type=int, default=1024)
+    parser.add_argument("--lfm2-audio-jp-audio-temperature", type=float, default=0.8)
+    parser.add_argument("--lfm2-audio-jp-audio-top-k", type=int, default=64)
     parser.add_argument("--supertonic-model", default="supertonic-3")
     parser.add_argument("--supertonic-default-voice", default="M1")
     parser.add_argument("--supertonic-default-lang", default="en")
@@ -406,6 +411,11 @@ def main():
         dots_tts_guidance_scale=args.dots_tts_guidance_scale,
         dots_tts_speaker_scale=args.dots_tts_speaker_scale,
         dots_tts_max_generate_length=args.dots_tts_max_generate_length,
+        lfm2_audio_jp_hf_model=args.lfm2_audio_jp_hf_model,
+        lfm2_audio_jp_system_prompt=args.lfm2_audio_jp_system_prompt,
+        lfm2_audio_jp_max_new_tokens=args.lfm2_audio_jp_max_new_tokens,
+        lfm2_audio_jp_audio_temperature=args.lfm2_audio_jp_audio_temperature,
+        lfm2_audio_jp_audio_top_k=args.lfm2_audio_jp_audio_top_k,
         supertonic_model=args.supertonic_model,
         supertonic_default_voice=args.supertonic_default_voice,
         supertonic_default_lang=args.supertonic_default_lang,
