@@ -27,6 +27,7 @@
       "CosyVoice2",
       "CSM-1B",
       "Dia",
+      "dots.tts",
       "DramaBox",
       "F5-TTS",
       "Fish-Speech",
@@ -374,6 +375,80 @@
             "clone"
           ],
           "flag": "--dia-default-voice"
+        }
+      ]
+    },
+    {
+      "id": "dots.tts",
+      "title": "dots.tts (L4 required, 24 languages incl. Japanese, voice cloning)",
+      "status": "Colab L4 verification pending (GPU required, bf16 load ~5GB; ungated weights, no `HF_TOKEN`; zero-shot cloning model — `default` is a random speaker, use `clone` for a stable voice)",
+      "languages": "24 languages (incl. Japanese)",
+      "description": "A 2B-parameter fully continuous, end-to-end autoregressive TTS from rednote-hilab ([rednote-hilab/dots.tts](https://github.com/rednote-hilab/dots.tts)). The backbone pairs a semantic encoder, a **Qwen2.5-1.5B-Base** LLM that consumes BPE text directly (no phonemes), and an autoregressive flow-matching (DiT) acoustic head over a 48 kHz AudioVAE — there are no discrete codec tokens anywhere in the pipeline. It reports open-source SOTA on Seed-TTS-Eval and the highest average speaker similarity on the 24-language MiniMax multilingual benchmark.",
+      "notes": [
+        "- rednote-hilab's 2B fully continuous, end-to-end autoregressive TTS (Qwen2.5-1.5B backbone + flow-matching head over a 48 kHz AudioVAE). Runs in-process (no separate backend).",
+        "- **No HF_TOKEN needed**: weights ([rednote-hilab/dots.tts-base](https://huggingface.co/rednote-hilab/dots.tts-base), ~9.5GB) are ungated. Python 3.12 venv installs torch==2.8.0.",
+        "- Fundamentally a zero-shot cloning model: `default` = no reference (random-voice sampling; a stable single speaker is only meaningful on a fine-tuned checkpoint). Set `DOTS_TTS_PROMPT_WAV` (optionally `DOTS_TTS_PROMPT_TEXT` for continuation cloning) and use `voice=\"clone\"` for a stable voice.",
+        "- Checkpoints (all 2B / Apache-2.0): `rednote-hilab/dots.tts-base` (Pretrain), `rednote-hilab/dots.tts-soar` (Self-Corrective Alignment, higher SIM), `rednote-hilab/dots.tts-mf` (MeanFlow distilled, NFE=4, fastest).",
+        "- License: code and weights are both **Apache-2.0** (commercial use OK). Misuse for impersonation/fraud/disinformation is prohibited by the upstream terms."
+      ],
+      "prefix": "DOTS_TTS",
+      "params": [
+        {
+          "name": "DOTS_TTS_HF_MODEL",
+          "default": "rednote-hilab/dots.tts-base",
+          "type": "select",
+          "options": [
+            "rednote-hilab/dots.tts-base",
+            "rednote-hilab/dots.tts-soar",
+            "rednote-hilab/dots.tts-mf"
+          ],
+          "flag": "--dots-tts-hf-model"
+        },
+        {
+          "name": "DOTS_TTS_DEFAULT_VOICE",
+          "default": "default",
+          "type": "select",
+          "options": [
+            "default",
+            "clone"
+          ],
+          "flag": "--dots-tts-default-voice"
+        },
+        {
+          "name": "DOTS_TTS_PROMPT_WAV",
+          "default": "",
+          "type": "string",
+          "flag": "--dots-tts-prompt-wav"
+        },
+        {
+          "name": "DOTS_TTS_PROMPT_TEXT",
+          "default": "",
+          "type": "string",
+          "flag": "--dots-tts-prompt-text"
+        },
+        {
+          "name": "DOTS_TTS_LANGUAGE",
+          "default": "auto_detect",
+          "type": "string",
+          "flag": "--dots-tts-language"
+        },
+        {
+          "name": "DOTS_TTS_NUM_STEPS",
+          "default": 10,
+          "type": "integer",
+          "flag": "--dots-tts-num-steps"
+        },
+        {
+          "name": "DOTS_TTS_GUIDANCE_SCALE",
+          "default": 1.2,
+          "type": "number",
+          "flag": "--dots-tts-guidance-scale"
+        },
+        {
+          "name": "DOTS_TTS_SPEAKER_SCALE",
+          "default": 1.5,
+          "type": "number",
+          "flag": "--dots-tts-speaker-scale"
         }
       ]
     },

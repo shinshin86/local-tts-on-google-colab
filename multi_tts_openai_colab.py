@@ -11,7 +11,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "Irodori-TTS", "Irodori-TTS-Lite", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "MaskGCT", "MeloTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
+ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "Irodori-TTS", "Irodori-TTS-Lite", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "MaskGCT", "MeloTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -333,6 +333,22 @@ HIGGS_V3_PROMPT_TEXT = ""  #@param {type:"string"}
 HIGGS_V3_TEMPERATURE = 0.7  #@param {type:"number"}
 HIGGS_V3_TOP_K = 50  #@param {type:"integer"}
 HIGGS_V3_MAX_NEW_TOKENS = 2048  #@param {type:"integer"}
+
+#@markdown ---
+#@markdown dots.tts (L4 required, 24 languages incl. Japanese, voice cloning)
+#@markdown - rednote-hilab's 2B fully continuous, end-to-end autoregressive TTS (Qwen2.5-1.5B backbone + flow-matching head over a 48 kHz AudioVAE). Runs in-process (no separate backend).
+#@markdown - **No HF_TOKEN needed**: weights ([rednote-hilab/dots.tts-base](https://huggingface.co/rednote-hilab/dots.tts-base), ~9.5GB) are ungated. Python 3.12 venv installs torch==2.8.0.
+#@markdown - Fundamentally a zero-shot cloning model: `default` = no reference (random-voice sampling; a stable single speaker is only meaningful on a fine-tuned checkpoint). Set `DOTS_TTS_PROMPT_WAV` (optionally `DOTS_TTS_PROMPT_TEXT` for continuation cloning) and use `voice="clone"` for a stable voice.
+#@markdown - Checkpoints (all 2B / Apache-2.0): `rednote-hilab/dots.tts-base` (Pretrain), `rednote-hilab/dots.tts-soar` (Self-Corrective Alignment, higher SIM), `rednote-hilab/dots.tts-mf` (MeanFlow distilled, NFE=4, fastest).
+#@markdown - License: code and weights are both **Apache-2.0** (commercial use OK). Misuse for impersonation/fraud/disinformation is prohibited by the upstream terms.
+DOTS_TTS_HF_MODEL = "rednote-hilab/dots.tts-base"  #@param ["rednote-hilab/dots.tts-base", "rednote-hilab/dots.tts-soar", "rednote-hilab/dots.tts-mf"]
+DOTS_TTS_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+DOTS_TTS_PROMPT_WAV = ""  #@param {type:"string"}
+DOTS_TTS_PROMPT_TEXT = ""  #@param {type:"string"}
+DOTS_TTS_LANGUAGE = "auto_detect"  #@param {type:"string"}
+DOTS_TTS_NUM_STEPS = 10  #@param {type:"integer"}
+DOTS_TTS_GUIDANCE_SCALE = 1.2  #@param {type:"number"}
+DOTS_TTS_SPEAKER_SCALE = 1.5  #@param {type:"number"}
 
 #@markdown ---
 #@markdown DramaBox (A100 required, VRAM ~24GB, English-only, voice cloning)
@@ -727,6 +743,22 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         str(HIGGS_V3_TOP_K),
         "--higgs-v3-max-new-tokens",
         str(HIGGS_V3_MAX_NEW_TOKENS),
+        "--dots-tts-hf-model",
+        DOTS_TTS_HF_MODEL,
+        "--dots-tts-default-voice",
+        DOTS_TTS_DEFAULT_VOICE,
+        "--dots-tts-prompt-wav",
+        DOTS_TTS_PROMPT_WAV,
+        "--dots-tts-prompt-text",
+        DOTS_TTS_PROMPT_TEXT,
+        "--dots-tts-language",
+        DOTS_TTS_LANGUAGE,
+        "--dots-tts-num-steps",
+        str(DOTS_TTS_NUM_STEPS),
+        "--dots-tts-guidance-scale",
+        str(DOTS_TTS_GUIDANCE_SCALE),
+        "--dots-tts-speaker-scale",
+        str(DOTS_TTS_SPEAKER_SCALE),
         "--supertonic-model",
         SUPERTONIC_MODEL,
         "--supertonic-default-voice",

@@ -259,6 +259,20 @@ class Settings:
     scenema_vc_steps: int = 25
     scenema_vc_cfg_rate: float = 0.5
     scenema_background_sfx: bool = False
+    # dots.tts (rednote-hilab): 2B fully continuous AR TTS, 24 languages incl.
+    # Japanese, Apache-2.0 for both code and weights. Fundamentally a zero-shot
+    # cloning model: `default` = no reference (random-voice sampling), `clone` =
+    # reference audio (+ optional transcript for continuation cloning).
+    dots_tts_hf_model: str = "rednote-hilab/dots.tts-base"
+    dots_tts_default_voice: str = "default"
+    dots_tts_prompt_wav: str = ""
+    dots_tts_prompt_text: str = ""
+    dots_tts_language: str = "auto_detect"
+    dots_tts_precision: str = "bfloat16"
+    dots_tts_num_steps: int = 10
+    dots_tts_guidance_scale: float = 1.2
+    dots_tts_speaker_scale: float = 1.5
+    dots_tts_max_generate_length: int = 500
     root_dir: Path = Path("/content/openai-compatible-local-tts")
     repo_dir: Path = field(default_factory=default_repo_dir)
     app_port: int = 8000

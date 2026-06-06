@@ -188,6 +188,16 @@ def parse_args():
     parser.add_argument("--higgs-v3-top-k", type=int, default=50)
     parser.add_argument("--higgs-v3-max-new-tokens", type=int, default=2048)
     parser.add_argument("--higgs-v3-backend-port", type=int, default=5002)
+    parser.add_argument("--dots-tts-hf-model", default="rednote-hilab/dots.tts-base")
+    parser.add_argument("--dots-tts-default-voice", default="default")
+    parser.add_argument("--dots-tts-prompt-wav", default="")
+    parser.add_argument("--dots-tts-prompt-text", default="")
+    parser.add_argument("--dots-tts-language", default="auto_detect")
+    parser.add_argument("--dots-tts-precision", default="bfloat16")
+    parser.add_argument("--dots-tts-num-steps", type=int, default=10)
+    parser.add_argument("--dots-tts-guidance-scale", type=float, default=1.2)
+    parser.add_argument("--dots-tts-speaker-scale", type=float, default=1.5)
+    parser.add_argument("--dots-tts-max-generate-length", type=int, default=500)
     parser.add_argument("--supertonic-model", default="supertonic-3")
     parser.add_argument("--supertonic-default-voice", default="M1")
     parser.add_argument("--supertonic-default-lang", default="en")
@@ -386,6 +396,16 @@ def main():
         higgs_v3_top_k=args.higgs_v3_top_k,
         higgs_v3_max_new_tokens=args.higgs_v3_max_new_tokens,
         higgs_v3_backend_port=args.higgs_v3_backend_port,
+        dots_tts_hf_model=args.dots_tts_hf_model,
+        dots_tts_default_voice=args.dots_tts_default_voice,
+        dots_tts_prompt_wav=args.dots_tts_prompt_wav,
+        dots_tts_prompt_text=args.dots_tts_prompt_text,
+        dots_tts_language=args.dots_tts_language,
+        dots_tts_precision=args.dots_tts_precision,
+        dots_tts_num_steps=args.dots_tts_num_steps,
+        dots_tts_guidance_scale=args.dots_tts_guidance_scale,
+        dots_tts_speaker_scale=args.dots_tts_speaker_scale,
+        dots_tts_max_generate_length=args.dots_tts_max_generate_length,
         supertonic_model=args.supertonic_model,
         supertonic_default_voice=args.supertonic_default_voice,
         supertonic_default_lang=args.supertonic_default_lang,

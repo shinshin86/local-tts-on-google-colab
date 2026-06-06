@@ -49,6 +49,7 @@ Supported engines:
 | GPT-SoVITS | Engine starts on Colab — reference audio required for synthesis (no default speaker mode; pass `--gpt-sovits-prompt-wav` + `--gpt-sovits-prompt-text`) | Chinese / English / Japanese / Korean / Cantonese |
 | Higgs-Audio-v2 | Not working by default (upstream HF checkpoint requires unreleased `boson_multimodal` / transformers 5.x; engine starts but inference fails inside the audio tokenizer loader) | English |
 | Higgs-Audio-v3 | Works on Colab L4 / A100 (GPU required, ~19.9GB at load; T4 unsupported, slow first launch ~10-12 min via SGLang-Omni, **non-commercial weights — no hosted API**) | 100+ languages (incl. Japanese) |
+| dots.tts | Colab L4 verification pending (GPU required, bf16 load ~5GB; ungated weights, no `HF_TOKEN`; zero-shot cloning model — `default` is a random speaker, use `clone` for a stable voice) | 24 languages (incl. Japanese) |
 | DramaBox | Works on Colab A100 (GPU required, VRAM ~24GB peak, **LTX-2 Community License — non-compete clause**) | English |
 | Scenema | **Not verified on Colab** — text encoder is Gemma 3 12B IT (HF-gated), so running this engine requires accepting the Gemma Terms of Use on Hugging Face and providing `HF_TOKEN` via Colab Secrets. Code paths are in place but end-to-end Colab verification was deferred because `HF_TOKEN` setup is out of scope for this repo's default workflow. **Requires Colab A100 (40GB VRAM)**. First-run downloads ~38GB. Audio model derived from LTX-2.3 → **LTX-2 Community License** (same as DramaBox) | English-centric multilingual |
 
@@ -102,7 +103,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "Irodori-TTS", "Irodori-TTS-Lite", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "MaskGCT", "MeloTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
+ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "Irodori-TTS", "Irodori-TTS-Lite", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "MaskGCT", "MeloTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -424,6 +425,22 @@ HIGGS_V3_PROMPT_TEXT = ""  #@param {type:"string"}
 HIGGS_V3_TEMPERATURE = 0.7  #@param {type:"number"}
 HIGGS_V3_TOP_K = 50  #@param {type:"integer"}
 HIGGS_V3_MAX_NEW_TOKENS = 2048  #@param {type:"integer"}
+
+#@markdown ---
+#@markdown dots.tts (L4 required, 24 languages incl. Japanese, voice cloning)
+#@markdown - rednote-hilab's 2B fully continuous, end-to-end autoregressive TTS (Qwen2.5-1.5B backbone + flow-matching head over a 48 kHz AudioVAE). Runs in-process (no separate backend).
+#@markdown - **No HF_TOKEN needed**: weights ([rednote-hilab/dots.tts-base](https://huggingface.co/rednote-hilab/dots.tts-base), ~9.5GB) are ungated. Python 3.12 venv installs torch==2.8.0.
+#@markdown - Fundamentally a zero-shot cloning model: `default` = no reference (random-voice sampling; a stable single speaker is only meaningful on a fine-tuned checkpoint). Set `DOTS_TTS_PROMPT_WAV` (optionally `DOTS_TTS_PROMPT_TEXT` for continuation cloning) and use `voice="clone"` for a stable voice.
+#@markdown - Checkpoints (all 2B / Apache-2.0): `rednote-hilab/dots.tts-base` (Pretrain), `rednote-hilab/dots.tts-soar` (Self-Corrective Alignment, higher SIM), `rednote-hilab/dots.tts-mf` (MeanFlow distilled, NFE=4, fastest).
+#@markdown - License: code and weights are both **Apache-2.0** (commercial use OK). Misuse for impersonation/fraud/disinformation is prohibited by the upstream terms.
+DOTS_TTS_HF_MODEL = "rednote-hilab/dots.tts-base"  #@param ["rednote-hilab/dots.tts-base", "rednote-hilab/dots.tts-soar", "rednote-hilab/dots.tts-mf"]
+DOTS_TTS_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+DOTS_TTS_PROMPT_WAV = ""  #@param {type:"string"}
+DOTS_TTS_PROMPT_TEXT = ""  #@param {type:"string"}
+DOTS_TTS_LANGUAGE = "auto_detect"  #@param {type:"string"}
+DOTS_TTS_NUM_STEPS = 10  #@param {type:"integer"}
+DOTS_TTS_GUIDANCE_SCALE = 1.2  #@param {type:"number"}
+DOTS_TTS_SPEAKER_SCALE = 1.5  #@param {type:"number"}
 
 #@markdown ---
 #@markdown DramaBox (A100 required, VRAM ~24GB, English-only, voice cloning)
@@ -818,6 +835,22 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         str(HIGGS_V3_TOP_K),
         "--higgs-v3-max-new-tokens",
         str(HIGGS_V3_MAX_NEW_TOKENS),
+        "--dots-tts-hf-model",
+        DOTS_TTS_HF_MODEL,
+        "--dots-tts-default-voice",
+        DOTS_TTS_DEFAULT_VOICE,
+        "--dots-tts-prompt-wav",
+        DOTS_TTS_PROMPT_WAV,
+        "--dots-tts-prompt-text",
+        DOTS_TTS_PROMPT_TEXT,
+        "--dots-tts-language",
+        DOTS_TTS_LANGUAGE,
+        "--dots-tts-num-steps",
+        str(DOTS_TTS_NUM_STEPS),
+        "--dots-tts-guidance-scale",
+        str(DOTS_TTS_GUIDANCE_SCALE),
+        "--dots-tts-speaker-scale",
+        str(DOTS_TTS_SPEAKER_SCALE),
         "--supertonic-model",
         SUPERTONIC_MODEL,
         "--supertonic-default-voice",
@@ -1372,6 +1405,31 @@ The `voice` parameter exposes:
 
 This repo only downloads the weights (the user accepts Boson's license at download time) and does not redistribute them.
 
+### dots.tts
+
+A 2B-parameter fully continuous, end-to-end autoregressive TTS from rednote-hilab ([rednote-hilab/dots.tts](https://github.com/rednote-hilab/dots.tts)). The backbone pairs a semantic encoder, a **Qwen2.5-1.5B-Base** LLM that consumes BPE text directly (no phonemes), and an autoregressive flow-matching (DiT) acoustic head over a 48 kHz AudioVAE — there are no discrete codec tokens anywhere in the pipeline. It reports open-source SOTA on Seed-TTS-Eval and the highest average speaker similarity on the 24-language MiniMax multilingual benchmark.
+
+The wrapper clones the upstream GitHub repo, creates a **Python 3.12 venv**, and runs `uv pip install -e . -c constraints/recommended.txt` (which pins `torch==2.8.0`). The one normally-fragile dependency, `WeTextProcessing` → `pynini==2.1.6`, installs from a prebuilt `cp312` manylinux wheel, so nothing builds OpenFst from source. The model loads **in-process** (no separate backend); first request downloads ~9.5 GB from `rednote-hilab/dots.tts-base` (ungated — no `HF_TOKEN`).
+
+dots.tts is fundamentally a **zero-shot voice-cloning** model — the released checkpoints have no built-in default speaker. The `voice` parameter exposes:
+
+| voice | description |
+|---|---|
+| `default` | No reference: random-voice sampling. A stable single speaker is only meaningful on a fine-tuned single-speaker checkpoint; on the base/SOAR/MF checkpoints the timbre is random each run. |
+| `clone` | Zero-shot cloning from `--dots-tts-prompt-wav`. With `--dots-tts-prompt-text` it does **continuation cloning** (reference audio + transcript, recommended); without it, **x-vector-only cloning** (timbre from the speaker embedding). Returns 4xx if no prompt wav is configured. |
+
+The `--dots-tts-language` flag controls the model-side language tag (`none`, `auto_detect`, or a code/name such as `EN` / `JA`); the default `auto_detect` infers it from the input text, which works well for mixed Japanese/English use. Tunables: `--dots-tts-num-steps` (flow-matching steps, default 10), `--dots-tts-guidance-scale` (CFG, default 1.2), `--dots-tts-speaker-scale` (default 1.5). Output is 48 kHz.
+
+Three checkpoints are available via `--dots-tts-hf-model`, all 2B and Apache-2.0:
+
+| repo | variant | notes |
+|---|---|---|
+| `rednote-hilab/dots.tts-base` | Pretrain | default |
+| `rednote-hilab/dots.tts-soar` | Self-Corrective Alignment | higher speaker similarity / stability |
+| `rednote-hilab/dots.tts-mf` | MeanFlow distilled | NFE=4, fastest (CFG fused into the student) |
+
+**License**: code and weights are both **Apache-2.0** (commercial use OK). The LLM backbone is initialized from Qwen2.5-1.5B-Base. The upstream model card asks that high-fidelity zero-shot cloning not be used for impersonation, fraud, or disinformation, and recommends marking AI-generated audio.
+
 ### DramaBox
 
 A directable / expressive TTS from Resemble AI ([resemble-ai/DramaBox](https://github.com/resemble-ai/DramaBox)). It is an IC-LoRA fine-tune of Lightricks' LTX-2.3 audio-only branch, with a Gemma 3 12B text encoder; users can drive emotion, pacing, laughs, sighs, and other paralinguistic cues directly from the English text prompt. Voice cloning uses any 10+ second audio reference.
@@ -1497,6 +1555,7 @@ The license for each engine is as follows. When using them, always check each pr
 | Higgs-Audio-v2 (weights) | — | Boson Higgs Audio 2 Community License | Caution | Llama-derived community license. Restricted: >100k MAU needs extra license; outputs cannot be used to train other LLMs |
 | Higgs-Audio-v3 (code) | Apache 2.0 | — | — | Served by SGLang-Omni. 4B chat-native TTS, 100+ languages incl. Japanese |
 | Higgs-Audio-v3 (weights) | — | Boson Higgs Audio v3 Research and Non-Commercial License | Caution | **Non-commercial only.** Personal use / short-term eval permitted; hosted API / production / revenue need a separate commercial license. Ungated download (no HF_TOKEN) |
+| dots.tts | Apache 2.0 | Apache 2.0 | OK | 2B continuous AR TTS, 24 languages incl. Japanese, zero-shot cloning. Code and all checkpoints (base / soar / mf) are Apache-2.0. Backbone initialized from Qwen2.5-1.5B-Base. Ungated download (no HF_TOKEN) |
 | DramaBox | LTX-2 Community License (Lightricks) | LTX-2 Community License | **Not allowed without commercial license** for orgs with annual revenue $10M+ | English. Non-compete clause; redistributions must propagate the same license. Perth watermark always applied |
 | Scenema (code) | MIT | — | — | Repo: `ScenemaAI/scenema-audio` |
 | Scenema (audio weights) | — | LTX-2 Community License (Lightricks) | **Not allowed without commercial license** for orgs with annual revenue $10M+ | Audio transformer is derived from LTX-2.3; the LTX-2 Community License flows through. Same caveats as DramaBox (non-compete, acceptable-use restrictions, propagation requirement) |
@@ -1598,6 +1657,10 @@ This repository itself is intended for short-term operational verification and t
   https://huggingface.co/bosonai/higgs-audio-v3-tts-4b
 - SGLang-Omni (Higgs Audio v3 backend)
   https://github.com/sgl-project/sglang-omni
+- dots.tts
+  https://github.com/rednote-hilab/dots.tts
+- dots.tts (Hugging Face)
+  https://huggingface.co/rednote-hilab/dots.tts-base
 - DramaBox
   https://github.com/resemble-ai/DramaBox
 - DramaBox (Hugging Face)

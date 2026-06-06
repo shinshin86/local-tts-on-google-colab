@@ -80,6 +80,8 @@ def resolve_selected_voice(settings: Settings) -> str:
         return settings.higgs_default_voice
     if settings.engine == "Higgs-Audio-v3":
         return settings.higgs_v3_default_voice
+    if settings.engine == "dots.tts":
+        return settings.dots_tts_default_voice
     if settings.engine == "Supertonic":
         return settings.supertonic_default_voice
     if settings.engine == "DramaBox":
@@ -372,6 +374,31 @@ def print_engine_voice_hints(settings: Settings):
         print("ライセンス警告: GitHub コードは Apache-2.0 ですが、重み（bosonai/higgs-audio-v3-tts-4b）は")
         print("                 **Boson Higgs Audio v3 Research and Non-Commercial License** です。")
         print("                 個人利用 / 短期評価・テストは許可されますが、hosted API・production・収益化は別途商用ライセンスが必要です。")
+    elif settings.engine == "dots.tts":
+        print("dots.tts は rednote-hilab の 2B 完全連続 AR TTS です（24言語・日本語対応、ゼロショット voice cloning、Apache-2.0）。")
+        print(f"モデル: {settings.dots_tts_hf_model}")
+        print(f"language: {settings.dots_tts_language}（none / auto_detect / EN・JA 等のコード）")
+        print(f"num_steps: {settings.dots_tts_num_steps} / guidance_scale: {settings.dots_tts_guidance_scale} / speaker_scale: {settings.dots_tts_speaker_scale}")
+        print(f"デフォルト voice: {settings.dots_tts_default_voice}")
+        print("voice 候補: default（参照なし＝ランダム話者サンプリング）")
+        if settings.dots_tts_prompt_wav:
+            print(f"             clone（参照音声: {settings.dots_tts_prompt_wav}）")
+            if settings.dots_tts_prompt_text:
+                print(f"             prompt_text: {settings.dots_tts_prompt_text}（continuation cloning）")
+            else:
+                print("             prompt_text 未指定: x-vector のみのクローン（音声の音色から話者を推定）")
+        else:
+            print("             clone は --dots-tts-prompt-wav を指定すると有効になります（任意で --dots-tts-prompt-text も併用）")
+        print("注意: base は本質的にゼロショット cloning モデルです。参照なしの default は話者が毎回ランダムで、")
+        print("      安定した単一話者は fine-tune 済みチェックポイントでのみ意味を持ちます。安定した声色には clone を使ってください。")
+        print("チェックポイント: base（Pretrain）/ dots.tts-soar（Self-Corrective Alignment, 高 SIM）/ dots.tts-mf（MeanFlow 蒸留, NFE=4 高速）。")
+        print("      --dots-tts-hf-model で切り替え可能（いずれも 2B / Apache-2.0）。")
+        print("対応言語: en, zh, yue, es, fr, de, nl, pt, it, pl, cs, ro, ru, uk, el, tr, ar, hi, id, vi, th, ja, ko, fi（24言語）。")
+        print("          低リソース言語（ar / hi / tr / vi）は WER が高めです。出力は 48 kHz。")
+        print("注意: GPU 推奨（L4 24GB で動作想定、bf16 ロード ~5GB 程度）。Python 3.12 venv で torch==2.8.0 を導入します。")
+        print("      初回起動時に ~9.5GB の重みをダウンロードします（ungated、HF_TOKEN 不要）。")
+        print("ライセンス: コード / 重みとも Apache-2.0（商用 OK）。LLM backbone は Qwen2.5-1.5B-Base。")
+        print("乱用防止: 高品質なゼロショット cloning が可能です。なりすまし・詐欺・偽情報への利用は禁止（上流の利用規約）。")
     elif settings.engine == "GPT-SoVITS":
         print("GPT-SoVITS は RVC-Boss の few-shot voice cloning TTS です（5秒の参照音声で zero-shot 推論）。")
         print(f"version: {settings.gpt_sovits_version}")
