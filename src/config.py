@@ -273,6 +273,15 @@ class Settings:
     dots_tts_guidance_scale: float = 1.2
     dots_tts_speaker_scale: float = 1.5
     dots_tts_max_generate_length: int = 500
+    # LFM2.5-Audio-JP (LiquidAI): 1.5B end-to-end speech-text LM (speech-to-speech
+    # / ASR / TTS), Japanese-only. Single built-in Japanese voice via system
+    # prompt, no reference/cloning. Weights ungated (no HF_TOKEN). LFM Open
+    # License v1.0 (commercial OK under $10M annual revenue).
+    lfm2_audio_jp_hf_model: str = "LiquidAI/LFM2.5-Audio-1.5B-JP"
+    lfm2_audio_jp_system_prompt: str = "Perform TTS in japanese."
+    lfm2_audio_jp_max_new_tokens: int = 1024
+    lfm2_audio_jp_audio_temperature: float = 0.8
+    lfm2_audio_jp_audio_top_k: int = 64
     root_dir: Path = Path("/content/openai-compatible-local-tts")
     repo_dir: Path = field(default_factory=default_repo_dir)
     app_port: int = 8000

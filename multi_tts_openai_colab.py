@@ -11,7 +11,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "Irodori-TTS", "Irodori-TTS-Lite", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "MaskGCT", "MeloTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
+ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "Irodori-TTS", "Irodori-TTS-Lite", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -349,6 +349,18 @@ DOTS_TTS_LANGUAGE = "auto_detect"  #@param {type:"string"}
 DOTS_TTS_NUM_STEPS = 10  #@param {type:"integer"}
 DOTS_TTS_GUIDANCE_SCALE = 1.2  #@param {type:"number"}
 DOTS_TTS_SPEAKER_SCALE = 1.5  #@param {type:"number"}
+
+#@markdown ---
+#@markdown LFM2.5-Audio-JP (L4 required, Japanese-only, no voice cloning)
+#@markdown - Liquid AI's end-to-end speech-text model (1.5B): speech-to-speech / ASR / TTS. This JP checkpoint is Japanese-only with a single built-in voice (no reference / cloning). Runs in-process via the `liquid-audio` library; output is 24 kHz.
+#@markdown - **No HF_TOKEN needed**: weights ([LiquidAI/LFM2.5-Audio-1.5B-JP](https://huggingface.co/LiquidAI/LFM2.5-Audio-1.5B-JP)) are ungated. Python 3.12 venv installs liquid-audio + torch>=2.8 (flash-attn optional, falls back to torch SDPA).
+#@markdown - TTS uses sequential generation with the system prompt below. Tune length with `LFM2_AUDIO_JP_MAX_NEW_TOKENS` (counts text+audio tokens; audio is ~12.5 frames/sec).
+#@markdown - License: code and weights are **LFM Open License v1.0** (commercial OK for orgs under $10M annual revenue; above that needs a separate commercial license). Audio encoder is Apache-2.0 (NVIDIA NeMo); audio codec (Mimi) is CC-BY-4.0 (Kyutai).
+LFM2_AUDIO_JP_HF_MODEL = "LiquidAI/LFM2.5-Audio-1.5B-JP"  #@param {type:"string"}
+LFM2_AUDIO_JP_SYSTEM_PROMPT = "Perform TTS in japanese."  #@param {type:"string"}
+LFM2_AUDIO_JP_MAX_NEW_TOKENS = 1024  #@param {type:"integer"}
+LFM2_AUDIO_JP_AUDIO_TEMPERATURE = 0.8  #@param {type:"number"}
+LFM2_AUDIO_JP_AUDIO_TOP_K = 64  #@param {type:"integer"}
 
 #@markdown ---
 #@markdown DramaBox (A100 required, VRAM ~24GB, English-only, voice cloning)
@@ -759,6 +771,16 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         str(DOTS_TTS_GUIDANCE_SCALE),
         "--dots-tts-speaker-scale",
         str(DOTS_TTS_SPEAKER_SCALE),
+        "--lfm2-audio-jp-hf-model",
+        LFM2_AUDIO_JP_HF_MODEL,
+        "--lfm2-audio-jp-system-prompt",
+        LFM2_AUDIO_JP_SYSTEM_PROMPT,
+        "--lfm2-audio-jp-max-new-tokens",
+        str(LFM2_AUDIO_JP_MAX_NEW_TOKENS),
+        "--lfm2-audio-jp-audio-temperature",
+        str(LFM2_AUDIO_JP_AUDIO_TEMPERATURE),
+        "--lfm2-audio-jp-audio-top-k",
+        str(LFM2_AUDIO_JP_AUDIO_TOP_K),
         "--supertonic-model",
         SUPERTONIC_MODEL,
         "--supertonic-default-voice",

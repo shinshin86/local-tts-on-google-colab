@@ -50,6 +50,7 @@ Supported engines:
 | Higgs-Audio-v2 | Not working by default (upstream HF checkpoint requires unreleased `boson_multimodal` / transformers 5.x; engine starts but inference fails inside the audio tokenizer loader) | English |
 | Higgs-Audio-v3 | Works on Colab L4 / A100 (GPU required, ~19.9GB at load; T4 unsupported, slow first launch ~10-12 min via SGLang-Omni, **non-commercial weights — no hosted API**) | 100+ languages (incl. Japanese) |
 | dots.tts | Works on Colab L4 (GPU required, bf16 resident ~5.4GB, 48 kHz output; ungated weights, no `HF_TOKEN`; zero-shot cloning model — `default` is a random speaker, use `clone` for a stable voice) | 24 languages (incl. Japanese) |
+| LFM2.5-Audio-JP | Works on Colab L4 (GPU required, ~6.3GB VRAM resident; ungated weights, no `HF_TOKEN`; single built-in Japanese voice, no cloning; 24 kHz output) | Japanese |
 | DramaBox | Works on Colab A100 (GPU required, VRAM ~24GB peak, **LTX-2 Community License — non-compete clause**) | English |
 | Scenema | **Not verified on Colab** — text encoder is Gemma 3 12B IT (HF-gated), so running this engine requires accepting the Gemma Terms of Use on Hugging Face and providing `HF_TOKEN` via Colab Secrets. Code paths are in place but end-to-end Colab verification was deferred because `HF_TOKEN` setup is out of scope for this repo's default workflow. **Requires Colab A100 (40GB VRAM)**. First-run downloads ~38GB. Audio model derived from LTX-2.3 → **LTX-2 Community License** (same as DramaBox) | English-centric multilingual |
 
@@ -103,7 +104,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "Irodori-TTS", "Irodori-TTS-Lite", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "MaskGCT", "MeloTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
+ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "Irodori-TTS", "Irodori-TTS-Lite", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -441,6 +442,18 @@ DOTS_TTS_LANGUAGE = "auto_detect"  #@param {type:"string"}
 DOTS_TTS_NUM_STEPS = 10  #@param {type:"integer"}
 DOTS_TTS_GUIDANCE_SCALE = 1.2  #@param {type:"number"}
 DOTS_TTS_SPEAKER_SCALE = 1.5  #@param {type:"number"}
+
+#@markdown ---
+#@markdown LFM2.5-Audio-JP (L4 required, Japanese-only, no voice cloning)
+#@markdown - Liquid AI's end-to-end speech-text model (1.5B): speech-to-speech / ASR / TTS. This JP checkpoint is Japanese-only with a single built-in voice (no reference / cloning). Runs in-process via the `liquid-audio` library; output is 24 kHz.
+#@markdown - **No HF_TOKEN needed**: weights ([LiquidAI/LFM2.5-Audio-1.5B-JP](https://huggingface.co/LiquidAI/LFM2.5-Audio-1.5B-JP)) are ungated. Python 3.12 venv installs liquid-audio + torch>=2.8 (flash-attn optional, falls back to torch SDPA).
+#@markdown - TTS uses sequential generation with the system prompt below. Tune length with `LFM2_AUDIO_JP_MAX_NEW_TOKENS` (counts text+audio tokens; audio is ~12.5 frames/sec).
+#@markdown - License: code and weights are **LFM Open License v1.0** (commercial OK for orgs under $10M annual revenue; above that needs a separate commercial license). Audio encoder is Apache-2.0 (NVIDIA NeMo); audio codec (Mimi) is CC-BY-4.0 (Kyutai).
+LFM2_AUDIO_JP_HF_MODEL = "LiquidAI/LFM2.5-Audio-1.5B-JP"  #@param {type:"string"}
+LFM2_AUDIO_JP_SYSTEM_PROMPT = "Perform TTS in japanese."  #@param {type:"string"}
+LFM2_AUDIO_JP_MAX_NEW_TOKENS = 1024  #@param {type:"integer"}
+LFM2_AUDIO_JP_AUDIO_TEMPERATURE = 0.8  #@param {type:"number"}
+LFM2_AUDIO_JP_AUDIO_TOP_K = 64  #@param {type:"integer"}
 
 #@markdown ---
 #@markdown DramaBox (A100 required, VRAM ~24GB, English-only, voice cloning)
@@ -851,6 +864,16 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         str(DOTS_TTS_GUIDANCE_SCALE),
         "--dots-tts-speaker-scale",
         str(DOTS_TTS_SPEAKER_SCALE),
+        "--lfm2-audio-jp-hf-model",
+        LFM2_AUDIO_JP_HF_MODEL,
+        "--lfm2-audio-jp-system-prompt",
+        LFM2_AUDIO_JP_SYSTEM_PROMPT,
+        "--lfm2-audio-jp-max-new-tokens",
+        str(LFM2_AUDIO_JP_MAX_NEW_TOKENS),
+        "--lfm2-audio-jp-audio-temperature",
+        str(LFM2_AUDIO_JP_AUDIO_TEMPERATURE),
+        "--lfm2-audio-jp-audio-top-k",
+        str(LFM2_AUDIO_JP_AUDIO_TOP_K),
         "--supertonic-model",
         SUPERTONIC_MODEL,
         "--supertonic-default-voice",
@@ -1430,6 +1453,18 @@ Three checkpoints are available via `--dots-tts-hf-model`, all 2B and Apache-2.0
 
 **License**: code and weights are both **Apache-2.0** (commercial use OK). The LLM backbone is initialized from Qwen2.5-1.5B-Base. The upstream model card asks that high-fidelity zero-shot cloning not be used for impersonation, fraud, or disinformation, and recommends marking AI-generated audio.
 
+### LFM2.5-Audio-JP
+
+A Japanese-only build of Liquid AI's [LFM2.5-Audio](https://huggingface.co/LiquidAI/LFM2.5-Audio-1.5B-JP) — an end-to-end multimodal speech-text model (not a dedicated TTS). It pairs an LFM2.5-1.2B backbone with a FastConformer audio encoder, an RQ-transformer for discrete audio-token generation, and a lightweight LFM2-based audio detokenizer (Mimi codec, 8 codebooks, 24 kHz). The model can do speech-to-speech, ASR, and TTS; this wrapper drives the **TTS path** only.
+
+The wrapper installs the [`liquid-audio`](https://github.com/Liquid4All/liquid-audio) library into a **Python 3.12 venv** (`pip install liquid-audio`, which pins `torch>=2.8`) and loads the model **in-process** (`LFM2AudioModel` / `LFM2AudioProcessor`, `device="cuda"`, bf16). `flash-attn` is **optional** — the model falls back to torch SDPA when it is absent, so it is not installed. First request downloads the weights from `LiquidAI/LFM2.5-Audio-1.5B-JP` (ungated — no `HF_TOKEN`).
+
+TTS uses **sequential generation**: a system prompt (`Perform TTS in japanese.`, configurable via `--lfm2-audio-jp-system-prompt`) selects the task, the user turn carries the text, and the assistant turn's audio frames (`numel == 8`, one entry per Mimi codebook) are collected and detokenized to a 24 kHz waveform. The terminal end-of-audio frame (codes `== 2048`) is dropped before decoding (the detokenizer only accepts codes in `[0, 2047]`).
+
+The `voice` parameter exposes only `default` — the single built-in Japanese voice. There is **no reference audio / voice cloning** (the English base model `LiquidAI/LFM2.5-Audio-1.5B` has four named US/UK voices, but this JP checkpoint ships one Japanese voice). Tunables: `--lfm2-audio-jp-max-new-tokens` (default 1024; counts text+audio tokens, audio is ~12.5 frames/sec), `--lfm2-audio-jp-audio-temperature` (0.8), `--lfm2-audio-jp-audio-top-k` (64).
+
+**License**: code and weights are under the **LFM Open License v1.0** — commercial use is permitted for organizations under **USD 10M annual revenue**; above that threshold a separate commercial license from Liquid AI is required (qualified non-profits are exempt for research). The bundled **audio encoder is Apache-2.0** (derived from NVIDIA NeMo) and the **audio codec (Mimi) is CC-BY-4.0** (Kyutai). The license terminates on non-compliance and includes a patent-litigation termination clause.
+
 ### DramaBox
 
 A directable / expressive TTS from Resemble AI ([resemble-ai/DramaBox](https://github.com/resemble-ai/DramaBox)). It is an IC-LoRA fine-tune of Lightricks' LTX-2.3 audio-only branch, with a Gemma 3 12B text encoder; users can drive emotion, pacing, laughs, sighs, and other paralinguistic cues directly from the English text prompt. Voice cloning uses any 10+ second audio reference.
@@ -1556,6 +1591,9 @@ The license for each engine is as follows. When using them, always check each pr
 | Higgs-Audio-v3 (code) | Apache 2.0 | — | — | Served by SGLang-Omni. 4B chat-native TTS, 100+ languages incl. Japanese |
 | Higgs-Audio-v3 (weights) | — | Boson Higgs Audio v3 Research and Non-Commercial License | Caution | **Non-commercial only.** Personal use / short-term eval permitted; hosted API / production / revenue need a separate commercial license. Ungated download (no HF_TOKEN) |
 | dots.tts | Apache 2.0 | Apache 2.0 | OK | 2B continuous AR TTS, 24 languages incl. Japanese, zero-shot cloning. Code and all checkpoints (base / soar / mf) are Apache-2.0. Backbone initialized from Qwen2.5-1.5B-Base. Ungated download (no HF_TOKEN) |
+| LFM2.5-Audio-JP | LFM Open License v1.0 | LFM Open License v1.0 | Caution | Japanese-only speech-text model, TTS path. Commercial OK **under $10M annual revenue**; above that needs a separate commercial license. Ungated (no HF_TOKEN) |
+| LFM2.5-Audio-JP (audio encoder) | Apache 2.0 | — | OK | FastConformer encoder derived from NVIDIA NeMo |
+| LFM2.5-Audio-JP (audio codec / Mimi) | — | CC-BY 4.0 | OK | Kyutai Mimi codec (24 kHz, 8 codebooks); attribution required |
 | DramaBox | LTX-2 Community License (Lightricks) | LTX-2 Community License | **Not allowed without commercial license** for orgs with annual revenue $10M+ | English. Non-compete clause; redistributions must propagate the same license. Perth watermark always applied |
 | Scenema (code) | MIT | — | — | Repo: `ScenemaAI/scenema-audio` |
 | Scenema (audio weights) | — | LTX-2 Community License (Lightricks) | **Not allowed without commercial license** for orgs with annual revenue $10M+ | Audio transformer is derived from LTX-2.3; the LTX-2 Community License flows through. Same caveats as DramaBox (non-compete, acceptable-use restrictions, propagation requirement) |
@@ -1661,6 +1699,10 @@ This repository itself is intended for short-term operational verification and t
   https://github.com/rednote-hilab/dots.tts
 - dots.tts (Hugging Face)
   https://huggingface.co/rednote-hilab/dots.tts-base
+- LFM2.5-Audio-JP (Hugging Face)
+  https://huggingface.co/LiquidAI/LFM2.5-Audio-1.5B-JP
+- liquid-audio (LFM2-Audio library)
+  https://github.com/Liquid4All/liquid-audio
 - DramaBox
   https://github.com/resemble-ai/DramaBox
 - DramaBox (Hugging Face)
