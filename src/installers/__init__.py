@@ -4,6 +4,7 @@ from .chattts import install as install_chattts
 from .cosyvoice2 import install as install_cosyvoice2
 from .csm import install as install_csm
 from .dia import install as install_dia
+from .dots_tts import install as install_dots_tts
 from .dramabox import install as install_dramabox
 from .f5tts import install as install_f5tts
 from .fish_speech import install as install_fish_speech
@@ -48,6 +49,7 @@ INSTALLERS = {
     "CosyVoice2": install_cosyvoice2,
     "CSM-1B": install_csm,
     "Dia": install_dia,
+    "dots.tts": install_dots_tts,
     "DramaBox": install_dramabox,
     "F5-TTS": install_f5tts,
     "Fish-Speech": install_fish_speech,
