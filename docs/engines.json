@@ -2368,7 +2368,7 @@
     {
       "id": "ZONOS2",
       "title": "ZONOS2 (L4 required, 41 languages incl. Japanese, voice cloning)",
-      "status": "Untested (L4 required, sm_80+)",
+      "status": "Works (L4 verified, sm_80+ required)",
       "languages": "41 languages (tier-1: Japanese / English / Chinese)",
       "description": "Zyphra's latest TTS, [Zyphra/ZONOS2](https://github.com/Zyphra/Zonos2). A Mixture-of-Experts backbone generates DAC tokens from NeMo-normalized UTF-8 bytes conditioned on an ECAPA-TDNN speaker embedding, trained on 6M+ hours of multilingual speech. It supports 41 languages across three tiers (tier-1: English, Mandarin Chinese, Japanese) with high-fidelity zero-shot voice cloning. Default model: `Zyphra/ZONOS2`.",
       "notes": [

@@ -31,7 +31,7 @@ Supported engines:
 | F5-TTS | Works (GPU required) | English / Chinese (Japanese via separate model) |
 | Chatterbox | Works (GPU recommended) | Japanese / English / Chinese and 23 languages |
 | Zonos | Works (GPU required, ~6GB VRAM) | Japanese / English / Chinese / French / German |
-| ZONOS2 | Untested (L4 required, sm_80+) | 41 languages (tier-1: Japanese / English / Chinese) |
+| ZONOS2 | Works (L4 verified, sm_80+ required) | 41 languages (tier-1: Japanese / English / Chinese) |
 | OuteTTS | Works (CPU OK) | Japanese / English / Chinese and many languages |
 | Dia | Works (GPU recommended) | English (multi-speaker dialogue) |
 | Kyutai-TTS | Works (GPU recommended) | English / French |

@@ -175,7 +175,9 @@ async def audio_speech(payload: AudioSpeechRequest):
         raise HTTPException(status_code=500, detail="No audio was generated.")
 
     buf = io.BytesIO()
-    sf.write(buf, pcm, BACKEND_SAMPLE_RATE, format="WAV", subtype="FLOAT")
+    # Write PCM_16 (not FLOAT) so the WAV is readable by the Python stdlib
+    # `wave` module and the broadest set of OpenAI-style clients.
+    sf.write(buf, pcm, BACKEND_SAMPLE_RATE, format="WAV", subtype="PCM_16")
     audio_bytes = buf.getvalue()
 
     return Response(
