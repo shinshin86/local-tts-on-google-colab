@@ -139,6 +139,22 @@ class Settings:
     zonos_language: str = "ja"
     zonos_prompt_wav: str = ""
     zonos_default_voice: str = "default"
+    # ZONOS2 (Zyphra): MoE backbone + DAC tokens + ECAPA-TDNN embedding served
+    # by the bundled Mini-SGLang server (GPU sm_80+ required: flashinfer /
+    # sgl_kernel / cutlass kernels). Multilingual (tier-1: en/zh/ja). We launch
+    # `uv run python -m zonos2` as a backend and proxy its /tts/generate
+    # (44.1 kHz float32 PCM). default = a shipped reference voice; clone =
+    # --zonos2-prompt-wav. Code MIT (pyproject), weights Apache-2.0 (HF card).
+    zonos2_hf_model: str = "Zyphra/ZONOS2"
+    zonos2_language: str = "ja"
+    zonos2_prompt_wav: str = ""
+    zonos2_default_voice: str = "default"
+    # Bare filename → looked up inside the cloned repo's default_voices/.
+    zonos2_default_ref: str = "AmericanFemale.mp3"
+    zonos2_accurate_mode: bool = True
+    # >= 0 forces a fixed seed for reproducible output; -1 leaves it random.
+    zonos2_seed: int = -1
+    zonos2_backend_port: int = 5003
     outetts_model_size: str = "0.6B"
     outetts_backend: str = "HF"
     outetts_default_speaker: str = "EN-FEMALE-1-NEUTRAL"

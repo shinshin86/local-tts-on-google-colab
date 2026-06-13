@@ -11,7 +11,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "Irodori-TTS", "Irodori-TTS-Lite", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
+ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "Irodori-TTS", "Irodori-TTS-Lite", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos", "ZONOS2"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -166,6 +166,20 @@ ZONOS_HF_MODEL = "Zyphra/Zonos-v0.1-transformer"  #@param {type:"string"}
 ZONOS_LANGUAGE = "ja"  #@param ["en", "ja", "zh", "fr", "de"]
 ZONOS_PROMPT_WAV = ""  #@param {type:"string"}
 ZONOS_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+
+#@markdown ---
+#@markdown ZONOS2 (L4 required, 41 languages incl. Japanese, voice cloning)
+#@markdown - Zyphra's latest TTS: MoE backbone + DAC tokens + ECAPA-TDNN embedding, served by the bundled Mini-SGLang server. We launch `uv run python -m zonos2` as a backend and proxy its `/tts/generate` (44.1 kHz float32 PCM) as OpenAI-compatible.
+#@markdown - **GPU sm_80+ required** (L4 / A100): the backbone uses flashinfer / sgl_kernel / cutlass kernels, so T4 does not work. First launch is slow (`uv sync` fetches GPU kernels, then the weights download).
+#@markdown - `default` = a shipped reference voice (`default_voices/<ZONOS2_DEFAULT_REF>`); set `ZONOS2_PROMPT_WAV` and use `voice="clone"` for your own reference. `accurate_mode` on = closer voice match, off = more expressive.
+#@markdown - License: code is **MIT** (pyproject), weights are **Apache-2.0** ([HF model card](https://huggingface.co/Zyphra/ZONOS2)). Both allow commercial use.
+ZONOS2_HF_MODEL = "Zyphra/ZONOS2"  #@param {type:"string"}
+ZONOS2_LANGUAGE = "ja"  #@param ["en_us", "en_gb", "fr_fr", "de", "es", "it", "pt_br", "ja", "cmn", "ko"]
+ZONOS2_PROMPT_WAV = ""  #@param {type:"string"}
+ZONOS2_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+ZONOS2_DEFAULT_REF = "AmericanFemale.mp3"  #@param {type:"string"}
+ZONOS2_ACCURATE_MODE = True  #@param {type:"boolean"}
+ZONOS2_SEED = -1  #@param {type:"integer"}
 
 #@markdown ---
 #@markdown OuteTTS (CPU OK, multilingual incl JP, voice cloning)
@@ -585,6 +599,18 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         ZONOS_PROMPT_WAV,
         "--zonos-default-voice",
         ZONOS_DEFAULT_VOICE,
+        "--zonos2-hf-model",
+        ZONOS2_HF_MODEL,
+        "--zonos2-language",
+        ZONOS2_LANGUAGE,
+        "--zonos2-prompt-wav",
+        ZONOS2_PROMPT_WAV,
+        "--zonos2-default-voice",
+        ZONOS2_DEFAULT_VOICE,
+        "--zonos2-default-ref",
+        ZONOS2_DEFAULT_REF,
+        "--zonos2-seed",
+        str(ZONOS2_SEED),
         "--outetts-model-size",
         OUTETTS_MODEL_SIZE,
         "--outetts-backend",
@@ -844,6 +870,8 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         cmd.append("--scenema-skip-vc")
     if SCENEMA_BACKGROUND_SFX:
         cmd.append("--scenema-background-sfx")
+    if not ZONOS2_ACCURATE_MODE:
+        cmd.append("--zonos2-no-accurate-mode")
     cmd.append("--expose-public-url" if EXPOSE_PUBLIC_URL else "--no-expose-public-url")
     return cmd
 

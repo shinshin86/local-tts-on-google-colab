@@ -101,6 +101,18 @@ def parse_args():
     parser.add_argument("--zonos-language", default="ja")
     parser.add_argument("--zonos-prompt-wav", default="")
     parser.add_argument("--zonos-default-voice", default="default")
+    parser.add_argument("--zonos2-hf-model", default="Zyphra/ZONOS2")
+    parser.add_argument(
+        "--zonos2-language",
+        default="ja",
+        choices=["en_us", "en_gb", "fr_fr", "de", "es", "it", "pt_br", "ja", "cmn", "ko"],
+    )
+    parser.add_argument("--zonos2-prompt-wav", default="")
+    parser.add_argument("--zonos2-default-voice", default="default")
+    parser.add_argument("--zonos2-default-ref", default="AmericanFemale.mp3")
+    parser.add_argument("--zonos2-no-accurate-mode", action="store_true")
+    parser.add_argument("--zonos2-seed", type=int, default=-1)
+    parser.add_argument("--zonos2-backend-port", type=int, default=5003)
     parser.add_argument("--outetts-model-size", default="0.6B")
     parser.add_argument("--outetts-backend", default="HF")
     parser.add_argument("--outetts-default-speaker", default="EN-FEMALE-1-NEUTRAL")
@@ -314,6 +326,14 @@ def main():
         zonos_language=args.zonos_language,
         zonos_prompt_wav=args.zonos_prompt_wav,
         zonos_default_voice=args.zonos_default_voice,
+        zonos2_hf_model=args.zonos2_hf_model,
+        zonos2_language=args.zonos2_language,
+        zonos2_prompt_wav=args.zonos2_prompt_wav,
+        zonos2_default_voice=args.zonos2_default_voice,
+        zonos2_default_ref=args.zonos2_default_ref,
+        zonos2_accurate_mode=not args.zonos2_no_accurate_mode,
+        zonos2_seed=args.zonos2_seed,
+        zonos2_backend_port=args.zonos2_backend_port,
         outetts_model_size=args.outetts_model_size,
         outetts_backend=args.outetts_backend,
         outetts_default_speaker=args.outetts_default_speaker,
