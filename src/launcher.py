@@ -44,6 +44,8 @@ def resolve_selected_voice(settings: Settings) -> str:
         return settings.chatterbox_default_voice
     if settings.engine == "Zonos":
         return settings.zonos_default_voice
+    if settings.engine == "ZONOS2":
+        return settings.zonos2_default_voice
     if settings.engine == "OuteTTS":
         return settings.outetts_default_voice
     if settings.engine == "Dia":
@@ -227,6 +229,24 @@ def print_engine_voice_hints(settings: Settings):
             print("             clone は --zonos-prompt-wav を指定すると有効になります")
         print("対応言語: en, ja, zh, fr, de（espeak-ng で音素化）")
         print("注意: GPU 推奨（VRAM 6GB+）。ライセンス: Apache-2.0（コードと重み）")
+    elif settings.engine == "ZONOS2":
+        print("ZONOS2 は Zyphra の最新多言語 TTS です（MoE バックボーン + DAC、41言語、ゼロショット voice cloning）。")
+        print(f"モデル: {settings.zonos2_hf_model}")
+        print(f"language: {settings.zonos2_language}（tier-1: en_us/en_gb, cmn, ja）")
+        print(f"デフォルト voice: {settings.zonos2_default_voice} / 参照音声: {settings.zonos2_default_ref}")
+        print(f"accurate_mode: {settings.zonos2_accurate_mode}（True=声質再現重視 / False=表現力重視）")
+        print(f"seed: {'random' if settings.zonos2_seed < 0 else settings.zonos2_seed}")
+        print("voice 候補: default（同梱の default_voices/<ZONOS2_DEFAULT_REF> を参照音声として使用）")
+        if settings.zonos2_prompt_wav:
+            print(f"             clone（参照音声: {settings.zonos2_prompt_wav}）")
+        else:
+            print("             clone は --zonos2-prompt-wav を指定すると有効になります")
+        print("対応言語コード: en_us, en_gb, fr_fr, de, es, it, pt_br, ja, cmn, ko（tier 1-3 で計41言語）")
+        print("構成: 同梱の Mini-SGLang サーバ（uv run python -m zonos2）をバックエンドに起動し、")
+        print("      その /tts/generate（44.1kHz float32 PCM）を OpenAI 互換にプロキシします。")
+        print("注意: GPU は sm_80+ 必須（L4 / A100。flashinfer / sgl_kernel / cutlass カーネルのため T4 不可）。")
+        print("      初回は `uv sync`（GPU カーネルの取得）と重みダウンロードで起動に時間がかかります。")
+        print("ライセンス: コードは MIT（pyproject）、重みは Apache-2.0（HF モデルカード）。いずれも商用 OK。")
     elif settings.engine == "OuteTTS":
         print("OuteTTS は OuteAI の軽量多言語 TTS です（日本語含む多言語対応、voice cloning 対応）。")
         print(f"モデルサイズ: {settings.outetts_model_size} / backend: {settings.outetts_backend}")

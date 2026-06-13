@@ -63,7 +63,8 @@
       "VibeVoice",
       "VoxCPM2",
       "Voxtral-TTS",
-      "Zonos"
+      "Zonos",
+      "ZONOS2"
     ]
   },
   "expose_setting": {
@@ -2361,6 +2362,80 @@
             "clone"
           ],
           "flag": "--zonos-default-voice"
+        }
+      ]
+    },
+    {
+      "id": "ZONOS2",
+      "title": "ZONOS2 (L4 required, 41 languages incl. Japanese, voice cloning)",
+      "status": "Works (L4 verified, sm_80+ required)",
+      "languages": "41 languages (tier-1: Japanese / English / Chinese)",
+      "description": "Zyphra's latest TTS, [Zyphra/ZONOS2](https://github.com/Zyphra/Zonos2). A Mixture-of-Experts backbone generates DAC tokens from NeMo-normalized UTF-8 bytes conditioned on an ECAPA-TDNN speaker embedding, trained on 6M+ hours of multilingual speech. It supports 41 languages across three tiers (tier-1: English, Mandarin Chinese, Japanese) with high-fidelity zero-shot voice cloning. Default model: `Zyphra/ZONOS2`.",
+      "notes": [
+        "- Zyphra's latest TTS: MoE backbone + DAC tokens + ECAPA-TDNN embedding, served by the bundled Mini-SGLang server. We launch `uv run python -m zonos2` as a backend and proxy its `/tts/generate` (44.1 kHz float32 PCM) as OpenAI-compatible.",
+        "- **GPU sm_80+ required** (L4 / A100): the backbone uses flashinfer / sgl_kernel / cutlass kernels, so T4 does not work. First launch is slow (`uv sync` fetches GPU kernels, then the weights download).",
+        "- `default` = a shipped reference voice (`default_voices/<ZONOS2_DEFAULT_REF>`); set `ZONOS2_PROMPT_WAV` and use `voice=\"clone\"` for your own reference. `accurate_mode` on = closer voice match, off = more expressive.",
+        "- License: code is **MIT** (pyproject), weights are **Apache-2.0** ([HF model card](https://huggingface.co/Zyphra/ZONOS2)). Both allow commercial use."
+      ],
+      "prefix": "ZONOS2",
+      "params": [
+        {
+          "name": "ZONOS2_HF_MODEL",
+          "default": "Zyphra/ZONOS2",
+          "type": "string",
+          "flag": "--zonos2-hf-model"
+        },
+        {
+          "name": "ZONOS2_LANGUAGE",
+          "default": "ja",
+          "type": "select",
+          "options": [
+            "en_us",
+            "en_gb",
+            "fr_fr",
+            "de",
+            "es",
+            "it",
+            "pt_br",
+            "ja",
+            "cmn",
+            "ko"
+          ],
+          "flag": "--zonos2-language"
+        },
+        {
+          "name": "ZONOS2_PROMPT_WAV",
+          "default": "",
+          "type": "string",
+          "flag": "--zonos2-prompt-wav"
+        },
+        {
+          "name": "ZONOS2_DEFAULT_VOICE",
+          "default": "default",
+          "type": "select",
+          "options": [
+            "default",
+            "clone"
+          ],
+          "flag": "--zonos2-default-voice"
+        },
+        {
+          "name": "ZONOS2_DEFAULT_REF",
+          "default": "AmericanFemale.mp3",
+          "type": "string",
+          "flag": "--zonos2-default-ref"
+        },
+        {
+          "name": "ZONOS2_ACCURATE_MODE",
+          "default": true,
+          "type": "boolean",
+          "flag": null
+        },
+        {
+          "name": "ZONOS2_SEED",
+          "default": -1,
+          "type": "integer",
+          "flag": "--zonos2-seed"
         }
       ]
     }

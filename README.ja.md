@@ -28,6 +28,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | F5-TTS | 動作OK (GPU必須) | 英語 / 中国語（日本語は別モデル） |
 | Chatterbox | 動作OK (GPU推奨) | 日本語 / 英語 / 中国語 他 23言語 |
 | Zonos | 動作OK (GPU必須・VRAM ~6GB) | 日本語 / 英語 / 中国語 / フランス語 / ドイツ語 |
+| ZONOS2 | 動作OK (L4検証済・sm_80+必須) | 41言語 (tier-1: 日本語 / 英語 / 中国語) |
 | OuteTTS | 動作OK (CPU可) | 日本語 / 英語 / 中国語 他 多言語 |
 | Dia | 動作OK (GPU推奨) | 英語（マルチスピーカー対話） |
 | Kyutai-TTS | 動作OK (GPU推奨) | 英語 / フランス語 |
@@ -105,7 +106,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "Irodori-TTS", "Irodori-TTS-Lite", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos"]
+ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "Irodori-TTS", "Irodori-TTS-Lite", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos", "ZONOS2"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -260,6 +261,20 @@ ZONOS_HF_MODEL = "Zyphra/Zonos-v0.1-transformer"  #@param {type:"string"}
 ZONOS_LANGUAGE = "ja"  #@param ["en", "ja", "zh", "fr", "de"]
 ZONOS_PROMPT_WAV = ""  #@param {type:"string"}
 ZONOS_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+
+#@markdown ---
+#@markdown ZONOS2 (L4 required, 41 languages incl. Japanese, voice cloning)
+#@markdown - Zyphra's latest TTS: MoE backbone + DAC tokens + ECAPA-TDNN embedding, served by the bundled Mini-SGLang server. We launch `uv run python -m zonos2` as a backend and proxy its `/tts/generate` (44.1 kHz float32 PCM) as OpenAI-compatible.
+#@markdown - **GPU sm_80+ required** (L4 / A100): the backbone uses flashinfer / sgl_kernel / cutlass kernels, so T4 does not work. First launch is slow (`uv sync` fetches GPU kernels, then the weights download).
+#@markdown - `default` = a shipped reference voice (`default_voices/<ZONOS2_DEFAULT_REF>`); set `ZONOS2_PROMPT_WAV` and use `voice="clone"` for your own reference. `accurate_mode` on = closer voice match, off = more expressive.
+#@markdown - License: code is **MIT** (pyproject), weights are **Apache-2.0** ([HF model card](https://huggingface.co/Zyphra/ZONOS2)). Both allow commercial use.
+ZONOS2_HF_MODEL = "Zyphra/ZONOS2"  #@param {type:"string"}
+ZONOS2_LANGUAGE = "ja"  #@param ["en_us", "en_gb", "fr_fr", "de", "es", "it", "pt_br", "ja", "cmn", "ko"]
+ZONOS2_PROMPT_WAV = ""  #@param {type:"string"}
+ZONOS2_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+ZONOS2_DEFAULT_REF = "AmericanFemale.mp3"  #@param {type:"string"}
+ZONOS2_ACCURATE_MODE = True  #@param {type:"boolean"}
+ZONOS2_SEED = -1  #@param {type:"integer"}
 
 #@markdown ---
 #@markdown OuteTTS (CPU OK, multilingual incl JP, voice cloning)
@@ -679,6 +694,18 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         ZONOS_PROMPT_WAV,
         "--zonos-default-voice",
         ZONOS_DEFAULT_VOICE,
+        "--zonos2-hf-model",
+        ZONOS2_HF_MODEL,
+        "--zonos2-language",
+        ZONOS2_LANGUAGE,
+        "--zonos2-prompt-wav",
+        ZONOS2_PROMPT_WAV,
+        "--zonos2-default-voice",
+        ZONOS2_DEFAULT_VOICE,
+        "--zonos2-default-ref",
+        ZONOS2_DEFAULT_REF,
+        "--zonos2-seed",
+        str(ZONOS2_SEED),
         "--outetts-model-size",
         OUTETTS_MODEL_SIZE,
         "--outetts-backend",
@@ -938,6 +965,8 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         cmd.append("--scenema-skip-vc")
     if SCENEMA_BACKGROUND_SFX:
         cmd.append("--scenema-background-sfx")
+    if not ZONOS2_ACCURATE_MODE:
+        cmd.append("--zonos2-no-accurate-mode")
     cmd.append("--expose-public-url" if EXPOSE_PUBLIC_URL else "--no-expose-public-url")
     return cmd
 
@@ -1140,6 +1169,23 @@ Resemble AI の [resemble-ai/chatterbox](https://github.com/resemble-ai/chatterb
 | `clone` | ゼロショット音声クローン。`--zonos-prompt-wav` を指定したときのみ有効 |
 
 音声クローンを使う場合は、必ず権利を持っている音声（本人の同意がある音声）でのみ行ってください。
+
+### ZONOS2
+
+Zyphra の最新 TTS、[Zyphra/ZONOS2](https://github.com/Zyphra/Zonos2) です。Mixture-of-Experts バックボーンが、NeMo で正規化した UTF-8 バイト列と ECAPA-TDNN 話者埋め込みから DAC トークンを生成します（600万時間以上の多言語音声で学習）。3 つの tier で計 41 言語に対応し（tier-1: 英語・中国語・日本語）、高忠実度のゼロショット音声クローンを備えています。デフォルトモデルは `Zyphra/ZONOS2`。
+
+インプロセスで動く Zonos v0.1 と異なり、ZONOS2 は [Mini-SGLang](https://github.com/sgl-project/mini-sglang) ベースの推論サーバのみを提供します。インストーラはリポジトリを clone し、`uv sync` でプロジェクト環境を構築したうえで `uv run python -m zonos2` を `--zonos2-backend-port`（既定 5003）でバックエンド起動します。薄い OpenAI 互換プロキシが `/v1/audio/speech` をバックエンドの `/tts/generate` に転送し、返ってくる 44.1kHz float32 PCM を WAV に変換します。
+
+**GPU は compute capability sm_80+（L4 / A100）が必須です。** バックボーンが `flashinfer` / `sgl_kernel` / `cutlass` カーネルに依存するため、T4（sm_75）では動作しません。初回起動は遅く、`uv sync` での GPU カーネル取得に加え、初回生成時に重みがダウンロードされます。
+
+`voice` パラメータには次の値を指定できます。
+
+| voice | 説明 |
+|---|---|
+| `default` | 同梱の参照音声（`default_voices/<--zonos2-default-ref>`、例: `AmericanFemale.mp3`）を使用。クロスリンガルにクローンするため、`--zonos2-language ja` で日本語も話せます |
+| `clone` | ゼロショット音声クローン。`--zonos2-prompt-wav` を指定したときのみ有効 |
+
+`--zonos2-accurate-mode`（既定 ON）は声質再現を重視し、`--zonos2-no-accurate-mode` で表現力重視になります。`--zonos2-seed` に 0 以上を指定すると出力が再現可能になります。音声クローンを使う場合は、必ず権利を持っている音声（本人の同意がある音声）でのみ行ってください。ライセンス: コードは MIT（pyproject）、重みは Apache 2.0（HF モデルカード）。いずれも商用利用可。
 
 ### OuteTTS
 
@@ -1567,6 +1613,7 @@ Scenema AI による zero-shot な表現力豊か / 演技指向 TTS です（[S
 | F5-TTS | MIT | CC-BY-NC | 不可（モデル） | モデル重みは Emilia データセットの制約により非商用 |
 | Chatterbox | MIT | MIT | OK | 多言語（23言語、日本語含む）。ゼロショット voice cloning |
 | Zonos | Apache 2.0 | Apache 2.0 | OK | 英 / 日 / 中 / 仏 / 独。ゼロショット voice cloning。`espeak-ng` 必須 |
+| ZONOS2 | MIT | Apache 2.0 | OK | 41言語（tier-1 英/中/日）。ゼロショット voice cloning。Mini-SGLang バックエンド。GPU sm_80+（L4/A100） |
 | OuteTTS (0.6B) | Apache 2.0 | Apache 2.0 | OK | 日本語含む多言語、CPU 動作可、voice cloning |
 | OuteTTS (1B)   | Apache 2.0 | CC-BY-NC-SA-4.0 + Llama 3.2 Community License | 不可 | Llama-3.2 ベース。重みは非商用 |
 | Dia | Apache 2.0 | Apache 2.0 | OK | 英語のみ。`[S1]`/`[S2]` でマルチスピーカー対話 TTS |
@@ -1654,6 +1701,8 @@ Scenema AI による zero-shot な表現力豊か / 演技指向 TTS です（[S
   https://github.com/resemble-ai/chatterbox
 - Zonos
   https://github.com/Zyphra/Zonos
+- ZONOS2
+  https://github.com/Zyphra/Zonos2
 - OuteTTS
   https://github.com/edwko/OuteTTS
 - Dia
