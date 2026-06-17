@@ -383,10 +383,15 @@ LFM2_AUDIO_JP_AUDIO_TOP_K = 64  #@param {type:"integer"}
 #@markdown - **No HF_TOKEN needed**: weights ([inclusionAI/Ming-omni-tts-16.8B-A3B](https://huggingface.co/inclusionAI/Ming-omni-tts-16.8B-A3B), ~34GB) are ungated.
 #@markdown - `default` = the built-in voice (zero speaker-embedding, no reference). Set `MING_OMNI_TTS_PROMPT_WAV` (optionally `MING_OMNI_TTS_PROMPT_TEXT`) and use `voice="clone"` for zero-shot cloning. Output is 44.1 kHz.
 #@markdown - License: code is **MIT** ([GitHub](https://github.com/inclusionAI/Ming-omni-tts)), weights are **Apache-2.0** (HF model card). Both allow commercial use. Misuse for impersonation/fraud/disinformation is prohibited by the upstream terms.
+#@markdown - **Prompt-driven control**: `MING_OMNI_TTS_TASK` switches what to generate — `speech`, `music`, or `tta` (sound events); for `music`/`tta` the input text is a description. `MING_OMNI_TTS_STYLE` / `_EMOTION` / `_DIALECT` are natural-language voice design (mapped to the Chinese instruction keys 风格 / 情感 / 方言; best written in Chinese, e.g. style=`温柔自然的年轻女性声音` for a gentle female voice). All optional — empty keeps the plain `default`/`clone` behavior. They can also be overridden per request via the `task`/`style`/`emotion`/`dialect` body fields.
 MING_OMNI_TTS_HF_MODEL = "inclusionAI/Ming-omni-tts-16.8B-A3B"  #@param {type:"string"}
 MING_OMNI_TTS_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
 MING_OMNI_TTS_PROMPT_WAV = ""  #@param {type:"string"}
 MING_OMNI_TTS_PROMPT_TEXT = ""  #@param {type:"string"}
+MING_OMNI_TTS_TASK = "speech"  #@param ["speech", "music", "tta"]
+MING_OMNI_TTS_STYLE = ""  #@param {type:"string"}
+MING_OMNI_TTS_EMOTION = ""  #@param {type:"string"}
+MING_OMNI_TTS_DIALECT = ""  #@param {type:"string"}
 MING_OMNI_TTS_MAX_DECODE_STEPS = 200  #@param {type:"integer"}
 MING_OMNI_TTS_CFG = 2.0  #@param {type:"number"}
 MING_OMNI_TTS_SIGMA = 0.25  #@param {type:"number"}
@@ -831,6 +836,14 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         MING_OMNI_TTS_PROMPT_WAV,
         "--ming-omni-tts-prompt-text",
         MING_OMNI_TTS_PROMPT_TEXT,
+        "--ming-omni-tts-task",
+        MING_OMNI_TTS_TASK,
+        "--ming-omni-tts-style",
+        MING_OMNI_TTS_STYLE,
+        "--ming-omni-tts-emotion",
+        MING_OMNI_TTS_EMOTION,
+        "--ming-omni-tts-dialect",
+        MING_OMNI_TTS_DIALECT,
         "--ming-omni-tts-max-decode-steps",
         str(MING_OMNI_TTS_MAX_DECODE_STEPS),
         "--ming-omni-tts-cfg",

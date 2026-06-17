@@ -312,6 +312,13 @@ class Settings:
     ming_omni_tts_cfg: float = 2.0
     ming_omni_tts_sigma: float = 0.25
     ming_omni_tts_temperature: float = 0.0
+    # Prompt-driven control (all optional; empty = current behavior). task picks
+    # what to generate (speech / music / tta); style/emotion/dialect are
+    # natural-language voice design mapped to the instruction keys 风格/情感/方言.
+    ming_omni_tts_task: str = "speech"
+    ming_omni_tts_style: str = ""
+    ming_omni_tts_emotion: str = ""
+    ming_omni_tts_dialect: str = ""
     root_dir: Path = Path("/content/openai-compatible-local-tts")
     repo_dir: Path = field(default_factory=default_repo_dir)
     app_port: int = 8000

@@ -227,6 +227,10 @@ def parse_args():
     parser.add_argument("--ming-omni-tts-cfg", type=float, default=2.0)
     parser.add_argument("--ming-omni-tts-sigma", type=float, default=0.25)
     parser.add_argument("--ming-omni-tts-temperature", type=float, default=0.0)
+    parser.add_argument("--ming-omni-tts-task", default="speech", choices=["speech", "music", "tta"])
+    parser.add_argument("--ming-omni-tts-style", default="")
+    parser.add_argument("--ming-omni-tts-emotion", default="")
+    parser.add_argument("--ming-omni-tts-dialect", default="")
     parser.add_argument("--supertonic-model", default="supertonic-3")
     parser.add_argument("--supertonic-default-voice", default="M1")
     parser.add_argument("--supertonic-default-lang", default="en")
@@ -457,6 +461,10 @@ def main():
         ming_omni_tts_cfg=args.ming_omni_tts_cfg,
         ming_omni_tts_sigma=args.ming_omni_tts_sigma,
         ming_omni_tts_temperature=args.ming_omni_tts_temperature,
+        ming_omni_tts_task=args.ming_omni_tts_task,
+        ming_omni_tts_style=args.ming_omni_tts_style,
+        ming_omni_tts_emotion=args.ming_omni_tts_emotion,
+        ming_omni_tts_dialect=args.ming_omni_tts_dialect,
         supertonic_model=args.supertonic_model,
         supertonic_default_voice=args.supertonic_default_voice,
         supertonic_default_lang=args.supertonic_default_lang,

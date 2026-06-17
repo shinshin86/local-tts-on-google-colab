@@ -437,6 +437,15 @@ def print_engine_voice_hints(settings: Settings):
         print("Ming-omni-TTS は inclusionAI の 16.8B-A3B MoE 音声 LM です（~3B active、12.5Hz 連続トークナイザ + DiT head、in-process）。")
         print(f"モデル: {settings.ming_omni_tts_hf_model}")
         print(f"max_decode_steps: {settings.ming_omni_tts_max_decode_steps} / cfg: {settings.ming_omni_tts_cfg} / sigma: {settings.ming_omni_tts_sigma} / temperature: {settings.ming_omni_tts_temperature}")
+        print(f"task: {settings.ming_omni_tts_task}（speech / music / tta）")
+        _instr = [v for v in [
+            f"风格={settings.ming_omni_tts_style}" if settings.ming_omni_tts_style else "",
+            f"情感={settings.ming_omni_tts_emotion}" if settings.ming_omni_tts_emotion else "",
+            f"方言={settings.ming_omni_tts_dialect}" if settings.ming_omni_tts_dialect else "",
+        ] if v]
+        print("voice design (instruction):", "、".join(_instr) if _instr else "(なし)")
+        print("  プロンプト制御: task=music/tta で音楽・効果音、style/emotion/dialect で声質を自然言語指定（中国語推奨）。")
+        print("  これらは /v1/audio/speech のリクエスト body（task/style/emotion/dialect）でも上書き可能（未指定なら起動時の既定値）。")
         print(f"デフォルト voice: {settings.ming_omni_tts_default_voice}")
         print("voice 候補: default（内蔵ボイス: zero speaker-embedding、参照なし）")
         if settings.ming_omni_tts_prompt_wav:

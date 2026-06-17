@@ -105,6 +105,10 @@ def install(settings: Settings) -> dict:
         "MING_OMNI_TTS_CFG": str(settings.ming_omni_tts_cfg),
         "MING_OMNI_TTS_SIGMA": str(settings.ming_omni_tts_sigma),
         "MING_OMNI_TTS_TEMPERATURE": str(settings.ming_omni_tts_temperature),
+        "MING_OMNI_TTS_TASK": settings.ming_omni_tts_task,
+        "MING_OMNI_TTS_STYLE": settings.ming_omni_tts_style,
+        "MING_OMNI_TTS_EMOTION": settings.ming_omni_tts_emotion,
+        "MING_OMNI_TTS_DIALECT": settings.ming_omni_tts_dialect,
     }
     proc = popen(
         [
