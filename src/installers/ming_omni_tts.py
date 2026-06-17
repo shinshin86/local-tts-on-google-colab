@@ -89,6 +89,11 @@ def install(settings: Settings) -> dict:
         "PYTHONUNBUFFERED": "1",
         "HF_HUB_ETAG_TIMEOUT": "60",
         "HF_HUB_DOWNLOAD_TIMEOUT": "60",
+        # The 16.8B bf16 weights (~33GB) leave only a few GB on an A100 40GB.
+        # Without this, PyTorch reserves ~6GB it never allocates and the load
+        # OOMs at the very end; expandable_segments reclaims that fragmentation
+        # so the model fits with room for inference activations.
+        "PYTORCH_CUDA_ALLOC_CONF": "expandable_segments:True",
         "PYTHONPATH": str(repo_dir),
         "OPENAI_MODEL_ID": settings.openai_model_id or "ming-omni-tts",
         "MING_OMNI_TTS_HF_MODEL": settings.ming_omni_tts_hf_model,
