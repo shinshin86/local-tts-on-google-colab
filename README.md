@@ -52,6 +52,7 @@ Supported engines:
 | Higgs-Audio-v3 | Works on Colab L4 / A100 (GPU required, ~19.9GB at load; T4 unsupported, slow first launch ~10-12 min via SGLang-Omni, **non-commercial weights — no hosted API**) | 100+ languages (incl. Japanese) |
 | dots.tts | Works on Colab L4 (GPU required, bf16 resident ~5.4GB, 48 kHz output; ungated weights, no `HF_TOKEN`; zero-shot cloning model — `default` is a random speaker, use `clone` for a stable voice) | 24 languages (incl. Japanese) |
 | LFM2.5-Audio-JP | Works on Colab L4 (GPU required, ~6.3GB VRAM resident; ungated weights, no `HF_TOKEN`; single built-in Japanese voice, no cloning; 24 kHz output) | Japanese |
+| Ming-omni-TTS | Works on Colab A100 (verified; **A100 40GB required** — 16.8B-A3B MoE, ~35GB VRAM at load, needs `PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True` to fit and will not run on L4 24GB; ungated weights, no `HF_TOKEN`; zero-shot cloning; 44.1 kHz output) | Chinese / English-centric (dialect control incl. Cantonese) |
 | DramaBox | Works on Colab A100 (GPU required, VRAM ~24GB peak, **LTX-2 Community License — non-compete clause**) | English |
 | Scenema | **Not verified on Colab** — text encoder is Gemma 3 12B IT (HF-gated), so running this engine requires accepting the Gemma Terms of Use on Hugging Face and providing `HF_TOKEN` via Colab Secrets. Code paths are in place but end-to-end Colab verification was deferred because `HF_TOKEN` setup is out of scope for this repo's default workflow. **Requires Colab A100 (40GB VRAM)**. First-run downloads ~38GB. Audio model derived from LTX-2.3 → **LTX-2 Community License** (same as DramaBox) | English-centric multilingual |
 
@@ -105,7 +106,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "Irodori-TTS", "Irodori-TTS-Lite", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos", "ZONOS2"]
+ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "Irodori-TTS", "Irodori-TTS-Lite", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos", "ZONOS2"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -469,6 +470,27 @@ LFM2_AUDIO_JP_SYSTEM_PROMPT = "Perform TTS in japanese."  #@param {type:"string"
 LFM2_AUDIO_JP_MAX_NEW_TOKENS = 1024  #@param {type:"integer"}
 LFM2_AUDIO_JP_AUDIO_TEMPERATURE = 0.8  #@param {type:"number"}
 LFM2_AUDIO_JP_AUDIO_TOP_K = 64  #@param {type:"integer"}
+
+#@markdown ---
+#@markdown Ming-omni-TTS (A100 required, ~34GB weights, Chinese/English-centric, voice cloning)
+#@markdown - inclusionAI's 16.8B-A3B MoE audio LM (~3B active params) with a 12.5 Hz continuous tokenizer + DiT head. Runs in-process (no separate backend).
+#@markdown - **A100 40GB required**: the 16.8B checkpoint is ~34GB in bf16 and will not fit on an L4 (24GB). Python 3.10 venv installs torch==2.6.0 + grouped_gemm (MoE kernel, built from source) + a FlashAttention wheel.
+#@markdown - **No HF_TOKEN needed**: weights ([inclusionAI/Ming-omni-tts-16.8B-A3B](https://huggingface.co/inclusionAI/Ming-omni-tts-16.8B-A3B), ~34GB) are ungated.
+#@markdown - `default` = the built-in voice (zero speaker-embedding, no reference). Set `MING_OMNI_TTS_PROMPT_WAV` (optionally `MING_OMNI_TTS_PROMPT_TEXT`) and use `voice="clone"` for zero-shot cloning. Output is 44.1 kHz.
+#@markdown - License: code is **MIT** ([GitHub](https://github.com/inclusionAI/Ming-omni-tts)), weights are **Apache-2.0** (HF model card). Both allow commercial use. Misuse for impersonation/fraud/disinformation is prohibited by the upstream terms.
+#@markdown - **Prompt-driven control**: `MING_OMNI_TTS_TASK` switches what to generate — `speech`, `music`, or `tta` (sound events); for `music`/`tta` the input text is a description. `MING_OMNI_TTS_STYLE` / `_EMOTION` / `_DIALECT` are natural-language voice design (mapped to the Chinese instruction keys 风格 / 情感 / 方言; best written in Chinese, e.g. style=`温柔自然的年轻女性声音` for a gentle female voice). All optional — empty keeps the plain `default`/`clone` behavior. They can also be overridden per request via the `task`/`style`/`emotion`/`dialect` body fields.
+MING_OMNI_TTS_HF_MODEL = "inclusionAI/Ming-omni-tts-16.8B-A3B"  #@param {type:"string"}
+MING_OMNI_TTS_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+MING_OMNI_TTS_PROMPT_WAV = ""  #@param {type:"string"}
+MING_OMNI_TTS_PROMPT_TEXT = ""  #@param {type:"string"}
+MING_OMNI_TTS_TASK = "speech"  #@param ["speech", "music", "tta"]
+MING_OMNI_TTS_STYLE = ""  #@param {type:"string"}
+MING_OMNI_TTS_EMOTION = ""  #@param {type:"string"}
+MING_OMNI_TTS_DIALECT = ""  #@param {type:"string"}
+MING_OMNI_TTS_MAX_DECODE_STEPS = 200  #@param {type:"integer"}
+MING_OMNI_TTS_CFG = 2.0  #@param {type:"number"}
+MING_OMNI_TTS_SIGMA = 0.25  #@param {type:"number"}
+MING_OMNI_TTS_TEMPERATURE = 0.0  #@param {type:"number"}
 
 #@markdown ---
 #@markdown DramaBox (A100 required, VRAM ~24GB, English-only, voice cloning)
@@ -901,6 +923,30 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         str(LFM2_AUDIO_JP_AUDIO_TEMPERATURE),
         "--lfm2-audio-jp-audio-top-k",
         str(LFM2_AUDIO_JP_AUDIO_TOP_K),
+        "--ming-omni-tts-hf-model",
+        MING_OMNI_TTS_HF_MODEL,
+        "--ming-omni-tts-default-voice",
+        MING_OMNI_TTS_DEFAULT_VOICE,
+        "--ming-omni-tts-prompt-wav",
+        MING_OMNI_TTS_PROMPT_WAV,
+        "--ming-omni-tts-prompt-text",
+        MING_OMNI_TTS_PROMPT_TEXT,
+        "--ming-omni-tts-task",
+        MING_OMNI_TTS_TASK,
+        "--ming-omni-tts-style",
+        MING_OMNI_TTS_STYLE,
+        "--ming-omni-tts-emotion",
+        MING_OMNI_TTS_EMOTION,
+        "--ming-omni-tts-dialect",
+        MING_OMNI_TTS_DIALECT,
+        "--ming-omni-tts-max-decode-steps",
+        str(MING_OMNI_TTS_MAX_DECODE_STEPS),
+        "--ming-omni-tts-cfg",
+        str(MING_OMNI_TTS_CFG),
+        "--ming-omni-tts-sigma",
+        str(MING_OMNI_TTS_SIGMA),
+        "--ming-omni-tts-temperature",
+        str(MING_OMNI_TTS_TEMPERATURE),
         "--supertonic-model",
         SUPERTONIC_MODEL,
         "--supertonic-default-voice",
@@ -1511,6 +1557,36 @@ The `voice` parameter exposes only `default` — the single built-in Japanese vo
 
 **License**: code and weights are under the **LFM Open License v1.0** — commercial use is permitted for organizations under **USD 10M annual revenue**; above that threshold a separate commercial license from Liquid AI is required (qualified non-profits are exempt for research). The bundled **audio encoder is Apache-2.0** (derived from NVIDIA NeMo) and the **audio codec (Mimi) is CC-BY-4.0** (Kyutai). The license terminates on non-compliance and includes a patent-litigation termination clause.
 
+### Ming-omni-TTS
+
+inclusionAI's [Ming-omni-tts](https://github.com/inclusionAI/Ming-omni-tts), the **16.8B-A3B** checkpoint — a Mixture-of-Experts audio language model (~3B active parameters) built on a custom 12.5 Hz continuous tokenizer with a DiT (diffusion-transformer) acoustic head over a 44.1 kHz codec. It supports zero-shot voice cloning, natural-language voice design, emotion/dialect/rate control, and even speech-with-BGM and TTA, with strong Chinese (incl. Cantonese) and English coverage. Default model: `inclusionAI/Ming-omni-tts-16.8B-A3B`.
+
+**Hardware**: the 16.8B checkpoint is **~34 GB in bf16**, so **Google Colab A100 (40 GB) is required** — it will not fit on an L4 (24 GB). (A lighter `inclusionAI/Ming-omni-tts-0.5B` exists upstream and can be selected via `--ming-omni-tts-hf-model`, but this wrapper defaults to and is verified against the 16.8B-A3B model.)
+
+The wrapper clones the upstream GitHub repo and builds a **Python 3.10 venv** pinned to `torch==2.6.0` (matching upstream's `requirements.txt`). The MoE backbone needs **`grouped_gemm`**, which is compiled from source against that torch at install time; **FlashAttention** is installed from a prebuilt `cu12torch2.6 cp310` wheel rather than built from source (upstream leaves it commented out). `onnxruntime` is added for the `campplus.onnx` speaker-embedding extractor. The model loads **in-process** (no separate backend) and uvicorn runs with its cwd set to the repo root, because the MoE tokenizer (`tokenization_bailing.py`) and the modeling code (`modeling_bailingmm.py`) are top-level files there. First request downloads ~34 GB from `inclusionAI/Ming-omni-tts-16.8B-A3B` (ungated — no `HF_TOKEN`).
+
+The `voice` parameter exposes:
+
+| voice | Behavior |
+| --- | --- |
+| `default` | The built-in voice — a zero speaker-embedding with no reference audio. |
+| `clone` | Zero-shot cloning from `--ming-omni-tts-prompt-wav` (optionally `--ming-omni-tts-prompt-text` for the reference transcript). Returns 4xx if no prompt wav is configured. |
+
+Tunables: `--ming-omni-tts-max-decode-steps` (default 200), `--ming-omni-tts-cfg` (guidance scale, default 2.0), `--ming-omni-tts-sigma` (default 0.25), `--ming-omni-tts-temperature` (default 0.0). Text normalization is skipped (upstream notes it is unsupported for the MoE checkpoint). Output is 44.1 kHz.
+
+**Prompt-driven control.** Ming is a multi-task model, so the wrapper also exposes its prompt/instruction controls (all optional — leaving them empty keeps the plain `default`/`clone` behavior):
+
+| Control | Flag | Effect |
+| --- | --- | --- |
+| Task | `--ming-omni-tts-task` | `speech` (default), `music`, or `tta` (sound events). For `music`/`tta` the `input` text is a **description** and decode dynamics switch to upstream's recommended values (cfg 4.5 / sigma 0.3 / temperature 2.5). |
+| Style | `--ming-omni-tts-style` | Natural-language voice design → instruction key `风格`, e.g. `温柔自然的年轻女性声音` for a gentle female voice. This is how you select a male/female/ASMR/etc. voice without a reference clip. |
+| Emotion | `--ming-omni-tts-emotion` | instruction key `情感` (e.g. `高兴`). |
+| Dialect | `--ming-omni-tts-dialect` | instruction key `方言` (e.g. `广粤话` for Cantonese). |
+
+The instruction keys are Chinese and the descriptions work best written in Chinese. Each of these is also overridable per request via the `task` / `style` / `emotion` / `dialect` fields in the `/v1/audio/speech` body (a request value of `null`/omitted falls back to the startup default), so standard OpenAI clients that send only `input`/`voice` are unaffected.
+
+**License**: code is **MIT** (the [GitHub repo](https://github.com/inclusionAI/Ming-omni-tts)), weights are **Apache-2.0** (the [HF model card](https://huggingface.co/inclusionAI/Ming-omni-tts-16.8B-A3B)). Both allow commercial use. As with any high-fidelity zero-shot cloning model, impersonation / fraud / disinformation are prohibited by the upstream terms.
+
 ### DramaBox
 
 A directable / expressive TTS from Resemble AI ([resemble-ai/DramaBox](https://github.com/resemble-ai/DramaBox)). It is an IC-LoRA fine-tune of Lightricks' LTX-2.3 audio-only branch, with a Gemma 3 12B text encoder; users can drive emotion, pacing, laughs, sighs, and other paralinguistic cues directly from the English text prompt. Voice cloning uses any 10+ second audio reference.
@@ -1641,6 +1717,7 @@ The license for each engine is as follows. When using them, always check each pr
 | LFM2.5-Audio-JP | LFM Open License v1.0 | LFM Open License v1.0 | Caution | Japanese-only speech-text model, TTS path. Commercial OK **under $10M annual revenue**; above that needs a separate commercial license. Ungated (no HF_TOKEN) |
 | LFM2.5-Audio-JP (audio encoder) | Apache 2.0 | — | OK | FastConformer encoder derived from NVIDIA NeMo |
 | LFM2.5-Audio-JP (audio codec / Mimi) | — | CC-BY 4.0 | OK | Kyutai Mimi codec (24 kHz, 8 codebooks); attribution required |
+| Ming-omni-TTS | MIT | Apache 2.0 | OK | 16.8B-A3B MoE audio LM (~3B active), **A100 40GB required** (~34GB bf16 weights). Chinese/English-centric, dialect control. Zero-shot cloning. Code MIT (GitHub), weights Apache-2.0 (HF card). Ungated download (no HF_TOKEN) |
 | DramaBox | LTX-2 Community License (Lightricks) | LTX-2 Community License | **Not allowed without commercial license** for orgs with annual revenue $10M+ | English. Non-compete clause; redistributions must propagate the same license. Perth watermark always applied |
 | Scenema (code) | MIT | — | — | Repo: `ScenemaAI/scenema-audio` |
 | Scenema (audio weights) | — | LTX-2 Community License (Lightricks) | **Not allowed without commercial license** for orgs with annual revenue $10M+ | Audio transformer is derived from LTX-2.3; the LTX-2 Community License flows through. Same caveats as DramaBox (non-compete, acceptable-use restrictions, propagation requirement) |
@@ -1752,6 +1829,10 @@ This repository itself is intended for short-term operational verification and t
   https://huggingface.co/LiquidAI/LFM2.5-Audio-1.5B-JP
 - liquid-audio (LFM2-Audio library)
   https://github.com/Liquid4All/liquid-audio
+- Ming-omni-tts
+  https://github.com/inclusionAI/Ming-omni-tts
+- Ming-omni-tts-16.8B-A3B (Hugging Face)
+  https://huggingface.co/inclusionAI/Ming-omni-tts-16.8B-A3B
 - DramaBox
   https://github.com/resemble-ai/DramaBox
 - DramaBox (Hugging Face)

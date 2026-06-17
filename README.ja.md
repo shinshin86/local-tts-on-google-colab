@@ -52,6 +52,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | Higgs-Audio-v3 | Colab L4 / A100 動作確認済み（GPU 必須、ロード時 ~19.9GB。T4 非対応、SGLang-Omni 経由で初回起動が遅い ~10-12 分、**非商用の重み — hosted API 不可**） | 100+ 言語（日本語含む） |
 | dots.tts | Colab L4 動作確認済み（GPU 必須、bf16 常駐 ~5.4GB、出力 48 kHz。重みは ungated で `HF_TOKEN` 不要。ゼロショット cloning モデルのため `default` は話者がランダム、安定した声色は `clone` を使用） | 24 言語（日本語含む） |
 | LFM2.5-Audio-JP | Colab L4 動作確認済み（GPU 必須、VRAM 常駐 ~6.3GB。重みは ungated で `HF_TOKEN` 不要。内蔵の日本語ボイス1種のみ、cloning 非対応。出力 24 kHz） | 日本語 |
+| Ming-omni-TTS | Colab A100 動作確認済み（**A100 40GB 必須** — 16.8B-A3B MoE、ロード時 ~35GB VRAM。40GB に収めるため `PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True` が必要で L4 24GB では動かない。重みは ungated で `HF_TOKEN` 不要。zero-shot cloning。出力 44.1 kHz） | 中国語 / 英語が中心（広東語などの方言制御あり） |
 | DramaBox | Colab A100 動作確認済み（GPU 必須、VRAM ~24GB ピーク、**LTX-2 Community License — 非競合条項あり**） | 英語 |
 | Scenema | **Colab A100（40GB VRAM）必須**。初回起動時に約 38GB ダウンロード。音声モデルは LTX-2.3 派生のため **LTX-2 Community License**（DramaBox と同じ）。Gemma 3 12B IT 利用（HF gated、`HF_TOKEN` 必須） | 英語中心の多言語 |
 
@@ -106,7 +107,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "Irodori-TTS", "Irodori-TTS-Lite", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos", "ZONOS2"]
+ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "Irodori-TTS", "Irodori-TTS-Lite", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos", "ZONOS2"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -470,6 +471,27 @@ LFM2_AUDIO_JP_SYSTEM_PROMPT = "Perform TTS in japanese."  #@param {type:"string"
 LFM2_AUDIO_JP_MAX_NEW_TOKENS = 1024  #@param {type:"integer"}
 LFM2_AUDIO_JP_AUDIO_TEMPERATURE = 0.8  #@param {type:"number"}
 LFM2_AUDIO_JP_AUDIO_TOP_K = 64  #@param {type:"integer"}
+
+#@markdown ---
+#@markdown Ming-omni-TTS (A100 required, ~34GB weights, Chinese/English-centric, voice cloning)
+#@markdown - inclusionAI's 16.8B-A3B MoE audio LM (~3B active params) with a 12.5 Hz continuous tokenizer + DiT head. Runs in-process (no separate backend).
+#@markdown - **A100 40GB required**: the 16.8B checkpoint is ~34GB in bf16 and will not fit on an L4 (24GB). Python 3.10 venv installs torch==2.6.0 + grouped_gemm (MoE kernel, built from source) + a FlashAttention wheel.
+#@markdown - **No HF_TOKEN needed**: weights ([inclusionAI/Ming-omni-tts-16.8B-A3B](https://huggingface.co/inclusionAI/Ming-omni-tts-16.8B-A3B), ~34GB) are ungated.
+#@markdown - `default` = the built-in voice (zero speaker-embedding, no reference). Set `MING_OMNI_TTS_PROMPT_WAV` (optionally `MING_OMNI_TTS_PROMPT_TEXT`) and use `voice="clone"` for zero-shot cloning. Output is 44.1 kHz.
+#@markdown - License: code is **MIT** ([GitHub](https://github.com/inclusionAI/Ming-omni-tts)), weights are **Apache-2.0** (HF model card). Both allow commercial use. Misuse for impersonation/fraud/disinformation is prohibited by the upstream terms.
+#@markdown - **Prompt-driven control**: `MING_OMNI_TTS_TASK` switches what to generate — `speech`, `music`, or `tta` (sound events); for `music`/`tta` the input text is a description. `MING_OMNI_TTS_STYLE` / `_EMOTION` / `_DIALECT` are natural-language voice design (mapped to the Chinese instruction keys 风格 / 情感 / 方言; best written in Chinese, e.g. style=`温柔自然的年轻女性声音` for a gentle female voice). All optional — empty keeps the plain `default`/`clone` behavior. They can also be overridden per request via the `task`/`style`/`emotion`/`dialect` body fields.
+MING_OMNI_TTS_HF_MODEL = "inclusionAI/Ming-omni-tts-16.8B-A3B"  #@param {type:"string"}
+MING_OMNI_TTS_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+MING_OMNI_TTS_PROMPT_WAV = ""  #@param {type:"string"}
+MING_OMNI_TTS_PROMPT_TEXT = ""  #@param {type:"string"}
+MING_OMNI_TTS_TASK = "speech"  #@param ["speech", "music", "tta"]
+MING_OMNI_TTS_STYLE = ""  #@param {type:"string"}
+MING_OMNI_TTS_EMOTION = ""  #@param {type:"string"}
+MING_OMNI_TTS_DIALECT = ""  #@param {type:"string"}
+MING_OMNI_TTS_MAX_DECODE_STEPS = 200  #@param {type:"integer"}
+MING_OMNI_TTS_CFG = 2.0  #@param {type:"number"}
+MING_OMNI_TTS_SIGMA = 0.25  #@param {type:"number"}
+MING_OMNI_TTS_TEMPERATURE = 0.0  #@param {type:"number"}
 
 #@markdown ---
 #@markdown DramaBox (A100 required, VRAM ~24GB, English-only, voice cloning)
@@ -902,6 +924,30 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         str(LFM2_AUDIO_JP_AUDIO_TEMPERATURE),
         "--lfm2-audio-jp-audio-top-k",
         str(LFM2_AUDIO_JP_AUDIO_TOP_K),
+        "--ming-omni-tts-hf-model",
+        MING_OMNI_TTS_HF_MODEL,
+        "--ming-omni-tts-default-voice",
+        MING_OMNI_TTS_DEFAULT_VOICE,
+        "--ming-omni-tts-prompt-wav",
+        MING_OMNI_TTS_PROMPT_WAV,
+        "--ming-omni-tts-prompt-text",
+        MING_OMNI_TTS_PROMPT_TEXT,
+        "--ming-omni-tts-task",
+        MING_OMNI_TTS_TASK,
+        "--ming-omni-tts-style",
+        MING_OMNI_TTS_STYLE,
+        "--ming-omni-tts-emotion",
+        MING_OMNI_TTS_EMOTION,
+        "--ming-omni-tts-dialect",
+        MING_OMNI_TTS_DIALECT,
+        "--ming-omni-tts-max-decode-steps",
+        str(MING_OMNI_TTS_MAX_DECODE_STEPS),
+        "--ming-omni-tts-cfg",
+        str(MING_OMNI_TTS_CFG),
+        "--ming-omni-tts-sigma",
+        str(MING_OMNI_TTS_SIGMA),
+        "--ming-omni-tts-temperature",
+        str(MING_OMNI_TTS_TEMPERATURE),
         "--supertonic-model",
         SUPERTONIC_MODEL,
         "--supertonic-default-voice",
@@ -1512,6 +1558,36 @@ TTS は **sequential generation** を使います。system prompt（`Perform TTS
 
 **ライセンス**: コード・重みは **LFM Open License v1.0** です。年商 **USD 10M 未満**の組織は商用利用可、超過する場合は Liquid AI の別途商用ライセンスが必要です（適格な非営利団体は研究目的で免除）。同梱の **audio encoder は Apache-2.0**（NVIDIA NeMo 由来）、**audio codec（Mimi）は CC-BY-4.0**（Kyutai）です。ライセンスは規約違反時に終了し、特許訴訟による終了条項も含みます。
 
+### Ming-omni-TTS
+
+inclusionAI の [Ming-omni-tts](https://github.com/inclusionAI/Ming-omni-tts) の **16.8B-A3B** チェックポイントです。Mixture-of-Experts の音声言語モデル（active ~3B パラメータ）で、独自の 12.5 Hz 連続トークナイザ + DiT（diffusion-transformer）音響ヘッド（44.1 kHz codec）で構成されます。zero-shot voice cloning、自然言語による voice design、感情・方言・話速の制御、さらに BGM 付き音声生成や TTA まで対応し、中国語（広東語含む）と英語に強みがあります。デフォルトモデル: `inclusionAI/Ming-omni-tts-16.8B-A3B`。
+
+**ハードウェア**: 16.8B チェックポイントは bf16 で **~34GB** あるため、**Google Colab A100（40GB）必須**です。L4（24GB）には載りません。（上流には軽量な `inclusionAI/Ming-omni-tts-0.5B` もあり `--ming-omni-tts-hf-model` で選択できますが、本ラッパーは 16.8B-A3B をデフォルト・検証対象とします。）
+
+ラッパーは上流の GitHub リポジトリを clone し、**Python 3.10 venv** を `torch==2.6.0`（上流 `requirements.txt` に準拠）で構築します。MoE backbone には **`grouped_gemm`** が必要で、これは導入時にその torch に対してソースからビルドされます。**FlashAttention** はソースビルドせず、`cu12torch2.6 cp310` のビルド済み wheel を導入します（上流はコメントアウトしています）。`campplus.onnx` の話者埋め込み抽出のため `onnxruntime` も追加します。モデルは**インプロセス**でロードし（別バックエンドなし）、MoE トークナイザ（`tokenization_bailing.py`）とモデリングコード（`modeling_bailingmm.py`）がリポジトリ直下にあるため、uvicorn の cwd をリポジトリルートに設定して起動します。初回リクエスト時に `inclusionAI/Ming-omni-tts-16.8B-A3B` から ~34GB をダウンロードします（ungated、`HF_TOKEN` 不要）。
+
+`voice` パラメータ:
+
+| voice | 挙動 |
+| --- | --- |
+| `default` | 内蔵ボイス（zero speaker-embedding、参照音声なし）。 |
+| `clone` | `--ming-omni-tts-prompt-wav`（任意で `--ming-omni-tts-prompt-text` に参照音声の書き起こし）からの zero-shot cloning。prompt wav 未設定なら 4xx を返します。 |
+
+チューニング: `--ming-omni-tts-max-decode-steps`（既定 200）、`--ming-omni-tts-cfg`（guidance scale、既定 2.0）、`--ming-omni-tts-sigma`（既定 0.25）、`--ming-omni-tts-temperature`（既定 0.0）。テキスト正規化はスキップします（上流は MoE チェックポイントでは非対応と明記）。出力は 44.1 kHz です。
+
+**プロンプト駆動の制御。** Ming はマルチタスクモデルなので、ラッパーは prompt / instruction 制御も公開します（すべて任意。空のままなら従来の `default`/`clone` 挙動）:
+
+| 制御 | フラグ | 効果 |
+| --- | --- | --- |
+| タスク | `--ming-omni-tts-task` | `speech`（既定）/ `music` / `tta`（効果音）。`music`/`tta` では `input` テキストは**説明文**になり、decode 値が上流推奨（cfg 4.5 / sigma 0.3 / temperature 2.5）に切り替わります。 |
+| スタイル | `--ming-omni-tts-style` | 自然言語による声デザイン → instruction キー `风格`。例: `温柔自然的年轻女性声音`（優しい女性の声）。参照音声なしで男性/女性/ASMR 等を指定する手段。 |
+| 感情 | `--ming-omni-tts-emotion` | instruction キー `情感`（例: `高兴`）。 |
+| 方言 | `--ming-omni-tts-dialect` | instruction キー `方言`（例: 広東語 `广粤话`）。 |
+
+instruction キーは中国語で、説明文も**中国語で書くのが最も安定**します。これらは `/v1/audio/speech` の body の `task` / `style` / `emotion` / `dialect` フィールドでリクエスト単位の上書きも可能（`null`/未指定なら起動時の既定値にフォールバック）なので、`input`/`voice` だけ送る標準的な OpenAI クライアントには影響しません。
+
+**ライセンス**: コードは **MIT**（[GitHub リポジトリ](https://github.com/inclusionAI/Ming-omni-tts)）、重みは **Apache-2.0**（[HF モデルカード](https://huggingface.co/inclusionAI/Ming-omni-tts-16.8B-A3B)）。いずれも商用利用可です。高品質な zero-shot cloning が可能なモデルである以上、なりすまし・詐欺・偽情報への利用は上流の規約で禁止されています。
+
 ### DramaBox
 
 [resemble-ai/DramaBox](https://github.com/resemble-ai/DramaBox) の Resemble AI による「ディレクション可能」な表現力豊か TTS です。Lightricks の LTX-2.3（音声専用 branch）を IC-LoRA で fine-tune し、テキストエンコーダに Gemma 3 12B を採用。英語プロンプトの中で感情・ペーシング・笑い声・ため息などのパラ言語的要素を直接ディレクション可能。ボイスクローンは 10 秒以上の参照音声で動作します。
@@ -1642,6 +1718,7 @@ Scenema AI による zero-shot な表現力豊か / 演技指向 TTS です（[S
 | LFM2.5-Audio-JP | LFM Open License v1.0 | LFM Open License v1.0 | 要注意 | 日本語特化の音声・テキストモデル、TTS パス利用。**年商 $10M 未満は商用 OK**、超過は別途商用ライセンス必須。ungated（HF_TOKEN 不要） |
 | LFM2.5-Audio-JP (audio encoder) | Apache 2.0 | — | OK | FastConformer encoder は NVIDIA NeMo 由来 |
 | LFM2.5-Audio-JP (audio codec / Mimi) | — | CC-BY 4.0 | OK | Kyutai Mimi codec（24 kHz、8 codebooks）。帰属表示が必要 |
+| Ming-omni-TTS | MIT | Apache 2.0 | OK | 16.8B-A3B MoE 音声 LM（active ~3B）。**A100 40GB 必須**（bf16 で ~34GB の重み）。中国語/英語が中心、方言制御あり。zero-shot cloning。コード MIT（GitHub）、重み Apache-2.0（HF カード）。ungated（HF_TOKEN 不要） |
 | DramaBox | LTX-2 Community License (Lightricks) | LTX-2 Community License | **年商 $10M+ の組織は商用ライセンス必須** | 英語。非競合条項あり、再配布時は同ライセンス継承必須、Perth ウォーターマーク常時付与 |
 | Scenema (code) | MIT | — | — | リポジトリ: `ScenemaAI/scenema-audio` |
 | Scenema (音声重み) | — | LTX-2 Community License (Lightricks) | **年商 $10M+ の組織は商用ライセンス必須** | 音声 transformer は LTX-2.3 派生のため LTX-2 Community License が継承される。DramaBox と同じ注意点（非競合条項、acceptable use 制限、再配布時のライセンス継承） |
@@ -1753,6 +1830,10 @@ Scenema AI による zero-shot な表現力豊か / 演技指向 TTS です（[S
   https://huggingface.co/LiquidAI/LFM2.5-Audio-1.5B-JP
 - liquid-audio (LFM2-Audio library)
   https://github.com/Liquid4All/liquid-audio
+- Ming-omni-tts
+  https://github.com/inclusionAI/Ming-omni-tts
+- Ming-omni-tts-16.8B-A3B (Hugging Face)
+  https://huggingface.co/inclusionAI/Ming-omni-tts-16.8B-A3B
 - DramaBox
   https://github.com/resemble-ai/DramaBox
 - DramaBox (Hugging Face)

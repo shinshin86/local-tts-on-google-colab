@@ -42,6 +42,7 @@
       "LFM2.5-Audio-JP",
       "MaskGCT",
       "MeloTTS",
+      "Ming-omni-TTS",
       "MisoTTS",
       "MOSS-TTS-Nano",
       "MOSS-TTS-v1.5",
@@ -1229,6 +1230,105 @@
             "KR"
           ],
           "flag": "--melo-default-voice"
+        }
+      ]
+    },
+    {
+      "id": "Ming-omni-TTS",
+      "title": "Ming-omni-TTS (A100 required, ~34GB weights, Chinese/English-centric, voice cloning)",
+      "status": "Works on Colab A100 (verified; **A100 40GB required** — 16.8B-A3B MoE, ~35GB VRAM at load, needs `PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True` to fit and will not run on L4 24GB; ungated weights, no `HF_TOKEN`; zero-shot cloning; 44.1 kHz output)",
+      "languages": "Chinese / English-centric (dialect control incl. Cantonese)",
+      "description": "inclusionAI's [Ming-omni-tts](https://github.com/inclusionAI/Ming-omni-tts), the **16.8B-A3B** checkpoint — a Mixture-of-Experts audio language model (~3B active parameters) built on a custom 12.5 Hz continuous tokenizer with a DiT (diffusion-transformer) acoustic head over a 44.1 kHz codec. It supports zero-shot voice cloning, natural-language voice design, emotion/dialect/rate control, and even speech-with-BGM and TTA, with strong Chinese (incl. Cantonese) and English coverage. Default model: `inclusionAI/Ming-omni-tts-16.8B-A3B`.",
+      "notes": [
+        "- inclusionAI's 16.8B-A3B MoE audio LM (~3B active params) with a 12.5 Hz continuous tokenizer + DiT head. Runs in-process (no separate backend).",
+        "- **A100 40GB required**: the 16.8B checkpoint is ~34GB in bf16 and will not fit on an L4 (24GB). Python 3.10 venv installs torch==2.6.0 + grouped_gemm (MoE kernel, built from source) + a FlashAttention wheel.",
+        "- **No HF_TOKEN needed**: weights ([inclusionAI/Ming-omni-tts-16.8B-A3B](https://huggingface.co/inclusionAI/Ming-omni-tts-16.8B-A3B), ~34GB) are ungated.",
+        "- `default` = the built-in voice (zero speaker-embedding, no reference). Set `MING_OMNI_TTS_PROMPT_WAV` (optionally `MING_OMNI_TTS_PROMPT_TEXT`) and use `voice=\"clone\"` for zero-shot cloning. Output is 44.1 kHz.",
+        "- License: code is **MIT** ([GitHub](https://github.com/inclusionAI/Ming-omni-tts)), weights are **Apache-2.0** (HF model card). Both allow commercial use. Misuse for impersonation/fraud/disinformation is prohibited by the upstream terms.",
+        "- **Prompt-driven control**: `MING_OMNI_TTS_TASK` switches what to generate — `speech`, `music`, or `tta` (sound events); for `music`/`tta` the input text is a description. `MING_OMNI_TTS_STYLE` / `_EMOTION` / `_DIALECT` are natural-language voice design (mapped to the Chinese instruction keys 风格 / 情感 / 方言; best written in Chinese, e.g. style=`温柔自然的年轻女性声音` for a gentle female voice). All optional — empty keeps the plain `default`/`clone` behavior. They can also be overridden per request via the `task`/`style`/`emotion`/`dialect` body fields."
+      ],
+      "prefix": "MING_OMNI_TTS",
+      "params": [
+        {
+          "name": "MING_OMNI_TTS_HF_MODEL",
+          "default": "inclusionAI/Ming-omni-tts-16.8B-A3B",
+          "type": "string",
+          "flag": "--ming-omni-tts-hf-model"
+        },
+        {
+          "name": "MING_OMNI_TTS_DEFAULT_VOICE",
+          "default": "default",
+          "type": "select",
+          "options": [
+            "default",
+            "clone"
+          ],
+          "flag": "--ming-omni-tts-default-voice"
+        },
+        {
+          "name": "MING_OMNI_TTS_PROMPT_WAV",
+          "default": "",
+          "type": "string",
+          "flag": "--ming-omni-tts-prompt-wav"
+        },
+        {
+          "name": "MING_OMNI_TTS_PROMPT_TEXT",
+          "default": "",
+          "type": "string",
+          "flag": "--ming-omni-tts-prompt-text"
+        },
+        {
+          "name": "MING_OMNI_TTS_TASK",
+          "default": "speech",
+          "type": "select",
+          "options": [
+            "speech",
+            "music",
+            "tta"
+          ],
+          "flag": "--ming-omni-tts-task"
+        },
+        {
+          "name": "MING_OMNI_TTS_STYLE",
+          "default": "",
+          "type": "string",
+          "flag": "--ming-omni-tts-style"
+        },
+        {
+          "name": "MING_OMNI_TTS_EMOTION",
+          "default": "",
+          "type": "string",
+          "flag": "--ming-omni-tts-emotion"
+        },
+        {
+          "name": "MING_OMNI_TTS_DIALECT",
+          "default": "",
+          "type": "string",
+          "flag": "--ming-omni-tts-dialect"
+        },
+        {
+          "name": "MING_OMNI_TTS_MAX_DECODE_STEPS",
+          "default": 200,
+          "type": "integer",
+          "flag": "--ming-omni-tts-max-decode-steps"
+        },
+        {
+          "name": "MING_OMNI_TTS_CFG",
+          "default": 2.0,
+          "type": "number",
+          "flag": "--ming-omni-tts-cfg"
+        },
+        {
+          "name": "MING_OMNI_TTS_SIGMA",
+          "default": 0.25,
+          "type": "number",
+          "flag": "--ming-omni-tts-sigma"
+        },
+        {
+          "name": "MING_OMNI_TTS_TEMPERATURE",
+          "default": 0.0,
+          "type": "number",
+          "flag": "--ming-omni-tts-temperature"
         }
       ]
     },
