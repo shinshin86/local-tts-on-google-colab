@@ -66,6 +66,12 @@ def install(settings: Settings) -> dict:
         ["-r", str(repo_dir / "requirements.txt")],
         cwd=str(repo_dir),
     )
+    # torchtune (imported by modeling_bailingmm) pulls in datasets==2.14.4,
+    # which references pa.PyExtensionType — removed in pyarrow>=18. The
+    # unconstrained resolve grabs pyarrow 24 and the engine crashes at import
+    # with "module 'pyarrow' has no attribute 'PyExtensionType'". Pin pyarrow
+    # back to the last release that still has it.
+    uv_pip_install(python_bin, ["pyarrow==17.0.0"])
     uv_pip_install(python_bin, [FLASH_ATTN_WHEEL])
     # onnxruntime drives the campplus.onnx speaker-embedding extractor (needed
     # for voice='clone'); it is not in upstream's requirements.txt. fastapi /
