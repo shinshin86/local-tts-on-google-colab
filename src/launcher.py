@@ -84,6 +84,8 @@ def resolve_selected_voice(settings: Settings) -> str:
         return settings.higgs_v3_default_voice
     if settings.engine == "dots.tts":
         return settings.dots_tts_default_voice
+    if settings.engine == "Ming-omni-TTS":
+        return settings.ming_omni_tts_default_voice
     if settings.engine == "Supertonic":
         return settings.supertonic_default_voice
     if settings.engine == "DramaBox":
@@ -431,6 +433,24 @@ def print_engine_voice_hints(settings: Settings):
         print("flash-attn は任意（未導入時は torch SDPA に自動フォールバック）。GPU 推奨（L4 で動作想定）。")
         print("ライセンス: コード / 重みは **LFM Open License v1.0**（年商 $10M 未満は商用 OK、超過は別途商用ライセンスが必要）。")
         print("           audio encoder は Apache-2.0（NVIDIA NeMo 由来）、audio codec(Mimi) は CC-BY-4.0（Kyutai）。")
+    elif settings.engine == "Ming-omni-TTS":
+        print("Ming-omni-TTS は inclusionAI の 16.8B-A3B MoE 音声 LM です（~3B active、12.5Hz 連続トークナイザ + DiT head、in-process）。")
+        print(f"モデル: {settings.ming_omni_tts_hf_model}")
+        print(f"max_decode_steps: {settings.ming_omni_tts_max_decode_steps} / cfg: {settings.ming_omni_tts_cfg} / sigma: {settings.ming_omni_tts_sigma} / temperature: {settings.ming_omni_tts_temperature}")
+        print(f"デフォルト voice: {settings.ming_omni_tts_default_voice}")
+        print("voice 候補: default（内蔵ボイス: zero speaker-embedding、参照なし）")
+        if settings.ming_omni_tts_prompt_wav:
+            print(f"             clone（参照音声: {settings.ming_omni_tts_prompt_wav}）")
+            if settings.ming_omni_tts_prompt_text:
+                print(f"             prompt_text: {settings.ming_omni_tts_prompt_text}")
+        else:
+            print("             clone は --ming-omni-tts-prompt-wav を指定すると有効になります（任意で --ming-omni-tts-prompt-text も併用）")
+        print("対応言語: 中国語 / 英語が中心（広東語などの方言制御も上流がサポート）。出力は 44.1 kHz。")
+        print("注意: **A100 40GB 必須**。16.8B（bf16 ~34GB の重み）をロードするため L4 24GB では動きません。")
+        print("      Python 3.10 venv で torch==2.6.0 + grouped_gemm（MoE カーネル、ソースビルド）+ FlashAttention wheel を導入します。")
+        print("      初回起動時に ~34GB の重みをダウンロードします（ungated、HF_TOKEN 不要）。")
+        print("ライセンス: コードは **MIT**（GitHub: inclusionAI/Ming-omni-tts）、重みは **Apache-2.0**（HF モデルカード）。いずれも商用 OK。")
+        print("乱用防止: 高品質なゼロショット cloning が可能です。なりすまし・詐欺・偽情報への利用は禁止（上流の利用規約）。")
     elif settings.engine == "GPT-SoVITS":
         print("GPT-SoVITS は RVC-Boss の few-shot voice cloning TTS です（5秒の参照音声で zero-shot 推論）。")
         print(f"version: {settings.gpt_sovits_version}")

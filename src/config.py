@@ -298,6 +298,20 @@ class Settings:
     lfm2_audio_jp_max_new_tokens: int = 1024
     lfm2_audio_jp_audio_temperature: float = 0.8
     lfm2_audio_jp_audio_top_k: int = 64
+    # Ming-omni-TTS (inclusionAI): 16.8B-A3B MoE audio LM (~3B active) with a
+    # 12.5 Hz continuous tokenizer + DiT head. Runs in-process. `default` = the
+    # built-in voice (zero speaker-embedding, no reference); `clone` = zero-shot
+    # cloning from a reference wav (+ optional transcript). Code MIT (GitHub),
+    # weights Apache-2.0 (HF card). ~34GB of weights → A100 40GB required.
+    ming_omni_tts_hf_model: str = "inclusionAI/Ming-omni-tts-16.8B-A3B"
+    ming_omni_tts_default_voice: str = "default"
+    ming_omni_tts_prompt_wav: str = ""
+    ming_omni_tts_prompt_text: str = ""
+    ming_omni_tts_gen_prompt: str = "Please generate speech based on the following description.\n"
+    ming_omni_tts_max_decode_steps: int = 200
+    ming_omni_tts_cfg: float = 2.0
+    ming_omni_tts_sigma: float = 0.25
+    ming_omni_tts_temperature: float = 0.0
     root_dir: Path = Path("/content/openai-compatible-local-tts")
     repo_dir: Path = field(default_factory=default_repo_dir)
     app_port: int = 8000
