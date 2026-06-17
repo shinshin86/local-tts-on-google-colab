@@ -49,10 +49,18 @@ def install(settings: Settings) -> dict:
         python_bin,
         ["torch==2.6.0", "torchaudio==2.6.0", "torchvision==0.21.0"],
     )
-    # The rest of the pinned stack (transformers==4.52.4, diffusers, grouped_gemm,
-    # x_transformers, torchdiffeq, torchtune, torchao, decord, hyperpyyaml, ...).
-    # flash_attn is left commented out in requirements.txt; we install a matching
-    # prebuilt wheel below instead of building it from source.
+    # grouped_gemm's setup.py imports torch at build time, but uv's build
+    # isolation hides the venv's torch, so a plain `-r requirements.txt` fails
+    # with "ModuleNotFoundError: No module named 'torch'". Build it explicitly
+    # with --no-build-isolation after torch and the build deps are present (it
+    # compiles CUTLASS CUDA kernels for the arches in TORCH_CUDA_ARCH_LIST).
+    uv_pip_install(python_bin, ["setuptools", "wheel", "ninja", "packaging"])
+    uv_pip_install(python_bin, ["--no-build-isolation", "grouped_gemm==0.1.4"])
+    # The rest of the pinned stack (transformers==4.52.4, diffusers,
+    # x_transformers, torchdiffeq, torchtune, torchao, decord, hyperpyyaml, ...);
+    # grouped_gemm is already satisfied above. flash_attn is left commented out
+    # in requirements.txt; we install a matching prebuilt wheel below instead of
+    # building it from source.
     uv_pip_install(
         python_bin,
         ["-r", str(repo_dir / "requirements.txt")],
