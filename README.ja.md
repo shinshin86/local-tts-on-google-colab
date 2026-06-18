@@ -20,7 +20,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | VoxCPM2 | 動作OK (GPU必須) | 日本語 / 英語 / 中国語 他 30言語 |
 | MOSS-TTS-Nano | 動作（出力が約2秒で切れる） | 日本語 / 英語 / 中国語 他 20言語 |
 | MOSS-TTS-v1.5 | A100 で動作確認（L4 22GB は VRAM 不足：モデル+activation+音声トークナイザーで超過） | 日本語 / 英語 / 中国語 / 韓国語 他 31言語 |
-| MOSS-TTS-Local-v1.5 | Colab 検証待ち（~4B MossTTSLocal、8B 版より軽量で L4 に収まる見込み） | 日本語 / 英語 / 中国語 / 韓国語 他 31言語 |
+| MOSS-TTS-Local-v1.5 | L4 で動作確認（~4B MossTTSLocal、~12.4GB VRAM。8B 版が OOM する L4 でも動作） | 日本語 / 英語 / 中国語 / 韓国語 他 31言語 |
 | NeuTTS | 動作OK (CPU可・voice cloning) | 英語 / スペイン語 / ドイツ語 / フランス語 |
 | TinyTTS | 動作OK | 英語 |
 | Supertonic | 動作OK (CPU可・ONNX・~99M params) | 英語 / 日本語 / 韓国語 他 31言語 |
@@ -1161,7 +1161,7 @@ GPU 必須: int4 パスは Triton カーネルを使用するため、Linux + CU
 
 ### MOSS-TTS-Local-v1.5
 
-[OpenMOSS/MOSS-TTS](https://github.com/OpenMOSS/MOSS-TTS) の ~4B パラメータ `MossTTSLocal` 系チェックポイントで、Hugging Face の `OpenMOSS-Team/MOSS-TTS-Local-Transformer-v1.5` を使用します。OpenAI 互換ラッパーと **31 言語**（中国語、広東語、英語、アラビア語、チェコ語、デンマーク語、オランダ語、フィンランド語、フランス語、ドイツ語、ギリシャ語、ヘブライ語、ヒンディー語、ハンガリー語、イタリア語、**日本語**、韓国語、マケドニア語、マレー語、ペルシャ語、ポーランド語、ポルトガル語、ルーマニア語、ロシア語、スペイン語、スワヒリ語、スウェーデン語、タガログ語、タイ語、トルコ語、ベトナム語）、ゼロショット voice cloning は 8B の `MOSS-TTS-v1.5` と共通で、`MOSS_LOCAL_V1_5_LANGUAGE` フォームフィールドおよび `MOSS_LOCAL_V1_5_PROMPT_WAV` + `voice="clone"` で制御します。大きな違いはアーキテクチャとサイズで、8B の `MossTTSDelay` ではなく時間同期型の `MossTTSLocal`（RVQ depth transformer）を ~4B パラメータで採用し、MOSS-Audio-Tokenizer-v2 を介してネイティブ 48 kHz ステレオで出力します。8B 版のおよそ半分のサイズなので、Colab L4 の 22 GB VRAM に収まる見込みです。インストーラは v1.5 と同じ構成で、専用の Python 3.12 venv に上流の `[torch-runtime]` extra（`torch==2.9.1+cu128` / `transformers==5.0.0`）と `accelerate`（`device_map=` に必要）を導入します。`attn_implementation` のデフォルトは `sdpa` で、`flash_attention_2` に切り替える場合は別途 `flash-attn` のインストールが必要です。ライセンス: コード・重みとも **Apache 2.0**（商用利用 OK）。
+[OpenMOSS/MOSS-TTS](https://github.com/OpenMOSS/MOSS-TTS) の ~4B パラメータ `MossTTSLocal` 系チェックポイントで、Hugging Face の `OpenMOSS-Team/MOSS-TTS-Local-Transformer-v1.5` を使用します。OpenAI 互換ラッパーと **31 言語**（中国語、広東語、英語、アラビア語、チェコ語、デンマーク語、オランダ語、フィンランド語、フランス語、ドイツ語、ギリシャ語、ヘブライ語、ヒンディー語、ハンガリー語、イタリア語、**日本語**、韓国語、マケドニア語、マレー語、ペルシャ語、ポーランド語、ポルトガル語、ルーマニア語、ロシア語、スペイン語、スワヒリ語、スウェーデン語、タガログ語、タイ語、トルコ語、ベトナム語）、ゼロショット voice cloning は 8B の `MOSS-TTS-v1.5` と共通で、`MOSS_LOCAL_V1_5_LANGUAGE` フォームフィールドおよび `MOSS_LOCAL_V1_5_PROMPT_WAV` + `voice="clone"` で制御します。大きな違いはアーキテクチャとサイズで、8B の `MossTTSDelay` ではなく時間同期型の `MossTTSLocal`（RVQ depth transformer）を ~4B パラメータで採用し、MOSS-Audio-Tokenizer-v2 を介してネイティブ 48 kHz ステレオで出力します。8B 版のおよそ半分のサイズなので、Colab L4 の 22 GB VRAM に余裕を持って収まります — Colab L4 で end-to-end 確認済み（resident ~12.4 GB。8B 版が OOM する L4 でも動作。出力はネイティブ 48 kHz ステレオ WAV、1 文で約 6 秒）。インストーラは v1.5 と同じ構成で、専用の Python 3.12 venv に上流の `[torch-runtime]` extra（`torch==2.9.1+cu128` / `transformers==5.0.0`）と `accelerate`（`device_map=` に必要）を導入します。`attn_implementation` のデフォルトは `sdpa` で、`flash_attention_2` に切り替える場合は別途 `flash-attn` のインストールが必要です。ライセンス: コード・重みとも **Apache 2.0**（商用利用 OK）。
 
 ### NeuTTS
 
@@ -1711,7 +1711,7 @@ Scenema AI による zero-shot な表現力豊か / 演技指向 TTS です（[S
 | VoxCPM2 | Apache 2.0 | Apache 2.0 | OK | |
 | MOSS-TTS-Nano | Apache 2.0 | Apache 2.0 | OK | 100M パラメータ、CPU 動作可 |
 | MOSS-TTS-v1.5 | Apache 2.0 | Apache 2.0 | OK | 8B パラメータ、**A100 必須**（ロード時 ~22GB + 音声トークナイザー。L4 22GB は不足）。31言語（日本語含む）。ゼロショット voice cloning |
-| MOSS-TTS-Local-v1.5 | Apache 2.0 | Apache 2.0 | OK | ~4B MossTTSLocal パラメータ、L4 に収まる見込み（8B 版より軽量）。48kHz ステレオ。31言語（日本語含む）。ゼロショット voice cloning |
+| MOSS-TTS-Local-v1.5 | Apache 2.0 | Apache 2.0 | OK | ~4B MossTTSLocal パラメータ、L4 で動作確認（~12.4GB。8B 版は L4 で OOM）。48kHz ステレオ。31言語（日本語含む）。ゼロショット voice cloning |
 | NeuTTS | Apache 2.0 | Apache 2.0 (Air) / NeuTTS Open License 1.0 (Nano) | OK (Air) / 規約要確認 (Nano) | ボイスクローン。英 / 西 / 独 / 仏 |
 | TinyTTS | Apache 2.0 | Apache 2.0 | OK | |
 | Supertonic | MIT | OpenRAIL-M | OK | 31言語（日 / 韓 / 英含む）。CPU 動作（ONNX）。なりすまし・ディープフェイク等の use-based ethical restrictions あり |
