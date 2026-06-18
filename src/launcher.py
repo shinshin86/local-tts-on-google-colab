@@ -94,6 +94,8 @@ def resolve_selected_voice(settings: Settings) -> str:
         return settings.scenema_default_voice
     if settings.engine == "MOSS-TTS-v1.5":
         return settings.moss_tts_v1_5_default_voice
+    if settings.engine == "MOSS-TTS-Local-v1.5":
+        return settings.moss_local_v1_5_default_voice
     return ""
 
 
@@ -202,6 +204,24 @@ def print_engine_voice_hints(settings: Settings):
         print("           Malay / Persian / Polish / Portuguese / Romanian / Russian / Spanish / Swahili /")
         print("           Swedish / Tagalog / Thai / Turkish / Vietnamese（計 31 言語）")
         print("注意: A100 必須（VRAM ~22GB resident + audio tokenizer。L4 22GB は不足し OOM 確認済み）。")
+        print("      Python 3.12 venv で torch 2.9.1+cu128 / transformers 5.0.0 / accelerate を導入します。")
+        print("ライセンス: コード / 重みとも Apache 2.0（商用 OK）。")
+    elif settings.engine == "MOSS-TTS-Local-v1.5":
+        print("MOSS-TTS-Local-v1.5 は OpenMOSS の MossTTSLocal 系 多言語 TTS です（~4B、31言語、ゼロショット voice cloning、Apache-2.0）。")
+        print(f"モデル: {settings.moss_local_v1_5_hf_model}")
+        print(f"language: {settings.moss_local_v1_5_language}")
+        print(f"attn_impl: {settings.moss_local_v1_5_attn_impl} / max_new_tokens: {settings.moss_local_v1_5_max_new_tokens}")
+        print(f"デフォルト voice: {settings.moss_local_v1_5_default_voice}")
+        print("voice 候補: default（参照音声なし、language タグのみ）")
+        if settings.moss_local_v1_5_prompt_wav:
+            print(f"             clone（参照音声: {settings.moss_local_v1_5_prompt_wav}）")
+        else:
+            print("             clone は --moss-local-v1-5-prompt-wav を指定すると有効になります")
+        print("対応言語: Chinese / Cantonese / English / Arabic / Czech / Danish / Dutch / Finnish / French /")
+        print("           German / Greek / Hebrew / Hindi / Hungarian / Italian / Japanese / Korean / Macedonian /")
+        print("           Malay / Persian / Polish / Portuguese / Romanian / Russian / Spanish / Swahili /")
+        print("           Swedish / Tagalog / Thai / Turkish / Vietnamese（計 31 言語）")
+        print("特徴: MOSS-Audio-Tokenizer-v2 による 48kHz ステレオ出力。8B の MOSS-TTS-v1.5 より軽量で L4 でも動作。")
         print("      Python 3.12 venv で torch 2.9.1+cu128 / transformers 5.0.0 / accelerate を導入します。")
         print("ライセンス: コード / 重みとも Apache 2.0（商用 OK）。")
     elif settings.engine == "TinyTTS":

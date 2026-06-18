@@ -11,7 +11,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "Irodori-TTS", "Irodori-TTS-Lite", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos", "ZONOS2"]
+ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "Irodori-TTS", "Irodori-TTS-Lite", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos", "ZONOS2"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -134,6 +134,19 @@ MOSS_TTS_V1_5_PROMPT_WAV = ""  #@param {type:"string"}
 MOSS_TTS_V1_5_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
 MOSS_TTS_V1_5_ATTN_IMPL = "sdpa"  #@param ["sdpa", "eager", "flash_attention_2"]
 MOSS_TTS_V1_5_MAX_NEW_TOKENS = 4096  #@param {type:"integer"}
+
+#@markdown ---
+#@markdown MOSS-TTS-Local-v1.5 (L4 OK — ~4B MossTTSLocal, 31 languages, 48kHz stereo, Apache 2.0)
+#@markdown - ~4B-parameter MossTTSLocal checkpoint from [OpenMOSS/MOSS-TTS](https://github.com/OpenMOSS/MOSS-TTS) with zero-shot voice cloning.
+#@markdown - Lighter than the 8B MOSS-TTS-v1.5 (MossTTSDelay), so it fits on Colab L4; uses MOSS-Audio-Tokenizer-v2 for native 48kHz stereo output.
+#@markdown - Installs with the upstream `[torch-runtime]` extra (`torch==2.9.1+cu128`, `transformers==5.0.0`) plus `accelerate` under a dedicated Python 3.12 venv.
+#@markdown - License: code and weights are both Apache 2.0. Commercial use OK.
+MOSS_LOCAL_V1_5_HF_MODEL = "OpenMOSS-Team/MOSS-TTS-Local-Transformer-v1.5"  #@param {type:"string"}
+MOSS_LOCAL_V1_5_LANGUAGE = "Japanese"  #@param ["Chinese", "Cantonese", "English", "Arabic", "Czech", "Danish", "Dutch", "Finnish", "French", "German", "Greek", "Hebrew", "Hindi", "Hungarian", "Italian", "Japanese", "Korean", "Macedonian", "Malay", "Persian", "Polish", "Portuguese", "Romanian", "Russian", "Spanish", "Swahili", "Swedish", "Tagalog", "Thai", "Turkish", "Vietnamese"]
+MOSS_LOCAL_V1_5_PROMPT_WAV = ""  #@param {type:"string"}
+MOSS_LOCAL_V1_5_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+MOSS_LOCAL_V1_5_ATTN_IMPL = "sdpa"  #@param ["sdpa", "eager", "flash_attention_2"]
+MOSS_LOCAL_V1_5_MAX_NEW_TOKENS = 4096  #@param {type:"integer"}
 
 #@markdown ---
 #@markdown NeuTTS (CPU OK, EN/ES/DE/FR, voice cloning)
@@ -592,6 +605,18 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         MOSS_TTS_V1_5_ATTN_IMPL,
         "--moss-tts-v1-5-max-new-tokens",
         str(MOSS_TTS_V1_5_MAX_NEW_TOKENS),
+        "--moss-local-v1-5-hf-model",
+        MOSS_LOCAL_V1_5_HF_MODEL,
+        "--moss-local-v1-5-language",
+        MOSS_LOCAL_V1_5_LANGUAGE,
+        "--moss-local-v1-5-prompt-wav",
+        MOSS_LOCAL_V1_5_PROMPT_WAV,
+        "--moss-local-v1-5-default-voice",
+        MOSS_LOCAL_V1_5_DEFAULT_VOICE,
+        "--moss-local-v1-5-attn-impl",
+        MOSS_LOCAL_V1_5_ATTN_IMPL,
+        "--moss-local-v1-5-max-new-tokens",
+        str(MOSS_LOCAL_V1_5_MAX_NEW_TOKENS),
         "--neutts-backbone-repo",
         NEUTTS_BACKBONE_REPO,
         "--neutts-codec-repo",

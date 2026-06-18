@@ -46,6 +46,7 @@
       "MisoTTS",
       "MOSS-TTS-Nano",
       "MOSS-TTS-v1.5",
+      "MOSS-TTS-Local-v1.5",
       "NeuTTS",
       "OpenVoice-V2",
       "Orpheus-TTS",
@@ -1523,6 +1524,100 @@
           "default": 4096,
           "type": "integer",
           "flag": "--moss-tts-v1-5-max-new-tokens"
+        }
+      ]
+    },
+    {
+      "id": "MOSS-TTS-Local-v1.5",
+      "title": "MOSS-TTS-Local-v1.5 (L4 OK — ~4B MossTTSLocal, 31 languages, 48kHz stereo, Apache 2.0)",
+      "status": "Pending Colab verification (~4B MossTTSLocal, expected to fit on L4 — lighter than the 8B v1.5)",
+      "languages": "Japanese / English / Chinese / Korean and 31 languages",
+      "description": "A ~4B-parameter `MossTTSLocal` checkpoint from [OpenMOSS/MOSS-TTS](https://github.com/OpenMOSS/MOSS-TTS) using the `OpenMOSS-Team/MOSS-TTS-Local-Transformer-v1.5` weights on Hugging Face. It shares the same OpenAI-compatible wrapper and the same **31 languages** (Chinese, Cantonese, English, Arabic, Czech, Danish, Dutch, Finnish, French, German, Greek, Hebrew, Hindi, Hungarian, Italian, **Japanese**, Korean, Macedonian, Malay, Persian, Polish, Portuguese, Romanian, Russian, Spanish, Swahili, Swedish, Tagalog, Thai, Turkish, Vietnamese) and zero-shot voice cloning as the 8B `MOSS-TTS-v1.5`, controlled by the `MOSS_LOCAL_V1_5_LANGUAGE` form field and `MOSS_LOCAL_V1_5_PROMPT_WAV` + `voice=\"clone\"`. The key difference is architecture and size: it uses the time-synchronous `MossTTSLocal` design (RVQ depth transformer) at ~4B parameters instead of the 8B `MossTTSDelay`, and decodes through MOSS-Audio-Tokenizer-v2 for native 48 kHz stereo output. Because it is roughly half the size of the 8B v1.5, it is expected to fit within Colab L4's 22 GB VRAM. The installer mirrors the v1.5 setup: a dedicated Python 3.12 venv with the upstream `[torch-runtime]` extra (`torch==2.9.1+cu128`, `transformers==5.0.0`) plus `accelerate` (required by `device_map=`). Default `attn_implementation` is `sdpa`; switch to `flash_attention_2` only if you've installed `flash-attn` first. License: code and weights are both **Apache 2.0** (commercial use OK).",
+      "notes": [
+        "- ~4B-parameter MossTTSLocal checkpoint from [OpenMOSS/MOSS-TTS](https://github.com/OpenMOSS/MOSS-TTS) with zero-shot voice cloning.",
+        "- Lighter than the 8B MOSS-TTS-v1.5 (MossTTSDelay), so it fits on Colab L4; uses MOSS-Audio-Tokenizer-v2 for native 48kHz stereo output.",
+        "- Installs with the upstream `[torch-runtime]` extra (`torch==2.9.1+cu128`, `transformers==5.0.0`) plus `accelerate` under a dedicated Python 3.12 venv.",
+        "- License: code and weights are both Apache 2.0. Commercial use OK."
+      ],
+      "prefix": "MOSS_LOCAL_V1_5",
+      "params": [
+        {
+          "name": "MOSS_LOCAL_V1_5_HF_MODEL",
+          "default": "OpenMOSS-Team/MOSS-TTS-Local-Transformer-v1.5",
+          "type": "string",
+          "flag": "--moss-local-v1-5-hf-model"
+        },
+        {
+          "name": "MOSS_LOCAL_V1_5_LANGUAGE",
+          "default": "Japanese",
+          "type": "select",
+          "options": [
+            "Chinese",
+            "Cantonese",
+            "English",
+            "Arabic",
+            "Czech",
+            "Danish",
+            "Dutch",
+            "Finnish",
+            "French",
+            "German",
+            "Greek",
+            "Hebrew",
+            "Hindi",
+            "Hungarian",
+            "Italian",
+            "Japanese",
+            "Korean",
+            "Macedonian",
+            "Malay",
+            "Persian",
+            "Polish",
+            "Portuguese",
+            "Romanian",
+            "Russian",
+            "Spanish",
+            "Swahili",
+            "Swedish",
+            "Tagalog",
+            "Thai",
+            "Turkish",
+            "Vietnamese"
+          ],
+          "flag": "--moss-local-v1-5-language"
+        },
+        {
+          "name": "MOSS_LOCAL_V1_5_PROMPT_WAV",
+          "default": "",
+          "type": "string",
+          "flag": "--moss-local-v1-5-prompt-wav"
+        },
+        {
+          "name": "MOSS_LOCAL_V1_5_DEFAULT_VOICE",
+          "default": "default",
+          "type": "select",
+          "options": [
+            "default",
+            "clone"
+          ],
+          "flag": "--moss-local-v1-5-default-voice"
+        },
+        {
+          "name": "MOSS_LOCAL_V1_5_ATTN_IMPL",
+          "default": "sdpa",
+          "type": "select",
+          "options": [
+            "sdpa",
+            "eager",
+            "flash_attention_2"
+          ],
+          "flag": "--moss-local-v1-5-attn-impl"
+        },
+        {
+          "name": "MOSS_LOCAL_V1_5_MAX_NEW_TOKENS",
+          "default": 4096,
+          "type": "integer",
+          "flag": "--moss-local-v1-5-max-new-tokens"
         }
       ]
     },

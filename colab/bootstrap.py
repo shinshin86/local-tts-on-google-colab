@@ -80,6 +80,15 @@ def parse_args():
     parser.add_argument("--moss-tts-v1-5-default-voice", default="default")
     parser.add_argument("--moss-tts-v1-5-attn-impl", default="sdpa")
     parser.add_argument("--moss-tts-v1-5-max-new-tokens", type=int, default=4096)
+    parser.add_argument(
+        "--moss-local-v1-5-hf-model",
+        default="OpenMOSS-Team/MOSS-TTS-Local-Transformer-v1.5",
+    )
+    parser.add_argument("--moss-local-v1-5-language", default="Japanese")
+    parser.add_argument("--moss-local-v1-5-prompt-wav", default="")
+    parser.add_argument("--moss-local-v1-5-default-voice", default="default")
+    parser.add_argument("--moss-local-v1-5-attn-impl", default="sdpa")
+    parser.add_argument("--moss-local-v1-5-max-new-tokens", type=int, default=4096)
     parser.add_argument("--neutts-backbone-repo", default="neuphonic/neutts-air")
     parser.add_argument("--neutts-codec-repo", default="neuphonic/neucodec")
     parser.add_argument("--neutts-default-voice", default="jo")
@@ -321,6 +330,12 @@ def main():
         moss_tts_v1_5_default_voice=args.moss_tts_v1_5_default_voice,
         moss_tts_v1_5_attn_impl=args.moss_tts_v1_5_attn_impl,
         moss_tts_v1_5_max_new_tokens=args.moss_tts_v1_5_max_new_tokens,
+        moss_local_v1_5_hf_model=args.moss_local_v1_5_hf_model,
+        moss_local_v1_5_language=args.moss_local_v1_5_language,
+        moss_local_v1_5_prompt_wav=args.moss_local_v1_5_prompt_wav,
+        moss_local_v1_5_default_voice=args.moss_local_v1_5_default_voice,
+        moss_local_v1_5_attn_impl=args.moss_local_v1_5_attn_impl,
+        moss_local_v1_5_max_new_tokens=args.moss_local_v1_5_max_new_tokens,
         neutts_backbone_repo=args.neutts_backbone_repo,
         neutts_codec_repo=args.neutts_codec_repo,
         neutts_default_voice=args.neutts_default_voice,
