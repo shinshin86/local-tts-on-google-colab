@@ -24,6 +24,7 @@ from .ming_omni_tts import install as install_ming_omni_tts
 from .misotts import install as install_misotts
 from .moss_tts_nano import install as install_moss_tts_nano
 from .moss_tts_v1_5 import install as install_moss_tts_v1_5
+from .moss_tts_local_v1_5 import install as install_moss_tts_local_v1_5
 from .neutts import install as install_neutts
 from .openvoice_v2 import install as install_openvoice_v2
 from .orpheus import install as install_orpheus
@@ -71,6 +72,7 @@ INSTALLERS = {
     "MisoTTS": install_misotts,
     "MOSS-TTS-Nano": install_moss_tts_nano,
     "MOSS-TTS-v1.5": install_moss_tts_v1_5,
+    "MOSS-TTS-Local-v1.5": install_moss_tts_local_v1_5,
     "NeuTTS": install_neutts,
     "OpenVoice-V2": install_openvoice_v2,
     "Orpheus-TTS": install_orpheus,

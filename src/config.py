@@ -118,6 +118,12 @@ class Settings:
     moss_tts_v1_5_default_voice: str = "default"
     moss_tts_v1_5_attn_impl: str = "sdpa"
     moss_tts_v1_5_max_new_tokens: int = 4096
+    moss_local_v1_5_hf_model: str = "OpenMOSS-Team/MOSS-TTS-Local-Transformer-v1.5"
+    moss_local_v1_5_language: str = "Japanese"
+    moss_local_v1_5_prompt_wav: str = ""
+    moss_local_v1_5_default_voice: str = "default"
+    moss_local_v1_5_attn_impl: str = "sdpa"
+    moss_local_v1_5_max_new_tokens: int = 4096
     neutts_backbone_repo: str = "neuphonic/neutts-air"
     neutts_codec_repo: str = "neuphonic/neucodec"
     neutts_default_voice: str = "jo"
