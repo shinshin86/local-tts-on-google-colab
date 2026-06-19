@@ -25,6 +25,39 @@ a:hover { text-decoration: underline; }
   padding: 40px 20px 80px;
 }
 .page-header { margin-bottom: 24px; text-align: center; }
+.language-toggle {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 18px;
+}
+.lang-btn {
+  appearance: none;
+  border: 1px solid #d4d4d8;
+  background: transparent;
+  color: #777;
+  padding: 4px 12px;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.lang-btn:first-child { border-radius: 8px 0 0 8px; }
+.lang-btn:last-child {
+  border-left: none;
+  border-radius: 0 8px 8px 0;
+}
+.lang-btn:hover {
+  background: #f0f0f2;
+  color: #1c1c1e;
+}
+.lang-btn.active {
+  background: #e8e8ec;
+  color: #1c1c1e;
+}
+.lang-btn:focus-visible {
+  outline: 2px solid #0a66c2;
+  outline-offset: 1px;
+}
 .page-header h1 {
   font-size: 1.75rem;
   margin: 0 0 14px;
@@ -46,6 +79,9 @@ a:hover { text-decoration: underline; }
 .tagline a { font-weight: 500; }
 @media (prefers-color-scheme: dark) {
   .tagline { color: #aaa; }
+  .lang-btn { background: transparent; border-color: #3a3a3e; color: #9a9aa1; }
+  .lang-btn:hover { background: #2a2a2e; color: #ececf1; }
+  .lang-btn.active { background: #34343a; color: #ececf1; }
 }
 
 /* ----- card ----- */
