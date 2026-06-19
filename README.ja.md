@@ -63,6 +63,17 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 
 `VOICEVOX` は含めていません。
 
+## AIエージェントを用いた Colab 接続方法について
+
+このリポジトリではAIエージェントからの利用を想定して [.mcp.json](.mcp.json) を含めています。デフォルトでは [shinshin86/colab-mcp-go](https://github.com/shinshin86/colab-mcp-go) を使う設定です。
+
+`colab-mcp-go` は [googlecolab/colab-mcp](https://github.com/googlecolab/colab-mcp) のローカルブリッジを Go で移植した非公式プロジェクトで、このリポジトリでは Codex や Claude Code などのエージェントから Colab を扱う用途を想定しています。  
+（公式 Colab MCP の Codex 対応状況は変わる可能性がありますが、このリポジトリでは Codex でも扱いやすい選択肢として Go 版をデフォルトにしています）
+
+ただし、このリポジトリ自体は特定の Colab 接続手段に依存していません。
+
+公式 `colab-mcp` をはじめ、別の手段に置き換えることも可能です。その際は `.mcp.json` を書き換えてご利用ください。
+
 ## 使い方
 
 ### 最短手順 — WebUI コマンドジェネレーター
