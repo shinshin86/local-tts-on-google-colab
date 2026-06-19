@@ -1,15 +1,12 @@
 {
   "mcpServers": {
     "colab-mcp": {
-      "command": "uvx",
+      "command": "colab-mcp-go",
       "args": [
-        "--python",
-        "3.13",
-        "--with",
-        "fakeredis==2.34.1",
-        "git+https://github.com/googlecolab/colab-mcp"
+        "--connect-timeout",
+        "300s"
       ],
-      "timeout": 30000
+      "timeout": 360000
     }
   }
 }

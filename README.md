@@ -63,6 +63,17 @@ Supported engines:
 
 `VOICEVOX` is not included.
 
+## Colab connection with AI agents
+
+This repository includes [.mcp.json](.mcp.json) for use from AI agents. By default, it is configured to use [shinshin86/colab-mcp-go](https://github.com/shinshin86/colab-mcp-go).
+
+`colab-mcp-go` is an unofficial Go port of the local bridge from [googlecolab/colab-mcp](https://github.com/googlecolab/colab-mcp). In this repository, it is intended for using Colab from agents such as Codex and Claude Code.  
+(Official Colab MCP support for Codex may change over time, but this repository defaults to the Go version as an option that is also easy to use from Codex.)
+
+However, this repository itself does not depend on a specific Colab connection method.
+
+You can replace it with the official `colab-mcp` or another method. In that case, rewrite `.mcp.json` as needed.
+
 ## Usage
 
 ### Quickest path — WebUI cell generator
