@@ -368,6 +368,7 @@ a:hover { text-decoration: underline; }
   line-height: 1.55;
   background: transparent;
 }
+.agent-prompt-preview { max-height: 360px; }
 .btn-block { width: 100%; }
 .cta-hint {
   margin: 8px 0 0;

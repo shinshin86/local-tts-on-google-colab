@@ -154,6 +154,20 @@
           <button @click="resetDefaults" class="btn btn-ghost btn-small">Reset all options</button>
         </div>
       </section>
+
+      <section class="card copy-card">
+        <h2 class="step-heading"><span class="step-num">3</span> Copy agent prompt</h2>
+        <div class="code-block">
+          <div class="code-block-header">
+            <span class="code-block-meta">{{ generatedAgentPromptLines }} lines · Prompt</span>
+            <button @click="copyAgentPrompt" :class="['btn', 'btn-primary', 'btn-small', agentCopyState]">
+              <span v-if="agentCopyState === 'copied'">Copied ✓</span>
+              <span v-else>Copy prompt</span>
+            </button>
+          </div>
+          <pre class="cell-preview agent-prompt-preview"><code>{{ generatedAgentPrompt }}</code></pre>
+        </div>
+      </section>
     </main>
 
     <p v-else class="loading">Loading engines.json…</p>

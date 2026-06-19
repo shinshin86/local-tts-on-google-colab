@@ -197,6 +197,54 @@ function generateCell(data, engine, values) {
   ].join("\n");
 }
 
+function colabConnectionGuidance() {
+  return [
+    "First check whether the current agent environment already has a Colab MCP server or any Colab control tool available.",
+    "If a usable Colab connection is already available, use it without asking the user to choose an implementation.",
+    "If no usable Colab connection is available, ask the user what Colab connection they can provide before changing local setup.",
+    "This repository includes .mcp.json configured for colab-mcp-go, which is a practical default for Codex-oriented usage.",
+    "The official googlecolab/colab-mcp may be appropriate in clients that support it.",
+    "Do not install tools, edit MCP config, or switch MCP implementations without user approval.",
+  ];
+}
+
+function generateAgentPrompt(engine, values, generatedCell) {
+  if (!engine) return "";
+  const guidance = colabConnectionGuidance().map((line) => `- ${line}`).join("\n");
+  const sampleText = values.TEST_TEXT || "";
+  const publicUrlNote = values.EXPOSE_PUBLIC_URL
+    ? "Expose a public URL if the setup command produces one, then report the OpenAI-compatible endpoint."
+    : "Do not expose a public URL unless the user asks for one.";
+
+  return [
+    "You are helping me run a local OpenAI-compatible TTS server on Google Colab.",
+    "",
+    "Goal:",
+    `- Set up and run the ${engine.id} engine from https://github.com/shinshin86/local-tts-on-google-colab`,
+    "- Use Google Colab through an MCP connection when possible.",
+    "- Run the generated Colab Python cell below in a fresh Colab scratchpad or an already connected Colab notebook.",
+    "- Confirm the server starts successfully, then run or describe a simple /v1/audio/speech smoke test.",
+    "- Summarize the endpoint URL, model ID, selected voice/speaker, and any runtime limitations.",
+    "",
+    "Colab connection handling:",
+    guidance,
+    "",
+    "Operational constraints:",
+    "- Before executing, confirm whether the user wants a free GPU runtime, paid runtime, or CPU fallback if GPU is unavailable.",
+    "- If Colab prompts for browser sign-in, runtime selection, or notebook trust, ask the user to complete it.",
+    "- If package installation or model download fails, inspect the error and make the smallest fix needed.",
+    "- Prefer the repository's generated cell over rewriting the setup from scratch.",
+    `- Sample text for the smoke test: ${sampleText}`,
+    `- ${publicUrlNote}`,
+    "",
+    "Generated Colab cell to execute:",
+    "```python",
+    generatedCell.trimEnd(),
+    "```",
+    "",
+  ].join("\n");
+}
+
 function defaultValues(data) {
   const values = {};
   for (const p of data.repo_settings) values[p.name] = p.default;
@@ -215,6 +263,7 @@ createApp({
   setup() {
     const data = ref(null);
     const copyState = ref("");
+    const agentCopyState = ref("");
     const state = reactive({ engineId: "Kokoro", values: {} });
 
     onMounted(async () => {
@@ -294,28 +343,52 @@ createApp({
 
     const generatedLines = computed(() => generatedCell.value.split("\n").length);
 
-    async function copyCell() {
+    const generatedAgentPrompt = computed(() =>
+      data.value
+        ? generateAgentPrompt(selectedEngine.value, state.values, generatedCell.value)
+        : ""
+    );
+
+    const generatedAgentPromptLines = computed(() => generatedAgentPrompt.value.split("\n").length);
+
+    async function copyText(text, copyStateRef, fallbackMessage) {
       try {
-        await navigator.clipboard.writeText(generatedCell.value);
-        copyState.value = "copied";
-        setTimeout(() => (copyState.value = ""), 1800);
+        await navigator.clipboard.writeText(text);
+        copyStateRef.value = "copied";
+        setTimeout(() => (copyStateRef.value = ""), 1800);
       } catch (e) {
         // Fallback: select-and-copy via a temporary textarea.
         const ta = document.createElement("textarea");
-        ta.value = generatedCell.value;
+        ta.value = text;
         ta.style.position = "fixed";
         ta.style.opacity = "0";
         document.body.appendChild(ta);
         ta.select();
         try {
           document.execCommand("copy");
-          copyState.value = "copied";
-          setTimeout(() => (copyState.value = ""), 1800);
+          copyStateRef.value = "copied";
+          setTimeout(() => (copyStateRef.value = ""), 1800);
         } catch (err) {
-          alert("Could not copy automatically — please select & copy the preview below.");
+          alert(fallbackMessage);
         }
         document.body.removeChild(ta);
       }
+    }
+
+    function copyCell() {
+      return copyText(
+        generatedCell.value,
+        copyState,
+        "Could not copy automatically — please select & copy the cell preview below."
+      );
+    }
+
+    function copyAgentPrompt() {
+      return copyText(
+        generatedAgentPrompt.value,
+        agentCopyState,
+        "Could not copy automatically — please select & copy the prompt preview below."
+      );
     }
 
     function downloadCell() {
@@ -356,9 +429,13 @@ createApp({
       hasLicenseInNotes,
       generatedCell,
       generatedLines,
+      generatedAgentPrompt,
+      generatedAgentPromptLines,
       copyState,
+      agentCopyState,
       repoUrl: REPO_URL,
       copyCell,
+      copyAgentPrompt,
       downloadCell,
       resetDefaults,
       niceLabel,
