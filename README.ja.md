@@ -56,6 +56,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | Ming-omni-TTS | Colab A100 動作確認済み（**A100 40GB 必須** — 16.8B-A3B MoE、ロード時 ~35GB VRAM。40GB に収めるため `PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True` が必要で L4 24GB では動かない。重みは ungated で `HF_TOKEN` 不要。zero-shot cloning。出力 44.1 kHz） | 中国語 / 英語が中心（広東語などの方言制御あり） |
 | DramaBox | Colab A100 動作確認済み（GPU 必須、VRAM ~24GB ピーク、**LTX-2 Community License — 非競合条項あり**） | 英語 |
 | Scenema | **Colab A100（40GB VRAM）必須**。初回起動時に約 38GB ダウンロード。音声モデルは LTX-2.3 派生のため **LTX-2 Community License**（DramaBox と同じ）。Gemma 3 12B IT 利用（HF gated、`HF_TOKEN` 必須） | 英語中心の多言語 |
+| MioTTS | _Colab 検証予定_（GPU 推奨, VRAM 約4〜6GB, T4 でも可の見込み。LLM ベース — Qwen3-1.7B-Base backbone をプリビルド llama-cpp-python CUDA wheel で host し MioCodec トークン[25Hz]を生成 → 44.1kHz。重みは ungated で `HF_TOKEN` 不要。プリセット音声 / ゼロショットクローン。**デフォルトプリセットは商用利用不可** — 商用時は自分の音声で clone） | 日本語 / 英語 |
 
 `MeloTTS`、`Style-Bert-VITS2` は Colab の uv + venv 環境で依存解決に問題があり、現時点では動作しません。
 
@@ -119,7 +120,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "Irodori-TTS", "Irodori-TTS-Lite", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos", "ZONOS2"]
+ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "Irodori-TTS", "Irodori-TTS-Lite", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos", "ZONOS2"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -410,6 +411,23 @@ MISOTTS_MAX_AUDIO_LENGTH_MS = 30000  #@param {type:"integer"}
 MISOTTS_TEMPERATURE = 0.9  #@param {type:"number"}
 MISOTTS_TOPK = 50  #@param {type:"integer"}
 MISOTTS_TOKENIZER_REPO = "unsloth/Llama-3.2-1B"  #@param {type:"string"}
+
+#@markdown MioTTS (GPU recommended ~4-6GB VRAM, T4 OK, Japanese/English, voice cloning)
+#@markdown - Aratako's LLM-based TTS: a Qwen3-1.7B-Base backbone generates MioCodec tokens (25 Hz) that decode to 44.1 kHz audio. We host the GGUF (`MIOTTS_GGUF_REPO`/`MIOTTS_GGUF_FILE`) with a prebuilt **llama-cpp-python CUDA wheel** (no Linux CUDA `llama-server` binary exists), run `run_server.py` as the synthesis backend, and proxy its `/v1/tts` as OpenAI-compatible `/v1/audio/speech`. Match `MIOTTS_LLAMA_CUDA` to Colab's CUDA (cu121..cu125).
+#@markdown - `default` uses the shipped preset `MIOTTS_DEFAULT_PRESET`; you can also pass a preset name directly as the voice (`jp_female` / `jp_male` / `en_female` / `en_male`). Set `MIOTTS_PROMPT_WAV` and use `voice="clone"` for your own reference audio.
+#@markdown - License: code is **MIT**, **MioTTS-1.7B** weights are **Apache-2.0** ([HF](https://huggingface.co/Aratako/MioTTS-1.7B)), **MioCodec** is **Apache-2.0**. ⚠️ The bundled default presets are derived from T5Gemma-TTS / Gemini 2.5 Pro TTS and **cannot be used commercially** — clone your own voice for commercial use.
+MIOTTS_GGUF_REPO = "Aratako/MioTTS-GGUF"  #@param {type:"string"}
+MIOTTS_GGUF_FILE = "MioTTS-1.7B-Q8_0.gguf"  #@param ["MioTTS-1.7B-BF16.gguf", "MioTTS-1.7B-Q8_0.gguf", "MioTTS-1.7B-Q6_K.gguf", "MioTTS-1.7B-Q4_K_M.gguf", "MioTTS-0.6B-Q8_0.gguf", "MioTTS-1.2B-Q8_0.gguf", "MioTTS-2.6B-Q8_0.gguf"]
+MIOTTS_CODEC_MODEL = "Aratako/MioCodec-25Hz-44.1kHz-v2"  #@param {type:"string"}
+MIOTTS_LLAMA_CUDA = "cu124"  #@param ["cu121", "cu122", "cu123", "cu124", "cu125"]
+MIOTTS_N_CTX = 8192  #@param {type:"integer"}
+MIOTTS_DEFAULT_PRESET = "jp_female"  #@param ["jp_female", "jp_male", "en_female", "en_male"]
+MIOTTS_DEFAULT_VOICE = "default"  #@param ["default", "clone", "jp_female", "jp_male", "en_female", "en_male"]
+MIOTTS_PROMPT_WAV = ""  #@param {type:"string"}
+MIOTTS_TEMPERATURE = 0.8  #@param {type:"number"}
+MIOTTS_TOP_P = 1.0  #@param {type:"number"}
+MIOTTS_REPETITION_PENALTY = 1.0  #@param {type:"number"}
+MIOTTS_MAX_TOKENS = 700  #@param {type:"integer"}
 
 #@markdown ---
 #@markdown StyleTTS 2 (GPU recommended, English-only, MIT code / Custom weights)
@@ -871,6 +889,30 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         str(MISOTTS_TOPK),
         "--misotts-tokenizer-repo",
         MISOTTS_TOKENIZER_REPO,
+        "--miotts-gguf-repo",
+        MIOTTS_GGUF_REPO,
+        "--miotts-gguf-file",
+        MIOTTS_GGUF_FILE,
+        "--miotts-codec-model",
+        MIOTTS_CODEC_MODEL,
+        "--miotts-llama-cuda",
+        MIOTTS_LLAMA_CUDA,
+        "--miotts-n-ctx",
+        str(MIOTTS_N_CTX),
+        "--miotts-default-preset",
+        MIOTTS_DEFAULT_PRESET,
+        "--miotts-default-voice",
+        MIOTTS_DEFAULT_VOICE,
+        "--miotts-prompt-wav",
+        MIOTTS_PROMPT_WAV,
+        "--miotts-temperature",
+        str(MIOTTS_TEMPERATURE),
+        "--miotts-top-p",
+        str(MIOTTS_TOP_P),
+        "--miotts-repetition-penalty",
+        str(MIOTTS_REPETITION_PENALTY),
+        "--miotts-max-tokens",
+        str(MIOTTS_MAX_TOKENS),
         "--styletts2-default-voice",
         STYLETTS2_DEFAULT_VOICE,
         "--styletts2-prompt-wav",
@@ -1698,6 +1740,16 @@ Scenema AI による zero-shot な表現力豊か / 演技指向 TTS です（[S
 
 **ライセンス警告（重要）**: コードは MIT ですが、**音声 transformer の重みは LTX-2.3 派生のため LTX-2 Community License Agreement**（Lightricks）が継承されます — DramaBox と同じ制約の強いライセンスです。Gemma 3 12B IT は別途 Gemma Terms of Use（Google）の対象です。両方を自身の用途に対して遵守できるかは利用者の責任で確認してください。Acceptable use 制限は広範（なりすまし / ディープフェイク / 偽情報 / 軍事 / 医療助言など禁止）。
 
+### MioTTS
+
+[Aratako/MioTTS-Inference](https://github.com/Aratako/MioTTS-Inference) は LLM ベースの TTS です。汎用 LLM backbone（既定は [`Aratako/MioTTS-1.7B`](https://huggingface.co/Aratako/MioTTS-1.7B)、`Qwen/Qwen3-1.7B-Base` のファインチューン）が **MioCodec** トークンを 25 Hz で自己回帰生成し、codec が 44.1 kHz 音声へデコードします。フレームレートが低い（秒あたりのトークン数が少ない）ことが高速合成の理由です。
+
+**本リポジトリでの構成（3 プロセス）**: MioTTS のクライアントは OpenAI 互換の `/v1/chat/completions` サーバへ問い合わせ、モデルに埋め込まれた chat template に依存します。upstream はその役割に `llama-server -hf …` または `vllm serve …` を案内していますが、**Linux 向けのプリビルド CUDA `llama-server` バイナリは配布されていない**ため、本リポジトリでは GGUF（`Aratako/MioTTS-GGUF`、既定 `MioTTS-1.7B-Q8_0.gguf`）を**プリビルドの [`llama-cpp-python`](https://github.com/abetlen/llama-cpp-python) CUDA wheel**（`--miotts-llama-cuda`、既定 `cu124` — Colab の CUDA に合わせて `cu121`〜`cu125`）で host します。続いて `run_server.py`（MioCodec を読み込みトークンをデコードする合成バックエンド）を起動し、その `/v1/tts` を OpenAI 互換 `/v1/audio/speech` にプロキシします。プロキシは合成の `timings` と `token_count` を `x-miotts-timings` / `x-miotts-token-count` レスポンスヘッダーとして返し、速度を観測できるようにしています。
+
+**音声**: `default` は `--miotts-default-preset`（既定 `jp_female`）で選んだ同梱プリセットを使用します。`voice` にプリセット名（`jp_female` / `jp_male` / `en_female` / `en_male`）を直接渡すこともできます。自分の話者を使う場合は `--miotts-prompt-wav` を設定し `voice="clone"` を指定してください（参照音声はその場でエンコードされます）。サンプリングは `--miotts-temperature` / `--miotts-top-p` / `--miotts-repetition-penalty` / `--miotts-max-tokens` で調整できます（既定値は upstream の `DefaultLLMParams` に一致）。
+
+ライセンス: コードは **MIT**、既定の **MioTTS-1.7B** 重みは **Apache 2.0**（ベースモデル `Qwen3-1.7B-Base` も Apache 2.0）、**MioCodec** も **Apache 2.0** で、いずれも商用利用可能です。**ただし同梱のデフォルトプリセット（`jp_female` / `jp_male` / `en_female` / `en_male`）は T5Gemma-TTS および Google Gemini 2.5 Pro TTS 由来のため、これらで合成した音声は商用利用できません。** 商用利用する場合は `voice="clone"` で自分の音声をクローンしてください。なお GGUF/HF 重みのライセンスはモデルサイズで異なり（Apache 2.0 は 0.6B と 1.7B のみ — ライセンス表参照）、`--miotts-gguf-file` を別サイズに変更すると適用される重みライセンスも変わります。
+
 ### MeloTTS (現在動作不可)
 
 [myshell-ai/MeloTTS](https://github.com/myshell-ai/MeloTTS) を使う構成ですが、依存パッケージ `tokenizers` のビルドに Rust コンパイラが必要なため、現在の Colab 環境ではインストールに失敗します。
@@ -1765,6 +1817,12 @@ Scenema AI による zero-shot な表現力豊か / 演技指向 TTS です（[S
 | Scenema (code) | MIT | — | — | リポジトリ: `ScenemaAI/scenema-audio` |
 | Scenema (音声重み) | — | LTX-2 Community License (Lightricks) | **年商 $10M+ の組織は商用ライセンス必須** | 音声 transformer は LTX-2.3 派生のため LTX-2 Community License が継承される。DramaBox と同じ注意点（非競合条項、acceptable use 制限、再配布時のライセンス継承） |
 | Scenema (Gemma 3 12B IT) | — | Gemma Terms of Use (Google) | 要注意 | HF gated。モデルカードで同意のうえ `HF_TOKEN` を設定。商用利用は Gemma 規約の prohibited use policy 遵守が条件 |
+| MioTTS (コード) | MIT | — | OK | リポジトリ: `Aratako/MioTTS-Inference`。LLM クライアント（`/v1/chat/completions`）+ MioCodec デコード。ungated（`HF_TOKEN` 不要） |
+| MioTTS-1.7B (既定) / MioTTS-0.6B | — | Apache 2.0 | OK | `Qwen3-1.7B-Base` / `Qwen3-0.6B-Base`（いずれも Apache 2.0）のファインチューン。既定 GGUF は `MioTTS-1.7B-Q8_0.gguf` |
+| MioTTS-0.4B / 1.2B / 2.6B | — | LFM Open License v1.0 | 売上上限内で OK | LFM backbone 系。年商 $10M 未満なら商用可（LFM2.5-Audio-JP と同系統） |
+| MioTTS-0.1B | — | Falcon-LLM License | 要注意 | Falcon backbone 系。商用前に Falcon-LLM License を確認 |
+| MioCodec | — | Apache 2.0 | OK | `Aratako/MioCodec-25Hz-44.1kHz-v2`、25 Hz → 44.1 kHz |
+| MioTTS デフォルトプリセット | — | **商用不可** | **不可** | `jp_female` / `jp_male` / `en_female` / `en_male` は T5Gemma-TTS / Gemini 2.5 Pro TTS 由来 → これらで合成した音声は商用利用不可。商用時は自分の音声で `voice="clone"` |
 
 **Piper について**: `piper-tts` パッケージは GPL-3.0 です。また、デフォルトの `en_US-lessac-medium` 音声は Lessac Technologies 提供の Blizzard 2013 データセットで学習されており、このデータセットのライセンスは商用利用を禁止しています。商用利用が必要な場合は、許容的なライセンスで学習された別の voice モデルを選択してください。
 
@@ -1886,3 +1944,13 @@ Scenema AI による zero-shot な表現力豊か / 演技指向 TTS です（[S
   https://github.com/ScenemaAI/scenema-audio
 - Scenema Audio (Hugging Face)
   https://huggingface.co/ScenemaAI/scenema-audio
+- MioTTS-Inference
+  https://github.com/Aratako/MioTTS-Inference
+- MioTTS-1.7B (Hugging Face)
+  https://huggingface.co/Aratako/MioTTS-1.7B
+- MioTTS-GGUF (Hugging Face)
+  https://huggingface.co/Aratako/MioTTS-GGUF
+- MioCodec
+  https://github.com/Aratako/MioCodec
+- llama-cpp-python
+  https://github.com/abetlen/llama-cpp-python

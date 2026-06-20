@@ -217,6 +217,31 @@ class Settings:
     # Ungated mirror of the Llama 3.2 tokenizer (byte-identical to the gated
     # meta-llama/Llama-3.2-1B). Set to "meta-llama/Llama-3.2-1B" (+ HF_TOKEN) for the official source.
     misotts_tokenizer_repo: str = "unsloth/Llama-3.2-1B"
+    # MioTTS (Aratako): LLM-based TTS. A Qwen3-1.7B-Base backbone autoregressively
+    # generates MioCodec tokens (25 Hz) that decode to 44.1 kHz audio. Triple
+    # process: a llama-cpp-python OpenAI server (prebuilt CUDA wheel) hosts the
+    # GGUF, run_server.py is the synthesis backend, and our app.py proxies
+    # /v1/audio/speech -> /v1/tts. default = a shipped preset; one of the preset
+    # names selects it directly; clone = --miotts-prompt-wav reference audio.
+    # Code MIT, MioTTS-1.7B weights Apache-2.0, MioCodec Apache-2.0. NOTE: the
+    # bundled default presets are derived from T5Gemma-TTS / Gemini 2.5 Pro TTS
+    # and CANNOT be used commercially — clone your own voice for commercial use.
+    miotts_gguf_repo: str = "Aratako/MioTTS-GGUF"
+    miotts_gguf_file: str = "MioTTS-1.7B-Q8_0.gguf"
+    miotts_codec_model: str = "Aratako/MioCodec-25Hz-44.1kHz-v2"
+    # llama-cpp-python CUDA wheel index tag (cu121..cu125). Match Colab's CUDA.
+    miotts_llama_cuda: str = "cu124"
+    miotts_n_ctx: int = 8192
+    miotts_default_preset: str = "jp_female"
+    miotts_prompt_wav: str = ""
+    miotts_default_voice: str = "default"
+    # Upstream DefaultLLMParams (miotts_server/config.py).
+    miotts_temperature: float = 0.8
+    miotts_top_p: float = 1.0
+    miotts_repetition_penalty: float = 1.0
+    miotts_max_tokens: int = 700
+    miotts_llm_port: int = 5004
+    miotts_backend_port: int = 5005
     styletts2_default_voice: str = "default"
     styletts2_prompt_wav: str = ""
     styletts2_alpha: float = 0.3

@@ -11,7 +11,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "Irodori-TTS", "Irodori-TTS-Lite", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos", "ZONOS2"]
+ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "Irodori-TTS", "Irodori-TTS-Lite", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos", "ZONOS2"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -302,6 +302,23 @@ MISOTTS_MAX_AUDIO_LENGTH_MS = 30000  #@param {type:"integer"}
 MISOTTS_TEMPERATURE = 0.9  #@param {type:"number"}
 MISOTTS_TOPK = 50  #@param {type:"integer"}
 MISOTTS_TOKENIZER_REPO = "unsloth/Llama-3.2-1B"  #@param {type:"string"}
+
+#@markdown MioTTS (GPU recommended ~4-6GB VRAM, T4 OK, Japanese/English, voice cloning)
+#@markdown - Aratako's LLM-based TTS: a Qwen3-1.7B-Base backbone generates MioCodec tokens (25 Hz) that decode to 44.1 kHz audio. We host the GGUF (`MIOTTS_GGUF_REPO`/`MIOTTS_GGUF_FILE`) with a prebuilt **llama-cpp-python CUDA wheel** (no Linux CUDA `llama-server` binary exists), run `run_server.py` as the synthesis backend, and proxy its `/v1/tts` as OpenAI-compatible `/v1/audio/speech`. Match `MIOTTS_LLAMA_CUDA` to Colab's CUDA (cu121..cu125).
+#@markdown - `default` uses the shipped preset `MIOTTS_DEFAULT_PRESET`; you can also pass a preset name directly as the voice (`jp_female` / `jp_male` / `en_female` / `en_male`). Set `MIOTTS_PROMPT_WAV` and use `voice="clone"` for your own reference audio.
+#@markdown - License: code is **MIT**, **MioTTS-1.7B** weights are **Apache-2.0** ([HF](https://huggingface.co/Aratako/MioTTS-1.7B)), **MioCodec** is **Apache-2.0**. ⚠️ The bundled default presets are derived from T5Gemma-TTS / Gemini 2.5 Pro TTS and **cannot be used commercially** — clone your own voice for commercial use.
+MIOTTS_GGUF_REPO = "Aratako/MioTTS-GGUF"  #@param {type:"string"}
+MIOTTS_GGUF_FILE = "MioTTS-1.7B-Q8_0.gguf"  #@param ["MioTTS-1.7B-BF16.gguf", "MioTTS-1.7B-Q8_0.gguf", "MioTTS-1.7B-Q6_K.gguf", "MioTTS-1.7B-Q4_K_M.gguf", "MioTTS-0.6B-Q8_0.gguf", "MioTTS-1.2B-Q8_0.gguf", "MioTTS-2.6B-Q8_0.gguf"]
+MIOTTS_CODEC_MODEL = "Aratako/MioCodec-25Hz-44.1kHz-v2"  #@param {type:"string"}
+MIOTTS_LLAMA_CUDA = "cu124"  #@param ["cu121", "cu122", "cu123", "cu124", "cu125"]
+MIOTTS_N_CTX = 8192  #@param {type:"integer"}
+MIOTTS_DEFAULT_PRESET = "jp_female"  #@param ["jp_female", "jp_male", "en_female", "en_male"]
+MIOTTS_DEFAULT_VOICE = "default"  #@param ["default", "clone", "jp_female", "jp_male", "en_female", "en_male"]
+MIOTTS_PROMPT_WAV = ""  #@param {type:"string"}
+MIOTTS_TEMPERATURE = 0.8  #@param {type:"number"}
+MIOTTS_TOP_P = 1.0  #@param {type:"number"}
+MIOTTS_REPETITION_PENALTY = 1.0  #@param {type:"number"}
+MIOTTS_MAX_TOKENS = 700  #@param {type:"integer"}
 
 #@markdown ---
 #@markdown StyleTTS 2 (GPU recommended, English-only, MIT code / Custom weights)
@@ -763,6 +780,30 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         str(MISOTTS_TOPK),
         "--misotts-tokenizer-repo",
         MISOTTS_TOKENIZER_REPO,
+        "--miotts-gguf-repo",
+        MIOTTS_GGUF_REPO,
+        "--miotts-gguf-file",
+        MIOTTS_GGUF_FILE,
+        "--miotts-codec-model",
+        MIOTTS_CODEC_MODEL,
+        "--miotts-llama-cuda",
+        MIOTTS_LLAMA_CUDA,
+        "--miotts-n-ctx",
+        str(MIOTTS_N_CTX),
+        "--miotts-default-preset",
+        MIOTTS_DEFAULT_PRESET,
+        "--miotts-default-voice",
+        MIOTTS_DEFAULT_VOICE,
+        "--miotts-prompt-wav",
+        MIOTTS_PROMPT_WAV,
+        "--miotts-temperature",
+        str(MIOTTS_TEMPERATURE),
+        "--miotts-top-p",
+        str(MIOTTS_TOP_P),
+        "--miotts-repetition-penalty",
+        str(MIOTTS_REPETITION_PENALTY),
+        "--miotts-max-tokens",
+        str(MIOTTS_MAX_TOKENS),
         "--styletts2-default-voice",
         STYLETTS2_DEFAULT_VOICE,
         "--styletts2-prompt-wav",
