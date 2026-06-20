@@ -176,6 +176,18 @@ def parse_args():
     parser.add_argument("--misotts-temperature", type=float, default=0.9)
     parser.add_argument("--misotts-topk", type=int, default=50)
     parser.add_argument("--misotts-tokenizer-repo", default="unsloth/Llama-3.2-1B")
+    parser.add_argument("--miotts-gguf-repo", default="Aratako/MioTTS-GGUF")
+    parser.add_argument("--miotts-gguf-file", default="MioTTS-1.7B-Q8_0.gguf")
+    parser.add_argument("--miotts-codec-model", default="Aratako/MioCodec-25Hz-44.1kHz-v2")
+    parser.add_argument("--miotts-llama-cuda", default="cu124")
+    parser.add_argument("--miotts-n-ctx", type=int, default=8192)
+    parser.add_argument("--miotts-default-preset", default="jp_female")
+    parser.add_argument("--miotts-prompt-wav", default="")
+    parser.add_argument("--miotts-default-voice", default="default")
+    parser.add_argument("--miotts-temperature", type=float, default=0.8)
+    parser.add_argument("--miotts-top-p", type=float, default=1.0)
+    parser.add_argument("--miotts-repetition-penalty", type=float, default=1.0)
+    parser.add_argument("--miotts-max-tokens", type=int, default=700)
     parser.add_argument("--styletts2-default-voice", default="default")
     parser.add_argument("--styletts2-prompt-wav", default="")
     parser.add_argument("--styletts2-alpha", type=float, default=0.3)
@@ -419,6 +431,18 @@ def main():
         misotts_temperature=args.misotts_temperature,
         misotts_topk=args.misotts_topk,
         misotts_tokenizer_repo=args.misotts_tokenizer_repo,
+        miotts_gguf_repo=args.miotts_gguf_repo,
+        miotts_gguf_file=args.miotts_gguf_file,
+        miotts_codec_model=args.miotts_codec_model,
+        miotts_llama_cuda=args.miotts_llama_cuda,
+        miotts_n_ctx=args.miotts_n_ctx,
+        miotts_default_preset=args.miotts_default_preset,
+        miotts_prompt_wav=args.miotts_prompt_wav,
+        miotts_default_voice=args.miotts_default_voice,
+        miotts_temperature=args.miotts_temperature,
+        miotts_top_p=args.miotts_top_p,
+        miotts_repetition_penalty=args.miotts_repetition_penalty,
+        miotts_max_tokens=args.miotts_max_tokens,
         styletts2_default_voice=args.styletts2_default_voice,
         styletts2_prompt_wav=args.styletts2_prompt_wav,
         styletts2_alpha=args.styletts2_alpha,

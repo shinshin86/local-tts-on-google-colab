@@ -46,6 +46,8 @@ def resolve_selected_voice(settings: Settings) -> str:
         return settings.zonos_default_voice
     if settings.engine == "ZONOS2":
         return settings.zonos2_default_voice
+    if settings.engine == "MioTTS":
+        return settings.miotts_default_voice
     if settings.engine == "OuteTTS":
         return settings.outetts_default_voice
     if settings.engine == "Dia":
@@ -269,6 +271,24 @@ def print_engine_voice_hints(settings: Settings):
         print("注意: GPU は sm_80+ 必須（L4 / A100。flashinfer / sgl_kernel / cutlass カーネルのため T4 不可）。")
         print("      初回は `uv sync`（GPU カーネルの取得）と重みダウンロードで起動に時間がかかります。")
         print("ライセンス: コードは MIT（pyproject）、重みは Apache-2.0（HF モデルカード）。いずれも商用 OK。")
+    elif settings.engine == "MioTTS":
+        print("MioTTS は Aratako の LLM ベース TTS です（Qwen3-1.7B-Base で MioCodec トークン[25Hz]を生成 → 44.1kHz）。")
+        print(f"GGUF: {settings.miotts_gguf_repo} / {settings.miotts_gguf_file}")
+        print(f"codec: {settings.miotts_codec_model}")
+        print(f"デフォルト voice: {settings.miotts_default_voice} / デフォルト preset: {settings.miotts_default_preset}")
+        print("voice 候補: default（MIOTTS_DEFAULT_PRESET の同梱プリセットを使用）")
+        print("             jp_female / jp_male / en_female / en_male（プリセット名を直接指定可）")
+        if settings.miotts_prompt_wav:
+            print(f"             clone（参照音声: {settings.miotts_prompt_wav}）")
+        else:
+            print("             clone は --miotts-prompt-wav を指定すると有効になります")
+        print("対応言語: 日本語・英語")
+        print("構成: llama-cpp-python の OpenAI 互換サーバ（CUDA wheel, GGUF を host）+ run_server.py を")
+        print("      バックエンドに起動し、その /v1/tts を OpenAI 互換 /v1/audio/speech にプロキシします。")
+        print("注意: GPU 推奨（VRAM 約4〜6GB。T4 でも可）。初回は重み/codec ダウンロードで時間がかかります。")
+        print("ライセンス: コードは MIT、MioTTS-1.7B 重みは Apache-2.0、MioCodec は Apache-2.0。")
+        print("      ただし同梱デフォルトプリセットは T5Gemma-TTS / Gemini 2.5 Pro TTS 由来のため商用利用不可。")
+        print("      商用利用時は自分の音声で clone してください。")
     elif settings.engine == "OuteTTS":
         print("OuteTTS は OuteAI の軽量多言語 TTS です（日本語含む多言語対応、voice cloning 対応）。")
         print(f"モデルサイズ: {settings.outetts_model_size} / backend: {settings.outetts_backend}")

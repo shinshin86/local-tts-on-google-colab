@@ -21,6 +21,7 @@ from .lfm2_audio_jp import install as install_lfm2_audio_jp
 from .maskgct import install as install_maskgct
 from .melo import install as install_melo
 from .ming_omni_tts import install as install_ming_omni_tts
+from .miotts import install as install_miotts
 from .misotts import install as install_misotts
 from .moss_tts_nano import install as install_moss_tts_nano
 from .moss_tts_v1_5 import install as install_moss_tts_v1_5
@@ -69,6 +70,7 @@ INSTALLERS = {
     "MaskGCT": install_maskgct,
     "MeloTTS": install_melo,
     "Ming-omni-TTS": install_ming_omni_tts,
+    "MioTTS": install_miotts,
     "MisoTTS": install_misotts,
     "MOSS-TTS-Nano": install_moss_tts_nano,
     "MOSS-TTS-v1.5": install_moss_tts_v1_5,
