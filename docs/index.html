@@ -155,8 +155,9 @@
         </div>
       </section>
 
-      <section class="card copy-card">
-        <h2 class="step-heading"><span class="step-num">3</span> {{ t("copyAgentPrompt") }}</h2>
+      <section class="card copy-card agent-card">
+        <h2 class="alt-heading">{{ t("copyAgentPrompt") }}</h2>
+        <p class="alt-hint">{{ t("agentPromptHint") }}</p>
         <div class="code-block">
           <div class="code-block-header">
             <span class="code-block-meta">{{ lineMeta(generatedAgentPromptLines, "Prompt") }}</span>

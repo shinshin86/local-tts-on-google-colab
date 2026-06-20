@@ -375,6 +375,20 @@ a:hover { text-decoration: underline; }
   font-size: 0.78rem;
   font-weight: 700;
 }
+.alt-heading {
+  font-size: 1rem;
+  margin: 0 0 4px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+}
+.alt-hint {
+  margin: 0 0 12px;
+  color: #666;
+  font-size: 0.86rem;
+}
+@media (prefers-color-scheme: dark) {
+  .alt-hint { color: #9a9aa1; }
+}
 
 .code-block {
   border: 1px solid #e4e4e7;
