@@ -27,12 +27,114 @@ const ACRONYMS = {
   dtype: "dtype",
 };
 
-const COMMON_CLI_LABELS = {
-  TEST_TEXT: "Sample text to synthesize",
-  TEST_SPEED: "Playback speed",
-  TEST_VOICE: "Voice override (optional)",
-  OPENAI_MODEL_ID: "OpenAI model ID (optional)",
+const I18N = {
+  en: {
+    pageTitle: "Local TTS on Google Colab — Cell Generator",
+    pageDescription:
+      "Generate a ready-to-paste Google Colab cell for the local-tts-on-google-colab project. Pick a TTS engine and copy a cell — that's it.",
+    taglineBefore: "Pick a TTS engine, click ",
+    taglineMiddle: ", paste into a ",
+    taglineAfter:
+      ", and run it. Scratchpad notebooks are ephemeral — nothing is written to your Drive until you explicitly save.",
+    ttsEngine: "TTS engine",
+    aboutEngine: "About this engine",
+    colabStatus: "Colab status:",
+    licenseMissingTitle: "License info not surfaced here",
+    licenseMissingBody: "— check the upstream repository link above for the engine's code & weight licenses.",
+    advancedOptions: "Advanced {engine} options",
+    enable: "Enable",
+    sampleRequest: "Sample request",
+    copyCell: "Copy cell",
+    copied: "Copied ✓",
+    pasteIntoColab: "Paste into Colab & run",
+    openColab: "Open Colab scratchpad ↗",
+    scratchpadHint: "Scratchpad notebooks aren't saved to Drive unless you explicitly save them.",
+    downloadPy: "Download as .py",
+    resetOptions: "Reset all options",
+    copyAgentPrompt: "Copy agent prompt",
+    copyPrompt: "Copy prompt",
+    loading: "Loading engines.json…",
+    githubRepository: "GitHub repository",
+    generatedFrom: "Generated from",
+    linesMeta: "{count} lines · {kind}",
+    copyCellFallback: "Could not copy automatically — please select & copy the cell preview below.",
+    copyPromptFallback: "Could not copy automatically — please select & copy the prompt preview below.",
+    voiceSpeaker: "Voice / speaker",
+    speaker: "Speaker",
+    language: "Language",
+    model: "Model",
+    statusUnknown: "Unknown",
+    statusWorks: "Works",
+    statusNotWorking: "Not working",
+    commonCli: {
+      TEST_TEXT: "Sample text to synthesize",
+      TEST_SPEED: "Playback speed",
+      TEST_VOICE: "Voice override (optional)",
+      OPENAI_MODEL_ID: "OpenAI model ID (optional)",
+    },
+  },
+  ja: {
+    pageTitle: "Local TTS on Google Colab — セル生成ツール",
+    pageDescription:
+      "local-tts-on-google-colab 用のGoogle Colabセルを生成します。TTSエンジンを選んでコピーするだけで使えます。",
+    taglineBefore: "TTSエンジンを選び、「",
+    taglineMiddle: "」をクリックして",
+    taglineAfter:
+      "に貼り付けて実行します。Scratchpadのノートブックは一時的なもので、明示的に保存しない限りDriveには書き込まれません。",
+    ttsEngine: "TTSエンジン",
+    aboutEngine: "このエンジンについて",
+    colabStatus: "Colabでの状態:",
+    licenseMissingTitle: "ライセンス情報はここには表示されていません",
+    licenseMissingBody: "— エンジンのコードと重みのライセンスは上流リポジトリで確認してください。",
+    advancedOptions: "{engine} の詳細オプション",
+    enable: "有効化",
+    sampleRequest: "サンプルリクエスト",
+    copyCell: "セルをコピー",
+    copied: "コピーしました ✓",
+    pasteIntoColab: "Colabに貼り付けて実行",
+    openColab: "Colab scratchpadを開く ↗",
+    scratchpadHint: "Scratchpadのノートブックは、明示的に保存しない限りDriveには保存されません。",
+    downloadPy: ".pyとしてダウンロード",
+    resetOptions: "すべて初期値に戻す",
+    copyAgentPrompt: "エージェント用プロンプトをコピー",
+    copyPrompt: "プロンプトをコピー",
+    loading: "engines.jsonを読み込み中…",
+    githubRepository: "GitHubリポジトリ",
+    generatedFrom: "生成元",
+    linesMeta: "{count}行 · {kind}",
+    copyCellFallback: "自動コピーできませんでした。下のセルプレビューを選択してコピーしてください。",
+    copyPromptFallback: "自動コピーできませんでした。下のプロンプトプレビューを選択してコピーしてください。",
+    voiceSpeaker: "声 / 話者",
+    speaker: "話者",
+    language: "言語",
+    model: "モデル",
+    statusUnknown: "不明",
+    statusWorks: "動作OK",
+    statusNotWorking: "未動作",
+    commonCli: {
+      TEST_TEXT: "読み上げるサンプルテキスト",
+      TEST_SPEED: "再生速度",
+      TEST_VOICE: "声の上書き指定（任意）",
+      OPENAI_MODEL_ID: "OpenAIモデルID（任意）",
+    },
+  },
 };
+
+function getInitialLang() {
+  try {
+    const saved = localStorage.getItem("local-tts-lang");
+    if (saved === "en" || saved === "ja") return saved;
+  } catch (e) {
+    // Ignore blocked localStorage.
+  }
+  return (navigator.language || "").toLowerCase().startsWith("ja") ? "ja" : "en";
+}
+
+function formatText(template, vars = {}) {
+  return String(template).replace(/\{(\w+)\}/g, (_, key) =>
+    Object.prototype.hasOwnProperty.call(vars, key) ? String(vars[key]) : `{${key}}`
+  );
+}
 
 function niceLabel(name, prefix) {
   let s = name;
@@ -50,8 +152,8 @@ function niceLabel(name, prefix) {
   return label;
 }
 
-function commonCliLabel(name) {
-  return COMMON_CLI_LABELS[name] || niceLabel(name);
+function commonCliLabel(name, lang = "en") {
+  return I18N[lang].commonCli[name] || niceLabel(name);
 }
 
 function escapeHtml(s) {
@@ -79,6 +181,14 @@ function statusShort(status) {
   if (lower.startsWith("works") || lower.startsWith("working")) return "Works";
   if (lower.startsWith("not working") || lower.startsWith("not verified")) return "Not working";
   return status.split(/[(–—]/)[0].trim() || "Unknown";
+}
+
+function statusShortLabel(status, lang = "en") {
+  const short = statusShort(status);
+  if (short === "Works") return I18N[lang].statusWorks;
+  if (short === "Not working") return I18N[lang].statusNotWorking;
+  if (short === "Unknown") return I18N[lang].statusUnknown;
+  return short;
 }
 
 function statusClass(status) {
@@ -197,6 +307,98 @@ function generateCell(data, engine, values) {
   ].join("\n");
 }
 
+function colabConnectionGuidance(lang = "en") {
+  if (lang === "ja") {
+    return [
+      "まず、現在のエージェント環境でColab MCPサーバー、またはColab操作用ツールが利用できるか確認してください。",
+      "利用可能なColab接続がある場合は、ユーザーに実装方式を選ばせず、その接続を使って進めてください。",
+      "利用可能なColab接続がない場合は、ローカル設定を変更する前に、ユーザーがどのColab接続を用意できるか確認してください。",
+      "このリポジトリには、Codex向けに扱いやすい既定として colab-mcp-go 用の .mcp.json が含まれています。",
+      "公式の googlecolab/colab-mcp は、それに対応したクライアントでは選択肢になります。",
+      "ツールのインストール、MCP設定の編集、MCP実装の切り替えは、ユーザーの承認なしに行わないでください。",
+    ];
+  }
+  return [
+    "First check whether the current agent environment already has a Colab MCP server or any Colab control tool available.",
+    "If a usable Colab connection is already available, use it without asking the user to choose an implementation.",
+    "If no usable Colab connection is available, ask the user what Colab connection they can provide before changing local setup.",
+    "This repository includes .mcp.json configured for colab-mcp-go, which is a practical default for Codex-oriented usage.",
+    "The official googlecolab/colab-mcp may be appropriate in clients that support it.",
+    "Do not install tools, edit MCP config, or switch MCP implementations without user approval.",
+  ];
+}
+
+function generateAgentPrompt(engine, values, generatedCell, lang = "en") {
+  if (!engine) return "";
+  const guidance = colabConnectionGuidance(lang).map((line) => `- ${line}`).join("\n");
+  const sampleText = values.TEST_TEXT || "";
+  if (lang === "ja") {
+    const publicUrlNote = values.EXPOSE_PUBLIC_URL
+      ? "セットアップコマンドが公開URLを生成する場合は、そのURLを提示し、OpenAI互換エンドポイントとして報告してください。"
+      : "ユーザーが明示的に依頼しない限り、公開URLは作成しないでください。";
+
+    return [
+      "Google Colab上でローカルのOpenAI互換TTSサーバーを起動してください。",
+      "",
+      "目的:",
+      `- https://github.com/shinshin86/local-tts-on-google-colab から ${engine.id} エンジンをセットアップして実行する`,
+      "- 可能であれば、Google ColabはMCP接続経由で操作する",
+      "- 下にある生成済みのColab Pythonセルを、新しいColab scratchpad、または接続済みのColabノートブックで実行する",
+      "- サーバーが正常に起動したことを確認し、簡単な /v1/audio/speech の疎通確認を実行、または手順を説明する",
+      "- エンドポイントURL、モデルID、選択された声/話者、実行時の制限事項をまとめる",
+      "",
+      "Colab接続の扱い:",
+      guidance,
+      "",
+      "実行時の注意:",
+      "- 実行前に、無料GPUランタイム、有料ランタイム、GPUが使えない場合のCPUフォールバックのどれを使うかユーザーに確認してください。",
+      "- Colabでブラウザログイン、ランタイム選択、ノートブックの信頼確認が必要な場合は、ユーザーに操作を依頼してください。",
+      "- パッケージインストールやモデルダウンロードが失敗した場合は、エラーを確認し、必要最小限の修正で対応してください。",
+      "- セットアップを一から書き直すのではなく、このリポジトリが生成したセルを優先して使ってください。",
+      `- 疎通確認用のサンプルテキスト: ${sampleText}`,
+      `- ${publicUrlNote}`,
+      "",
+      "実行する生成済みColabセル:",
+      "```python",
+      generatedCell.trimEnd(),
+      "```",
+      "",
+    ].join("\n");
+  }
+
+  const publicUrlNote = values.EXPOSE_PUBLIC_URL
+    ? "Expose a public URL if the setup command produces one, then report the OpenAI-compatible endpoint."
+    : "Do not expose a public URL unless the user asks for one.";
+
+  return [
+    "You are helping me run a local OpenAI-compatible TTS server on Google Colab.",
+    "",
+    "Goal:",
+    `- Set up and run the ${engine.id} engine from https://github.com/shinshin86/local-tts-on-google-colab`,
+    "- Use Google Colab through an MCP connection when possible.",
+    "- Run the generated Colab Python cell below in a fresh Colab scratchpad or an already connected Colab notebook.",
+    "- Confirm the server starts successfully, then run or describe a simple /v1/audio/speech smoke test.",
+    "- Summarize the endpoint URL, model ID, selected voice/speaker, and any runtime limitations.",
+    "",
+    "Colab connection handling:",
+    guidance,
+    "",
+    "Operational constraints:",
+    "- Before executing, confirm whether the user wants a free GPU runtime, paid runtime, or CPU fallback if GPU is unavailable.",
+    "- If Colab prompts for browser sign-in, runtime selection, or notebook trust, ask the user to complete it.",
+    "- If package installation or model download fails, inspect the error and make the smallest fix needed.",
+    "- Prefer the repository's generated cell over rewriting the setup from scratch.",
+    `- Sample text for the smoke test: ${sampleText}`,
+    `- ${publicUrlNote}`,
+    "",
+    "Generated Colab cell to execute:",
+    "```python",
+    generatedCell.trimEnd(),
+    "```",
+    "",
+  ].join("\n");
+}
+
 function defaultValues(data) {
   const values = {};
   for (const p of data.repo_settings) values[p.name] = p.default;
@@ -215,9 +417,28 @@ createApp({
   setup() {
     const data = ref(null);
     const copyState = ref("");
-    const state = reactive({ engineId: "Kokoro", values: {} });
+    const agentCopyState = ref("");
+    const state = reactive({ engineId: "Kokoro", lang: getInitialLang(), values: {} });
+
+    function t(key, vars = {}) {
+      const text = I18N[state.lang][key] ?? I18N.en[key] ?? key;
+      return formatText(text, vars);
+    }
+
+    function setLang(lang) {
+      if (lang !== "en" && lang !== "ja") return;
+      state.lang = lang;
+    }
+
+    function syncDocumentLanguage(lang) {
+      document.documentElement.lang = lang;
+      document.title = I18N[lang].pageTitle;
+      const meta = document.querySelector('meta[name="description"]');
+      if (meta) meta.setAttribute("content", I18N[lang].pageDescription);
+    }
 
     onMounted(async () => {
+      syncDocumentLanguage(state.lang);
       const res = await fetch("./engines.json");
       if (!res.ok) {
         console.error("Failed to load engines.json:", res.status);
@@ -228,6 +449,18 @@ createApp({
       state.engineId = json.engine_selector.default;
       state.values = defaultValues(json);
     });
+
+    watch(
+      () => state.lang,
+      (lang) => {
+        syncDocumentLanguage(lang);
+        try {
+          localStorage.setItem("local-tts-lang", lang);
+        } catch (e) {
+          // Ignore blocked localStorage.
+        }
+      }
+    );
 
     const selectedEngine = computed(() => {
       if (!data.value) return null;
@@ -259,10 +492,10 @@ createApp({
     const primaryLabel = computed(() => {
       const p = primaryParam.value;
       if (!p) return "";
-      if (/_VOICE$/.test(p.name)) return "Voice / speaker";
-      if (/_SPEAKER$/.test(p.name)) return "Speaker";
-      if (/_LANGUAGE$/.test(p.name) || /_LANG$/.test(p.name)) return "Language";
-      if (/_CHECKPOINT$/.test(p.name) || /_MODEL$/.test(p.name)) return "Model";
+      if (/_VOICE$/.test(p.name)) return t("voiceSpeaker");
+      if (/_SPEAKER$/.test(p.name)) return t("speaker");
+      if (/_LANGUAGE$/.test(p.name) || /_LANG$/.test(p.name)) return t("language");
+      if (/_CHECKPOINT$/.test(p.name) || /_MODEL$/.test(p.name)) return t("model");
       return niceLabel(p.name);
     });
 
@@ -294,28 +527,52 @@ createApp({
 
     const generatedLines = computed(() => generatedCell.value.split("\n").length);
 
-    async function copyCell() {
+    const generatedAgentPrompt = computed(() =>
+      data.value
+        ? generateAgentPrompt(selectedEngine.value, state.values, generatedCell.value, state.lang)
+        : ""
+    );
+
+    const generatedAgentPromptLines = computed(() => generatedAgentPrompt.value.split("\n").length);
+
+    async function copyText(text, copyStateRef, fallbackMessage) {
       try {
-        await navigator.clipboard.writeText(generatedCell.value);
-        copyState.value = "copied";
-        setTimeout(() => (copyState.value = ""), 1800);
+        await navigator.clipboard.writeText(text);
+        copyStateRef.value = "copied";
+        setTimeout(() => (copyStateRef.value = ""), 1800);
       } catch (e) {
         // Fallback: select-and-copy via a temporary textarea.
         const ta = document.createElement("textarea");
-        ta.value = generatedCell.value;
+        ta.value = text;
         ta.style.position = "fixed";
         ta.style.opacity = "0";
         document.body.appendChild(ta);
         ta.select();
         try {
           document.execCommand("copy");
-          copyState.value = "copied";
-          setTimeout(() => (copyState.value = ""), 1800);
+          copyStateRef.value = "copied";
+          setTimeout(() => (copyStateRef.value = ""), 1800);
         } catch (err) {
-          alert("Could not copy automatically — please select & copy the preview below.");
+          alert(fallbackMessage);
         }
         document.body.removeChild(ta);
       }
+    }
+
+    function copyCell() {
+      return copyText(
+        generatedCell.value,
+        copyState,
+        t("copyCellFallback")
+      );
+    }
+
+    function copyAgentPrompt() {
+      return copyText(
+        generatedAgentPrompt.value,
+        agentCopyState,
+        t("copyPromptFallback")
+      );
     }
 
     function downloadCell() {
@@ -342,7 +599,12 @@ createApp({
 
     function engineLabel(engine) {
       const tag = statusShort(engine.status);
-      return tag && tag !== "Works" ? `${engine.id} — ${tag}` : engine.id;
+      return tag && tag !== "Works" ? `${engine.id} — ${statusShortLabel(engine.status, state.lang)}` : engine.id;
+    }
+
+    function lineMeta(count, kind) {
+      const label = state.lang === "ja" && kind === "Prompt" ? "プロンプト" : kind;
+      return t("linesMeta", { count, kind: label });
     }
 
     return {
@@ -356,15 +618,23 @@ createApp({
       hasLicenseInNotes,
       generatedCell,
       generatedLines,
+      generatedAgentPrompt,
+      generatedAgentPromptLines,
       copyState,
+      agentCopyState,
       repoUrl: REPO_URL,
       copyCell,
+      copyAgentPrompt,
       downloadCell,
       resetDefaults,
+      setLang,
+      t,
+      lineMeta,
       niceLabel,
       commonCliLabel,
       renderInlineMd,
       statusShort,
+      statusShortLabel: (status) => statusShortLabel(status, state.lang),
       statusClass,
       engineLabel,
     };

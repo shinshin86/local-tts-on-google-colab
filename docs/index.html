@@ -11,20 +11,20 @@
 <body>
   <div id="app" v-cloak>
     <header class="page-header">
+      <div class="language-toggle" role="group" aria-label="Language / 言語">
+        <button type="button" lang="en" :aria-pressed="state.lang === 'en'" :class="['lang-btn', { active: state.lang === 'en' }]" @click="setLang('en')">English</button>
+        <button type="button" lang="ja" :aria-pressed="state.lang === 'ja'" :class="['lang-btn', { active: state.lang === 'ja' }]" @click="setLang('ja')">日本語</button>
+      </div>
       <h1>Local TTS on Google Colab</h1>
       <img src="./logo.jpg" alt="Local TTS on Colab" class="page-logo" width="1040" height="520" />
-      <p class="tagline">
-        Pick a TTS engine, click <strong>Copy cell</strong>, paste into a
-        <a href="https://colab.research.google.com/notebooks/empty.ipynb" target="_blank" rel="noopener">Colab scratchpad</a>,
-        and run it. Scratchpad notebooks are ephemeral — nothing is written to your Drive until you explicitly save.
-      </p>
+      <p class="tagline">{{ t("taglineBefore") }}<strong>{{ t("copyCell") }}</strong>{{ t("taglineMiddle") }}<a href="https://colab.research.google.com/notebooks/empty.ipynb" target="_blank" rel="noopener">Colab scratchpad</a>{{ t("taglineAfter") }}</p>
     </header>
 
     <main v-if="data">
       <!-- ─── Above the fold: just the essentials ─── -->
       <section class="card hero">
         <div class="field field-large">
-          <label for="engine-select">TTS engine</label>
+          <label for="engine-select">{{ t("ttsEngine") }}</label>
           <select id="engine-select" v-model="state.engineId">
             <option v-for="e in data.engines" :key="e.id" :value="e.id">
               {{ engineLabel(e) }}
@@ -34,20 +34,20 @@
 
         <div v-if="selectedEngine" class="engine-meta">
           <div class="badges">
-            <span :class="['badge', statusClass(selectedEngine.status)]">{{ statusShort(selectedEngine.status) }}</span>
+            <span :class="['badge', statusClass(selectedEngine.status)]">{{ statusShortLabel(selectedEngine.status) }}</span>
             <span class="badge badge-info" v-if="selectedEngine.languages">{{ selectedEngine.languages }}</span>
           </div>
           <details v-if="hasEngineDetails" class="callout">
-            <summary>About this engine</summary>
+            <summary>{{ t("aboutEngine") }}</summary>
             <p v-if="selectedEngine.description" v-html="renderInlineMd(selectedEngine.description)" class="engine-description"></p>
             <p v-if="selectedEngine.status" class="engine-status-line">
-              <strong>Colab status:</strong> {{ selectedEngine.status }}
+              <strong>{{ t("colabStatus") }}</strong> {{ selectedEngine.status }}
             </p>
             <ul v-if="selectedEngine.notes.length" class="engine-notes">
               <li v-for="(note, idx) in selectedEngine.notes" :key="idx" v-html="renderInlineMd(note.replace(/^- /, ''))"></li>
             </ul>
             <p v-if="!hasLicenseInNotes" class="license-missing">
-              <strong>License info not surfaced here</strong> — check the upstream repository link above for the engine's code &amp; weight licenses.
+              <strong>{{ t("licenseMissingTitle") }}</strong> {{ t("licenseMissingBody") }}
             </p>
           </details>
         </div>
@@ -63,7 +63,7 @@
       <!-- ─── Optional tweaks (collapsed by default) ─── -->
       <details class="card collapsible" v-if="advancedEngineParams.length">
         <summary>
-          <span>Advanced {{ selectedEngine.id }} options</span>
+          <span>{{ t("advancedOptions", { engine: selectedEngine.id }) }}</span>
           <span class="summary-count">{{ advancedEngineParams.length }}</span>
         </summary>
         <div class="grid">
@@ -76,7 +76,7 @@
 
             <label v-else-if="p.type === 'boolean'" class="inline-check">
               <input type="checkbox" v-model="state.values[p.name]" />
-              <span>Enable <code>{{ p.true_flag }}</code></span>
+              <span>{{ t("enable") }} <code>{{ p.true_flag }}</code></span>
             </label>
 
             <input
@@ -107,10 +107,10 @@
       </details>
 
       <details class="card collapsible">
-        <summary>Sample request</summary>
+        <summary>{{ t("sampleRequest") }}</summary>
         <div class="grid">
           <div class="field" v-for="p in data.common_cli" :key="p.name">
-            <label :for="'c-' + p.name">{{ commonCliLabel(p.name) }}</label>
+            <label :for="'c-' + p.name">{{ commonCliLabel(p.name, state.lang) }}</label>
             <input
               v-if="p.type === 'number' || p.type === 'integer'"
               :id="'c-' + p.name"
@@ -131,38 +131,52 @@
 
       <!-- ─── Final card: the generated code + next-step CTA ─── -->
       <section class="card copy-card">
-        <h2 class="step-heading"><span class="step-num">1</span> Copy the cell</h2>
+        <h2 class="step-heading"><span class="step-num">1</span> {{ t("copyCell") }}</h2>
         <div class="code-block">
           <div class="code-block-header">
-            <span class="code-block-meta">{{ generatedLines }} lines · Python</span>
+            <span class="code-block-meta">{{ lineMeta(generatedLines, "Python") }}</span>
             <button @click="copyCell" :class="['btn', 'btn-primary', 'btn-small', copyState]">
-              <span v-if="copyState === 'copied'">Copied ✓</span>
-              <span v-else>Copy cell</span>
+              <span v-if="copyState === 'copied'">{{ t("copied") }}</span>
+              <span v-else>{{ t("copyCell") }}</span>
             </button>
           </div>
           <pre class="cell-preview"><code>{{ generatedCell }}</code></pre>
         </div>
 
-        <h2 class="step-heading"><span class="step-num">2</span> Paste into Colab &amp; run</h2>
+        <h2 class="step-heading"><span class="step-num">2</span> {{ t("pasteIntoColab") }}</h2>
         <a class="btn btn-colab btn-large btn-block" href="https://colab.research.google.com/notebooks/empty.ipynb" target="_blank" rel="noopener">
-          Open Colab scratchpad ↗
+          {{ t("openColab") }}
         </a>
-        <p class="cta-hint">Scratchpad notebooks aren't saved to Drive unless you explicitly save them.</p>
+        <p class="cta-hint">{{ t("scratchpadHint") }}</p>
 
         <div class="utility-actions">
-          <button @click="downloadCell" class="btn btn-ghost btn-small">Download as .py</button>
-          <button @click="resetDefaults" class="btn btn-ghost btn-small">Reset all options</button>
+          <button @click="downloadCell" class="btn btn-ghost btn-small">{{ t("downloadPy") }}</button>
+          <button @click="resetDefaults" class="btn btn-ghost btn-small">{{ t("resetOptions") }}</button>
+        </div>
+      </section>
+
+      <section class="card copy-card">
+        <h2 class="step-heading"><span class="step-num">3</span> {{ t("copyAgentPrompt") }}</h2>
+        <div class="code-block">
+          <div class="code-block-header">
+            <span class="code-block-meta">{{ lineMeta(generatedAgentPromptLines, "Prompt") }}</span>
+            <button @click="copyAgentPrompt" :class="['btn', 'btn-primary', 'btn-small', agentCopyState]">
+              <span v-if="agentCopyState === 'copied'">{{ t("copied") }}</span>
+              <span v-else>{{ t("copyPrompt") }}</span>
+            </button>
+          </div>
+          <pre class="cell-preview agent-prompt-preview"><code>{{ generatedAgentPrompt }}</code></pre>
         </div>
       </section>
     </main>
 
-    <p v-else class="loading">Loading engines.json…</p>
+    <p v-else class="loading">{{ t("loading") }}</p>
 
     <footer class="page-footer">
       <p>
-        <a :href="repoUrl" target="_blank" rel="noopener">GitHub repository</a>
+        <a :href="repoUrl" target="_blank" rel="noopener">{{ t("githubRepository") }}</a>
         <span class="dot">·</span>
-        Generated from
+        {{ t("generatedFrom") }}
         <a :href="repoUrl + '/blob/main/multi_tts_openai_colab.py'" target="_blank" rel="noopener">multi_tts_openai_colab.py</a>
       </p>
     </footer>
