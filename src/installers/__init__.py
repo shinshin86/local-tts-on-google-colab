@@ -43,6 +43,7 @@ from .vibevoice import install as install_vibevoice
 from .voxcpm import install as install_voxcpm
 from .tiny_tts import install as install_tiny_tts
 from .voxtral import install as install_voxtral
+from .vyvo_multilingual import install as install_vyvo_multilingual
 from .zonos import install as install_zonos
 from .zonos2 import install as install_zonos2
 
@@ -93,6 +94,7 @@ INSTALLERS = {
     "VibeVoice": install_vibevoice,
     "VoxCPM2": install_voxcpm,
     "Voxtral-TTS": install_voxtral,
+    "Vyvo-Multilingual": install_vyvo_multilingual,
     "Zonos": install_zonos,
     "ZONOS2": install_zonos2,
 }

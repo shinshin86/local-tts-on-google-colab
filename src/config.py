@@ -350,6 +350,26 @@ class Settings:
     ming_omni_tts_style: str = ""
     ming_omni_tts_emotion: str = ""
     ming_omni_tts_dialect: str = ""
+    # Vyvo-Multilingual (Vyvo): a 0.9B Qwen3-0.6B-backbone LLM-TTS that
+    # autoregressively emits kyutai/mimi audio tokens (32 codebooks, 24 kHz).
+    # English + Japanese. It is fundamentally a zero-shot voice-cloning model
+    # with no built-in default speaker, so every request needs a reference
+    # audio + its transcript: `clone` (== `default`) requires --vyvo-prompt-wav
+    # and --vyvo-prompt-text, otherwise the app returns 4xx (same contract as
+    # GPT-SoVITS). Runs in-process via plain transformers (no upstream repo).
+    # Code + Vyvo weights are Apache-2.0; the kyutai/mimi codec is CC-BY-4.0
+    # (attribution required) — see the README license table.
+    vyvo_hf_model: str = "Vyvo/Vyvo-Multilingual-v0.1"
+    vyvo_mimi_repo: str = "kyutai/mimi"
+    vyvo_prompt_wav: str = ""
+    vyvo_prompt_text: str = ""
+    vyvo_default_voice: str = "clone"
+    # Generation params (Vyvo model card defaults).
+    vyvo_temperature: float = 0.7
+    vyvo_top_p: float = 0.9
+    vyvo_repetition_penalty: float = 1.1
+    vyvo_max_new_tokens: int = 9600
+    vyvo_min_new_tokens: int = 960
     root_dir: Path = Path("/content/openai-compatible-local-tts")
     repo_dir: Path = field(default_factory=default_repo_dir)
     app_port: int = 8000

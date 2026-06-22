@@ -280,6 +280,16 @@ def parse_args():
     parser.add_argument("--scenema-vc-steps", type=int, default=25)
     parser.add_argument("--scenema-vc-cfg-rate", type=float, default=0.5)
     parser.add_argument("--scenema-background-sfx", action="store_true")
+    parser.add_argument("--vyvo-hf-model", default="Vyvo/Vyvo-Multilingual-v0.1")
+    parser.add_argument("--vyvo-mimi-repo", default="kyutai/mimi")
+    parser.add_argument("--vyvo-prompt-wav", default="")
+    parser.add_argument("--vyvo-prompt-text", default="")
+    parser.add_argument("--vyvo-default-voice", default="clone")
+    parser.add_argument("--vyvo-temperature", type=float, default=0.7)
+    parser.add_argument("--vyvo-top-p", type=float, default=0.9)
+    parser.add_argument("--vyvo-repetition-penalty", type=float, default=1.1)
+    parser.add_argument("--vyvo-max-new-tokens", type=int, default=9600)
+    parser.add_argument("--vyvo-min-new-tokens", type=int, default=960)
     parser.add_argument("--root-dir", default="/content/openai-compatible-local-tts")
     return parser.parse_args()
 
@@ -532,6 +542,16 @@ def main():
         scenema_vc_steps=args.scenema_vc_steps,
         scenema_vc_cfg_rate=args.scenema_vc_cfg_rate,
         scenema_background_sfx=args.scenema_background_sfx,
+        vyvo_hf_model=args.vyvo_hf_model,
+        vyvo_mimi_repo=args.vyvo_mimi_repo,
+        vyvo_prompt_wav=args.vyvo_prompt_wav,
+        vyvo_prompt_text=args.vyvo_prompt_text,
+        vyvo_default_voice=args.vyvo_default_voice,
+        vyvo_temperature=args.vyvo_temperature,
+        vyvo_top_p=args.vyvo_top_p,
+        vyvo_repetition_penalty=args.vyvo_repetition_penalty,
+        vyvo_max_new_tokens=args.vyvo_max_new_tokens,
+        vyvo_min_new_tokens=args.vyvo_min_new_tokens,
         root_dir=Path(args.root_dir),
         repo_dir=REPO_DIR,
     )
