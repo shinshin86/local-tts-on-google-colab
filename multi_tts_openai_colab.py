@@ -11,7 +11,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "Irodori-TTS", "Irodori-TTS-Lite", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos", "ZONOS2"]
+ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "Irodori-TTS", "Irodori-TTS-Lite", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "Zonos", "ZONOS2"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -475,6 +475,25 @@ SUPERTONIC_MODEL = "supertonic-3"  #@param ["supertonic-3", "supertonic-2", "sup
 SUPERTONIC_DEFAULT_VOICE = "M1"  #@param ["M1", "M2", "M3", "M4", "M5", "F1", "F2", "F3", "F4", "F5"]
 SUPERTONIC_DEFAULT_LANG = "en"  #@param ["en", "ja", "ko", "ar", "bg", "cs", "da", "de", "el", "es", "et", "fi", "fr", "hi", "hr", "hu", "id", "it", "lt", "lv", "nl", "pl", "pt", "ro", "ru", "sk", "sl", "sv", "tr", "uk", "vi", "na"]
 SUPERTONIC_TOTAL_STEPS = 5  #@param {type:"integer"}
+
+#@markdown ---
+#@markdown Vyvo-Multilingual (GPU recommended ~2-4GB VRAM, voice cloning required)
+#@markdown - Vyvo's 0.9B LLM-based TTS (Qwen3-0.6B backbone) that autoregressively emits kyutai/mimi audio tokens (32 codebooks, 24 kHz). Runs in-process via plain transformers — there is no upstream repo, the inference is the model-card snippet. Python 3.12 venv installs torch==2.9.1+cu128 / transformers==5.0.0.
+#@markdown - **No HF_TOKEN needed**: both checkpoints are ungated. Pick `VYVO_HF_MODEL`:
+#@markdown   - `Vyvo/Vyvo-Multilingual-v0.1` — **English + Japanese**, weights **Apache-2.0** (Japanese quality is limited).
+#@markdown   - `Vyvo/Vyvo-Multilingual-EN-FT-v0.1` — **English-only** fine-tune (single expressive speaker, higher EN quality), weights **MIT**. A derivative of the multilingual base — not a newer generation.
+#@markdown - Fundamentally a zero-shot cloning model with **no built-in speaker** (both checkpoints): every request needs a reference audio *and* its transcript. Set both `VYVO_PROMPT_WAV` and `VYVO_PROMPT_TEXT` and call with `voice="clone"` (`default` maps to the same path). Without them the wrapper returns a 4xx — same contract as GPT-SoVITS. The transcript must match the clip (upstream: transcript-free cloning collapses).
+#@markdown - License: code is **Apache-2.0**; weights are **Apache-2.0** (base) / **MIT** (EN-FT) — both allow commercial use. The **kyutai/mimi** codec is **CC-BY-4.0** — attribution required. For voice cloning, only use reference audio you have rights to (consent of the speaker).
+VYVO_HF_MODEL = "Vyvo/Vyvo-Multilingual-v0.1"  #@param ["Vyvo/Vyvo-Multilingual-v0.1", "Vyvo/Vyvo-Multilingual-EN-FT-v0.1"]
+VYVO_MIMI_REPO = "kyutai/mimi"  #@param {type:"string"}
+VYVO_PROMPT_WAV = ""  #@param {type:"string"}
+VYVO_PROMPT_TEXT = ""  #@param {type:"string"}
+VYVO_DEFAULT_VOICE = "clone"  #@param ["clone", "default"]
+VYVO_TEMPERATURE = 0.7  #@param {type:"number"}
+VYVO_TOP_P = 0.9  #@param {type:"number"}
+VYVO_REPETITION_PENALTY = 1.1  #@param {type:"number"}
+VYVO_MAX_NEW_TOKENS = 9600  #@param {type:"integer"}
+VYVO_MIN_NEW_TOKENS = 960  #@param {type:"integer"}
 
 import shlex
 import subprocess
@@ -964,6 +983,26 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         str(SCENEMA_VC_STEPS),
         "--scenema-vc-cfg-rate",
         str(SCENEMA_VC_CFG_RATE),
+        "--vyvo-hf-model",
+        VYVO_HF_MODEL,
+        "--vyvo-mimi-repo",
+        VYVO_MIMI_REPO,
+        "--vyvo-prompt-wav",
+        VYVO_PROMPT_WAV,
+        "--vyvo-prompt-text",
+        VYVO_PROMPT_TEXT,
+        "--vyvo-default-voice",
+        VYVO_DEFAULT_VOICE,
+        "--vyvo-temperature",
+        str(VYVO_TEMPERATURE),
+        "--vyvo-top-p",
+        str(VYVO_TOP_P),
+        "--vyvo-repetition-penalty",
+        str(VYVO_REPETITION_PENALTY),
+        "--vyvo-max-new-tokens",
+        str(VYVO_MAX_NEW_TOKENS),
+        "--vyvo-min-new-tokens",
+        str(VYVO_MIN_NEW_TOKENS),
     ]
     if IRODORI_LITE_CODEC_INT4:
         cmd.append("--irodori-lite-codec-int4")

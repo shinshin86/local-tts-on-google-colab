@@ -57,6 +57,7 @@ Supported engines:
 | DramaBox | Works on Colab A100 (GPU required, VRAM ~24GB peak, **LTX-2 Community License — non-compete clause**) | English |
 | Scenema | **Not verified on Colab** — text encoder is Gemma 3 12B IT (HF-gated), so running this engine requires accepting the Gemma Terms of Use on Hugging Face and providing `HF_TOKEN` via Colab Secrets. Code paths are in place but end-to-end Colab verification was deferred because `HF_TOKEN` setup is out of scope for this repo's default workflow. **Requires Colab A100 (40GB VRAM)**. First-run downloads ~38GB. Audio model derived from LTX-2.3 → **LTX-2 Community License** (same as DramaBox) | English-centric multilingual |
 | MioTTS | Works on Colab L4 (verified; GPU required, **~4.6GB VRAM** resident — LLM ~3.2GB + codec ~1.4GB, so T4 16GB has ample headroom; LLM-based — a Qwen3-1.7B-Base GGUF hosted via a prebuilt llama-cpp-python CUDA wheel generates MioCodec tokens at 25 Hz → 44.1 kHz; **~4× faster than real time, RTF ≈ 0.25**; ungated weights, no `HF_TOKEN`; preset voices or zero-shot cloning. **Default presets are non-commercial** — clone your own voice for commercial use) | Japanese / English |
+| Vyvo-Multilingual | Works on Colab T4 (English verified end-to-end via the public URL; GPU recommended, ~2-4GB VRAM; 0.9B Qwen3-0.6B-backbone LLM-TTS that emits kyutai/mimi tokens → 24 kHz; runs in-process via plain transformers, no upstream repo; ungated weights, no `HF_TOKEN`). Two ungated checkpoints via `--vyvo-hf-model`: `Vyvo-Multilingual-v0.1` (EN/JA, Apache-2.0; Japanese quality is limited) and `Vyvo-Multilingual-EN-FT-v0.1` (English-only fine-tune, MIT). **Zero-shot cloning only — no built-in speaker**: every request needs `--vyvo-prompt-wav` + `--vyvo-prompt-text` (otherwise 4xx). Code Apache-2.0; the kyutai/mimi codec is CC-BY-4.0 (attribution) | English / Japanese (base); English (EN-FT) |
 
 `MeloTTS` and `Style-Bert-VITS2` currently have dependency resolution issues under Colab's uv + venv environment and do not work.
 
@@ -119,7 +120,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "Irodori-TTS", "Irodori-TTS-Lite", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Zonos", "ZONOS2"]
+ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "Irodori-TTS", "Irodori-TTS-Lite", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "Zonos", "ZONOS2"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -583,6 +584,25 @@ SUPERTONIC_MODEL = "supertonic-3"  #@param ["supertonic-3", "supertonic-2", "sup
 SUPERTONIC_DEFAULT_VOICE = "M1"  #@param ["M1", "M2", "M3", "M4", "M5", "F1", "F2", "F3", "F4", "F5"]
 SUPERTONIC_DEFAULT_LANG = "en"  #@param ["en", "ja", "ko", "ar", "bg", "cs", "da", "de", "el", "es", "et", "fi", "fr", "hi", "hr", "hu", "id", "it", "lt", "lv", "nl", "pl", "pt", "ro", "ru", "sk", "sl", "sv", "tr", "uk", "vi", "na"]
 SUPERTONIC_TOTAL_STEPS = 5  #@param {type:"integer"}
+
+#@markdown ---
+#@markdown Vyvo-Multilingual (GPU recommended ~2-4GB VRAM, voice cloning required)
+#@markdown - Vyvo's 0.9B LLM-based TTS (Qwen3-0.6B backbone) that autoregressively emits kyutai/mimi audio tokens (32 codebooks, 24 kHz). Runs in-process via plain transformers — there is no upstream repo, the inference is the model-card snippet. Python 3.12 venv installs torch==2.9.1+cu128 / transformers==5.0.0.
+#@markdown - **No HF_TOKEN needed**: both checkpoints are ungated. Pick `VYVO_HF_MODEL`:
+#@markdown   - `Vyvo/Vyvo-Multilingual-v0.1` — **English + Japanese**, weights **Apache-2.0** (Japanese quality is limited).
+#@markdown   - `Vyvo/Vyvo-Multilingual-EN-FT-v0.1` — **English-only** fine-tune (single expressive speaker, higher EN quality), weights **MIT**. A derivative of the multilingual base — not a newer generation.
+#@markdown - Fundamentally a zero-shot cloning model with **no built-in speaker** (both checkpoints): every request needs a reference audio *and* its transcript. Set both `VYVO_PROMPT_WAV` and `VYVO_PROMPT_TEXT` and call with `voice="clone"` (`default` maps to the same path). Without them the wrapper returns a 4xx — same contract as GPT-SoVITS. The transcript must match the clip (upstream: transcript-free cloning collapses).
+#@markdown - License: code is **Apache-2.0**; weights are **Apache-2.0** (base) / **MIT** (EN-FT) — both allow commercial use. The **kyutai/mimi** codec is **CC-BY-4.0** — attribution required. For voice cloning, only use reference audio you have rights to (consent of the speaker).
+VYVO_HF_MODEL = "Vyvo/Vyvo-Multilingual-v0.1"  #@param ["Vyvo/Vyvo-Multilingual-v0.1", "Vyvo/Vyvo-Multilingual-EN-FT-v0.1"]
+VYVO_MIMI_REPO = "kyutai/mimi"  #@param {type:"string"}
+VYVO_PROMPT_WAV = ""  #@param {type:"string"}
+VYVO_PROMPT_TEXT = ""  #@param {type:"string"}
+VYVO_DEFAULT_VOICE = "clone"  #@param ["clone", "default"]
+VYVO_TEMPERATURE = 0.7  #@param {type:"number"}
+VYVO_TOP_P = 0.9  #@param {type:"number"}
+VYVO_REPETITION_PENALTY = 1.1  #@param {type:"number"}
+VYVO_MAX_NEW_TOKENS = 9600  #@param {type:"integer"}
+VYVO_MIN_NEW_TOKENS = 960  #@param {type:"integer"}
 
 import shlex
 import subprocess
@@ -1072,6 +1092,26 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         str(SCENEMA_VC_STEPS),
         "--scenema-vc-cfg-rate",
         str(SCENEMA_VC_CFG_RATE),
+        "--vyvo-hf-model",
+        VYVO_HF_MODEL,
+        "--vyvo-mimi-repo",
+        VYVO_MIMI_REPO,
+        "--vyvo-prompt-wav",
+        VYVO_PROMPT_WAV,
+        "--vyvo-prompt-text",
+        VYVO_PROMPT_TEXT,
+        "--vyvo-default-voice",
+        VYVO_DEFAULT_VOICE,
+        "--vyvo-temperature",
+        str(VYVO_TEMPERATURE),
+        "--vyvo-top-p",
+        str(VYVO_TOP_P),
+        "--vyvo-repetition-penalty",
+        str(VYVO_REPETITION_PENALTY),
+        "--vyvo-max-new-tokens",
+        str(VYVO_MAX_NEW_TOKENS),
+        "--vyvo-min-new-tokens",
+        str(VYVO_MIN_NEW_TOKENS),
     ]
     if IRODORI_LITE_CODEC_INT4:
         cmd.append("--irodori-lite-codec-int4")
@@ -1749,6 +1789,21 @@ The `voice` parameter exposes:
 
 License: code is **MIT**, the default **MioTTS-1.7B** weights are **Apache 2.0** (base model `Qwen3-1.7B-Base` is also Apache 2.0), and **MioCodec** is **Apache 2.0** — all permit commercial use. **However, the bundled default presets (`jp_female` / `jp_male` / `en_female` / `en_male`) are derived from T5Gemma-TTS and Google Gemini 2.5 Pro TTS, so audio synthesized with them cannot be used commercially.** For commercial use, clone your own voice via `voice="clone"`. Note the GGUF/HF weights licenses vary by model size (only 0.6B and 1.7B are Apache 2.0 — see the license table); switching `--miotts-gguf-file` to another size changes the applicable weights license.
 
+### Vyvo-Multilingual
+
+A 0.9B LLM-based TTS by Vyvo. A `Qwen3-0.6B` backbone autoregressively emits **kyutai/mimi** audio tokens (32 codebooks), which the Mimi codec decodes to 24 kHz audio. There is no separate upstream package — inference is the plain `transformers` snippet from the model card, so the wrapper runs it in-process (Python 3.12 venv with `torch==2.9.1+cu128` / `transformers==5.0.0`). Both checkpoints are ungated — no `HF_TOKEN` needed.
+
+**Checkpoints** (select with `--vyvo-hf-model`):
+
+- [`Vyvo/Vyvo-Multilingual-v0.1`](https://huggingface.co/Vyvo/Vyvo-Multilingual-v0.1) (default) — **English and Japanese**, weights **Apache-2.0**. In practice the Japanese quality is limited (use a Japanese reference whose language matches the target).
+- [`Vyvo/Vyvo-Multilingual-EN-FT-v0.1`](https://huggingface.co/Vyvo/Vyvo-Multilingual-EN-FT-v0.1) — **English-only** fine-tune of the multilingual base (a single expressive English speaker, higher English quality), weights **MIT**. It is a derivative of the base, **not a newer-generation model**; it shares the exact same architecture, token layout, and Mimi codec, so the same wrapper drives it unchanged.
+
+**Voices.** Both checkpoints are fundamentally zero-shot cloning models with **no built-in speaker**, so every request needs a reference audio *and* its transcript. Set both `--vyvo-prompt-wav` and `--vyvo-prompt-text` and call with `voice="clone"` (`voice="default"` maps to the same path). Without them the wrapper returns a 4xx, mirroring the GPT-SoVITS contract — it does not silently fall back to a random voice. The transcript must match the clip (upstream notes that transcript-free / zero-shot cloning collapses into short, unrelated fragments). Sampling is exposed via `--vyvo-temperature` / `--vyvo-top-p` / `--vyvo-repetition-penalty` / `--vyvo-max-new-tokens` / `--vyvo-min-new-tokens` (defaults match the model card: 0.7 / 0.9 / 1.1 / 9600 / 960). For voice cloning, only use reference audio you have rights to (consent of the speaker).
+
+Verified on Colab T4 (both checkpoints): the engine, the `/v1` endpoints, and the trycloudflare tunnel come up, and English synthesis returns a valid 24 kHz WAV end-to-end through the public URL. Japanese synthesis also returns 200 on the base checkpoint but is best paired with a Japanese reference clip. Note that autoregressive generation on a T4 is slow (~100 s for a one-sentence clip); an L4 / A100 is recommended for interactive use.
+
+License: code is **Apache-2.0**; weights are **Apache-2.0** (`Vyvo-Multilingual-v0.1`) or **MIT** (`Vyvo-Multilingual-EN-FT-v0.1`) — both allow commercial use. However, inference always loads the **kyutai/mimi** codec, which is **CC-BY-4.0** — commercial use is permitted but **attribution to Kyutai is required**. See the license table below.
+
 ### MeloTTS (currently not working)
 
 Intended to use [myshell-ai/MeloTTS](https://github.com/myshell-ai/MeloTTS), but the dependency `tokenizers` requires a Rust compiler to build, so installation fails in the current Colab environment.
@@ -1822,6 +1877,10 @@ The license for each engine is as follows. When using them, always check each pr
 | MioTTS-0.1B | — | Falcon-LLM License | Caution | Falcon-backbone variant; review the Falcon-LLM License before commercial use |
 | MioCodec | — | Apache 2.0 | OK | `Aratako/MioCodec-25Hz-44.1kHz-v2`, 25 Hz → 44.1 kHz |
 | MioTTS default presets | — | **Non-commercial** | **Not allowed** | `jp_female` / `jp_male` / `en_female` / `en_male` are derived from T5Gemma-TTS / Gemini 2.5 Pro TTS → audio synthesized with them cannot be used commercially. Use `voice="clone"` with your own audio for commercial use |
+| Vyvo-Multilingual (code) | Apache 2.0 | — | OK | 0.9B Qwen3-0.6B-backbone LLM-TTS. Zero-shot cloning only (no built-in speaker; reference audio + transcript required). In-process via transformers; ungated download (no HF_TOKEN) |
+| Vyvo-Multilingual-v0.1 (default) | — | Apache 2.0 | OK | EN / JA base checkpoint (Japanese quality limited) |
+| Vyvo-Multilingual-EN-FT-v0.1 | — | MIT | OK | English-only fine-tune of the base (single expressive speaker). Derivative, not a newer generation; same architecture / token layout / Mimi codec |
+| Vyvo-Multilingual (audio codec / Mimi) | — | CC-BY 4.0 | OK (with attribution) | Kyutai `kyutai/mimi` codec (24 kHz, 32 codebooks); always loaded for encode/decode — attribution to Kyutai required |
 
 **About Piper**: The `piper-tts` package is GPL-3.0. Also, the default `en_US-lessac-medium` voice is trained on the Blizzard 2013 dataset provided by Lessac Technologies, and its license prohibits commercial use. If you need commercial use, choose another voice model trained with a permissive license.
 
@@ -1953,3 +2012,9 @@ This repository itself is intended for short-term operational verification and t
   https://github.com/Aratako/MioCodec
 - llama-cpp-python
   https://github.com/abetlen/llama-cpp-python
+- Vyvo-Multilingual-v0.1 (Hugging Face)
+  https://huggingface.co/Vyvo/Vyvo-Multilingual-v0.1
+- Vyvo-Multilingual-EN-FT-v0.1 (Hugging Face)
+  https://huggingface.co/Vyvo/Vyvo-Multilingual-EN-FT-v0.1
+- Kyutai Mimi codec (Hugging Face)
+  https://huggingface.co/kyutai/mimi

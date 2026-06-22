@@ -98,6 +98,8 @@ def resolve_selected_voice(settings: Settings) -> str:
         return settings.moss_tts_v1_5_default_voice
     if settings.engine == "MOSS-TTS-Local-v1.5":
         return settings.moss_local_v1_5_default_voice
+    if settings.engine == "Vyvo-Multilingual":
+        return settings.vyvo_default_voice
     return ""
 
 
@@ -669,6 +671,29 @@ def print_engine_voice_hints(settings: Settings):
         print("注意: GPU 推奨（VRAM ~1GB）。Triton カーネル使用のため Linux + CUDA 必須。")
         print("ライセンス: コード（runtime / patch）と重み（kizuna-intelligence/*-int4）はいずれも MIT。")
         print("           ベースの Aratako/Irodori-TTS と DACVAE コーデックも MIT。")
+    elif settings.engine == "Vyvo-Multilingual":
+        _vyvo_en_ft = "EN-FT" in settings.vyvo_hf_model
+        print("Vyvo-Multilingual は Vyvo の LLM ベース TTS です（Qwen3-0.6B backbone + kyutai/mimi codec）。")
+        print(f"モデル: {settings.vyvo_hf_model} / codec: {settings.vyvo_mimi_repo}")
+        print("選択可能な checkpoint:")
+        print("  Vyvo/Vyvo-Multilingual-v0.1       … 英語 + 日本語、重みは Apache-2.0（日本語の品質は限定的）")
+        print("  Vyvo/Vyvo-Multilingual-EN-FT-v0.1 … 英語専用ファインチューン（単一話者・英語高品質）、重みは MIT。ベースの派生で新世代ではありません")
+        print(f"temperature: {settings.vyvo_temperature} / top_p: {settings.vyvo_top_p} / repetition_penalty: {settings.vyvo_repetition_penalty}")
+        print(f"max_new_tokens: {settings.vyvo_max_new_tokens} / min_new_tokens: {settings.vyvo_min_new_tokens}")
+        print(f"デフォルト voice: {settings.vyvo_default_voice}")
+        print("voice 候補: clone（== default。いずれも参照音声が必須）")
+        if settings.vyvo_prompt_wav and settings.vyvo_prompt_text:
+            print(f"             参照音声: {settings.vyvo_prompt_wav} / 書き起こし: {settings.vyvo_prompt_text}")
+        else:
+            print("             参照音声未設定: --vyvo-prompt-wav と --vyvo-prompt-text の両方が必須です。")
+            print("             (Vyvo は内蔵スピーカーを持たないゼロショット cloning モデルで、参照なしの推論はできません。未設定時は 4xx を返します。)")
+        print(f"対応言語: {'英語専用' if _vyvo_en_ft else '英語 / 日本語'}。出力は 24 kHz（mimi codec）。")
+        print("構成: 上流リポジトリは無く、モデルカードの transformers 推論コードを in-process で実行します。")
+        print("      Python 3.12 venv で torch==2.9.1+cu128 / transformers==5.0.0 を導入します。")
+        print("注意: GPU 推奨（0.9B + mimi。L4 で動作想定、VRAM ~2-4GB 程度）。初回は重み（Vyvo + kyutai/mimi）をダウンロードします。")
+        _vyvo_w_lic = "MIT" if _vyvo_en_ft else "Apache-2.0"
+        print(f"ライセンス: コードは Apache-2.0、現在選択中の重みは {_vyvo_w_lic}（いずれも商用 OK）。ただし kyutai/mimi コーデックは CC-BY-4.0 で帰属表示が必要です。")
+        print("乱用防止: 参照音声は権利のあるもの（話者の同意）のみを使用してください。")
     else:
         print("Irodori-TTS は現状 voice 切り替えを持たない想定です。")
 
