@@ -1801,7 +1801,7 @@ Vyvo の 0.9B の LLM ベース TTS です。`Qwen3-0.6B` backbone が **kyutai/
 
 **音声**: どちらの checkpoint も**内蔵スピーカーを持たない**ゼロショットクローンモデルで、各リクエストに参照音声 *と* その書き起こしの両方が必要です。`--vyvo-prompt-wav` と `--vyvo-prompt-text` の両方を設定し、`voice="clone"`（`voice="default"` も同じ経路）で呼び出してください。未設定の場合は GPT-SoVITS と同様に 4xx を返し、ランダム音声へ暗黙にフォールバックすることはありません。書き起こしは音声と一致している必要があります（上流いわく、書き起こし無しのクローンは短い無関係な断片に崩壊します）。サンプリングは `--vyvo-temperature` / `--vyvo-top-p` / `--vyvo-repetition-penalty` / `--vyvo-max-new-tokens` / `--vyvo-min-new-tokens` で調整できます（既定値はモデルカード準拠: 0.7 / 0.9 / 1.1 / 9600 / 960）。クローンに使う参照音声は、権利のあるもの（話者の同意）のみを使用してください。
 
-Colab T4 で確認済み: エンジン・`/v1` エンドポイント・trycloudflare トンネルが起動し、英語の合成は公開URL経由で end-to-end に有効な 24 kHz WAV を返します。日本語も base checkpoint で 200 を返しますが、日本語の参照音声と組み合わせるのが最適です。
+Colab T4 で確認済み（両 checkpoint）: エンジン・`/v1` エンドポイント・trycloudflare トンネルが起動し、英語の合成は公開URL経由で end-to-end に有効な 24 kHz WAV を返します。日本語も base checkpoint で 200 を返しますが、日本語の参照音声と組み合わせるのが最適です。なお T4 での自己回帰生成は遅く（1文あたり約100秒）、対話的な用途には L4 / A100 を推奨します。
 
 ライセンス: コードは **Apache-2.0**、重みは **Apache-2.0**（`Vyvo-Multilingual-v0.1`）または **MIT**（`Vyvo-Multilingual-EN-FT-v0.1`）で、いずれも商用利用可です。ただし推論では常に **kyutai/mimi** コーデックを読み込みます。これは **CC-BY-4.0** で、商用利用は可能ですが **Kyutai への帰属表示が必要**です。下記のライセンス表も参照してください。
 
