@@ -479,12 +479,13 @@ SUPERTONIC_TOTAL_STEPS = 5  #@param {type:"integer"}
 #@markdown ---
 #@markdown Vyvo-Multilingual (GPU recommended ~2-4GB VRAM, voice cloning required)
 #@markdown - Vyvo's 0.9B LLM-based TTS (Qwen3-0.6B backbone) that autoregressively emits kyutai/mimi audio tokens (32 codebooks, 24 kHz). Runs in-process via plain transformers — there is no upstream repo, the inference is the model-card snippet. Python 3.12 venv installs torch==2.9.1+cu128 / transformers==5.0.0.
-#@markdown - **No HF_TOKEN needed**: both checkpoints are ungated. Pick `VYVO_HF_MODEL`:
+#@markdown - **No HF_TOKEN needed**: all checkpoints are ungated. Pick `VYVO_HF_MODEL`:
 #@markdown   - `Vyvo/Vyvo-Multilingual-v0.1` — **English + Japanese**, weights **Apache-2.0** (Japanese quality is limited).
 #@markdown   - `Vyvo/Vyvo-Multilingual-EN-FT-v0.1` — **English-only** fine-tune (single expressive speaker, higher EN quality), weights **MIT**. A derivative of the multilingual base — not a newer generation.
-#@markdown - Fundamentally a zero-shot cloning model with **no built-in speaker** (both checkpoints): every request needs a reference audio *and* its transcript. Set both `VYVO_PROMPT_WAV` and `VYVO_PROMPT_TEXT` and call with `voice="clone"` (`default` maps to the same path). Without them the wrapper returns a 4xx — same contract as GPT-SoVITS. The transcript must match the clip (upstream: transcript-free cloning collapses).
-#@markdown - License: code is **Apache-2.0**; weights are **Apache-2.0** (base) / **MIT** (EN-FT) — both allow commercial use. The **kyutai/mimi** codec is **CC-BY-4.0** — attribution required. For voice cloning, only use reference audio you have rights to (consent of the speaker).
-VYVO_HF_MODEL = "Vyvo/Vyvo-Multilingual-v0.1"  #@param ["Vyvo/Vyvo-Multilingual-v0.1", "Vyvo/Vyvo-Multilingual-EN-FT-v0.1"]
+#@markdown   - `Vyvo/Vyvo-Multilingual-JA-FT-v0.1` — **Japanese-only** fine-tune (single speaker, higher JA quality), weights **MIT**. A derivative of the multilingual base — not a newer generation.
+#@markdown - Fundamentally a zero-shot cloning model with **no built-in speaker** (all checkpoints): every request needs a reference audio *and* its transcript. Set both `VYVO_PROMPT_WAV` and `VYVO_PROMPT_TEXT` and call with `voice="clone"` (`default` maps to the same path). Without them the wrapper returns a 4xx — same contract as GPT-SoVITS. The transcript must match the clip (upstream: transcript-free cloning collapses).
+#@markdown - License: code is **Apache-2.0**; weights are **Apache-2.0** (base) / **MIT** (EN-FT, JA-FT) — all allow commercial use. The **kyutai/mimi** codec is **CC-BY-4.0** — attribution required. For voice cloning, only use reference audio you have rights to (consent of the speaker).
+VYVO_HF_MODEL = "Vyvo/Vyvo-Multilingual-v0.1"  #@param ["Vyvo/Vyvo-Multilingual-v0.1", "Vyvo/Vyvo-Multilingual-EN-FT-v0.1", "Vyvo/Vyvo-Multilingual-JA-FT-v0.1"]
 VYVO_MIMI_REPO = "kyutai/mimi"  #@param {type:"string"}
 VYVO_PROMPT_WAV = ""  #@param {type:"string"}
 VYVO_PROMPT_TEXT = ""  #@param {type:"string"}
