@@ -2634,22 +2634,28 @@
     },
     {
       "id": "Vyvo-Multilingual",
-      "title": "Vyvo-Multilingual (GPU recommended ~2-4GB VRAM, English/Japanese, voice cloning required)",
-      "status": "**Not yet verified on Colab** — code paths are in place but end-to-end Colab verification is pending (GPU recommended, ~2-4GB VRAM expected; 0.9B Qwen3-0.6B-backbone LLM-TTS that emits kyutai/mimi tokens → 24 kHz; runs in-process via plain transformers, no upstream repo; ungated weights, no `HF_TOKEN`). **Zero-shot cloning only — no built-in speaker**: every request needs `--vyvo-prompt-wav` + `--vyvo-prompt-text` (otherwise 4xx). Code + Vyvo weights Apache-2.0; the kyutai/mimi codec is CC-BY-4.0 (attribution)",
-      "languages": "English / Japanese",
-      "description": "A 0.9B LLM-based multilingual TTS using [Vyvo/Vyvo-Multilingual-v0.1](https://huggingface.co/Vyvo/Vyvo-Multilingual-v0.1). A `Qwen3-0.6B` backbone autoregressively emits **kyutai/mimi** audio tokens (32 codebooks), which the Mimi codec decodes to 24 kHz audio. Supports **English and Japanese**. There is no separate upstream package — inference is the plain `transformers` snippet from the model card, so the wrapper runs it in-process (Python 3.12 venv with `torch==2.9.1+cu128` / `transformers==5.0.0`). Weights ([Vyvo](https://huggingface.co/Vyvo/Vyvo-Multilingual-v0.1) + [kyutai/mimi](https://huggingface.co/kyutai/mimi)) are ungated — no `HF_TOKEN` needed.",
+      "title": "Vyvo-Multilingual (GPU recommended ~2-4GB VRAM, voice cloning required)",
+      "status": "Works on Colab T4 (English verified end-to-end via the public URL; GPU recommended, ~2-4GB VRAM; 0.9B Qwen3-0.6B-backbone LLM-TTS that emits kyutai/mimi tokens → 24 kHz; runs in-process via plain transformers, no upstream repo; ungated weights, no `HF_TOKEN`). Two ungated checkpoints via `--vyvo-hf-model`: `Vyvo-Multilingual-v0.1` (EN/JA, Apache-2.0; Japanese quality is limited) and `Vyvo-Multilingual-EN-FT-v0.1` (English-only fine-tune, MIT). **Zero-shot cloning only — no built-in speaker**: every request needs `--vyvo-prompt-wav` + `--vyvo-prompt-text` (otherwise 4xx). Code Apache-2.0; the kyutai/mimi codec is CC-BY-4.0 (attribution)",
+      "languages": "English / Japanese (base); English (EN-FT)",
+      "description": "A 0.9B LLM-based TTS by Vyvo. A `Qwen3-0.6B` backbone autoregressively emits **kyutai/mimi** audio tokens (32 codebooks), which the Mimi codec decodes to 24 kHz audio. There is no separate upstream package — inference is the plain `transformers` snippet from the model card, so the wrapper runs it in-process (Python 3.12 venv with `torch==2.9.1+cu128` / `transformers==5.0.0`). Both checkpoints are ungated — no `HF_TOKEN` needed.",
       "notes": [
         "- Vyvo's 0.9B LLM-based TTS (Qwen3-0.6B backbone) that autoregressively emits kyutai/mimi audio tokens (32 codebooks, 24 kHz). Runs in-process via plain transformers — there is no upstream repo, the inference is the model-card snippet. Python 3.12 venv installs torch==2.9.1+cu128 / transformers==5.0.0.",
-        "- **No HF_TOKEN needed**: weights ([Vyvo/Vyvo-Multilingual-v0.1](https://huggingface.co/Vyvo/Vyvo-Multilingual-v0.1)) are ungated.",
-        "- Fundamentally a zero-shot cloning model with **no built-in speaker**: every request needs a reference audio + its transcript. Set both `VYVO_PROMPT_WAV` and `VYVO_PROMPT_TEXT` and call with `voice=\"clone\"` (`default` maps to the same path). Without them the wrapper returns a 4xx — same contract as GPT-SoVITS.",
-        "- License: code and Vyvo weights are **Apache-2.0** (commercial use OK). The **kyutai/mimi** codec is **CC-BY-4.0** — attribution required. For voice cloning, only use reference audio you have rights to (consent of the speaker)."
+        "- **No HF_TOKEN needed**: both checkpoints are ungated. Pick `VYVO_HF_MODEL`:",
+        "- `Vyvo/Vyvo-Multilingual-v0.1` — **English + Japanese**, weights **Apache-2.0** (Japanese quality is limited).",
+        "- `Vyvo/Vyvo-Multilingual-EN-FT-v0.1` — **English-only** fine-tune (single expressive speaker, higher EN quality), weights **MIT**. A derivative of the multilingual base — not a newer generation.",
+        "- Fundamentally a zero-shot cloning model with **no built-in speaker** (both checkpoints): every request needs a reference audio *and* its transcript. Set both `VYVO_PROMPT_WAV` and `VYVO_PROMPT_TEXT` and call with `voice=\"clone\"` (`default` maps to the same path). Without them the wrapper returns a 4xx — same contract as GPT-SoVITS. The transcript must match the clip (upstream: transcript-free cloning collapses).",
+        "- License: code is **Apache-2.0**; weights are **Apache-2.0** (base) / **MIT** (EN-FT) — both allow commercial use. The **kyutai/mimi** codec is **CC-BY-4.0** — attribution required. For voice cloning, only use reference audio you have rights to (consent of the speaker)."
       ],
       "prefix": "VYVO",
       "params": [
         {
           "name": "VYVO_HF_MODEL",
           "default": "Vyvo/Vyvo-Multilingual-v0.1",
-          "type": "string",
+          "type": "select",
+          "options": [
+            "Vyvo/Vyvo-Multilingual-v0.1",
+            "Vyvo/Vyvo-Multilingual-EN-FT-v0.1"
+          ],
           "flag": "--vyvo-hf-model"
         },
         {
