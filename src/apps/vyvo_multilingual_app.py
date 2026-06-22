@@ -141,7 +141,7 @@ def _decode_audio(rt: _Runtime, generated_ids: list[int]):
         return None
     codes_t = torch.tensor(codes[: frames * NUM_CODEBOOKS]).view(frames, NUM_CODEBOOKS)
     codes_t = codes_t.t().unsqueeze(0).to(rt.device)
-    return rt.mimi.decode(codes_t).audio_values.squeeze().cpu().float().numpy()
+    return rt.mimi.decode(codes_t).audio_values.detach().squeeze().cpu().float().numpy()
 
 
 @app.exception_handler(Exception)
@@ -209,11 +209,10 @@ async def audio_speech(payload: AudioSpeechRequest):
         )
 
     rt = get_runtime()
-    reference_tokens = _encode_reference(rt, PROMPT_WAV)
-    prompt = _build_prompt(rt, reference_tokens, PROMPT_TEXT, payload.input)
-    input_ids = torch.tensor([prompt], device=rt.device)
-
-    with torch.no_grad():
+    with torch.inference_mode():
+        reference_tokens = _encode_reference(rt, PROMPT_WAV)
+        prompt = _build_prompt(rt, reference_tokens, PROMPT_TEXT, payload.input)
+        input_ids = torch.tensor([prompt], device=rt.device)
         output = rt.model.generate(
             input_ids,
             attention_mask=torch.ones_like(input_ids),
@@ -226,8 +225,7 @@ async def audio_speech(payload: AudioSpeechRequest):
             eos_token_id=BASE + EOS,
             pad_token_id=rt.tokenizer.eos_token_id,
         )
-
-    audio_np = _decode_audio(rt, output[0, input_ids.shape[1] :].tolist())
+        audio_np = _decode_audio(rt, output[0, input_ids.shape[1] :].tolist())
     if audio_np is None or audio_np.size == 0:
         raise HTTPException(status_code=500, detail="No audio was generated.")
 
