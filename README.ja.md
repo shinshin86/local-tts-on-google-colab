@@ -57,7 +57,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | DramaBox | Colab A100 動作確認済み（GPU 必須、VRAM ~24GB ピーク、**LTX-2 Community License — 非競合条項あり**） | 英語 |
 | Scenema | **Colab A100（40GB VRAM）必須**。初回起動時に約 38GB ダウンロード。音声モデルは LTX-2.3 派生のため **LTX-2 Community License**（DramaBox と同じ）。Gemma 3 12B IT 利用（HF gated、`HF_TOKEN` 必須） | 英語中心の多言語 |
 | MioTTS | Colab L4 動作確認済み（GPU 必須、**VRAM 約4.6GB** 常駐 — LLM 約3.2GB + codec 約1.4GB。T4 16GB でも十分。LLM ベース — Qwen3-1.7B-Base GGUF をプリビルド llama-cpp-python CUDA wheel で host し MioCodec トークン[25Hz]を生成 → 44.1kHz。**実時間の約4倍速、RTF ≈ 0.25**。重みは ungated で `HF_TOKEN` 不要。プリセット音声 / ゼロショットクローン。**デフォルトプリセットは商用利用不可** — 商用時は自分の音声で clone） | 日本語 / 英語 |
-| Vyvo-Multilingual | Colab T4 動作確認済み（公開URL経由で end-to-end 確認。GPU 推奨、VRAM 約2-4GB。0.9B の Qwen3-0.6B backbone LLM-TTS で kyutai/mimi トークンを生成 → 24kHz。上流リポジトリ無し、transformers で in-process 実行。重みは ungated で `HF_TOKEN` 不要）。`--vyvo-hf-model` で3つの ungated checkpoint を選択: `Vyvo-Multilingual-v0.1`（EN/JA、Apache-2.0、日本語は品質限定的）、`Vyvo-Multilingual-EN-FT-v0.1`（英語専用FT、MIT）、`Vyvo-Multilingual-JA-FT-v0.1`（日本語専用FT、MIT）。**ゼロショットクローン専用 — 内蔵スピーカー無し**: 各リクエストで `--vyvo-prompt-wav` + `--vyvo-prompt-text` が必須（未設定は 4xx）。コードは Apache-2.0、kyutai/mimi コーデックは CC-BY-4.0（帰属表示要） | 英語 / 日本語（base）、英語（EN-FT）、日本語（JA-FT） |
+| Vyvo-Multilingual | Colab T4 動作確認済み（公開URL経由で end-to-end 確認。GPU 推奨、VRAM 約2-4GB。0.9B の Qwen3-0.6B backbone LLM-TTS で kyutai/mimi トークンを生成 → 24kHz。上流リポジトリ無し、transformers で in-process 実行。重みは ungated で `HF_TOKEN` 不要）。`--vyvo-hf-model` で3つの ungated checkpoint を選択: `Vyvo-Multilingual-v0.1`（EN/JA、Apache-2.0、日本語は品質限定的）、`Vyvo-Multilingual-EN-FT-v0.1`（英語専用FT、MIT）、`Vyvo-Multilingual-JA-FT-v0.1`（日本語専用FT、MIT。⚠️ 当方では正常な品質の日本語生成を確認できず。日本語には base checkpoint を推奨）。**ゼロショットクローン専用 — 内蔵スピーカー無し**: 各リクエストで `--vyvo-prompt-wav` + `--vyvo-prompt-text` が必須（未設定は 4xx）。コードは Apache-2.0、kyutai/mimi コーデックは CC-BY-4.0（帰属表示要） | 英語 / 日本語（base）、英語（EN-FT）、日本語（JA-FT） |
 
 `MeloTTS`、`Style-Bert-VITS2` は Colab の uv + venv 環境で依存解決に問題があり、現時点では動作しません。
 
@@ -592,7 +592,7 @@ SUPERTONIC_TOTAL_STEPS = 5  #@param {type:"integer"}
 #@markdown - **No HF_TOKEN needed**: all checkpoints are ungated. Pick `VYVO_HF_MODEL`:
 #@markdown   - `Vyvo/Vyvo-Multilingual-v0.1` — **English + Japanese**, weights **Apache-2.0** (Japanese quality is limited).
 #@markdown   - `Vyvo/Vyvo-Multilingual-EN-FT-v0.1` — **English-only** fine-tune (single expressive speaker, higher EN quality), weights **MIT**. A derivative of the multilingual base — not a newer generation.
-#@markdown   - `Vyvo/Vyvo-Multilingual-JA-FT-v0.1` — **Japanese-only** fine-tune (single speaker, higher JA quality), weights **MIT**. A derivative of the multilingual base — not a newer generation.
+#@markdown   - `Vyvo/Vyvo-Multilingual-JA-FT-v0.1` — **Japanese-only** fine-tune (single speaker), weights **MIT**. A derivative of the multilingual base — not a newer generation. **Note: we were not able to verify normal-quality Japanese generation with this checkpoint in our own testing; we recommend the base checkpoint for Japanese.**
 #@markdown - Fundamentally a zero-shot cloning model with **no built-in speaker** (all checkpoints): every request needs a reference audio *and* its transcript. Set both `VYVO_PROMPT_WAV` and `VYVO_PROMPT_TEXT` and call with `voice="clone"` (`default` maps to the same path). Without them the wrapper returns a 4xx — same contract as GPT-SoVITS. The transcript must match the clip (upstream: transcript-free cloning collapses).
 #@markdown - License: code is **Apache-2.0**; weights are **Apache-2.0** (base) / **MIT** (EN-FT, JA-FT) — all allow commercial use. The **kyutai/mimi** codec is **CC-BY-4.0** — attribution required. For voice cloning, only use reference audio you have rights to (consent of the speaker).
 VYVO_HF_MODEL = "Vyvo/Vyvo-Multilingual-v0.1"  #@param ["Vyvo/Vyvo-Multilingual-v0.1", "Vyvo/Vyvo-Multilingual-EN-FT-v0.1", "Vyvo/Vyvo-Multilingual-JA-FT-v0.1"]
@@ -1799,11 +1799,15 @@ Vyvo の 0.9B の LLM ベース TTS です。`Qwen3-0.6B` backbone が **kyutai/
 
 - [`Vyvo/Vyvo-Multilingual-v0.1`](https://huggingface.co/Vyvo/Vyvo-Multilingual-v0.1)（既定）— **英語 + 日本語**、重みは **Apache-2.0**。実際には日本語の品質は限定的です（ターゲット言語に合った日本語の参照音声を使ってください）。
 - [`Vyvo/Vyvo-Multilingual-EN-FT-v0.1`](https://huggingface.co/Vyvo/Vyvo-Multilingual-EN-FT-v0.1) — base の **英語専用**ファインチューン（単一の表現力ある話者、英語の品質が高い）、重みは **MIT**。base の派生であり**新世代モデルではありません**。アーキテクチャ・トークンレイアウト・Mimi codec が完全に同一なので、同じラッパーがそのまま動作します。
-- [`Vyvo/Vyvo-Multilingual-JA-FT-v0.1`](https://huggingface.co/Vyvo/Vyvo-Multilingual-JA-FT-v0.1) — base の **日本語専用**ファインチューン（単一話者、日本語の明瞭性向上）、重みは **MIT**。EN-FT と同様に base の派生であり**新世代モデルではなく**、アーキテクチャ・トークンレイアウト・Mimi codec は同一です。
+- [`Vyvo/Vyvo-Multilingual-JA-FT-v0.1`](https://huggingface.co/Vyvo/Vyvo-Multilingual-JA-FT-v0.1) — base の **日本語専用**ファインチューン（単一話者）、重みは **MIT**。EN-FT と同様に base の派生であり**新世代モデルではなく**、アーキテクチャ・トークンレイアウト・Mimi codec は同一です。**注意: 当方の Colab 検証では、この checkpoint で正常な品質の日本語生成を確認できませんでした（下の検証メモ参照）。日本語には base checkpoint の利用を推奨します。**
 
 **音声**: いずれの checkpoint も**内蔵スピーカーを持たない**ゼロショットクローンモデルで、各リクエストに参照音声 *と* その書き起こしの両方が必要です。`--vyvo-prompt-wav` と `--vyvo-prompt-text` の両方を設定し、`voice="clone"`（`voice="default"` も同じ経路）で呼び出してください。未設定の場合は GPT-SoVITS と同様に 4xx を返し、ランダム音声へ暗黙にフォールバックすることはありません。書き起こしは音声と一致している必要があります（上流いわく、書き起こし無しのクローンは短い無関係な断片に崩壊します）。サンプリングは `--vyvo-temperature` / `--vyvo-top-p` / `--vyvo-repetition-penalty` / `--vyvo-max-new-tokens` / `--vyvo-min-new-tokens` で調整できます（既定値はモデルカード準拠: 0.7 / 0.9 / 1.1 / 9600 / 960）。クローンに使う参照音声は、権利のあるもの（話者の同意）のみを使用してください。
 
-Colab T4 で確認済み: エンジン・`/v1` エンドポイント・trycloudflare トンネルが起動し、合成は公開URL経由で end-to-end に有効な 24 kHz WAV を返します（base / EN-FT は英語、base / JA-FT は日本語）。base checkpoint はクロスリンガルクローン（日本語の参照声で英語を発話）にも対応します。なお T4 での自己回帰生成は遅く（1文あたり約100秒）、対話的な用途には L4 / A100 を推奨します。
+Colab T4 で確認済み: エンジン・`/v1` エンドポイント・trycloudflare トンネルが起動し、合成は公開URL経由で end-to-end に有効な 24 kHz WAV を返します（base / EN-FT は英語、**base** は日本語）。base checkpoint はクロスリンガルクローン（日本語の参照声で英語を発話）にも対応します。
+
+**当方の検証では、`Vyvo-Multilingual-JA-FT-v0.1` checkpoint から正常な品質の日本語出力を確認できませんでした。** 既定のサンプリング設定では、生成したゼロショットクローンが使える発話になりませんでした（出力が非常に短い・低有声率・非音声になりがちで、きれいに終了せずトークン上限まで生成し続けて非常に遅くなる）。英語の男性参照音声でも、クリーンな日本語の男性参照音声（FLEURS, CC-BY-4.0）でも同様で、`--vyvo-temperature` を 0.3 に下げても当方の環境では結果は変わりませんでした。原因は特定できておらず、これはモデル側の問題が確認されたというより、当方の検証上の限界です。現時点では、日本語には base checkpoint を推奨します。
+
+なお T4 での自己回帰生成は遅く（1文あたり約100秒。JA-FT が崩壊する場合はさらに大幅に遅延）、対話的な用途には L4 / A100 を推奨します。
 
 ライセンス: コードは **Apache-2.0**、重みは **Apache-2.0**（`Vyvo-Multilingual-v0.1`）または **MIT**（`Vyvo-Multilingual-EN-FT-v0.1`・`Vyvo-Multilingual-JA-FT-v0.1`）で、いずれも商用利用可です。ただし推論では常に **kyutai/mimi** コーデックを読み込みます。これは **CC-BY-4.0** で、商用利用は可能ですが **Kyutai への帰属表示が必要**です。下記のライセンス表も参照してください。
 
@@ -1883,7 +1887,7 @@ Colab T4 で確認済み: エンジン・`/v1` エンドポイント・trycloudf
 | Vyvo-Multilingual (code) | Apache 2.0 | — | OK | 0.9B の Qwen3-0.6B backbone LLM-TTS。ゼロショットクローン専用（内蔵スピーカー無し、参照音声 + 書き起こしが必須）。transformers で in-process 実行。ungated（HF_TOKEN 不要） |
 | Vyvo-Multilingual-v0.1（既定） | — | Apache 2.0 | OK | EN / JA の base checkpoint（日本語の品質は限定的） |
 | Vyvo-Multilingual-EN-FT-v0.1 | — | MIT | OK | base の英語専用ファインチューン（単一の表現力ある話者）。新世代ではなく派生。アーキテクチャ / トークンレイアウト / Mimi codec は同一 |
-| Vyvo-Multilingual-JA-FT-v0.1 | — | MIT | OK | base の日本語専用ファインチューン（単一話者、日本語の明瞭性向上）。新世代ではなく派生。アーキテクチャ / トークンレイアウト / Mimi codec は同一 |
+| Vyvo-Multilingual-JA-FT-v0.1 | — | MIT | OK（ライセンス） | base の日本語専用ファインチューン（単一話者）。新世代ではなく派生。アーキテクチャ / トークンレイアウト / Mimi codec は同一。⚠️ 当方では正常な品質の生成を確認できず。日本語には base を推奨 |
 | Vyvo-Multilingual (audio codec / Mimi) | — | CC-BY 4.0 | OK（帰属表示あり） | Kyutai `kyutai/mimi` codec（24 kHz、32 codebooks）。encode/decode で常に読み込むため Kyutai への帰属表示が必要 |
 
 **Piper について**: `piper-tts` パッケージは GPL-3.0 です。また、デフォルトの `en_US-lessac-medium` 音声は Lessac Technologies 提供の Blizzard 2013 データセットで学習されており、このデータセットのライセンスは商用利用を禁止しています。商用利用が必要な場合は、許容的なライセンスで学習された別の voice モデルを選択してください。
