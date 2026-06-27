@@ -35,16 +35,16 @@
         <div v-if="selectedEngine" class="engine-meta">
           <div class="badges">
             <span :class="['badge', statusClass(selectedEngine.status)]">{{ statusShortLabel(selectedEngine.status) }}</span>
-            <span class="badge badge-info" v-if="selectedEngine.languages">{{ selectedEngine.languages }}</span>
+            <span class="badge badge-info" v-if="localizedEngineLanguages">{{ localizedEngineLanguages }}</span>
           </div>
           <details v-if="hasEngineDetails" class="callout">
             <summary>{{ t("aboutEngine") }}</summary>
-            <p v-if="selectedEngine.description" v-html="renderInlineMd(selectedEngine.description)" class="engine-description"></p>
-            <p v-if="selectedEngine.status" class="engine-status-line">
-              <strong>{{ t("colabStatus") }}</strong> {{ selectedEngine.status }}
+            <p v-if="localizedEngineDescription" v-html="renderInlineMd(localizedEngineDescription)" class="engine-description"></p>
+            <p v-if="localizedEngineStatus" class="engine-status-line">
+              <strong>{{ t("colabStatus") }}</strong> {{ localizedEngineStatus }}
             </p>
-            <ul v-if="selectedEngine.notes.length" class="engine-notes">
-              <li v-for="(note, idx) in selectedEngine.notes" :key="idx" v-html="renderInlineMd(note.replace(/^- /, ''))"></li>
+            <ul v-if="localizedEngineNotes.length" class="engine-notes">
+              <li v-for="(note, idx) in localizedEngineNotes" :key="idx" v-html="renderInlineMd(note.replace(/^- /, ''))"></li>
             </ul>
             <p v-if="!hasLicenseInNotes" class="license-missing">
               <strong>{{ t("licenseMissingTitle") }}</strong> {{ t("licenseMissingBody") }}

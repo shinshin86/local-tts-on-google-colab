@@ -109,10 +109,16 @@
       "id": "Bark",
       "title": "Bark (GPU recommended, 13 languages, MIT)",
       "status": "Working on Colab (GPU recommended, ~12GB / 8GB small)",
+      "status_ja": "Colab 動作確認済み (GPU推奨・~12GB / small=8GB)",
       "languages": "English / Japanese / Chinese and 13 languages",
+      "languages_ja": "英語 / 日本語 / 中国語 他 13言語",
       "description": "A text-prompted generative audio model from Suno using [suno-ai/bark](https://github.com/suno-ai/bark). Supports 13 languages (English, German, Spanish, French, Hindi, Italian, **Japanese**, Korean, Polish, Portuguese, Russian, Turkish, Simplified Chinese) and can produce non-verbal sounds (laughter, sighs, simple SFX). Voice presets follow the upstream Speaker Library naming `v2/<lang>_speaker_<n>` (10 speakers per language).",
+      "description_ja": "[suno-ai/bark](https://github.com/suno-ai/bark) を使った Suno の生成的 text-to-audio モデルです。13 言語対応（英 / 独 / 西 / 仏 / ヒンディー / 伊 / **日本語** / 韓 / ポーランド / 葡 / 露 / トルコ / 簡体中）で、笑い声・ため息などのノンバーバル音や簡単な効果音も生成できます。voice プリセットは upstream の Speaker Library 名 `v2/<lang>_speaker_<n>`（言語ごとに 10 話者）です。",
       "notes": [
         "- License: code & weights both MIT. Generative audio (laughter, sound effects)."
+      ],
+      "notes_ja": [
+        "- ライセンス: コードは MIT、モデル重みは MIT。商用利用: OK。 備考: 13言語（日本語含む）。生成的（笑い声 / SFX）。著者は重みを research-oriented と表記"
       ],
       "prefix": "BARK",
       "params": [
@@ -153,10 +159,16 @@
       "id": "ChatTTS",
       "title": "ChatTTS (GPU recommended, EN/ZH, AGPL-3.0+ code / CC-BY-NC-4.0 weights)",
       "status": "Working on Colab (GPU recommended, **non-commercial**)",
+      "status_ja": "Colab 動作確認済み (GPU推奨・**商用不可**)",
       "languages": "English / Chinese",
+      "languages_ja": "英語 / 中国語",
       "description": "A conversational TTS from 2noise using [2noise/ChatTTS](https://github.com/2noise/ChatTTS). Designed for daily dialogue with expressive features (laughter, hesitation, pauses). EN / ZH only.",
+      "description_ja": "[2noise/ChatTTS](https://github.com/2noise/ChatTTS) を使った 2noise の対話特化 TTS です。日常会話用に設計され、笑い声 / ためらい / ポーズなどを表現します。英語 / 中国語のみ対応。",
       "notes": [
         "- **Non-commercial only.** Weights contain intentional high-frequency noise to deter misuse."
+      ],
+      "notes_ja": [
+        "- ライセンス: コードは AGPL-3.0+、モデル重みは CC BY-NC 4.0。商用利用: **不可**。 備考: 英 / 中 の対話 TTS。重みには乱用防止用の高周波ノイズが意図的に入っている"
       ],
       "prefix": "CHATTTS",
       "params": [
@@ -188,9 +200,15 @@
       "id": "Chatterbox",
       "title": "Chatterbox (GPU recommended, multilingual incl JP, voice cloning)",
       "status": "Works (GPU recommended)",
+      "status_ja": "動作OK (GPU推奨)",
       "languages": "Japanese / English / Chinese and 23 languages",
+      "languages_ja": "日本語 / 英語 / 中国語 他 23言語",
       "description": "A multilingual TTS using [resemble-ai/chatterbox](https://github.com/resemble-ai/chatterbox) by Resemble AI. The Chatterbox Multilingual model supports 23 languages including Japanese, English, Chinese, French, German, Spanish, Korean, etc., and supports zero-shot voice cloning. Default language is `ja` (Japanese). When `--chatterbox-prompt-wav` is provided, the `clone` voice becomes available and uses the reference audio. A GPU runtime is recommended (VRAM ~2-4GB). License: MIT (both code and weights).",
+      "description_ja": "Resemble AI の [resemble-ai/chatterbox](https://github.com/resemble-ai/chatterbox) を使った多言語 TTS です。Chatterbox Multilingual モデルは日本語・英語・中国語・フランス語・ドイツ語・スペイン語・韓国語など 23 言語に対応し、ゼロショット音声クローンを備えています。デフォルト言語は `ja`（日本語）。`--chatterbox-prompt-wav` を指定すると `clone` voice が有効になり、参照音声の声色で合成されます。GPU 推奨（VRAM ~2-4GB）。ライセンス: MIT（コードと重みの両方）。",
       "notes": [],
+      "notes_ja": [
+        "- ライセンス: コードは MIT、モデル重みは MIT。商用利用: OK。 備考: 多言語（23言語、日本語含む）。ゼロショット voice cloning"
+      ],
       "prefix": "CHATTERBOX",
       "params": [
         {
@@ -246,11 +264,17 @@
       "id": "CosyVoice2",
       "title": "CosyVoice2 (GPU recommended, multilingual incl JP, Apache 2.0)",
       "status": "Works (GPU recommended, Python 3.10 venv)",
+      "status_ja": "動作OK (GPU推奨・Python 3.10 venv)",
       "languages": "Japanese / English / Chinese / Korean / German and 9 languages",
+      "languages_ja": "日本語 / 英語 / 中 / 韓 / 独 他 9言語",
       "description": "A multilingual zero-shot voice cloning TTS using [FunAudioLLM/CosyVoice](https://github.com/FunAudioLLM/CosyVoice). The 0.5B-parameter v2 checkpoint (`FunAudioLLM/CosyVoice2-0.5B`) supports 9 common languages — **Japanese**, English, Chinese, Korean, German, Spanish, French, Italian, Russian — plus 18+ Chinese dialects, with cross-lingual zero-shot cloning. The wrapper forces a **Python 3.10 venv** (`uv venv --python 3.10`) because upstream pins (`torch==2.3.1`, `openai-whisper==20231117`, `onnxruntime-gpu==1.18.0`, etc.) do not resolve under Colab's default Python 3.12. The repo is cloned with `--recursive` to pick up the `Matcha-TTS` submodule. A GPU is recommended (VRAM ~4GB).",
+      "description_ja": "[FunAudioLLM/CosyVoice](https://github.com/FunAudioLLM/CosyVoice) を使った Alibaba FunAudioLLM の多言語ゼロショット voice cloning TTS です。0.5B パラメータの v2 チェックポイント（`FunAudioLLM/CosyVoice2-0.5B`）は **日本語**・英語・中国語・韓国語・独語・西語・仏語・伊語・露語の 9 言語に加えて中国方言 18 種類以上をサポートし、cross-lingual のゼロショットクローンが可能です。本ラッパーは上流の pin（`torch==2.3.1`、`openai-whisper==20231117`、`onnxruntime-gpu==1.18.0` 等）が Colab デフォルトの Python 3.12 で解決しないため、**Python 3.10 の venv を強制**します（`uv venv --python 3.10`）。`Matcha-TTS` サブモジュールが必要なので `--recursive` で clone します。GPU 推奨（VRAM ~4GB）。",
       "notes": [
         "- Forces a Python 3.10 venv because upstream pins (torch 2.3.1, openai-whisper 20231117, etc.) do not resolve under Python 3.12.",
         "- License: Apache 2.0 for both code ([FunAudioLLM/CosyVoice](https://github.com/FunAudioLLM/CosyVoice)) and weights ([FunAudioLLM/CosyVoice2-0.5B](https://huggingface.co/FunAudioLLM/CosyVoice2-0.5B)). Commercial use OK. The model card adds a non-binding academic-purpose / takedown request."
+      ],
+      "notes_ja": [
+        "- ライセンス: コードは Apache 2.0、モデル重みは Apache 2.0。商用利用: OK。 備考: 多言語（日本語含む）。ゼロショット voice cloning。Python 3.10 venv 必須"
       ],
       "prefix": "COSYVOICE",
       "params": [
@@ -288,11 +312,17 @@
       "id": "CSM-1B",
       "title": "Sesame CSM-1B (GPU required, English-only, Apache 2.0)",
       "status": "Not working by default (HF-gated weights for `sesame/csm-1b` + `meta-llama/Llama-3.2-1B`, requires accepting both licenses + `HF_TOKEN`)",
+      "status_ja": "デフォルトで動作不可（`sesame/csm-1b` と `meta-llama/Llama-3.2-1B` の HF gated。両方のライセンス同意 + `HF_TOKEN` が必要）",
       "languages": "English (Llama-3.2-1B base + Mimi codec)",
+      "languages_ja": "英語（Llama-3.2-1B ベース + Mimi codec）",
       "description": "A conversational speech model from Sesame using [SesameAILabs/csm](https://github.com/SesameAILabs/csm). The architecture is a Llama-3.2-1B backbone plus an audio decoder that produces Mimi codec audio (the same codec lineage as Kyutai-TTS). EN only.",
+      "description_ja": "[SesameAILabs/csm](https://github.com/SesameAILabs/csm) を使った Sesame の対話特化 TTS です。アーキテクチャは Llama-3.2-1B backbone + Mimi codec を出力する音声デコーダ（Kyutai-TTS と同じ codec 系統）。英語のみ対応。",
       "notes": [
         "- **HF gated**: accept terms for `sesame/csm-1b` AND `meta-llama/Llama-3.2-1B`, then set `HF_TOKEN`.",
         "- License: CSM weights ([sesame/csm-1b](https://huggingface.co/sesame/csm-1b)) and code ([SesameAILabs/csm](https://github.com/SesameAILabs/csm)) are Apache 2.0, but the **effective stack is governed by the Llama 3.2 Community License** because of the meta-llama/Llama-3.2-1B backbone. Commercial use is OK below ~700M MAU and requires \"Built with Llama\" attribution + Meta's Acceptable Use Policy compliance."
+      ],
+      "notes_ja": [
+        "- ライセンス: コードは Apache 2.0、モデル重みは Apache 2.0。商用利用: OK。 備考: 英のみ。対話型。Llama-3.2-1B も依存（Llama 3.2 Community License）。HF gated"
       ],
       "prefix": "CSM",
       "params": [
@@ -338,9 +368,15 @@
       "id": "Dia",
       "title": "Dia (GPU recommended, English-only, [S1]/[S2] dialogue, Apache 2.0)",
       "status": "Works (GPU recommended)",
+      "status_ja": "動作OK (GPU推奨)",
       "languages": "English (multi-speaker dialogue)",
+      "languages_ja": "英語（マルチスピーカー対話）",
       "description": "A dialogue-oriented TTS using [nari-labs/dia](https://github.com/nari-labs/dia). The 1.6B-parameter model generates multi-speaker conversations in a single pass via `[S1]` / `[S2]` speaker tags directly in the prompt. English-only at the moment. The wrapper automatically prepends `[S1]` if your input has no speaker tag, so plain text still works for single-speaker TTS. Default model: `nari-labs/Dia-1.6B-0626`. With `--dia-prompt-wav` and `--dia-prompt-text`, the `clone` voice becomes available and conditions on a reference clip. A GPU runtime is recommended (VRAM ~4.4GB at float16/bfloat16, ~7.9GB at float32). License: Apache 2.0 (code and weights).",
+      "description_ja": "[nari-labs/dia](https://github.com/nari-labs/dia) を使った対話特化 TTS です。1.6B パラメータのモデルで、`[S1]` / `[S2]` 話者タグをプロンプトに含めることで、マルチスピーカー対話を 1 パスで生成します。現状は英語のみ対応。入力に話者タグが無い場合はラッパーが先頭に `[S1]` を自動挿入するので、シングルスピーカーの平文 TTS としても利用できます。デフォルトモデル: `nari-labs/Dia-1.6B-0626`。`--dia-prompt-wav` と `--dia-prompt-text` の両方を指定すると `clone` voice が有効になり、参照音声で声色を条件付けられます。GPU 推奨（VRAM ~4.4GB at float16/bfloat16、~7.9GB at float32）。ライセンス: Apache 2.0（コードと重み）。",
       "notes": [],
+      "notes_ja": [
+        "- ライセンス: コードは Apache 2.0、モデル重みは Apache 2.0。商用利用: OK。 備考: 英語のみ。`[S1]`/`[S2]` でマルチスピーカー対話 TTS"
+      ],
       "prefix": "DIA",
       "params": [
         {
@@ -388,14 +424,20 @@
       "id": "dots.tts",
       "title": "dots.tts (L4 required, 24 languages incl. Japanese, voice cloning)",
       "status": "Works on Colab L4 (GPU required, bf16 resident ~5.4GB, 48 kHz output; ungated weights, no `HF_TOKEN`; zero-shot cloning model — `default` is a random speaker, use `clone` for a stable voice)",
+      "status_ja": "Colab L4 動作確認済み（GPU 必須、bf16 常駐 ~5.4GB、出力 48 kHz。重みは ungated で `HF_TOKEN` 不要。ゼロショット cloning モデルのため `default` は話者がランダム、安定した声色は `clone` を使用）",
       "languages": "24 languages (incl. Japanese)",
+      "languages_ja": "24 言語（日本語含む）",
       "description": "A 2B-parameter fully continuous, end-to-end autoregressive TTS from rednote-hilab ([rednote-hilab/dots.tts](https://github.com/rednote-hilab/dots.tts)). The backbone pairs a semantic encoder, a **Qwen2.5-1.5B-Base** LLM that consumes BPE text directly (no phonemes), and an autoregressive flow-matching (DiT) acoustic head over a 48 kHz AudioVAE — there are no discrete codec tokens anywhere in the pipeline. It reports open-source SOTA on Seed-TTS-Eval and the highest average speaker similarity on the 24-language MiniMax multilingual benchmark.",
+      "description_ja": "rednote-hilab による 2B パラメータの完全連続・end-to-end 自己回帰 TTS です（[rednote-hilab/dots.tts](https://github.com/rednote-hilab/dots.tts)）。バックボーンは semantic encoder と **Qwen2.5-1.5B-Base** LLM（BPE テキストを音素化せず直接入力）、48 kHz AudioVAE 上で動く自己回帰 flow-matching（DiT）音響ヘッドの組み合わせで、パイプライン中に離散コーデックトークンが一切ありません。Seed-TTS-Eval でオープンソース SOTA、24 言語の MiniMax 多言語ベンチで平均話者類似度トップを報告しています。",
       "notes": [
         "- rednote-hilab's 2B fully continuous, end-to-end autoregressive TTS (Qwen2.5-1.5B backbone + flow-matching head over a 48 kHz AudioVAE). Runs in-process (no separate backend).",
         "- **No HF_TOKEN needed**: weights ([rednote-hilab/dots.tts-base](https://huggingface.co/rednote-hilab/dots.tts-base), ~9.5GB) are ungated. Python 3.12 venv installs torch==2.8.0.",
         "- Fundamentally a zero-shot cloning model: `default` = no reference (random-voice sampling; a stable single speaker is only meaningful on a fine-tuned checkpoint). Set `DOTS_TTS_PROMPT_WAV` (optionally `DOTS_TTS_PROMPT_TEXT` for continuation cloning) and use `voice=\"clone\"` for a stable voice.",
         "- Checkpoints (all 2B / Apache-2.0): `rednote-hilab/dots.tts-base` (Pretrain), `rednote-hilab/dots.tts-soar` (Self-Corrective Alignment, higher SIM), `rednote-hilab/dots.tts-mf` (MeanFlow distilled, NFE=4, fastest).",
         "- License: code and weights are both **Apache-2.0** (commercial use OK). Misuse for impersonation/fraud/disinformation is prohibited by the upstream terms."
+      ],
+      "notes_ja": [
+        "- ライセンス: コードは Apache 2.0、モデル重みは Apache 2.0。商用利用: OK。 備考: 2B 連続 AR TTS、24 言語（日本語含む）、ゼロショット cloning。コードと全チェックポイント（base / soar / mf）が Apache-2.0。backbone は Qwen2.5-1.5B-Base 由来。ダウンロードは gated ではない（HF_TOKEN 不要）"
       ],
       "prefix": "DOTS_TTS",
       "params": [
@@ -462,13 +504,19 @@
       "id": "DramaBox",
       "title": "DramaBox (A100 required, VRAM ~24GB, English-only, voice cloning)",
       "status": "Works on Colab A100 (GPU required, VRAM ~24GB peak, **LTX-2 Community License — non-compete clause**)",
+      "status_ja": "Colab A100 動作確認済み（GPU 必須、VRAM ~24GB ピーク、**LTX-2 Community License — 非競合条項あり**）",
       "languages": "English",
+      "languages_ja": "英語",
       "description": "A directable / expressive TTS from Resemble AI ([resemble-ai/DramaBox](https://github.com/resemble-ai/DramaBox)). It is an IC-LoRA fine-tune of Lightricks' LTX-2.3 audio-only branch, with a Gemma 3 12B text encoder; users can drive emotion, pacing, laughs, sighs, and other paralinguistic cues directly from the English text prompt. Voice cloning uses any 10+ second audio reference.",
+      "description_ja": "[resemble-ai/DramaBox](https://github.com/resemble-ai/DramaBox) の Resemble AI による「ディレクション可能」な表現力豊か TTS です。Lightricks の LTX-2.3（音声専用 branch）を IC-LoRA で fine-tune し、テキストエンコーダに Gemma 3 12B を採用。英語プロンプトの中で感情・ペーシング・笑い声・ため息などのパラ言語的要素を直接ディレクション可能。ボイスクローンは 10 秒以上の参照音声で動作します。",
       "notes": [
         "- Resemble AI's directable / expressive TTS (IC-LoRA fine-tune of LTX-2.3, paralinguistic cues like laughs/sighs).",
         "- **License: LTX-2 Community License** (Lightricks). Non-compete clause; commercial license required for org revenue $10M+.",
         "- Generated audio is **always watermarked** with Resemble Perth (imperceptible, non-removable per upstream).",
         "- First-run downloads ~8.5GB (DramaBox) + Gemma 3 12B snapshot."
+      ],
+      "notes_ja": [
+        "- ライセンス: コードは LTX-2 Community License (Lightricks)、モデル重みは LTX-2 Community License。商用利用: **年商 $10M+ の組織は商用ライセンス必須**。 備考: 英語。非競合条項あり、再配布時は同ライセンス継承必須、Perth ウォーターマーク常時付与"
       ],
       "prefix": "DRAMABOX",
       "params": [
@@ -570,9 +618,15 @@
       "id": "F5-TTS",
       "title": "F5-TTS (GPU required)",
       "status": "Works (GPU required)",
+      "status_ja": "動作OK (GPU必須)",
       "languages": "English / Chinese (Japanese via separate model)",
+      "languages_ja": "英語 / 中国語（日本語は別モデル）",
       "description": "A zero-shot voice cloning TTS using [SWivid/F5-TTS](https://github.com/SWivid/F5-TTS). It mimics the voice quality of a reference audio to generate speech. Uses the default reference audio bundled with the package (English female). To use a Japanese model, specify a community-provided Japanese checkpoint with `--f5tts-ckpt-file` / `--f5tts-vocab-file`. A GPU runtime (T4 or higher) is required. License: code MIT / model CC-BY-NC.",
+      "description_ja": "[SWivid/F5-TTS](https://github.com/SWivid/F5-TTS) を使ったゼロショット音声クローニング TTS です。参照音声の声質を模倣して音声を生成します。パッケージ同梱のデフォルト参照音声（英語女性）を使用します。日本語モデルを使う場合は `--f5tts-ckpt-file` / `--f5tts-vocab-file` でコミュニティ提供の日本語チェックポイントを指定してください。GPU ランタイム（T4 以上）が必要です。ライセンス: コード MIT / モデル CC-BY-NC。",
       "notes": [],
+      "notes_ja": [
+        "- ライセンス: コードは MIT、モデル重みは CC-BY-NC。商用利用: 不可（モデル）。 備考: モデル重みは Emilia データセットの制約により非商用"
+      ],
       "prefix": "F5TTS",
       "params": [
         {
@@ -599,9 +653,15 @@
       "id": "Fish-Speech",
       "title": "Fish-Speech (A100/L4 GPU required, VRAM 24GB+)",
       "status": "Not working",
+      "status_ja": "動作不可",
       "languages": "Japanese / English / Chinese and 80+ languages",
+      "languages_ja": "日本語 / 英語 / 中国語 他 80言語以上",
       "description": "A high-quality TTS using [fishaudio/fish-speech](https://github.com/fishaudio/fish-speech). Japanese is Tier 1 supported (highest quality) and it supports 80+ languages. It requires 24GB+ VRAM and targets A100/L4 GPUs, but on Colab the runtime crashes with OOM during model loading, so it currently does not work. License: Apache 2.0.",
+      "description_ja": "[fishaudio/fish-speech](https://github.com/fishaudio/fish-speech) を使った高品質 TTS です。日本語は Tier 1 サポート（最高品質）で、80 言語以上に対応しています。VRAM 24GB 以上が必要で A100/L4 GPU を想定していますが、Colab 環境ではモデルロード時に OOM（メモリ不足）でランタイムがクラッシュするため、現時点では動作しません。ライセンス: Apache 2.0。",
       "notes": [],
+      "notes_ja": [
+        "- ライセンス: コードは Apache 2.0、モデル重みは Apache 2.0。商用利用: OK。 備考: A100/L4 GPU 必須（VRAM 24GB+）"
+      ],
       "prefix": "FISH_SPEECH",
       "params": [
         {
@@ -616,11 +676,17 @@
       "id": "GPT-SoVITS",
       "title": "GPT-SoVITS (GPU recommended, ZH/EN/JA/KO/YUE, MIT)",
       "status": "Engine starts on Colab — reference audio required for synthesis (no default speaker mode; pass `--gpt-sovits-prompt-wav` + `--gpt-sovits-prompt-text`)",
+      "status_ja": "Colab でエンジン起動確認済み（synthesis には参照音声必須・default speaker モード非対応・`--gpt-sovits-prompt-wav` と `--gpt-sovits-prompt-text` を指定）",
       "languages": "Chinese / English / Japanese / Korean / Cantonese",
+      "languages_ja": "中 / 英 / 日 / 韓 / 粤",
       "description": "A few-shot voice cloning TTS from RVC-Boss using [RVC-Boss/GPT-SoVITS](https://github.com/RVC-Boss/GPT-SoVITS). 5 seconds of reference audio is enough for zero-shot inference; 1 minute can be used for fine-tuning. Supports **Chinese, English, Japanese, Korean, Cantonese**. Multiple model versions (v1, v2, v2Pro, v2ProPlus, v3, v4) are exposed via `--gpt-sovits-version` (default `v2`).",
+      "description_ja": "[RVC-Boss/GPT-SoVITS](https://github.com/RVC-Boss/GPT-SoVITS) の few-shot voice cloning TTS です。5秒の参照音声でゼロショット推論可能、1分でファインチューニングも可能。**中国語 / 英語 / 日本語 / 韓国語 / 広東語** に対応。複数のモデルバージョン（v1, v2, v2Pro, v2ProPlus, v3, v4）を `--gpt-sovits-version`（デフォルト `v2`）で切り替え可能。",
       "notes": [
         "- Few-shot voice cloning (5-second reference). Reference audio + transcript required.",
         "- License: MIT for both code ([RVC-Boss/GPT-SoVITS](https://github.com/RVC-Boss/GPT-SoVITS)) and pretrained weights (`lj1995/GPT-SoVITS`). Commercial use OK. Per-version (v1/v2/v3/v4) licenses are not individually attested upstream — verify before shipping a commercial product."
+      ],
+      "notes_ja": [
+        "- ライセンス: コードは MIT、モデル重みは MIT。商用利用: OK。 備考: 中 / 英 / 日 / 韓 / 粤 few-shot voice cloning。参照音声 + 書き起こし必須"
       ],
       "prefix": "GPT_SOVITS",
       "params": [
@@ -694,12 +760,16 @@
       "id": "Higgs-Audio-v2",
       "title": "Higgs Audio v2 (A100/L4 required, VRAM 24GB+, voice cloning)",
       "status": "Not working by default (upstream HF checkpoint requires unreleased `boson_multimodal` / transformers 5.x; engine starts but inference fails inside the audio tokenizer loader)",
+      "status_ja": "デフォルトで動作不可（HF 上の checkpoint が未リリースの `boson_multimodal` / transformers 5.x を要求。エンジンは起動するが audio tokenizer ロード時に上流コードと config schema が一致せず推論失敗）",
       "languages": "English",
+      "languages_ja": "英語",
       "description": "An LLM-based audio foundation model from Boson AI ([boson-ai/higgs-audio](https://github.com/boson-ai/higgs-audio)). The 3B-base generation model is paired with a separate audio tokenizer (`bosonai/higgs-audio-v2-tokenizer`). Voice cloning works either by referencing a bundled preset (e.g. `belinda`, `broom_salesman` under `examples/voice_prompts/`) or by passing a custom audio path.",
+      "description_ja": "[boson-ai/higgs-audio](https://github.com/boson-ai/higgs-audio) の Boson AI による LLM ベース音声基盤モデルです。3B-base 生成モデルと別モジュールの audio tokenizer（`bosonai/higgs-audio-v2-tokenizer`）の組み合わせ。voice cloning は同梱プリセット（`belinda`、`broom_salesman` 等が `examples/voice_prompts/` 以下）または任意の音声パスで動作します。",
       "notes": [
         "- Code: Apache-2.0. **Weights: Boson Higgs Audio 2 Community License** (Llama-derived).",
         "- Restrictions: >100k MAU requires extra license; outputs cannot be used to train other LLMs."
       ],
+      "notes_ja": [],
       "prefix": "HIGGS",
       "params": [
         {
@@ -756,14 +826,18 @@
       "id": "Higgs-Audio-v3",
       "title": "Higgs Audio v3 (A100/L4 required, 100+ languages incl. Japanese, voice cloning)",
       "status": "Works on Colab L4 / A100 (GPU required, ~19.9GB at load; T4 unsupported, slow first launch ~10-12 min via SGLang-Omni, **non-commercial weights — no hosted API**)",
+      "status_ja": "Colab L4 / A100 動作確認済み（GPU 必須、ロード時 ~19.9GB。T4 非対応、SGLang-Omni 経由で初回起動が遅い ~10-12 分、**非商用の重み — hosted API 不可**）",
       "languages": "100+ languages (incl. Japanese)",
+      "languages_ja": "100+ 言語（日本語含む）",
       "description": "A separate, newer model from Boson AI — a 4B chat-native TTS (Qwen3-4B backbone, `HiggsMultimodalQwen3ForConditionalGeneration`) built for expressive conversational speech across 100+ languages, with zero-shot voice cloning. It is **not** related to the v2 engine above and does **not** use the `boson-ai/higgs-audio` GitHub repo (that repo is v2-only and explicitly states \"Higgs Audio v3 is a standalone release\"). v3 is served by **SGLang-Omni** ([sgl-project/sglang-omni](https://github.com/sgl-project/sglang-omni)), which natively exposes an OpenAI-compatible `/v1/audio/speech`; this wrapper runs that backend on `--higgs-v3-backend-port` (default 5002) and proxies to it.",
+      "description_ja": "Boson AI による別系統の新しいモデルで、表現力豊かな会話音声向けの 4B chat-native TTS（Qwen3-4B backbone、`HiggsMultimodalQwen3ForConditionalGeneration`）です。100+ 言語に対応し、ゼロショット voice cloning が可能です。上記の v2 とは**無関係**で、`boson-ai/higgs-audio` の GitHub リポジトリは使いません（同リポは v2 専用で「Higgs Audio v3 is a standalone release」と明記）。v3 は **SGLang-Omni**（[sgl-project/sglang-omni](https://github.com/sgl-project/sglang-omni)）が配信し、OpenAI 互換の `/v1/audio/speech` をネイティブに公開します。本ラッパーはそのバックエンドを `--higgs-v3-backend-port`（既定 5002）で起動し、プロキシします。",
       "notes": [
         "- Separate 4B chat-native TTS (Qwen3-4B backbone) served by **SGLang-Omni**, which natively exposes `/v1/audio/speech`. Distinct from Higgs Audio v2.",
         "- **No HF_TOKEN needed**: weights ([bosonai/higgs-audio-v3-tts-4b](https://huggingface.co/bosonai/higgs-audio-v3-tts-4b)) are ungated.",
         "- L4 (24GB) verified (~19.9GB at load). T4 unsupported (sgl-kernel/flash-attn need sm_80+). First launch is slow (~10-12 min: download + torch.compile / CUDA-graph capture). Python 3.12 venv builds sglang-omni from source.",
         "- License: GitHub code is Apache-2.0, but **weights are under the Boson Higgs Audio v3 Research and Non-Commercial License** ([LICENSE](https://huggingface.co/bosonai/higgs-audio-v3-tts-4b/blob/main/LICENSE)). Personal use / short-term evaluation is permitted; hosted API, production, or revenue-generating use needs a separate commercial license. `voice=\"clone\"` needs `HIGGS_V3_PROMPT_WAV` (optionally `HIGGS_V3_PROMPT_TEXT`); otherwise use `voice=\"default\"`."
       ],
+      "notes_ja": [],
       "prefix": "HIGGS_V3",
       "params": [
         {
@@ -818,12 +892,18 @@
       "id": "Irodori-TTS",
       "title": "Irodori-TTS",
       "status": "Works",
+      "status_ja": "動作OK",
       "languages": "Japanese",
+      "languages_ja": "日本語",
       "description": "A Japanese TTS using [Aratako/Irodori-TTS](https://github.com/Aratako/Irodori-TTS). By default it uses the Hugging Face model `Aratako/Irodori-TTS-500M-v3` (a Rectified Flow DiT trained from scratch). To fall back to V2 set `IRODORI_HF_CHECKPOINT=Aratako/Irodori-TTS-500M-v2`; for V1 use `Aratako/Irodori-TTS-500M`. Output is high-quality 48 kHz, but there is no voice switching.",
+      "description_ja": "[Aratako/Irodori-TTS](https://github.com/Aratako/Irodori-TTS) を使った日本語 TTS です。デフォルトで Hugging Face の `Aratako/Irodori-TTS-500M-v3`（スクラッチ学習の Rectified Flow DiT）を使用します。V2 にフォールバックする場合は `IRODORI_HF_CHECKPOINT=Aratako/Irodori-TTS-500M-v2`、V1 を利用する場合は `Aratako/Irodori-TTS-500M` を指定してください。出力は 48kHz で高音質ですが、voice の切り替え機能はありません。",
       "notes": [
         "- Default: v3 (Rectified Flow DiT, Duration Predictor + always-on SilentCipher watermark).",
         "- Older variants: \"Aratako/Irodori-TTS-500M-v2\" or v1 (\"Aratako/Irodori-TTS-500M\" + codec_repo=\"facebook/dacvae-watermarked\").",
         "- License: MIT for code ([Aratako/Irodori-TTS](https://github.com/Aratako/Irodori-TTS)), all weight variants (v1/v2/v3), and the Aratako/Semantic-DACVAE-Japanese-32dim codec. Commercial use OK. The author requests ethical use (no impersonation/deepfake)."
+      ],
+      "notes_ja": [
+        "- ライセンス: コードは MIT、モデル重みは MIT (v1 / v2 / v3)。商用利用: OK。 備考: なりすまし・ディープフェイク生成を禁止する倫理規定あり。V3 は SilentCipher ウォーターマーク同梱（除去禁止）"
       ],
       "prefix": "IRODORI",
       "params": [
@@ -872,13 +952,19 @@
       "id": "Irodori-TTS-Lite",
       "title": "Irodori-TTS-Lite (int4-quantized Irodori-TTS, ~1GB VRAM, MIT)",
       "status": "Works (GPU required, ~1GB VRAM, int4-quantized)",
+      "status_ja": "動作OK（GPU 必須、VRAM ~1GB、int4 量子化）",
       "languages": "Japanese",
+      "languages_ja": "日本語",
       "description": "An int4-quantized inference runtime for Irodori-TTS using [kizuna-intelligence/Irodori-TTS-Lite](https://github.com/kizuna-intelligence/Irodori-TTS-Lite). The runtime monkey-patches `irodori_tts.inference_runtime.InferenceRuntime.from_key` so the standard Irodori-TTS pipeline can load 4-bit safetensors with a Triton `FusedInt4Linear` kernel. End-to-end peak VRAM is ~1 GB (vs. ~2 GB for the fp32 path) at essentially unchanged audio quality.",
+      "description_ja": "[kizuna-intelligence/Irodori-TTS-Lite](https://github.com/kizuna-intelligence/Irodori-TTS-Lite) を使った Irodori-TTS の int4 量子化推論ランタイムです。`irodori_tts.inference_runtime.InferenceRuntime.from_key` をモンキーパッチして、4-bit safetensors を Triton の `FusedInt4Linear` カーネルで直接読み込めるようにします。エンドツーエンドのピーク VRAM は約 1 GB（fp32 パスの ~2 GB から削減）で、音質はほぼ劣化しません。",
       "notes": [
         "- Default checkpoint is voice-design int4 (speaker baked in, seconds derived from text via pyopenjtalk).",
         "- For the v3-derived int4 with built-in Duration Predictor, switch to",
         "\"kizuna-intelligence/Irodori-TTS-500M-v3-int4\" AND set IRODORI_LITE_CHECKPOINT_FILE=\"model.safetensors\".",
         "- License: MIT for the default `kizuna-intelligence/Irodori-TTS-Lite-int4` weights, inherited from upstream `Aratako/Irodori-TTS` (MIT). The alternate `kizuna-intelligence/Irodori-TTS-500M-v3-int4` HF card declares no license — confirm with upstream before commercial use."
+      ],
+      "notes_ja": [
+        "- ライセンス: コードは MIT、モデル重みは MIT (`kizuna-intelligence/Irodori-TTS-Lite-int4`, `kizuna-intelligence/Irodori-TTS-500M-v3-int4`)。商用利用: OK。 備考: Irodori-TTS 用の int4 量子化ランタイム。Triton カーネル使用のため Linux + CUDA 必須。`fused_int4_linear.py` は OneCompression（Fujitsu Ltd., MIT）からベンダリング"
       ],
       "prefix": "IRODORI_LITE",
       "params": [
@@ -921,10 +1007,16 @@
       "id": "Kokoro",
       "title": "Kokoro",
       "status": "Works",
+      "status_ja": "動作OK",
       "languages": "Japanese / English / Chinese and more",
+      "languages_ja": "日本語 / 英語 / 中国語 他",
       "description": "A lightweight TTS using [hexgrad/kokoro](https://github.com/hexgrad/kokoro), supporting Japanese, English, and Chinese. The default voice is the Japanese `jf_alpha`, and 9 voices can be selected from the form.",
+      "description_ja": "[hexgrad/kokoro](https://github.com/hexgrad/kokoro) を使った日本語・英語・中国語対応の軽量 TTS です。デフォルト voice は日本語の `jf_alpha` で、フォームから 9 種類の voice を選べます。",
       "notes": [
         "- License: Apache 2.0 for both code ([hexgrad/kokoro](https://github.com/hexgrad/kokoro)) and weights ([hexgrad/Kokoro-82M](https://huggingface.co/hexgrad/Kokoro-82M)). Commercial use OK."
+      ],
+      "notes_ja": [
+        "- ライセンス: コードは Apache 2.0、モデル重みは Apache 2.0。商用利用: OK。"
       ],
       "prefix": "KOKORO_DEFAULT",
       "params": [
@@ -968,12 +1060,18 @@
       "id": "Kokoro-ONNX",
       "title": "Kokoro-ONNX (NVIDIA-optimized Kokoro-82M, onnxruntime, GPU/CPU)",
       "status": "Works",
+      "status_ja": "動作OK",
       "languages": "Japanese / English / Chinese and more",
+      "languages_ja": "日本語 / 英語 / 中国語 他",
       "description": "NVIDIA's ONNX build of Kokoro-82M ([nvidia/kokoro-82M-onnx-opt](https://huggingface.co/nvidia/kokoro-82M-onnx-opt)), run through `onnxruntime` instead of PyTorch. It exposes all 53 preset voices from the model's `voices.bin` and supports the same 9 languages as Kokoro (American/British English, Spanish, French, Hindi, Italian, Japanese, Brazilian Portuguese, Mandarin Chinese). The language is inferred from the voice-name prefix (`a`/`b`=English, `e`=Spanish, `f`=French, `h`=Hindi, `i`=Italian, `j`=Japanese, `p`=Portuguese, `z`=Chinese).",
+      "description_ja": "NVIDIA が Kokoro-82M を ONNX 化したモデル（[nvidia/kokoro-82M-onnx-opt](https://huggingface.co/nvidia/kokoro-82M-onnx-opt)）を、PyTorch ではなく `onnxruntime` で実行するエンジンです。モデル同梱の `voices.bin` から 53 種類すべての preset voice を公開し、Kokoro と同じ 9 言語（米/英英語・スペイン語・フランス語・ヒンディー語・イタリア語・日本語・ブラジルポルトガル語・中国語）に対応します。言語は voice 名の接頭辞（`a`/`b`=英語, `e`=西語, `f`=仏語, `h`=ヒンディー, `i`=伊語, `j`=日本語, `p`=ポルトガル語, `z`=中国語）から自動判定します。",
       "notes": [
         "- NVIDIA's ONNX build of hexgrad/Kokoro-82M, run via onnxruntime with misaki G2P. 53 preset voices, 9 languages.",
         "- provider: auto/cuda prefer GPU and fall back to CPU; cpu forces CPU-only.",
         "- License: Apache 2.0 for both code and weights ([nvidia/kokoro-82M-onnx-opt](https://huggingface.co/nvidia/kokoro-82M-onnx-opt), base [hexgrad/Kokoro-82M](https://huggingface.co/hexgrad/Kokoro-82M)). Commercial use OK."
+      ],
+      "notes_ja": [
+        "- ライセンス: コードは Apache 2.0、モデル重みは Apache 2.0。商用利用: OK。 備考: NVIDIA による hexgrad/Kokoro-82M の ONNX 再配布。コード・重みとも Apache 2.0"
       ],
       "prefix": "KOKORO_ONNX",
       "params": [
@@ -1041,9 +1139,15 @@
       "id": "Kyutai-TTS",
       "title": "Kyutai-TTS (GPU recommended, English/French only, CC-BY-4.0 weights)",
       "status": "Works (GPU recommended)",
+      "status_ja": "動作OK (GPU推奨)",
       "languages": "English / French",
+      "languages_ja": "英語 / フランス語",
       "description": "A streaming TTS using [kyutai-labs/delayed-streams-modeling](https://github.com/kyutai-labs/delayed-streams-modeling) — Kyutai Labs' English / French TTS built on the Delayed Streams Modeling (DSM) framework. The default model is `kyutai/tts-1.6b-en_fr` (1.6B parameters, English + French). Voices are loaded from a separate Hugging Face voice repository (default `kyutai/tts-voices`); the wrapper looks up `KYUTAI_VOICE` (default `expresso/ex03-ex01_happy_001_channel1_334s.wav`) inside that repo for the `default` voice. When `--kyutai-prompt-wav` is provided (a local `.wav` or pre-extracted `.safetensors` voice cache), the `clone` voice becomes available; you can also pass any voice path inside the voice repo directly as the `voice` parameter. A GPU runtime is recommended (CUDA, VRAM ~6GB). Japanese is **not** supported. License: code is MIT (Python) / Apache 2.0 (Rust); model weights are CC-BY-4.0.",
+      "description_ja": "[kyutai-labs/delayed-streams-modeling](https://github.com/kyutai-labs/delayed-streams-modeling) を使った Kyutai Labs の英語 / フランス語 TTS です。Delayed Streams Modeling (DSM) フレームワーク上に実装されており、ストリーミング推論に対応しています。デフォルトモデルは `kyutai/tts-1.6b-en_fr`（1.6B パラメータ、英語 + フランス語）。voice は別の Hugging Face リポ（デフォルト `kyutai/tts-voices`）から読み込まれ、`default` voice では `KYUTAI_VOICE`（デフォルト `expresso/ex03-ex01_happy_001_channel1_334s.wav`）が参照されます。`--kyutai-prompt-wav`（ローカルの `.wav` または事前計算済みの `.safetensors` voice cache）を指定すると `clone` voice が有効になります。任意の voice repo 内パスを `voice` パラメータに直接指定することも可能です。GPU 推奨（CUDA、VRAM ~6GB）。日本語は **非対応**。ライセンス: コードは MIT (Python) / Apache 2.0 (Rust)、モデル重みは CC-BY-4.0。",
       "notes": [],
+      "notes_ja": [
+        "- ライセンス: コードは MIT (Python) / Apache 2.0 (Rust)、モデル重みは CC-BY-4.0。商用利用: OK（要 attribution）。 備考: 英語 / 仏。DSM ベースのストリーミング TTS。GPU 推奨"
+      ],
       "prefix": "KYUTAI",
       "params": [
         {
@@ -1086,13 +1190,19 @@
       "id": "LFM2.5-Audio-JP",
       "title": "LFM2.5-Audio-JP (L4 required, Japanese-only, no voice cloning)",
       "status": "Works on Colab L4 (GPU required, ~6.3GB VRAM resident; ungated weights, no `HF_TOKEN`; single built-in Japanese voice, no cloning; 24 kHz output)",
+      "status_ja": "Colab L4 動作確認済み（GPU 必須、VRAM 常駐 ~6.3GB。重みは ungated で `HF_TOKEN` 不要。内蔵の日本語ボイス1種のみ、cloning 非対応。出力 24 kHz）",
       "languages": "Japanese",
+      "languages_ja": "日本語",
       "description": "A Japanese-only build of Liquid AI's [LFM2.5-Audio](https://huggingface.co/LiquidAI/LFM2.5-Audio-1.5B-JP) — an end-to-end multimodal speech-text model (not a dedicated TTS). It pairs an LFM2.5-1.2B backbone with a FastConformer audio encoder, an RQ-transformer for discrete audio-token generation, and a lightweight LFM2-based audio detokenizer (Mimi codec, 8 codebooks, 24 kHz). The model can do speech-to-speech, ASR, and TTS; this wrapper drives the **TTS path** only.",
+      "description_ja": "Liquid AI の [LFM2.5-Audio](https://huggingface.co/LiquidAI/LFM2.5-Audio-1.5B-JP) の日本語特化版です。専用 TTS ではなく **end-to-end のマルチモーダル音声・テキストモデル**で、LFM2.5-1.2B backbone + FastConformer audio encoder + RQ-transformer（離散音声トークン生成）+ 軽量な LFM2 ベース audio detokenizer（Mimi codec、8 codebooks、24 kHz）で構成されます。音声対話・ASR・TTS が可能で、本ラッパーは **TTS パス**のみを使います。",
       "notes": [
         "- Liquid AI's end-to-end speech-text model (1.5B): speech-to-speech / ASR / TTS. This JP checkpoint is Japanese-only with a single built-in voice (no reference / cloning). Runs in-process via the `liquid-audio` library; output is 24 kHz.",
         "- **No HF_TOKEN needed**: weights ([LiquidAI/LFM2.5-Audio-1.5B-JP](https://huggingface.co/LiquidAI/LFM2.5-Audio-1.5B-JP)) are ungated. Python 3.12 venv installs liquid-audio + torch>=2.8 (flash-attn optional, falls back to torch SDPA).",
         "- TTS uses sequential generation with the system prompt below. Tune length with `LFM2_AUDIO_JP_MAX_NEW_TOKENS` (counts text+audio tokens; audio is ~12.5 frames/sec).",
         "- License: code and weights are **LFM Open License v1.0** (commercial OK for orgs under $10M annual revenue; above that needs a separate commercial license). Audio encoder is Apache-2.0 (NVIDIA NeMo); audio codec (Mimi) is CC-BY-4.0 (Kyutai)."
+      ],
+      "notes_ja": [
+        "- ライセンス: コードは LFM Open License v1.0、モデル重みは LFM Open License v1.0。商用利用: 要注意。 備考: 日本語特化の音声・テキストモデル、TTS パス利用。**年商 $10M 未満は商用 OK**、超過は別途商用ライセンス必須。ungated（HF_TOKEN 不要）"
       ],
       "prefix": "LFM2_AUDIO_JP",
       "params": [
@@ -1132,10 +1242,16 @@
       "id": "MaskGCT",
       "title": "MaskGCT (GPU required, EN/ZH, MIT code / CC-BY-NC-4.0 weights)",
       "status": "Working on Colab (GPU required, ~10-12GB, **non-commercial weights**)",
+      "status_ja": "Colab 動作確認済み (GPU必須・~10-12GB・**商用不可**)",
       "languages": "English / Chinese",
+      "languages_ja": "英語 / 中国語",
       "description": "A Masked Generative Codec Transformer TTS from Amphion ([open-mmlab/Amphion](https://github.com/open-mmlab/Amphion/tree/main/models/tts/maskgct)). Fully non-autoregressive, eliminating the explicit alignment step. Zero-shot voice cloning — every request needs a reference audio. EN / ZH (with optional `prompt_lang` / `target_lang` for other languages).",
+      "description_ja": "[open-mmlab/Amphion](https://github.com/open-mmlab/Amphion/tree/main/models/tts/maskgct) の Masked Generative Codec Transformer TTS です（Amphion）。完全な non-autoregressive で明示的なアラインメントが不要。ゼロショット voice cloning で、毎リクエストに参照音声が必要です。英 / 中（`prompt_lang` / `target_lang` で他言語も）。",
       "notes": [
         "- **Non-commercial only.** Zero-shot voice cloning — always uses a reference audio."
+      ],
+      "notes_ja": [
+        "- ライセンス: コードは MIT、モデル重みは CC BY-NC 4.0。商用利用: **不可**。 備考: 英 / 中 ゼロショット音声クローン。重みは非商用"
       ],
       "prefix": "MASKGCT",
       "params": [
@@ -1195,11 +1311,15 @@
       "id": "MeloTTS",
       "title": "MeloTTS",
       "status": "Not working",
+      "status_ja": "動作不可",
       "languages": "-",
+      "languages_ja": "-",
       "description": "Intended to use [myshell-ai/MeloTTS](https://github.com/myshell-ai/MeloTTS), but the dependency `tokenizers` requires a Rust compiler to build, so installation fails in the current Colab environment.",
+      "description_ja": "[myshell-ai/MeloTTS](https://github.com/myshell-ai/MeloTTS) を使う構成ですが、依存パッケージ `tokenizers` のビルドに Rust コンパイラが必要なため、現在の Colab 環境ではインストールに失敗します。",
       "notes": [
         "- License: MIT for both code ([myshell-ai/MeloTTS](https://github.com/myshell-ai/MeloTTS)) and the per-language weight repos. Commercial use OK."
       ],
+      "notes_ja": [],
       "prefix": "MELO",
       "params": [
         {
@@ -1240,8 +1360,11 @@
       "id": "Ming-omni-TTS",
       "title": "Ming-omni-TTS (A100 required, ~34GB weights, Chinese/English-centric, voice cloning)",
       "status": "Works on Colab A100 (verified; **A100 40GB required** — 16.8B-A3B MoE, ~35GB VRAM at load, needs `PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True` to fit and will not run on L4 24GB; ungated weights, no `HF_TOKEN`; zero-shot cloning; 44.1 kHz output)",
+      "status_ja": "Colab A100 動作確認済み（**A100 40GB 必須** — 16.8B-A3B MoE、ロード時 ~35GB VRAM。40GB に収めるため `PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True` が必要で L4 24GB では動かない。重みは ungated で `HF_TOKEN` 不要。zero-shot cloning。出力 44.1 kHz）",
       "languages": "Chinese / English-centric (dialect control incl. Cantonese)",
+      "languages_ja": "中国語 / 英語が中心（広東語などの方言制御あり）",
       "description": "inclusionAI's [Ming-omni-tts](https://github.com/inclusionAI/Ming-omni-tts), the **16.8B-A3B** checkpoint — a Mixture-of-Experts audio language model (~3B active parameters) built on a custom 12.5 Hz continuous tokenizer with a DiT (diffusion-transformer) acoustic head over a 44.1 kHz codec. It supports zero-shot voice cloning, natural-language voice design, emotion/dialect/rate control, and even speech-with-BGM and TTA, with strong Chinese (incl. Cantonese) and English coverage. Default model: `inclusionAI/Ming-omni-tts-16.8B-A3B`.",
+      "description_ja": "inclusionAI の [Ming-omni-tts](https://github.com/inclusionAI/Ming-omni-tts) の **16.8B-A3B** チェックポイントです。Mixture-of-Experts の音声言語モデル（active ~3B パラメータ）で、独自の 12.5 Hz 連続トークナイザ + DiT（diffusion-transformer）音響ヘッド（44.1 kHz codec）で構成されます。zero-shot voice cloning、自然言語による voice design、感情・方言・話速の制御、さらに BGM 付き音声生成や TTA まで対応し、中国語（広東語含む）と英語に強みがあります。デフォルトモデル: `inclusionAI/Ming-omni-tts-16.8B-A3B`。",
       "notes": [
         "- inclusionAI's 16.8B-A3B MoE audio LM (~3B active params) with a 12.5 Hz continuous tokenizer + DiT head. Runs in-process (no separate backend).",
         "- **A100 40GB required**: the 16.8B checkpoint is ~34GB in bf16 and will not fit on an L4 (24GB). Python 3.10 venv installs torch==2.6.0 + grouped_gemm (MoE kernel, built from source) + a FlashAttention wheel.",
@@ -1249,6 +1372,9 @@
         "- `default` = the built-in voice (zero speaker-embedding, no reference). Set `MING_OMNI_TTS_PROMPT_WAV` (optionally `MING_OMNI_TTS_PROMPT_TEXT`) and use `voice=\"clone\"` for zero-shot cloning. Output is 44.1 kHz.",
         "- License: code is **MIT** ([GitHub](https://github.com/inclusionAI/Ming-omni-tts)), weights are **Apache-2.0** (HF model card). Both allow commercial use. Misuse for impersonation/fraud/disinformation is prohibited by the upstream terms.",
         "- **Prompt-driven control**: `MING_OMNI_TTS_TASK` switches what to generate — `speech`, `music`, or `tta` (sound events); for `music`/`tta` the input text is a description. `MING_OMNI_TTS_STYLE` / `_EMOTION` / `_DIALECT` are natural-language voice design (mapped to the Chinese instruction keys 风格 / 情感 / 方言; best written in Chinese, e.g. style=`温柔自然的年轻女性声音` for a gentle female voice). All optional — empty keeps the plain `default`/`clone` behavior. They can also be overridden per request via the `task`/`style`/`emotion`/`dialect` body fields."
+      ],
+      "notes_ja": [
+        "- ライセンス: コードは MIT、モデル重みは Apache 2.0。商用利用: OK。 備考: 16.8B-A3B MoE 音声 LM（active ~3B）。**A100 40GB 必須**（bf16 で ~34GB の重み）。中国語/英語が中心、方言制御あり。zero-shot cloning。コード MIT（GitHub）、重み Apache-2.0（HF カード）。ungated（HF_TOKEN 不要）"
       ],
       "prefix": "MING_OMNI_TTS",
       "params": [
@@ -1339,9 +1465,13 @@
       "id": "MioTTS",
       "title": "MioTTS",
       "status": "Works on Colab L4 (verified; GPU required, **~4.6GB VRAM** resident — LLM ~3.2GB + codec ~1.4GB, so T4 16GB has ample headroom; LLM-based — a Qwen3-1.7B-Base GGUF hosted via a prebuilt llama-cpp-python CUDA wheel generates MioCodec tokens at 25 Hz → 44.1 kHz; **~4× faster than real time, RTF ≈ 0.25**; ungated weights, no `HF_TOKEN`; preset voices or zero-shot cloning. **Default presets are non-commercial** — clone your own voice for commercial use)",
+      "status_ja": "Colab L4 動作確認済み（GPU 必須、**VRAM 約4.6GB** 常駐 — LLM 約3.2GB + codec 約1.4GB。T4 16GB でも十分。LLM ベース — Qwen3-1.7B-Base GGUF をプリビルド llama-cpp-python CUDA wheel で host し MioCodec トークン[25Hz]を生成 → 44.1kHz。**実時間の約4倍速、RTF ≈ 0.25**。重みは ungated で `HF_TOKEN` 不要。プリセット音声 / ゼロショットクローン。**デフォルトプリセットは商用利用不可** — 商用時は自分の音声で clone）",
       "languages": "Japanese / English",
+      "languages_ja": "日本語 / 英語",
       "description": "[Aratako/MioTTS-Inference](https://github.com/Aratako/MioTTS-Inference) is an LLM-based TTS. A standard LLM backbone (default [`Aratako/MioTTS-1.7B`](https://huggingface.co/Aratako/MioTTS-1.7B), a fine-tune of `Qwen/Qwen3-1.7B-Base`) autoregressively generates **MioCodec** tokens at 25 Hz, which the codec decodes to 44.1 kHz audio. The low frame rate (few tokens per second) is what makes synthesis fast.",
+      "description_ja": "[Aratako/MioTTS-Inference](https://github.com/Aratako/MioTTS-Inference) は LLM ベースの TTS です。汎用 LLM backbone（既定は [`Aratako/MioTTS-1.7B`](https://huggingface.co/Aratako/MioTTS-1.7B)、`Qwen/Qwen3-1.7B-Base` のファインチューン）が **MioCodec** トークンを 25 Hz で自己回帰生成し、codec が 44.1 kHz 音声へデコードします。フレームレートが低い（秒あたりのトークン数が少ない）ことが高速合成の理由です。",
       "notes": [],
+      "notes_ja": [],
       "prefix": "",
       "params": []
     },
@@ -1349,8 +1479,11 @@
       "id": "MisoTTS",
       "title": "MisoTTS (A100 required — Sesame CSM fork, 8B, English-centric, Modified MIT)",
       "status": "Works on A100, no `HF_TOKEN` needed (Llama 3.2 tokenizer sourced from the ungated `unsloth/Llama-3.2-1B` mirror; 8B Sesame-CSM fork, ~32GB F32 checkpoint → ~16GB bf16 on GPU; T4/L4 expected to OOM)",
+      "status_ja": "A100 で動作・`HF_TOKEN` 不要（Llama 3.2 トークナイザは ungated な `unsloth/Llama-3.2-1B` ミラーから取得。8B の Sesame-CSM フォーク、~32GB F32 ckpt → GPU 上 bf16 ~16GB。T4/L4 は OOM 想定）",
       "languages": "English-centric (Llama 8B base + Mimi codec; upstream does not document other languages)",
+      "languages_ja": "英語中心（Llama 8B ベース + Mimi codec。その他言語は upstream 未記載）",
       "description": "An 8B conversational speech model from Miso Labs using [MisoLabsAI/MisoTTS](https://github.com/MisoLabsAI/MisoTTS) with the `MisoLabs/MisoTTS` weights on Hugging Face. It is a **fork of Sesame CSM** — a Llama-style 8B backbone plus a ~300M audio decoder that produces Mimi codec audio at 24 kHz, so the API mirrors CSM (`load_miso_8b` / `Segment` / `generate(text, speaker, context, max_audio_length_ms, temperature, topk)`).",
+      "description_ja": "[MisoLabsAI/MisoTTS](https://github.com/MisoLabsAI/MisoTTS) を使った Miso Labs の対話特化 8B TTS で、Hugging Face の `MisoLabs/MisoTTS` 重みを利用します。**Sesame CSM のフォーク**であり、Llama 系の 8B backbone + ~300M の音声デコーダが 24kHz の Mimi codec 音声を出力します。そのため API は CSM と同型です（`load_miso_8b` / `Segment` / `generate(text, speaker, context, max_audio_length_ms, temperature, topk)`）。",
       "notes": [
         "- **No HF_TOKEN needed**: `generator.py` hardcodes the gated `meta-llama/Llama-3.2-1B` tokenizer, so the wrapper redirects it to the ungated, byte-identical `MISOTTS_TOKENIZER_REPO` (default `unsloth/Llama-3.2-1B`). Set it to `meta-llama/Llama-3.2-1B` (with `HF_TOKEN` + license acceptance) to use the official source instead.",
         "- License: MisoTTS code & weights are **Modified MIT** ([MisoLabsAI/MisoTTS](https://github.com/MisoLabsAI/MisoTTS), [MisoLabs/MisoTTS](https://huggingface.co/MisoLabs/MisoTTS)) — commercial use OK, but products with >50M MAU or >$10M/month revenue must display \"Miso Labs\" in the UI. The Llama 3.2 tokenizer (ungated mirror or official) is governed by the **Llama 3.2 Community License**. Output carries an inaudible SilentCipher watermark applied inside `generate()` (do not remove).",
@@ -1359,6 +1492,9 @@
         "- Aratako's LLM-based TTS: a Qwen3-1.7B-Base backbone generates MioCodec tokens (25 Hz) that decode to 44.1 kHz audio. We host the GGUF (`MIOTTS_GGUF_REPO`/`MIOTTS_GGUF_FILE`) with a prebuilt **llama-cpp-python CUDA wheel** (no Linux CUDA `llama-server` binary exists), run `run_server.py` as the synthesis backend, and proxy its `/v1/tts` as OpenAI-compatible `/v1/audio/speech`. Match `MIOTTS_LLAMA_CUDA` to Colab's CUDA (cu121..cu125).",
         "- `default` uses the shipped preset `MIOTTS_DEFAULT_PRESET`; you can also pass a preset name directly as the voice (`jp_female` / `jp_male` / `en_female` / `en_male`). Set `MIOTTS_PROMPT_WAV` and use `voice=\"clone\"` for your own reference audio.",
         "- License: code is **MIT**, **MioTTS-1.7B** weights are **Apache-2.0** ([HF](https://huggingface.co/Aratako/MioTTS-1.7B)), **MioCodec** is **Apache-2.0**. ⚠️ The bundled default presets are derived from T5Gemma-TTS / Gemini 2.5 Pro TTS and **cannot be used commercially** — clone your own voice for commercial use."
+      ],
+      "notes_ja": [
+        "- ライセンス: コードは Modified MIT、モデル重みは Modified MIT。商用利用: OK。 備考: 8B の Sesame-CSM フォーク、**A100 必須**（~32GB F32 ckpt → bf16 ~16GB）。英語中心。トークナイザは ungated な `unsloth/Llama-3.2-1B` ミラーから取得（Llama 3.2 Community License は適用。`HF_TOKEN` 不要）。ゼロショット音声クローン。SilentCipher ウォーターマーク。MAU 5,000万超 or 月商 $1,000万超は UI に \"Miso Labs\" 表示義務"
       ],
       "prefix": "",
       "params": [
@@ -1528,9 +1664,15 @@
       "id": "MOSS-TTS-Nano",
       "title": "MOSS-TTS-Nano (CPU OK)",
       "status": "Works (output truncated to ~2s)",
+      "status_ja": "動作（出力が約2秒で切れる）",
       "languages": "Japanese / English / Chinese and 20 languages",
+      "languages_ja": "日本語 / 英語 / 中国語 他 20言語",
       "description": "A lightweight multilingual TTS using [OpenMOSS/MOSS-TTS-Nano](https://github.com/OpenMOSS/MOSS-TTS-Nano). Only 0.1B (100M) parameters, supports 20 languages including Japanese / English / Chinese, and runs on CPU without a GPU. Default Hugging Face model: `OpenMOSS-Team/MOSS-TTS-Nano-100M`. Launched in `continuation` mode (plain TTS without a prompt audio). Output is 48 kHz stereo. License: Apache-2.0. Note: audio is generated successfully, but output is currently truncated to roughly the first ~2 seconds regardless of input length. The wrapper delegates generation to MOSS-TTS-Nano's `model.inference()`; exposing a length parameter on the upstream `inference()` API is likely needed to fix this.",
+      "description_ja": "[OpenMOSS/MOSS-TTS-Nano](https://github.com/OpenMOSS/MOSS-TTS-Nano) を使った軽量多言語 TTS です。わずか 0.1B（100M）パラメータで、日本語・英語・中国語を含む 20 言語に対応し、GPU 不要・CPU のみで動作します。デフォルトの Hugging Face モデルは `OpenMOSS-Team/MOSS-TTS-Nano-100M`。`continuation` モード（プロンプト音声なしの plain TTS）で起動します。出力は 48 kHz ステレオ。ライセンス: Apache-2.0。注意: 音声自体は正常に生成されますが、現状では入力テキストの長さに関わらず出力が先頭 2 秒程度で切れてしまいます。ラッパーは MOSS-TTS-Nano の `model.inference()` に生成を委譲しているだけなので、修正には上流 `inference()` API 側で生成長パラメータを露出させる必要がありそうです。",
       "notes": [],
+      "notes_ja": [
+        "- ライセンス: コードは Apache 2.0、モデル重みは Apache 2.0。商用利用: OK。 備考: 100M パラメータ、CPU 動作可"
+      ],
       "prefix": "MOSS_TTS_NANO",
       "params": [
         {
@@ -1555,13 +1697,19 @@
       "id": "MOSS-TTS-v1.5",
       "title": "MOSS-TTS-v1.5 (A100 required — L4 22GB is insufficient, 31 languages, Apache 2.0)",
       "status": "Works on A100 (L4 22GB is insufficient — model + activations + audio tokenizer exceed 22GB)",
+      "status_ja": "A100 で動作確認（L4 22GB は VRAM 不足：モデル+activation+音声トークナイザーで超過）",
       "languages": "Japanese / English / Chinese / Korean and 31 languages",
+      "languages_ja": "日本語 / 英語 / 中国語 / 韓国語 他 31言語",
       "description": "An 8B-parameter LLM-based multilingual TTS using [OpenMOSS/MOSS-TTS](https://github.com/OpenMOSS/MOSS-TTS) with the `OpenMOSS-Team/MOSS-TTS-v1.5` weights on Hugging Face. Supports **31 languages** (Chinese, Cantonese, English, Arabic, Czech, Danish, Dutch, Finnish, French, German, Greek, Hebrew, Hindi, Hungarian, Italian, **Japanese**, Korean, Macedonian, Malay, Persian, Polish, Portuguese, Romanian, Russian, Spanish, Swahili, Swedish, Tagalog, Thai, Turkish, Vietnamese) with explicit language tagging via the `MOSS_TTS_V1_5_LANGUAGE` form field. Zero-shot voice cloning is supported by pointing `MOSS_TTS_V1_5_PROMPT_WAV` at a reference audio file and selecting `voice=\"clone\"`. **Colab A100 is required** — although the bf16 weights are nominally ~16 GB, transformers' `device_map=` path pre-allocates KV cache and attention buffers that push the resident GPU footprint to ~22 GB *before* the audio tokenizer is moved to GPU, which exceeds L4's 22 GB total VRAM (verified end-to-end on Colab A100, OOM-confirmed on Colab L4). On A100 the full pipeline loads and synth completes in ~4 s per request at 24 kHz mono. The installer creates a dedicated Python 3.12 venv and installs the upstream `[torch-runtime]` extra (`torch==2.9.1+cu128`, `transformers==5.0.0`) plus `accelerate` (required by `device_map=`). Default `attn_implementation` is `sdpa`; switch to `flash_attention_2` only if you've installed `flash-attn` first. License: code and weights are both **Apache 2.0** (commercial use OK).",
+      "description_ja": "[OpenMOSS/MOSS-TTS](https://github.com/OpenMOSS/MOSS-TTS) の 8B パラメータ LLM ベース多言語 TTS で、Hugging Face の `OpenMOSS-Team/MOSS-TTS-v1.5` を使用します。中国語、広東語、英語、アラビア語、チェコ語、デンマーク語、オランダ語、フィンランド語、フランス語、ドイツ語、ギリシャ語、ヘブライ語、ヒンディー語、ハンガリー語、イタリア語、**日本語**、韓国語、マケドニア語、マレー語、ペルシャ語、ポーランド語、ポルトガル語、ルーマニア語、ロシア語、スペイン語、スワヒリ語、スウェーデン語、タガログ語、タイ語、トルコ語、ベトナム語の **31 言語**に対応します。フォームの `MOSS_TTS_V1_5_LANGUAGE` で言語タグを明示できます。`MOSS_TTS_V1_5_PROMPT_WAV` に参照音声を指定して `voice=\"clone\"` を選ぶことでゼロショット voice cloning も使えます。**Colab A100 が必須**です — bf16 重みは公称 16 GB ですが、transformers の `device_map=` 経由ロードで KV cache / attention buffer まで先取り確保される結果、音声トークナイザーを GPU に移す前で既に約 22 GB を占有し、L4 (22 GB) ではこの段階で OOM します（Colab A100 で end-to-end 確認済み、L4 で OOM 再現済み）。A100 では合成は 1 リクエストあたり約 4 秒（24 kHz mono）で完了します。インストーラは専用の Python 3.12 venv を作成し、上流の `[torch-runtime]` extra（`torch==2.9.1+cu128` / `transformers==5.0.0`）と `accelerate`（`device_map=` に必要）を導入します。`attn_implementation` のデフォルトは `sdpa` で、`flash_attention_2` に切り替える場合は別途 `flash-attn` のインストールが必要です。ライセンス: コード・重みとも **Apache 2.0**（商用利用 OK）。",
       "notes": [
         "- 8B-parameter LLM-based TTS from [OpenMOSS/MOSS-TTS](https://github.com/OpenMOSS/MOSS-TTS) with zero-shot voice cloning.",
         "- Verified on Colab A100; OOM-confirmed on Colab L4 (22GB) — transformers device_map pre-allocates ~22GB at load before the audio tokenizer is moved to GPU.",
         "- Installs with the upstream `[torch-runtime]` extra (`torch==2.9.1+cu128`, `transformers==5.0.0`) plus `accelerate` under a dedicated Python 3.12 venv.",
         "- License: code and weights are both Apache 2.0. Commercial use OK."
+      ],
+      "notes_ja": [
+        "- ライセンス: コードは Apache 2.0、モデル重みは Apache 2.0。商用利用: OK。 備考: 8B パラメータ、**A100 必須**（ロード時 ~22GB + 音声トークナイザー。L4 22GB は不足）。31言語（日本語含む）。ゼロショット voice cloning"
       ],
       "prefix": "MOSS_TTS_V1_5",
       "params": [
@@ -1649,13 +1797,19 @@
       "id": "MOSS-TTS-Local-v1.5",
       "title": "MOSS-TTS-Local-v1.5 (L4 OK — ~4B MossTTSLocal, 31 languages, 48kHz stereo, Apache 2.0)",
       "status": "Works on L4 (~4B MossTTSLocal, ~12.4GB VRAM — fits where the 8B v1.5 OOMs)",
+      "status_ja": "L4 で動作確認（~4B MossTTSLocal、~12.4GB VRAM。8B 版が OOM する L4 でも動作）",
       "languages": "Japanese / English / Chinese / Korean and 31 languages",
+      "languages_ja": "日本語 / 英語 / 中国語 / 韓国語 他 31言語",
       "description": "A ~4B-parameter `MossTTSLocal` checkpoint from [OpenMOSS/MOSS-TTS](https://github.com/OpenMOSS/MOSS-TTS) using the `OpenMOSS-Team/MOSS-TTS-Local-Transformer-v1.5` weights on Hugging Face. It shares the same OpenAI-compatible wrapper and the same **31 languages** (Chinese, Cantonese, English, Arabic, Czech, Danish, Dutch, Finnish, French, German, Greek, Hebrew, Hindi, Hungarian, Italian, **Japanese**, Korean, Macedonian, Malay, Persian, Polish, Portuguese, Romanian, Russian, Spanish, Swahili, Swedish, Tagalog, Thai, Turkish, Vietnamese) and zero-shot voice cloning as the 8B `MOSS-TTS-v1.5`, controlled by the `MOSS_LOCAL_V1_5_LANGUAGE` form field and `MOSS_LOCAL_V1_5_PROMPT_WAV` + `voice=\"clone\"`. The key difference is architecture and size: it uses the time-synchronous `MossTTSLocal` design (RVQ depth transformer) at ~4B parameters instead of the 8B `MossTTSDelay`, and decodes through MOSS-Audio-Tokenizer-v2 for native 48 kHz stereo output. Because it is roughly half the size of the 8B v1.5, it fits comfortably within Colab L4's 22 GB VRAM — verified end-to-end on Colab L4 at ~12.4 GB resident, where the 8B v1.5 OOMs (synth emits native 48 kHz stereo WAV, ~6 s for a one-sentence clip). The installer mirrors the v1.5 setup: a dedicated Python 3.12 venv with the upstream `[torch-runtime]` extra (`torch==2.9.1+cu128`, `transformers==5.0.0`) plus `accelerate` (required by `device_map=`). Default `attn_implementation` is `sdpa`; switch to `flash_attention_2` only if you've installed `flash-attn` first. License: code and weights are both **Apache 2.0** (commercial use OK).",
+      "description_ja": "[OpenMOSS/MOSS-TTS](https://github.com/OpenMOSS/MOSS-TTS) の ~4B パラメータ `MossTTSLocal` 系チェックポイントで、Hugging Face の `OpenMOSS-Team/MOSS-TTS-Local-Transformer-v1.5` を使用します。OpenAI 互換ラッパーと **31 言語**（中国語、広東語、英語、アラビア語、チェコ語、デンマーク語、オランダ語、フィンランド語、フランス語、ドイツ語、ギリシャ語、ヘブライ語、ヒンディー語、ハンガリー語、イタリア語、**日本語**、韓国語、マケドニア語、マレー語、ペルシャ語、ポーランド語、ポルトガル語、ルーマニア語、ロシア語、スペイン語、スワヒリ語、スウェーデン語、タガログ語、タイ語、トルコ語、ベトナム語）、ゼロショット voice cloning は 8B の `MOSS-TTS-v1.5` と共通で、`MOSS_LOCAL_V1_5_LANGUAGE` フォームフィールドおよび `MOSS_LOCAL_V1_5_PROMPT_WAV` + `voice=\"clone\"` で制御します。大きな違いはアーキテクチャとサイズで、8B の `MossTTSDelay` ではなく時間同期型の `MossTTSLocal`（RVQ depth transformer）を ~4B パラメータで採用し、MOSS-Audio-Tokenizer-v2 を介してネイティブ 48 kHz ステレオで出力します。8B 版のおよそ半分のサイズなので、Colab L4 の 22 GB VRAM に余裕を持って収まります — Colab L4 で end-to-end 確認済み（resident ~12.4 GB。8B 版が OOM する L4 でも動作。出力はネイティブ 48 kHz ステレオ WAV、1 文で約 6 秒）。インストーラは v1.5 と同じ構成で、専用の Python 3.12 venv に上流の `[torch-runtime]` extra（`torch==2.9.1+cu128` / `transformers==5.0.0`）と `accelerate`（`device_map=` に必要）を導入します。`attn_implementation` のデフォルトは `sdpa` で、`flash_attention_2` に切り替える場合は別途 `flash-attn` のインストールが必要です。ライセンス: コード・重みとも **Apache 2.0**（商用利用 OK）。",
       "notes": [
         "- ~4B-parameter MossTTSLocal checkpoint from [OpenMOSS/MOSS-TTS](https://github.com/OpenMOSS/MOSS-TTS) with zero-shot voice cloning.",
         "- Lighter than the 8B MOSS-TTS-v1.5 (MossTTSDelay), so it fits on Colab L4; uses MOSS-Audio-Tokenizer-v2 for native 48kHz stereo output.",
         "- Installs with the upstream `[torch-runtime]` extra (`torch==2.9.1+cu128`, `transformers==5.0.0`) plus `accelerate` under a dedicated Python 3.12 venv.",
         "- License: code and weights are both Apache 2.0. Commercial use OK."
+      ],
+      "notes_ja": [
+        "- ライセンス: コードは Apache 2.0、モデル重みは Apache 2.0。商用利用: OK。 備考: ~4B MossTTSLocal パラメータ、L4 で動作確認（~12.4GB。8B 版は L4 で OOM）。48kHz ステレオ。31言語（日本語含む）。ゼロショット voice cloning"
       ],
       "prefix": "MOSS_LOCAL_V1_5",
       "params": [
@@ -1743,14 +1897,20 @@
       "id": "NeuTTS",
       "title": "NeuTTS (CPU OK, EN/ES/DE/FR, voice cloning)",
       "status": "Works (CPU OK, voice cloning)",
+      "status_ja": "動作OK (CPU可・voice cloning)",
       "languages": "English / Spanish / German / French",
+      "languages_ja": "英語 / スペイン語 / ドイツ語 / フランス語",
       "description": "An on-device TTS using [neuphonic/neutts](https://github.com/neuphonic/neutts). Uses **instant voice cloning** — every request is rendered in the voice of a reference audio file, so there is no preset speaker concept. Five reference voices bundled in the upstream repo are exposed via the OpenAI `voice` parameter:",
+      "description_ja": "[neuphonic/neutts](https://github.com/neuphonic/neutts) を使ったオンデバイス TTS です。**インスタント voice cloning** を採用しており、リクエストごとに参照音声の声色で合成します（プリセット話者という概念はありません）。upstream リポジトリに同梱されている 5 つの参照音声を OpenAI 互換 API の `voice` パラメータから指定できます:",
       "notes": [
         "- License is **split** across backbones:",
         "- Code [neuphonic/neutts](https://github.com/neuphonic/neutts): Apache 2.0.",
         "- Weights `neuphonic/neutts-air` and codec `neuphonic/neucodec`: Apache 2.0 (commercial use OK).",
         "- Weights `neuphonic/neutts-nano` and the per-language Nano variants (`-french` / `-german` / `-spanish`): **NeuTTS Open License v1.0** — commercial use OK only if your annual revenue is below USD $5M; above that, a paid license from Neuphonic is required.",
         "- All outputs include a Resemble Perth (imperceptible) watermark."
+      ],
+      "notes_ja": [
+        "- ライセンス: コードは Apache 2.0、モデル重みは Apache 2.0 (Air) / NeuTTS Open License 1.0 (Nano)。商用利用: OK (Air) / 規約要確認 (Nano)。 備考: ボイスクローン。英 / 西 / 独 / 仏"
       ],
       "prefix": "NEUTTS",
       "params": [
@@ -1792,11 +1952,17 @@
       "id": "OpenVoice-V2",
       "title": "OpenVoice V2 (GPU recommended, multilingual incl JP, voice cloning, MIT)",
       "status": "Not working (Python 3.13 / `av==10` build failure)",
+      "status_ja": "動作不可（Python 3.13 で `av==10` がビルドできない）",
       "languages": "Japanese / English / Spanish / French / Chinese / Korean",
+      "languages_ja": "日本語 / 英語 / 西 / 仏 / 中 / 韓",
       "description": "Intended to use [myshell-ai/OpenVoice](https://github.com/myshell-ai/OpenVoice) V2 — a two-stage voice cloning TTS that first synthesises base speech with MeloTTS, then runs a ToneColorConverter (V2 checkpoints) to match the timbre of a reference clip. Both the code and the weights are MIT, so commercial use is allowed.",
+      "description_ja": "[myshell-ai/OpenVoice](https://github.com/myshell-ai/OpenVoice) V2 を使う構成で、2 段階の voice cloning TTS（MeloTTS でベース合成 → ToneColorConverter で声色変換）として実装しています。コード・重みともに MIT で商用利用可。",
       "notes": [
         "- Pipeline: MeloTTS base TTS -> ToneColorConverter (V2 checkpoints).",
         "- May hit the same MeloTTS dependency issue that breaks the standalone MeloTTS engine."
+      ],
+      "notes_ja": [
+        "- ライセンス: コードは MIT、モデル重みは MIT。商用利用: OK。 備考: 多言語（日本語含む）。voice cloning。現在動作不可: `faster-whisper==0.9.0` 経由の `av==10` が Python 3.13 でビルドできない"
       ],
       "prefix": "OPENVOICE",
       "params": [
@@ -1836,8 +2002,11 @@
       "id": "Orpheus-TTS",
       "title": "Orpheus-TTS (currently not working — HF-gated weights)",
       "status": "Not working (HF-gated weights, requires Llama 3.2 license acceptance + `HF_TOKEN`)",
+      "status_ja": "動作不可（HF gated 重み・Llama 3.2 ライセンス同意 + `HF_TOKEN` 必須）",
       "languages": "English (Llama-3.2-3B base, vLLM)",
+      "languages_ja": "英語（Llama-3.2-3B ベース、vLLM）",
       "description": "Intended to use [canopyai/Orpheus-TTS](https://github.com/canopyai/Orpheus-TTS) by Canopy Labs — an English LLM-TTS built on `meta-llama/Llama-3.2-3B-Instruct` and served via vLLM through the `orpheus-speech` package. The default checkpoint `canopylabs/orpheus-tts-0.1-finetune-prod` ships with 8 English voices: `tara`, `leah`, `jess`, `leo`, `dan`, `mia`, `zac`, `zoe`. Output is 24 kHz mono WAV. Japanese is **not** supported.",
+      "description_ja": "",
       "notes": [
         "- Code: Apache 2.0. Weights: Apache 2.0 + Llama 3.2 Community License (base model).",
         "- Pinned to vllm==0.7.3 due to a known regression in newer vLLM 0.7.x.",
@@ -1845,6 +2014,9 @@
         "meta-llama/Llama-3.2-3B-Instruct on HF, accept the Llama 3.2 license,",
         "then set `HF_TOKEN` (Colab Secrets → New secret with notebook access).",
         "See the README \"Orpheus-TTS\" section for the full setup."
+      ],
+      "notes_ja": [
+        "- ライセンス: コードは Apache 2.0、モデル重みは Apache 2.0 + Llama 3.2 Community License。商用利用: 要注意。 備考: ベースが Llama-3.2-3B-Instruct のため Llama Community License も実質適用。英語のみ。**現在動作不可: 重みが HF gated で Llama 3.2 ライセンス同意 + `HF_TOKEN` が必須**"
       ],
       "prefix": "ORPHEUS",
       "params": [
@@ -1882,12 +2054,16 @@
       "id": "OuteTTS",
       "title": "OuteTTS (CPU OK, multilingual incl JP, voice cloning)",
       "status": "Works (CPU OK)",
+      "status_ja": "動作OK (CPU可)",
       "languages": "Japanese / English / Chinese and many languages",
+      "languages_ja": "日本語 / 英語 / 中国語 他 多言語",
       "description": "A lightweight multilingual TTS using [edwko/OuteTTS](https://github.com/edwko/OuteTTS). Supports many languages including Japanese, with two model sizes (`0.6B` and `1B`) and multiple backends (`HF` for transformers, `LLAMACPP` for GGUF). Voice cloning is exposed via `--outetts-prompt-wav` (and an optional `--outetts-prompt-text` transcript). The default voice uses one of the bundled built-in speaker profiles, configurable via `--outetts-default-speaker` (e.g., `EN-FEMALE-1-NEUTRAL`). For best Japanese results, create a Japanese speaker profile from a reference clip with `clone`. Runs on CPU or GPU.",
+      "description_ja": "[edwko/OuteTTS](https://github.com/edwko/OuteTTS) を使った軽量多言語 TTS です。日本語を含む多言語に対応し、モデルサイズ（`0.6B` / `1B`）と backend（`HF` = transformers / `LLAMACPP` = GGUF）を選択できます。`--outetts-prompt-wav`（必要なら `--outetts-prompt-text` も）で voice cloning を有効にできます。デフォルト voice は `--outetts-default-speaker`（例: `EN-FEMALE-1-NEUTRAL`）で内蔵 speaker プロファイルを切り替えられます。日本語を発話させる場合は、日本語の参照音声から `clone` で speaker プロファイルを作るのが推奨です。CPU / GPU の両方で動作します。",
       "notes": [
         "- 0.6B: code/weights both Apache 2.0 (commercial use OK).",
         "- 1B: weights are CC-BY-NC-SA-4.0 + Llama 3.2 Community License (non-commercial only)."
       ],
+      "notes_ja": [],
       "prefix": "OUTETTS",
       "params": [
         {
@@ -1944,10 +2120,16 @@
       "id": "Piper",
       "title": "Piper",
       "status": "Works",
+      "status_ja": "動作OK",
       "languages": "English (default) / multilingual",
+      "languages_ja": "英語（デフォルト）/ 多言語",
       "description": "Launches the [piper-tts](https://github.com/OHF-Voice/piper1-gpl) built-in HTTP server as a backend and puts an OpenAI-compatible wrapper in front of it. The default is the English `en_US-lessac-medium`. Dependencies are light and setup is stable.",
+      "description_ja": "[piper-tts](https://github.com/OHF-Voice/piper1-gpl) の内蔵 HTTP サーバーをバックエンドとして起動し、その前段に OpenAI 互換ラッパーを載せています。デフォルトは英語の `en_US-lessac-medium` です。依存が軽く、セットアップが安定しています。",
       "notes": [
         "- License: code is MIT ([rhasspy/piper](https://github.com/rhasspy/piper)). The default `rhasspy/piper-voices` repo is MIT at the repo level, but **each individual voice has its own license** (MIT / CC0 / CC-BY / CC-BY-SA / etc.) depending on dataset provenance. Before commercial deployment, check the specific voice's MODEL_CARD inside the voice repo."
+      ],
+      "notes_ja": [
+        "- ライセンス: コードは GPL-3.0、モデル重みは MIT。商用利用: 要注意。 備考: デフォルト音声 `en_US-lessac-medium` の学習データ（Blizzard 2013）は研究目的限定・商用利用不可"
       ],
       "prefix": "PIPER",
       "params": [
@@ -1969,9 +2151,15 @@
       "id": "Piper-Plus",
       "title": "Piper-Plus",
       "status": "Works",
+      "status_ja": "動作OK",
       "languages": "Japanese / English / Chinese and 6 languages",
+      "languages_ja": "日本語 / 英語 / 中国語 他 6言語",
       "description": "A lightweight, Japanese-capable TTS based on [ayutaz/piper-plus](https://github.com/ayutaz/piper-plus). It enhances the original Piper with better Japanese quality (OpenJTalk + prosody) and a GPL-free (MIT) license. No GPU required, runs quickly on CPU. The default model is `tsukuyomi` (Japanese female).",
+      "description_ja": "[ayutaz/piper-plus](https://github.com/ayutaz/piper-plus) をベースにした日本語対応の軽量 TTS です。元の Piper から日本語品質（OpenJTalk + プロソディ）と GPL フリー（MIT ライセンス）の方向で強化されています。GPU 不要で、CPU でも高速に動作します。デフォルトモデルは `tsukuyomi`（日本語女性）です。",
       "notes": [],
+      "notes_ja": [
+        "- ライセンス: コードは MIT、モデル重みは MIT。商用利用: OK。"
+      ],
       "prefix": "PIPER_PLUS",
       "params": [
         {
@@ -1986,9 +2174,13 @@
       "id": "Pocket-TTS",
       "title": "Pocket-TTS (CPU-only, EN/FR/DE/IT/PT/ES, MIT code, CC-BY-4.0 weights)",
       "status": "Works (CPU OK, ~6x real-time)",
+      "status_ja": "動作OK (CPU可・~6x realtime)",
       "languages": "English / French / German / Italian / Portuguese / Spanish",
+      "languages_ja": "英語 / 仏 / 独 / 伊 / 葡 / 西",
       "description": "An ultra-lightweight CPU TTS using [kyutai-labs/pocket-tts](https://github.com/kyutai-labs/pocket-tts) — Kyutai Labs' 100M-parameter on-device TTS that runs at ~6× real-time on a MacBook Air M4 using only 2 CPU cores. GPU is **not** required. Default Hugging Face model: `kyutai/pocket-tts`; voices are sourced from `kyutai/tts-voices`. Six language models are available (`english` / `english_2026-01` / `english_2026-04` / `french_24l` / `german_24l` / `italian` / `portuguese` / `spanish_24l`); pick one via `--pocket-language`. The default voice uses the `POCKET_DEFAULT_SPEAKER` preset (default: `alba`); supplying `--pocket-prompt-wav` enables a `clone` voice from your own audio file or a `.safetensors` voice cache. The 21 built-in preset names (`alba`, `anna`, `charles`, …) can also be passed directly as the `voice` parameter. License: code is MIT, model weights are CC-BY-4.0; **individual voice licenses vary** (see [kyutai/tts-voices](https://huggingface.co/kyutai/tts-voices)). **Prohibited use:** voice impersonation or cloning without explicit and lawful consent, and disinformation, are explicitly forbidden by the upstream terms.",
+      "description_ja": "[kyutai-labs/pocket-tts](https://github.com/kyutai-labs/pocket-tts) を使った Kyutai Labs の超軽量 CPU TTS です。100M パラメータで、MacBook Air M4 の CPU 2 コアだけで ~6x realtime で動作します。**GPU 不要**。デフォルトの Hugging Face モデルは `kyutai/pocket-tts`、voice は `kyutai/tts-voices` から取得。言語別モデルが用意されており（`english` / `english_2026-01` / `english_2026-04` / `french_24l` / `german_24l` / `italian` / `portuguese` / `spanish_24l`）、`--pocket-language` で選択します。`default` voice は `POCKET_DEFAULT_SPEAKER`（デフォルト: `alba`）の内蔵プリセットを使用、`--pocket-prompt-wav` を指定すると独自音声からの `clone` voice が有効になります。21 種類の内蔵プリセット名（`alba`、`anna`、`charles` ...）を `voice` パラメータに直接渡すこともできます。ライセンス: コードは MIT、モデル重みは CC-BY-4.0、**voice ごとに個別ライセンス**（[kyutai/tts-voices](https://huggingface.co/kyutai/tts-voices) を参照）。**Prohibited use:** 上流規約により、合意のない voice impersonation や偽情報の生成は禁止されています。",
       "notes": [],
+      "notes_ja": [],
       "prefix": "POCKET",
       "params": [
         {
@@ -2058,9 +2250,15 @@
       "id": "Qwen3-TTS",
       "title": "Qwen3-TTS (GPU required)",
       "status": "Works (GPU required)",
+      "status_ja": "動作OK (GPU必須)",
       "languages": "Japanese / English / Chinese and 10 languages",
+      "languages_ja": "日本語 / 英語 / 中国語 他 10言語",
       "description": "A high-quality multilingual TTS using [QwenLM/Qwen3-TTS](https://github.com/QwenLM/Qwen3-TTS). It includes 9 speakers and supports 10 languages including Japanese. A GPU runtime (T4 or higher) is required. The default is the 0.6B model (lightweight), and the 1.7B model can also be selected from the form. Apache 2.0 licensed.",
+      "description_ja": "[QwenLM/Qwen3-TTS](https://github.com/QwenLM/Qwen3-TTS) を使った多言語高品質 TTS です。9 種類の話者を内蔵し、日本語を含む 10 言語に対応しています。GPU ランタイム（T4 以上）が必要です。デフォルトは 0.6B モデル（軽量）で、フォームから 1.7B モデルも選べます。Apache 2.0 ライセンスです。",
       "notes": [],
+      "notes_ja": [
+        "- ライセンス: コードは Apache 2.0、モデル重みは Apache 2.0。商用利用: OK。"
+      ],
       "prefix": "QWEN3",
       "params": [
         {
@@ -2114,9 +2312,15 @@
       "id": "Sarashina-TTS",
       "title": "Sarashina-TTS (GPU required, ~6GB VRAM, JP/EN, NonCommercial)",
       "status": "Works (GPU required, ~6GB VRAM)",
+      "status_ja": "動作OK (GPU必須・VRAM ~6GB)",
       "languages": "Japanese / English",
+      "languages_ja": "日本語 / 英語",
       "description": "A Japanese-centric TTS using [sbintuitions/sarashina2.2-tts](https://huggingface.co/sbintuitions/sarashina2.2-tts) by SB Intuitions. An 0.8B-parameter LLM-based TTS supporting Japanese (primary) and English, with zero-shot voice cloning support. Default Hugging Face model: `sbintuitions/sarashina2.2-tts`. The HuggingFace transformers backend needs ~6GB VRAM (a Colab T4 fits); the optional vLLM backend (`--sarashina-use-vllm`) needs more VRAM but is faster. Generated audio is 24 kHz and contains an inaudible SilentCipher watermark by default — per the upstream model terms, do not remove it. **License: Sarashina Model NonCommercial License Agreement (commercial use prohibited).**",
+      "description_ja": "SB Intuitions の [sbintuitions/sarashina2.2-tts](https://huggingface.co/sbintuitions/sarashina2.2-tts) を使った日本語中心の TTS です。0.8B パラメータの LLM ベース TTS で、日本語（メイン）と英語に対応し、ゼロショット音声クローン機能を備えています。デフォルトの Hugging Face モデルは `sbintuitions/sarashina2.2-tts`。HuggingFace transformers バックエンドで VRAM ~6GB（Colab T4 で動作可能）、`--sarashina-use-vllm` を有効にすると vLLM バックエンドが使われ、より多くの VRAM を消費する代わりに高速になります。出力は 24kHz で、デフォルトでは SilentCipher の不可聴ウォーターマークが埋め込まれます — 上流モデル規約により除去・無効化は禁止されているのでそのまま利用してください。**ライセンス: Sarashina Model NonCommercial License Agreement（商用利用不可）。**",
       "notes": [],
+      "notes_ja": [
+        "- ライセンス: コードは —、モデル重みは Sarashina Model NonCommercial License。商用利用: 不可。 備考: 日本語 / 英語。ゼロショット音声クローン対応。出力には SilentCipher のウォーターマークが付与される（除去禁止）"
+      ],
       "prefix": "SARASHINA",
       "params": [
         {
@@ -2160,8 +2364,11 @@
       "id": "Scenema",
       "title": "Scenema (A100 required, 40GB VRAM, English-centric multilingual, voice cloning)",
       "status": "**Not verified on Colab** — text encoder is Gemma 3 12B IT (HF-gated), so running this engine requires accepting the Gemma Terms of Use on Hugging Face and providing `HF_TOKEN` via Colab Secrets. Code paths are in place but end-to-end Colab verification was deferred because `HF_TOKEN` setup is out of scope for this repo's default workflow. **Requires Colab A100 (40GB VRAM)**. First-run downloads ~38GB. Audio model derived from LTX-2.3 → **LTX-2 Community License** (same as DramaBox)",
+      "status_ja": "**Colab A100（40GB VRAM）必須**。初回起動時に約 38GB ダウンロード。音声モデルは LTX-2.3 派生のため **LTX-2 Community License**（DramaBox と同じ）。Gemma 3 12B IT 利用（HF gated、`HF_TOKEN` 必須）",
       "languages": "English-centric multilingual",
+      "languages_ja": "英語中心の多言語",
       "description": "A zero-shot expressive voice cloning / speech-generation engine from Scenema AI ([ScenemaAI/scenema-audio](https://github.com/ScenemaAI/scenema-audio)). Its audio diffusion transformer is extracted from Lightricks' LTX-2 (22B audiovisual model) and conditioned with Gemma 3 12B IT, paired with SeedVC for voice identity transfer and a MelBandRoFormer separator for clean speech. The marquee feature is \"performance\": describe a voice in free-form English and the model delivers it with intent, pacing, breath control, and emotional arcs — including emotions the reference speaker never recorded.",
+      "description_ja": "Scenema AI による zero-shot な表現力豊か / 演技指向 TTS です（[ScenemaAI/scenema-audio](https://github.com/ScenemaAI/scenema-audio)）。音声 diffusion transformer は Lightricks の LTX-2（22B 音声 + 映像モデル）から抽出した派生で、テキスト条件付けに Gemma 3 12B IT、声色変換に SeedVC、クリーン化に MelBandRoFormer を組み合わせています。最大の特徴は「演技」で、英語の自由記述で声色を描写すると、意図・ペーシング・息遣い・感情アークまで含めて発話します（参照話者が録音した感情でなくても再現可能）。",
       "notes": [
         "- Zero-shot expressive voice cloning + speech generation (Scenema AI).",
         "- Audio model is derived from LTX-2.3 → **LTX-2 Community License** (Lightricks, same as DramaBox).",
@@ -2170,6 +2377,7 @@
         "- Pass plain text → wrapped in `<speak voice=\"...\" gender=\"...\">` automatically.",
         "Or write the full `<speak>...<action>...</action>...</speak>` XML yourself for emotion control."
       ],
+      "notes_ja": [],
       "prefix": "SCENEMA",
       "params": [
         {
@@ -2270,10 +2478,16 @@
       "id": "Spark-TTS",
       "title": "Spark-TTS (GPU recommended, EN/ZH only, voice cloning + gender/pitch/speed control)",
       "status": "Works (GPU recommended)",
+      "status_ja": "動作OK (GPU推奨)",
       "languages": "English / Chinese (non-commercial weights)",
+      "languages_ja": "英語 / 中国語（重みは非商用）",
       "description": "A bilingual zero-shot voice cloning TTS using [SparkAudio/Spark-TTS](https://github.com/SparkAudio/Spark-TTS). The 0.5B-parameter Qwen2.5-based LLM-TTS supports **English and Chinese** (Japanese is **not** supported), with two generation modes: voice cloning from a reference clip, or controllable generation by gender / pitch / speed without any reference. Output is 16 kHz mono WAV. A GPU is recommended (VRAM ~4GB).",
+      "description_ja": "[SparkAudio/Spark-TTS](https://github.com/SparkAudio/Spark-TTS) を使った 0.5B パラメータの Qwen2.5 ベース LLM-TTS です。**英語 / 中国語のみ**（日本語は **非対応**）対応で、ゼロショット voice cloning と、参照音声なしでの gender / pitch / speed 制御生成の 2 モードを持ちます。出力は 16 kHz モノラル WAV。GPU 推奨（VRAM ~4GB）。",
       "notes": [
         "- Code: Apache 2.0. Weights: CC BY-NC-SA 4.0 (non-commercial only) due to training data license."
+      ],
+      "notes_ja": [
+        "- ライセンス: コードは Apache 2.0、モデル重みは CC BY-NC-SA 4.0。商用利用: 不可。 備考: 英 / 中のみ。重みは学習データ制約で Apache 2.0 から再ライセンス"
       ],
       "prefix": "SPARK",
       "params": [
@@ -2347,11 +2561,15 @@
       "id": "Style-Bert-VITS2",
       "title": "Style-Bert-VITS2",
       "status": "Not working",
+      "status_ja": "動作不可",
       "languages": "-",
+      "languages_ja": "-",
       "description": "Intended to use [litagin02/Style-Bert-VITS2](https://github.com/litagin02/Style-Bert-VITS2), but `setuptools` / `torch` / `scipy` dependency conflicts cannot be resolved, and speech synthesis is not reachable in the current Colab environment.",
+      "description_ja": "[litagin02/Style-Bert-VITS2](https://github.com/litagin02/Style-Bert-VITS2) を使う構成ですが、`setuptools` / `torch` / `scipy` の依存整合性が取れず、現在の Colab 環境では音声合成まで到達できません。",
       "notes": [
         "- License: code is **AGPL-3.0** ([litagin02/Style-Bert-VITS2](https://github.com/litagin02/Style-Bert-VITS2)); default weights are **CC-BY-SA-4.0** (`litagin/style_bert_vits2_jvnv`, inherited from the JVNV corpus). Commercial use is permitted only under copyleft obligations: AGPL §13 requires source disclosure to network users; CC-BY-SA requires attribution + share-alike on any derivative."
       ],
+      "notes_ja": [],
       "prefix": "STYLE_BERT",
       "params": [
         {
@@ -2390,12 +2608,16 @@
       "id": "StyleTTS2",
       "title": "StyleTTS 2 (GPU recommended, English-only, MIT code / Custom weights)",
       "status": "Working on Colab (GPU recommended, Python 3.11 venv)",
+      "status_ja": "Colab 動作確認済み (GPU推奨・Python 3.11 venv)",
       "languages": "English",
+      "languages_ja": "英語",
       "description": "A high-quality TTS using diffusion + adversarial training with large speech language models, by yl4579 ([yl4579/StyleTTS2](https://github.com/yl4579/StyleTTS2)). The wrapper uses the [sidharthrajaram/StyleTTS2](https://github.com/sidharthrajaram/StyleTTS2) pip package, which substitutes **gruut (MIT)** for the upstream **phonemizer (GPL-3.0)** to keep the dependency tree GPL-free.",
+      "description_ja": "[yl4579/StyleTTS2](https://github.com/yl4579/StyleTTS2) の拡散 + SLM 敵対学習による高品質 TTS です。本ラッパーは [sidharthrajaram/StyleTTS2](https://github.com/sidharthrajaram/StyleTTS2) の pip パッケージを使用し、上流の **phonemizer (GPL-3.0)** ではなく **gruut (MIT)** に置き換えることで GPL の伝播を回避しています。",
       "notes": [
         "- Uses sidharthrajaram/StyleTTS2 (MIT, gruut-based — GPL-free).",
         "- Weights from yl4579/StyleTTS2-LibriTTS require disclosing that audio is synthesized."
       ],
+      "notes_ja": [],
       "prefix": "STYLETTS2",
       "params": [
         {
@@ -2444,11 +2666,17 @@
       "id": "Supertonic",
       "title": "Supertonic (CPU OK, 31 languages incl JP/KO/EN, ONNX)",
       "status": "Works (CPU OK, ONNX, ~99M params)",
+      "status_ja": "動作OK (CPU可・ONNX・~99M params)",
       "languages": "English / Japanese / Korean and 31 languages",
+      "languages_ja": "英語 / 日本語 / 韓国語 他 31言語",
       "description": "An ultra-lightweight on-device TTS using [supertone-inc/supertonic](https://github.com/supertone-inc/supertonic) by Supertone Inc. The `supertonic-3` model (~99M params, ~305MB ONNX assets) supports 31 languages including English, Japanese, and Korean, plus a `na` fallback for unknown text. Runs entirely on CPU via ONNX Runtime (no GPU required). The wrapper loads the model on first request and caches voice styles between requests.",
+      "description_ja": "Supertone Inc. の [supertone-inc/supertonic](https://github.com/supertone-inc/supertonic) を使った超軽量オンデバイス TTS です。`supertonic-3` モデル（約 99M params、ONNX アセット約 305MB）は英語・日本語・韓国語を含む 31 言語に対応し、未対応テキスト向けに `na` フォールバックも持ちます。ONNX Runtime で完全に CPU 動作（GPU 不要）。本ラッパーは初回リクエストでモデルをロードし、voice style はリクエスト間でキャッシュします。",
       "notes": [
         "- Code: MIT. Weights: OpenRAIL-M (commercial OK, use-based ethical restrictions).",
         "- Voice presets only (no voice cloning). Language is auto-detected for CJK text."
+      ],
+      "notes_ja": [
+        "- ライセンス: コードは MIT、モデル重みは OpenRAIL-M。商用利用: OK。 備考: 31言語（日 / 韓 / 英含む）。CPU 動作（ONNX）。なりすまし・ディープフェイク等の use-based ethical restrictions あり"
       ],
       "prefix": "SUPERTONIC",
       "params": [
@@ -2533,9 +2761,15 @@
       "id": "TinyTTS",
       "title": "TinyTTS",
       "status": "Works",
+      "status_ja": "動作OK",
       "languages": "English",
+      "languages_ja": "英語",
       "description": "An ultra-lightweight English TTS using [ecyht2/tiny-tts](https://github.com/ecyht2/tiny-tts). The model has only 1.6M parameters (~3.4 MB), no GPU required, and can synthesize speech at 53× real-time on CPU alone. Audio is output at 44.1 kHz. There is no voice switching. License: Apache 2.0.",
+      "description_ja": "[ecyht2/tiny-tts](https://github.com/ecyht2/tiny-tts) を使った超軽量の英語 TTS です。モデルはわずか 1.6M パラメータ（約 3.4MB）で、GPU 不要・CPU のみで 53 倍速のリアルタイム合成が可能です。音声は 44.1kHz で出力されます。voice の切り替え機能はありません。ライセンス: Apache 2.0。",
       "notes": [],
+      "notes_ja": [
+        "- ライセンス: コードは Apache 2.0、モデル重みは Apache 2.0。商用利用: OK。"
+      ],
       "prefix": "",
       "params": []
     },
@@ -2543,11 +2777,17 @@
       "id": "VibeVoice",
       "title": "VibeVoice (GPU required, English/Chinese, long-form multi-speaker)",
       "status": "Not working (upstream API churn)",
+      "status_ja": "動作不可（upstream API 移行中）",
       "languages": "English / Chinese (long-form, up to 4 speakers)",
+      "languages_ja": "英語 / 中国語（長尺・最大 4 話者）",
       "description": "Intended to use [microsoft/VibeVoice](https://github.com/microsoft/VibeVoice) — a 1.5B-parameter long-form multi-speaker TTS that can generate up to ~90 minutes of audio with up to 4 speakers in a single pass. The wrapper has been verified end-to-end up to model load on a Colab L4 GPU, but the upstream Microsoft repository is in the middle of a breaking API migration and synthesis cannot complete cleanly today:",
+      "description_ja": "[microsoft/VibeVoice](https://github.com/microsoft/VibeVoice) を使う構成で、1.5B パラメータの長尺・マルチスピーカー TTS（最大 4 話者・約 90 分を 1 パスで生成）として実装しています。Colab L4 GPU 上でモデルロードまでは到達しますが、upstream Microsoft リポジトリが現在 **破壊的な API 移行中** で、合成リクエストが完了しません:",
       "notes": [
         "- License: MIT, but Microsoft tags this as \"research purpose only\".",
         "- Non-EN/ZH languages, voice impersonation, and disinformation use are prohibited."
+      ],
+      "notes_ja": [
+        "- ライセンス: コードは MIT、モデル重みは MIT。商用利用: 要注意（research-only）。 備考: 英 / 中のみ。現在は動作不可: upstream API 移行中（.wav speaker ファイル → .pt prompt cache へ移行）"
       ],
       "prefix": "VIBEVOICE",
       "params": [
@@ -2597,9 +2837,15 @@
       "id": "VoxCPM2",
       "title": "VoxCPM2 (GPU required)",
       "status": "Works (GPU required)",
+      "status_ja": "動作OK (GPU必須)",
       "languages": "Japanese / English / Chinese and 30 languages",
+      "languages_ja": "日本語 / 英語 / 中国語 他 30言語",
       "description": "A high-quality TTS using [OpenBMB/VoxCPM](https://github.com/OpenBMB/VoxCPM). A 2B-parameter model that supports 30 languages including Japanese, with automatic language detection. Features include zero-shot TTS, voice design (generate voice from text description), and voice cloning. A GPU runtime (T4 or higher, ~8GB VRAM) is required. License: Apache 2.0.",
+      "description_ja": "[OpenBMB/VoxCPM](https://github.com/OpenBMB/VoxCPM) を使った高品質 TTS です。2B パラメータのモデルで、日本語を含む 30 言語に対応しており、言語を自動検出します。ゼロショット TTS、声デザイン（テキスト記述から声生成）、音声クローニングなどの機能を持ちます。GPU ランタイム（T4 以上、VRAM ~8GB）が必要です。ライセンス: Apache 2.0。",
       "notes": [],
+      "notes_ja": [
+        "- ライセンス: コードは Apache 2.0、モデル重みは Apache 2.0。商用利用: OK。"
+      ],
       "prefix": "VOXCPM",
       "params": [
         {
@@ -2626,9 +2872,15 @@
       "id": "Voxtral-TTS",
       "title": "Voxtral-TTS",
       "status": "Works (GPU required, VRAM 16GB+)",
+      "status_ja": "動作OK (GPU必須・VRAM 16GB+)",
       "languages": "English / French / Spanish and 9 languages",
+      "languages_ja": "英語 / フランス語 / スペイン語 他 9言語",
       "description": "A multilingual TTS using [mistralai/Voxtral-4B-TTS-2603](https://huggingface.co/mistralai/Voxtral-4B-TTS-2603). A 4B-parameter model supporting 9 languages: English, French, Spanish, German, Italian, Portuguese, Dutch, Arabic, and Hindi. It includes 20 preset voices and supports multiple formats such as wav / mp3 / flac / aac / opus. The backend uses vLLM + vllm-omni. A GPU runtime (VRAM 16GB or more) is required. Verified working on Colab A100 (40GB VRAM); may not work on the free-tier T4 (15GB) due to VRAM requirements. License: CC BY-NC 4.0 (non-commercial only).",
+      "description_ja": "[mistralai/Voxtral-4B-TTS-2603](https://huggingface.co/mistralai/Voxtral-4B-TTS-2603) を使った多言語 TTS です。4B パラメータのモデルで、英語・フランス語・スペイン語・ドイツ語・イタリア語・ポルトガル語・オランダ語・アラビア語・ヒンディー語の 9 言語に対応しています。20 種類のプリセットボイスを内蔵し、wav / mp3 / flac / aac / opus など複数フォーマットに対応しています。バックエンドに vLLM + vllm-omni を使用します。GPU ランタイム（VRAM 16GB 以上）が必要です。Colab A100（VRAM 40GB）で動作確認済みですが、無料枠の T4（15GB）では VRAM 不足のため動作しない可能性があります。ライセンス: CC BY-NC 4.0（非商用のみ）。",
       "notes": [],
+      "notes_ja": [
+        "- ライセンス: コードは —、モデル重みは CC BY-NC 4.0。商用利用: 不可。 備考: vLLM + vllm-omni 経由。音声データセットのライセンス制約により非商用"
+      ],
       "prefix": "",
       "params": []
     },
@@ -2636,8 +2888,11 @@
       "id": "Vyvo-Multilingual",
       "title": "Vyvo-Multilingual (GPU recommended ~2-4GB VRAM, voice cloning required)",
       "status": "Works on Colab T4 (verified end-to-end via the public URL; GPU recommended, ~2-4GB VRAM; 0.9B Qwen3-0.6B-backbone LLM-TTS that emits kyutai/mimi tokens → 24 kHz; runs in-process via plain transformers, no upstream repo; ungated weights, no `HF_TOKEN`). Three ungated checkpoints via `--vyvo-hf-model`: `Vyvo-Multilingual-v0.1` (EN/JA, Apache-2.0; Japanese quality is limited), `Vyvo-Multilingual-EN-FT-v0.1` (English-only fine-tune, MIT) and `Vyvo-Multilingual-JA-FT-v0.1` (Japanese-only fine-tune, MIT; ⚠️ we could not verify normal-quality Japanese generation on our side — prefer the base checkpoint for Japanese). **Zero-shot cloning only — no built-in speaker**: every request needs `--vyvo-prompt-wav` + `--vyvo-prompt-text` (otherwise 4xx). Code Apache-2.0; the kyutai/mimi codec is CC-BY-4.0 (attribution)",
+      "status_ja": "Colab T4 動作確認済み（公開URL経由で end-to-end 確認。GPU 推奨、VRAM 約2-4GB。0.9B の Qwen3-0.6B backbone LLM-TTS で kyutai/mimi トークンを生成 → 24kHz。上流リポジトリ無し、transformers で in-process 実行。重みは ungated で `HF_TOKEN` 不要）。`--vyvo-hf-model` で3つの ungated checkpoint を選択: `Vyvo-Multilingual-v0.1`（EN/JA、Apache-2.0、日本語は品質限定的）、`Vyvo-Multilingual-EN-FT-v0.1`（英語専用FT、MIT）、`Vyvo-Multilingual-JA-FT-v0.1`（日本語専用FT、MIT。⚠️ 当方では正常な品質の日本語生成を確認できず。日本語には base checkpoint を推奨）。**ゼロショットクローン専用 — 内蔵スピーカー無し**: 各リクエストで `--vyvo-prompt-wav` + `--vyvo-prompt-text` が必須（未設定は 4xx）。コードは Apache-2.0、kyutai/mimi コーデックは CC-BY-4.0（帰属表示要）",
       "languages": "English / Japanese (base); English (EN-FT); Japanese (JA-FT)",
+      "languages_ja": "英語 / 日本語（base）、英語（EN-FT）、日本語（JA-FT）",
       "description": "A 0.9B LLM-based TTS by Vyvo. A `Qwen3-0.6B` backbone autoregressively emits **kyutai/mimi** audio tokens (32 codebooks), which the Mimi codec decodes to 24 kHz audio. There is no separate upstream package — inference is the plain `transformers` snippet from the model card, so the wrapper runs it in-process (Python 3.12 venv with `torch==2.9.1+cu128` / `transformers==5.0.0`). All checkpoints are ungated — no `HF_TOKEN` needed.",
+      "description_ja": "Vyvo の 0.9B の LLM ベース TTS です。`Qwen3-0.6B` backbone が **kyutai/mimi** の音声トークン（32 codebook）を自己回帰生成し、Mimi codec が 24 kHz 音声へデコードします。独立した上流パッケージは無く、推論はモデルカードの `transformers` スニペットそのものなので、本リポジトリでは in-process で実行します（Python 3.12 venv に `torch==2.9.1+cu128` / `transformers==5.0.0` を導入）。いずれの checkpoint も ungated で `HF_TOKEN` 不要です。",
       "notes": [
         "- Vyvo's 0.9B LLM-based TTS (Qwen3-0.6B backbone) that autoregressively emits kyutai/mimi audio tokens (32 codebooks, 24 kHz). Runs in-process via plain transformers — there is no upstream repo, the inference is the model-card snippet. Python 3.12 venv installs torch==2.9.1+cu128 / transformers==5.0.0.",
         "- **No HF_TOKEN needed**: all checkpoints are ungated. Pick `VYVO_HF_MODEL`:",
@@ -2647,6 +2902,7 @@
         "- Fundamentally a zero-shot cloning model with **no built-in speaker** (all checkpoints): every request needs a reference audio *and* its transcript. Set both `VYVO_PROMPT_WAV` and `VYVO_PROMPT_TEXT` and call with `voice=\"clone\"` (`default` maps to the same path). Without them the wrapper returns a 4xx — same contract as GPT-SoVITS. The transcript must match the clip (upstream: transcript-free cloning collapses).",
         "- License: code is **Apache-2.0**; weights are **Apache-2.0** (base) / **MIT** (EN-FT, JA-FT) — all allow commercial use. The **kyutai/mimi** codec is **CC-BY-4.0** — attribution required. For voice cloning, only use reference audio you have rights to (consent of the speaker)."
       ],
+      "notes_ja": [],
       "prefix": "VYVO",
       "params": [
         {
@@ -2724,9 +2980,15 @@
       "id": "Zonos",
       "title": "Zonos (GPU recommended, JP/EN/ZH/FR/DE, voice cloning, Apache 2.0)",
       "status": "Works (GPU required, ~6GB VRAM)",
+      "status_ja": "動作OK (GPU必須・VRAM ~6GB)",
       "languages": "Japanese / English / Chinese / French / German",
+      "languages_ja": "日本語 / 英語 / 中国語 / フランス語 / ドイツ語",
       "description": "A multilingual TTS using [Zyphra/Zonos](https://github.com/Zyphra/Zonos). Supports English, Japanese, Chinese, French, and German with zero-shot voice cloning. Default model: `Zyphra/Zonos-v0.1-transformer` (Apache 2.0). Phonemization is done by `espeak-ng`, which is installed automatically. The wrapper uses the bundled `assets/exampleaudio.mp3` as the default speaker reference; supplying `--zonos-prompt-wav` enables a `clone` voice with your own reference audio. A GPU runtime is required (VRAM 6GB+, T4 OK). The optional Hybrid backbone needs an Ampere or newer GPU and additional `mamba-ssm` deps; the Transformer backbone is used by default for portability. License: Apache 2.0 (code and weights).",
+      "description_ja": "[Zyphra/Zonos](https://github.com/Zyphra/Zonos) を使った多言語 TTS です。英語・日本語・中国語・フランス語・ドイツ語に対応し、ゼロショット音声クローニングを備えています。デフォルトモデルは `Zyphra/Zonos-v0.1-transformer`（Apache 2.0）。音素化に `espeak-ng` を利用するため、インストーラが自動で `apt-get install espeak-ng` を実行します。デフォルト voice では upstream に同梱の `assets/exampleaudio.mp3` を参照音声として使用し、`--zonos-prompt-wav` を指定すると独自参照の `clone` voice が有効になります。GPU 必須（VRAM 6GB+、T4 動作可）。Hybrid backbone は Ampere 世代以降の GPU と `mamba-ssm` 依存を要求するため、ポータビリティのためデフォルトでは Transformer backbone を使用します。ライセンス: Apache 2.0（コードと重み）。",
       "notes": [],
+      "notes_ja": [
+        "- ライセンス: コードは Apache 2.0、モデル重みは Apache 2.0。商用利用: OK。 備考: 英 / 日 / 中 / 仏 / 独。ゼロショット voice cloning。`espeak-ng` 必須"
+      ],
       "prefix": "ZONOS",
       "params": [
         {
@@ -2770,13 +3032,19 @@
       "id": "ZONOS2",
       "title": "ZONOS2 (L4 required, 41 languages incl. Japanese, voice cloning)",
       "status": "Works (L4 verified, sm_80+ required)",
+      "status_ja": "動作OK (L4検証済・sm_80+必須)",
       "languages": "41 languages (tier-1: Japanese / English / Chinese)",
+      "languages_ja": "41言語 (tier-1: 日本語 / 英語 / 中国語)",
       "description": "Zyphra's latest TTS, [Zyphra/ZONOS2](https://github.com/Zyphra/Zonos2). A Mixture-of-Experts backbone generates DAC tokens from NeMo-normalized UTF-8 bytes conditioned on an ECAPA-TDNN speaker embedding, trained on 6M+ hours of multilingual speech. It supports 41 languages across three tiers (tier-1: English, Mandarin Chinese, Japanese) with high-fidelity zero-shot voice cloning. Default model: `Zyphra/ZONOS2`.",
+      "description_ja": "Zyphra の最新 TTS、[Zyphra/ZONOS2](https://github.com/Zyphra/Zonos2) です。Mixture-of-Experts バックボーンが、NeMo で正規化した UTF-8 バイト列と ECAPA-TDNN 話者埋め込みから DAC トークンを生成します（600万時間以上の多言語音声で学習）。3 つの tier で計 41 言語に対応し（tier-1: 英語・中国語・日本語）、高忠実度のゼロショット音声クローンを備えています。デフォルトモデルは `Zyphra/ZONOS2`。",
       "notes": [
         "- Zyphra's latest TTS: MoE backbone + DAC tokens + ECAPA-TDNN embedding, served by the bundled Mini-SGLang server. We launch `uv run python -m zonos2` as a backend and proxy its `/tts/generate` (44.1 kHz float32 PCM) as OpenAI-compatible.",
         "- **GPU sm_80+ required** (L4 / A100): the backbone uses flashinfer / sgl_kernel / cutlass kernels, so T4 does not work. First launch is slow (`uv sync` fetches GPU kernels, then the weights download).",
         "- `default` = a shipped reference voice (`default_voices/<ZONOS2_DEFAULT_REF>`); set `ZONOS2_PROMPT_WAV` and use `voice=\"clone\"` for your own reference. `accurate_mode` on = closer voice match, off = more expressive.",
         "- License: code is **MIT** (pyproject), weights are **Apache-2.0** ([HF model card](https://huggingface.co/Zyphra/ZONOS2)). Both allow commercial use."
+      ],
+      "notes_ja": [
+        "- ライセンス: コードは MIT、モデル重みは Apache 2.0。商用利用: OK。 備考: 41言語（tier-1 英/中/日）。ゼロショット voice cloning。Mini-SGLang バックエンド。GPU sm_80+（L4/A100）"
       ],
       "prefix": "ZONOS2",
       "params": [

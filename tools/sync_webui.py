@@ -19,6 +19,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent
 COLAB_SCRIPT = REPO_ROOT / "multi_tts_openai_colab.py"
 README = REPO_ROOT / "README.md"
+README_JA = REPO_ROOT / "README.ja.md"
 OUTPUT = REPO_ROOT / "docs" / "engines.json"
 
 PARAM_RE = re.compile(
@@ -252,7 +253,10 @@ def parse_readme_status(readme_text: str) -> dict[str, dict]:
     result: dict[str, dict] = {}
     in_table = False
     for line in readme_text.splitlines():
-        if "| Engine | Colab Status | Languages |" in line:
+        if (
+            "| Engine | Colab Status | Languages |" in line
+            or "| エンジン | Colab 動作確認 | 言語 |" in line
+        ):
             in_table = True
             continue
         if in_table:
@@ -315,14 +319,46 @@ def parse_readme_descriptions(readme_text: str) -> dict[str, str]:
     return result
 
 
+def parse_readme_license_notes(readme_text: str) -> dict[str, list[str]]:
+    """Extract concise Japanese license notes from README.ja.md's license table."""
+    result: dict[str, list[str]] = {}
+    in_table = False
+    for line in readme_text.splitlines():
+        if "| エンジン | コード | モデル重み | 商用利用 | 備考 |" in line:
+            in_table = True
+            continue
+        if not in_table:
+            continue
+        if not line.startswith("|"):
+            break
+        if line.startswith("|---"):
+            continue
+
+        parts = [p.strip() for p in line.strip().strip("|").split("|")]
+        if len(parts) < 5:
+            continue
+        engine, code, weights, commercial, note = parts[:5]
+        if not engine:
+            continue
+        text = f"- ライセンス: コードは {code}、モデル重みは {weights}。商用利用: {commercial}。"
+        if note:
+            text += f" 備考: {note}"
+        result.setdefault(engine, []).append(text)
+    return result
+
+
 def build_engines_json() -> dict:
     source = COLAB_SCRIPT.read_text(encoding="utf-8")
     readme = README.read_text(encoding="utf-8")
+    readme_ja = README_JA.read_text(encoding="utf-8")
 
     sections = parse_sections(source)
     var_to_flag, bool_flags = parse_cmd_mapping(source)
     status_map = parse_readme_status(readme)
+    status_map_ja = parse_readme_status(readme_ja)
     description_map = parse_readme_descriptions(readme)
+    description_map_ja = parse_readme_descriptions(readme_ja)
+    license_notes_ja = parse_readme_license_notes(readme_ja)
 
     # Section 0 holds REPO_URL/REPO_REF/WORKDIR + ENGINE + EXPOSE_PUBLIC_URL +
     # TEST_TEXT/TEST_SPEED/TEST_VOICE/OPENAI_MODEL_ID.
@@ -381,13 +417,18 @@ def build_engines_json() -> dict:
             params.append(entry)
 
         status_info = status_map.get(engine_id, {})
+        status_info_ja = status_map_ja.get(engine_id, {})
         engines_by_id[engine_id] = {
             "id": engine_id,
             "title": raw_title,
             "status": status_info.get("status", ""),
+            "status_ja": status_info_ja.get("status", ""),
             "languages": status_info.get("languages", ""),
+            "languages_ja": status_info_ja.get("languages", ""),
             "description": description_map.get(engine_id, ""),
+            "description_ja": description_map_ja.get(engine_id, ""),
             "notes": section["notes"],
+            "notes_ja": license_notes_ja.get(engine_id, []),
             "prefix": _common_python_prefix([p["name"] for p in params]),
             "params": params,
         }
@@ -400,14 +441,19 @@ def build_engines_json() -> dict:
             engines.append(engines_by_id[engine_id])
         else:
             status_info = status_map.get(engine_id, {})
+            status_info_ja = status_map_ja.get(engine_id, {})
             engines.append(
                 {
                     "id": engine_id,
                     "title": engine_id,
                     "status": status_info.get("status", ""),
+                    "status_ja": status_info_ja.get("status", ""),
                     "languages": status_info.get("languages", ""),
+                    "languages_ja": status_info_ja.get("languages", ""),
                     "description": description_map.get(engine_id, ""),
+                    "description_ja": description_map_ja.get(engine_id, ""),
                     "notes": [],
+                    "notes_ja": license_notes_ja.get(engine_id, []),
                     "prefix": "",
                     "params": [],
                 }
