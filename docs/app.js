@@ -158,6 +158,23 @@ function commonCliLabel(name, lang = "en") {
   return I18N[lang].commonCli[name] || niceLabel(name);
 }
 
+function localizedField(obj, key, lang = "en") {
+  if (!obj) return "";
+  const localizedKey = `${key}_${lang}`;
+  if (lang !== "en" && Object.prototype.hasOwnProperty.call(obj, localizedKey)) {
+    const localized = obj[localizedKey];
+    if (Array.isArray(localized) ? localized.length > 0 : Boolean(localized)) {
+      return localized;
+    }
+  }
+  return obj[key] || "";
+}
+
+function localizedArray(obj, key, lang = "en") {
+  const value = localizedField(obj, key, lang);
+  return Array.isArray(value) ? value : [];
+}
+
 function escapeHtml(s) {
   return String(s)
     .replace(/&/g, "&amp;")
@@ -469,6 +486,22 @@ createApp({
       return data.value.engines.find((e) => e.id === state.engineId) || null;
     });
 
+    const localizedEngineStatus = computed(() =>
+      localizedField(selectedEngine.value, "status", state.lang)
+    );
+
+    const localizedEngineLanguages = computed(() =>
+      localizedField(selectedEngine.value, "languages", state.lang)
+    );
+
+    const localizedEngineDescription = computed(() =>
+      localizedField(selectedEngine.value, "description", state.lang)
+    );
+
+    const localizedEngineNotes = computed(() =>
+      localizedArray(selectedEngine.value, "notes", state.lang)
+    );
+
     const primaryParam = computed(() => {
       const e = selectedEngine.value;
       if (!e || !e.params.length) return null;
@@ -509,16 +542,17 @@ createApp({
     });
 
     const hasEngineDetails = computed(() => {
-      const e = selectedEngine.value;
-      if (!e) return false;
-      return Boolean(e.status) || Boolean(e.description) || (e.notes && e.notes.length > 0);
+      return (
+        Boolean(localizedEngineStatus.value) ||
+        Boolean(localizedEngineDescription.value) ||
+        localizedEngineNotes.value.length > 0
+      );
     });
 
     const hasLicenseInNotes = computed(() => {
-      const e = selectedEngine.value;
-      if (!e) return false;
-      const blob = (e.notes || []).join(" ") + " " + (e.description || "");
-      return /licens|apache|mit\b|cc[-\s]?by|community license|openrail|noncommercial|non[-\s]?commercial/i.test(
+      const blob =
+        localizedEngineNotes.value.join(" ") + " " + localizedEngineDescription.value;
+      return /licens|ライセンス|商用利用|apache|mit\b|cc[-\s]?by|community license|openrail|noncommercial|non[-\s]?commercial/i.test(
         blob
       );
     });
@@ -613,6 +647,10 @@ createApp({
       data,
       state,
       selectedEngine,
+      localizedEngineStatus,
+      localizedEngineLanguages,
+      localizedEngineDescription,
+      localizedEngineNotes,
       primaryParam,
       primaryLabel,
       advancedEngineParams,
