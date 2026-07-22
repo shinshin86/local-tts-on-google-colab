@@ -596,6 +596,7 @@ SUPERTONIC_TOTAL_STEPS = 5  #@param {type:"integer"}
 SINE_WAVE_TTS_REF = "v0.1.0"  #@param {type:"string"}
 SINE_WAVE_TTS_DEFAULT_SPEAKER = "default"  #@param ["default", "chirpy", "deep", "robotic", "songful"]
 SINE_WAVE_TTS_DEFAULT_EMOTION = "neutral"  #@param ["neutral", "joy", "sad", "angry", "surprise", "calm", "fear"]
+SINE_WAVE_TTS_BACKEND_PORT = 5006  #@param {type:"integer"}
 
 #@markdown ---
 #@markdown Vyvo-Multilingual (GPU recommended ~2-4GB VRAM, voice cloning required)
@@ -1073,6 +1074,8 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         SINE_WAVE_TTS_DEFAULT_SPEAKER,
         "--sine-wave-tts-default-emotion",
         SINE_WAVE_TTS_DEFAULT_EMOTION,
+        "--sine-wave-tts-backend-port",
+        str(SINE_WAVE_TTS_BACKEND_PORT),
         "--dramabox-hf-model",
         DRAMABOX_HF_MODEL,
         "--dramabox-gemma-repo",

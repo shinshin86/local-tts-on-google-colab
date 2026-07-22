@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import os
+import re
+import shutil
 
 from src.config import Settings
 from src.runtime import (
@@ -18,11 +20,28 @@ from src.runtime import (
 UPSTREAM_REPO = "https://github.com/shinshin86/sine-wave-tts.git"
 
 
+def ensure_supported_node() -> None:
+    node_path = shutil.which("node")
+    npm_path = shutil.which("npm")
+    if not node_path or not npm_path:
+        raise RuntimeError("Sine-Wave-TTS requires Node.js 20+ and npm.")
+
+    completed = run([node_path, "--version"], capture_output=True)
+    version = completed.stdout.strip()
+    match = re.match(r"^v?(\d+)", version)
+    if not match or int(match.group(1)) < 20:
+        raise RuntimeError(
+            f"Sine-Wave-TTS requires Node.js 20+; found {version or 'unknown version'}."
+        )
+    print(f"Sine-Wave-TTS Node.js: {version}")
+
+
 def install(settings: Settings) -> dict:
     app_dir = settings.engines_dir / "sine-wave-tts-openai"
     upstream_dir = app_dir / "upstream"
     app_dir.mkdir(parents=True, exist_ok=True)
 
+    ensure_supported_node()
     ensure_git_clone(UPSTREAM_REPO, upstream_dir)
     run(["git", "fetch", "--tags", "--prune"], cwd=str(upstream_dir))
     run(["git", "checkout", "--detach", settings.sine_wave_tts_ref], cwd=str(upstream_dir))

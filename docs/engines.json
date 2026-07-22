@@ -2528,6 +2528,12 @@
             "fear"
           ],
           "flag": "--sine-wave-tts-default-emotion"
+        },
+        {
+          "name": "SINE_WAVE_TTS_BACKEND_PORT",
+          "default": 5006,
+          "type": "integer",
+          "flag": "--sine-wave-tts-backend-port"
         }
       ]
     },
