@@ -23,6 +23,7 @@ Supported engines:
 | MOSS-TTS-Local-v1.5 | Works on L4 (~4B MossTTSLocal, ~12.4GB VRAM — fits where the 8B v1.5 OOMs) | Japanese / English / Chinese / Korean and 31 languages |
 | NeuTTS | Works (CPU OK, voice cloning) | English / Spanish / German / French |
 | TinyTTS | Works | English |
+| Sine-Wave-TTS | Colab verification pending (CPU only, no model weights) | Japanese electronic vocalization (not intelligible speech) |
 | Supertonic | Works (CPU OK, ONNX, ~99M params) | English / Japanese / Korean and 31 languages |
 | Voxtral-TTS | Works (GPU required, VRAM 16GB+) | English / French / Spanish and 9 languages |
 | Orpheus-TTS | Not working (HF-gated weights, requires Llama 3.2 license acceptance + `HF_TOKEN`) | English (Llama-3.2-3B base, vLLM) |
@@ -120,7 +121,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "Irodori-TTS", "Irodori-TTS-Lite", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "Zonos", "ZONOS2"]
+ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "Irodori-TTS", "Irodori-TTS-Lite", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "Zonos", "ZONOS2"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -584,6 +585,16 @@ SUPERTONIC_MODEL = "supertonic-3"  #@param ["supertonic-3", "supertonic-2", "sup
 SUPERTONIC_DEFAULT_VOICE = "M1"  #@param ["M1", "M2", "M3", "M4", "M5", "F1", "F2", "F3", "F4", "F5"]
 SUPERTONIC_DEFAULT_LANG = "en"  #@param ["en", "ja", "ko", "ar", "bg", "cs", "da", "de", "el", "es", "et", "fi", "fr", "hi", "hr", "hu", "id", "it", "lt", "lv", "nl", "pl", "pt", "ro", "ru", "sk", "sl", "sv", "tr", "uk", "vi", "na"]
 SUPERTONIC_TOTAL_STEPS = 5  #@param {type:"integer"}
+
+#@markdown ---
+#@markdown Sine-Wave-TTS (CPU only, Japanese electronic vocalization, MIT)
+#@markdown - Converts Japanese text into deterministic beeping sine-wave tones for robots, mascots, and game characters.
+#@markdown - This is **not intelligible human speech**: the words cannot be understood from the audio alone.
+#@markdown - `voice` combines speaker and emotion as `speaker:emotion` (for example `chirpy:joy`).
+#@markdown - No model weights or GPU required. Code: MIT; commercial use OK.
+SINE_WAVE_TTS_REF = "v0.1.0"  #@param {type:"string"}
+SINE_WAVE_TTS_DEFAULT_SPEAKER = "default"  #@param ["default", "chirpy", "deep", "robotic", "songful"]
+SINE_WAVE_TTS_DEFAULT_EMOTION = "neutral"  #@param ["neutral", "joy", "sad", "angry", "surprise", "calm", "fear"]
 
 #@markdown ---
 #@markdown Vyvo-Multilingual (GPU recommended ~2-4GB VRAM, voice cloning required)
@@ -1055,6 +1066,12 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         SUPERTONIC_DEFAULT_LANG,
         "--supertonic-total-steps",
         str(SUPERTONIC_TOTAL_STEPS),
+        "--sine-wave-tts-ref",
+        SINE_WAVE_TTS_REF,
+        "--sine-wave-tts-default-speaker",
+        SINE_WAVE_TTS_DEFAULT_SPEAKER,
+        "--sine-wave-tts-default-emotion",
+        SINE_WAVE_TTS_DEFAULT_EMOTION,
         "--dramabox-hf-model",
         DRAMABOX_HF_MODEL,
         "--dramabox-gemma-repo",
@@ -1273,6 +1290,14 @@ Default backbone: `neuphonic/neutts-air` (~360M params, English only, Apache 2.0
 ### TinyTTS
 
 An ultra-lightweight English TTS using [ecyht2/tiny-tts](https://github.com/ecyht2/tiny-tts). The model has only 1.6M parameters (~3.4 MB), no GPU required, and can synthesize speech at 53× real-time on CPU alone. Audio is output at 44.1 kHz. There is no voice switching. License: Apache 2.0.
+
+### Sine-Wave-TTS
+
+[shinshin86/sine-wave-tts](https://github.com/shinshin86/sine-wave-tts) turns Japanese text into deterministic beeping sine-wave tones for robots, mascots, and game characters. It follows Japanese readings and accents through Kuromoji and outputs 44.1 kHz mono 16-bit WAV. It runs entirely on CPU, downloads no model weights, and pins the upstream `v0.1.0` tag by default.
+
+This engine is **electronic vocalization, not intelligible human speech**: listeners cannot recover the words from the audio alone. The OpenAI `voice` value combines one of five speakers (`default`, `chirpy`, `deep`, `robotic`, `songful`) with one of seven emotions (`neutral`, `joy`, `sad`, `angry`, `surprise`, `calm`, `fear`) as `speaker:emotion`, for example `chirpy:joy`. The same text and settings always produce the same sound.
+
+The upstream Node.js server already implements `/v1/audio/speech`; this project adds a thin compatibility wrapper for the shared root and `/v1/voices` endpoints. WAV and raw 44.1 kHz mono 16-bit PCM are supported. License: MIT; there are no model weights.
 
 ### Supertonic
 
@@ -1837,6 +1862,7 @@ The license for each engine is as follows. When using them, always check each pr
 | MOSS-TTS-Local-v1.5 | Apache 2.0 | Apache 2.0 | OK | ~4B MossTTSLocal params, verified on L4 (~12.4GB; the 8B v1.5 OOMs there). 48kHz stereo. 31 languages incl JP. Zero-shot voice cloning |
 | NeuTTS | Apache 2.0 | Apache 2.0 (Air) / NeuTTS Open License 1.0 (Nano) | OK (Air) / Check terms (Nano) | Voice cloning. EN / ES / DE / FR |
 | TinyTTS | Apache 2.0 | Apache 2.0 | OK | |
+| Sine-Wave-TTS | MIT | N/A (no model weights) | OK | Japanese electronic vocalization, not intelligible speech. CPU only. Kuromoji-based analysis |
 | Supertonic | MIT | OpenRAIL-M | OK | 31 languages incl JP/KO/EN. CPU OK (ONNX). Use-based ethical restrictions (no impersonation/deepfakes) |
 | Voxtral-TTS | — | CC BY-NC 4.0 | Not allowed | Via vLLM + vllm-omni. Non-commercial due to voice dataset license constraints |
 | Orpheus-TTS | Apache 2.0 | Apache 2.0 + Llama 3.2 Community License | Caution | Llama-3.2-3B-Instruct base; Llama Community License applies in practice. EN only. **Currently not working: weights are HF-gated and require Llama 3.2 license acceptance + `HF_TOKEN`** |
@@ -1925,6 +1951,8 @@ This repository itself is intended for short-term operational verification and t
   https://github.com/OpenBMB/VoxCPM
 - TinyTTS
   https://github.com/ecyht2/tiny-tts
+- Sine-Wave-TTS
+  https://github.com/shinshin86/sine-wave-tts
 - Supertonic
   https://github.com/supertone-inc/supertonic
 - MOSS-TTS-Nano

@@ -256,6 +256,10 @@ def parse_args():
     parser.add_argument("--supertonic-default-voice", default="M1")
     parser.add_argument("--supertonic-default-lang", default="en")
     parser.add_argument("--supertonic-total-steps", type=int, default=5)
+    parser.add_argument("--sine-wave-tts-ref", default="v0.1.0")
+    parser.add_argument("--sine-wave-tts-default-speaker", default="default")
+    parser.add_argument("--sine-wave-tts-default-emotion", default="neutral")
+    parser.add_argument("--sine-wave-tts-backend-port", type=int, default=5006)
     parser.add_argument("--dramabox-hf-model", default="ResembleAI/Dramabox")
     parser.add_argument("--dramabox-gemma-repo", default="unsloth/gemma-3-12b-it-bnb-4bit")
     parser.add_argument("--dramabox-default-voice", default="default")
@@ -518,6 +522,10 @@ def main():
         supertonic_default_voice=args.supertonic_default_voice,
         supertonic_default_lang=args.supertonic_default_lang,
         supertonic_total_steps=args.supertonic_total_steps,
+        sine_wave_tts_ref=args.sine_wave_tts_ref,
+        sine_wave_tts_default_speaker=args.sine_wave_tts_default_speaker,
+        sine_wave_tts_default_emotion=args.sine_wave_tts_default_emotion,
+        sine_wave_tts_backend_port=args.sine_wave_tts_backend_port,
         dramabox_hf_model=args.dramabox_hf_model,
         dramabox_gemma_repo=args.dramabox_gemma_repo,
         dramabox_default_voice=args.dramabox_default_voice,
