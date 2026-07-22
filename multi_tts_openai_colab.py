@@ -11,7 +11,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "Irodori-TTS", "Irodori-TTS-Lite", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "Zonos", "ZONOS2"]
+ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "Irodori-TTS", "Irodori-TTS-Lite", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "Zonos", "ZONOS2"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -475,6 +475,17 @@ SUPERTONIC_MODEL = "supertonic-3"  #@param ["supertonic-3", "supertonic-2", "sup
 SUPERTONIC_DEFAULT_VOICE = "M1"  #@param ["M1", "M2", "M3", "M4", "M5", "F1", "F2", "F3", "F4", "F5"]
 SUPERTONIC_DEFAULT_LANG = "en"  #@param ["en", "ja", "ko", "ar", "bg", "cs", "da", "de", "el", "es", "et", "fi", "fr", "hi", "hr", "hu", "id", "it", "lt", "lv", "nl", "pl", "pt", "ro", "ru", "sk", "sl", "sv", "tr", "uk", "vi", "na"]
 SUPERTONIC_TOTAL_STEPS = 5  #@param {type:"integer"}
+
+#@markdown ---
+#@markdown Sine-Wave-TTS (CPU only, Japanese electronic vocalization, MIT)
+#@markdown - Converts Japanese text into deterministic beeping sine-wave tones for robots, mascots, and game characters.
+#@markdown - This is **not intelligible human speech**: the words cannot be understood from the audio alone.
+#@markdown - `voice` combines speaker and emotion as `speaker:emotion` (for example `chirpy:joy`).
+#@markdown - No model weights or GPU required. Code: MIT; commercial use OK.
+SINE_WAVE_TTS_REF = "v0.1.0"  #@param {type:"string"}
+SINE_WAVE_TTS_DEFAULT_SPEAKER = "default"  #@param ["default", "chirpy", "deep", "robotic", "songful"]
+SINE_WAVE_TTS_DEFAULT_EMOTION = "neutral"  #@param ["neutral", "joy", "sad", "angry", "surprise", "calm", "fear"]
+SINE_WAVE_TTS_BACKEND_PORT = 5006  #@param {type:"integer"}
 
 #@markdown ---
 #@markdown Vyvo-Multilingual (GPU recommended ~2-4GB VRAM, voice cloning required)
@@ -946,6 +957,14 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         SUPERTONIC_DEFAULT_LANG,
         "--supertonic-total-steps",
         str(SUPERTONIC_TOTAL_STEPS),
+        "--sine-wave-tts-ref",
+        SINE_WAVE_TTS_REF,
+        "--sine-wave-tts-default-speaker",
+        SINE_WAVE_TTS_DEFAULT_SPEAKER,
+        "--sine-wave-tts-default-emotion",
+        SINE_WAVE_TTS_DEFAULT_EMOTION,
+        "--sine-wave-tts-backend-port",
+        str(SINE_WAVE_TTS_BACKEND_PORT),
         "--dramabox-hf-model",
         DRAMABOX_HF_MODEL,
         "--dramabox-gemma-repo",

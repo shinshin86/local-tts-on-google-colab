@@ -282,6 +282,14 @@ class Settings:
     supertonic_default_voice: str = "M1"
     supertonic_default_lang: str = "en"
     supertonic_total_steps: int = 5
+    # Sine-Wave-TTS: deterministic Japanese text vocalization rendered as
+    # electronic sine-wave tones (not intelligible human speech). The upstream
+    # v0.1.0 Node server already provides /v1/audio/speech; our thin wrapper
+    # adds the root and /v1/voices endpoints used by the shared launcher.
+    sine_wave_tts_ref: str = "v0.1.0"
+    sine_wave_tts_default_speaker: str = "default"
+    sine_wave_tts_default_emotion: str = "neutral"
+    sine_wave_tts_backend_port: int = 5006
     dramabox_hf_model: str = "ResembleAI/Dramabox"
     dramabox_gemma_repo: str = "unsloth/gemma-3-12b-it-bnb-4bit"
     dramabox_default_voice: str = "default"

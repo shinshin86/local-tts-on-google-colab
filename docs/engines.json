@@ -58,6 +58,7 @@
       "Qwen3-TTS",
       "Sarashina-TTS",
       "Scenema",
+      "Sine-Wave-TTS",
       "Spark-TTS",
       "Style-Bert-VITS2",
       "StyleTTS2",
@@ -2471,6 +2472,68 @@
           "type": "boolean",
           "true_flag": "--scenema-background-sfx",
           "false_flag": null
+        }
+      ]
+    },
+    {
+      "id": "Sine-Wave-TTS",
+      "title": "Sine-Wave-TTS (CPU only, Japanese electronic vocalization, MIT)",
+      "status": "Works on Colab (CPU only, no model weights, Node.js 20+)",
+      "status_ja": "動作OK（CPU のみ・モデル重みなし・Node.js 20+）",
+      "languages": "Japanese electronic vocalization (not intelligible speech)",
+      "languages_ja": "日本語の電子音声（言葉としては聞き取れない）",
+      "description": "[shinshin86/sine-wave-tts](https://github.com/shinshin86/sine-wave-tts) turns Japanese text into deterministic beeping sine-wave tones for robots, mascots, and game characters. It follows Japanese readings and accents through Kuromoji and outputs 44.1 kHz mono 16-bit WAV. It runs entirely on CPU, downloads no model weights, and pins the upstream `v0.1.0` tag by default.",
+      "description_ja": "[shinshin86/sine-wave-tts](https://github.com/shinshin86/sine-wave-tts) は、日本語テキストをロボット・マスコット・ゲームキャラクター向けの決定論的なサイン波ビープ音へ変換します。Kuromoji で日本語の読みとアクセントを解析し、44.1kHz・モノラル・16bit WAV を出力します。GPUとモデル重みは不要で、デフォルトでは上流の `v0.1.0` タグに固定します。",
+      "notes": [
+        "- Converts Japanese text into deterministic beeping sine-wave tones for robots, mascots, and game characters.",
+        "- This is **not intelligible human speech**: the words cannot be understood from the audio alone.",
+        "- `voice` combines speaker and emotion as `speaker:emotion` (for example `chirpy:joy`).",
+        "- No model weights or GPU required. Code: MIT; commercial use OK."
+      ],
+      "notes_ja": [
+        "- ライセンス: コードは MIT、モデル重みは 対象外（モデル重みなし）。商用利用: OK。 備考: 日本語の電子音声。言葉としては聞き取れない。CPUのみ。Kuromoji解析"
+      ],
+      "prefix": "SINE_WAVE_TTS",
+      "params": [
+        {
+          "name": "SINE_WAVE_TTS_REF",
+          "default": "v0.1.0",
+          "type": "string",
+          "flag": "--sine-wave-tts-ref"
+        },
+        {
+          "name": "SINE_WAVE_TTS_DEFAULT_SPEAKER",
+          "default": "default",
+          "type": "select",
+          "options": [
+            "default",
+            "chirpy",
+            "deep",
+            "robotic",
+            "songful"
+          ],
+          "flag": "--sine-wave-tts-default-speaker"
+        },
+        {
+          "name": "SINE_WAVE_TTS_DEFAULT_EMOTION",
+          "default": "neutral",
+          "type": "select",
+          "options": [
+            "neutral",
+            "joy",
+            "sad",
+            "angry",
+            "surprise",
+            "calm",
+            "fear"
+          ],
+          "flag": "--sine-wave-tts-default-emotion"
+        },
+        {
+          "name": "SINE_WAVE_TTS_BACKEND_PORT",
+          "default": 5006,
+          "type": "integer",
+          "flag": "--sine-wave-tts-backend-port"
         }
       ]
     },

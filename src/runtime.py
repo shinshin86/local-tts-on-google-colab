@@ -103,6 +103,7 @@ def kill_old_processes(app_port: int, piper_backend_port: int):
         "vllm.entrypoints.openai.api_server",
         "cloudflared tunnel",
         "server_fastapi.py",
+        "dist/src/server/cli.js",
     ]
     for pattern in patterns:
         run(["pkill", "-f", pattern], check=False)

@@ -90,6 +90,8 @@ def resolve_selected_voice(settings: Settings) -> str:
         return settings.ming_omni_tts_default_voice
     if settings.engine == "Supertonic":
         return settings.supertonic_default_voice
+    if settings.engine == "Sine-Wave-TTS":
+        return f"{settings.sine_wave_tts_default_speaker}:{settings.sine_wave_tts_default_emotion}"
     if settings.engine == "DramaBox":
         return settings.dramabox_default_voice
     if settings.engine == "Scenema":
@@ -658,6 +660,17 @@ def print_engine_voice_hints(settings: Settings):
         print("  id, it, lt, lv, nl, pl, pt, ro, ru, sk, sl, sv, tr, uk, vi, na")
         print("注意: GPU 不要（ONNX Runtime で CPU 動作）。Voice cloning は未対応（preset のみ）。")
         print("ライセンス: コードは MIT、重みは OpenRAIL-M（商用 OK、ディープフェイク等の use-based 制限あり）。")
+    elif settings.engine == "Sine-Wave-TTS":
+        print("Sine-Wave-TTS は日本語テキストを決定論的な電子音に変換します（CPU 動作）。")
+        print(f"upstream ref: {settings.sine_wave_tts_ref}")
+        print(
+            "デフォルト voice: "
+            f"{settings.sine_wave_tts_default_speaker}:{settings.sine_wave_tts_default_emotion}"
+        )
+        print("speaker: default, chirpy, deep, robotic, songful")
+        print("emotion: neutral, joy, sad, angry, surprise, calm, fear")
+        print("注意: 人間の発話ではなく、言葉として聞き取れないビープ音声です。")
+        print("ライセンス: MIT（モデル重みなし、商用利用可）。")
     elif settings.engine == "Irodori-TTS-Lite":
         print("Irodori-TTS-Lite は Irodori-TTS の int4 量子化ランタイムです（~1GB VRAM、音質ほぼ無劣化、MIT）。")
         print(f"モデル: {settings.irodori_lite_hf_checkpoint} / file: {settings.irodori_lite_checkpoint_file}")
