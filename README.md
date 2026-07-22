@@ -23,7 +23,7 @@ Supported engines:
 | MOSS-TTS-Local-v1.5 | Works on L4 (~4B MossTTSLocal, ~12.4GB VRAM — fits where the 8B v1.5 OOMs) | Japanese / English / Chinese / Korean and 31 languages |
 | NeuTTS | Works (CPU OK, voice cloning) | English / Spanish / German / French |
 | TinyTTS | Works | English |
-| Sine-Wave-TTS | Colab verification pending (CPU only, no model weights) | Japanese electronic vocalization (not intelligible speech) |
+| Sine-Wave-TTS | Works on Colab (CPU only, no model weights, Node.js 20+) | Japanese electronic vocalization (not intelligible speech) |
 | Supertonic | Works (CPU OK, ONNX, ~99M params) | English / Japanese / Korean and 31 languages |
 | Voxtral-TTS | Works (GPU required, VRAM 16GB+) | English / French / Spanish and 9 languages |
 | Orpheus-TTS | Not working (HF-gated weights, requires Llama 3.2 license acceptance + `HF_TOKEN`) | English (Llama-3.2-3B base, vLLM) |

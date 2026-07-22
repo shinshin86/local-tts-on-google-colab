@@ -23,7 +23,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | MOSS-TTS-Local-v1.5 | L4 で動作確認（~4B MossTTSLocal、~12.4GB VRAM。8B 版が OOM する L4 でも動作） | 日本語 / 英語 / 中国語 / 韓国語 他 31言語 |
 | NeuTTS | 動作OK (CPU可・voice cloning) | 英語 / スペイン語 / ドイツ語 / フランス語 |
 | TinyTTS | 動作OK | 英語 |
-| Sine-Wave-TTS | Colab 検証待ち（CPU のみ・モデル重みなし） | 日本語の電子音声（言葉としては聞き取れない） |
+| Sine-Wave-TTS | 動作OK（CPU のみ・モデル重みなし・Node.js 20+） | 日本語の電子音声（言葉としては聞き取れない） |
 | Supertonic | 動作OK (CPU可・ONNX・~99M params) | 英語 / 日本語 / 韓国語 他 31言語 |
 | Voxtral-TTS | 動作OK (GPU必須・VRAM 16GB+) | 英語 / フランス語 / スペイン語 他 9言語 |
 | Sarashina-TTS | 動作OK (GPU必須・VRAM ~6GB) | 日本語 / 英語 |
