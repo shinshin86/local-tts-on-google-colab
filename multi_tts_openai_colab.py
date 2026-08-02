@@ -30,10 +30,10 @@ FISH_SPEECH_MODEL = "fishaudio/s2-pro"  #@param {type:"string"}
 
 #@markdown ---
 #@markdown Irodori-TTS
-#@markdown - Default: v3 (Rectified Flow DiT, Duration Predictor + always-on SilentCipher watermark).
-#@markdown - Older variants: "Aratako/Irodori-TTS-500M-v2" or v1 ("Aratako/Irodori-TTS-500M" + codec_repo="facebook/dacvae-watermarked").
-#@markdown - License: MIT for code ([Aratako/Irodori-TTS](https://github.com/Aratako/Irodori-TTS)), all weight variants (v1/v2/v3), and the Aratako/Semantic-DACVAE-Japanese-32dim codec. Commercial use OK. The author requests ethical use (no impersonation/deepfake).
-IRODORI_HF_CHECKPOINT = "Aratako/Irodori-TTS-500M-v3"  #@param ["Aratako/Irodori-TTS-500M-v3", "Aratako/Irodori-TTS-500M-v2", "Aratako/Irodori-TTS-500M"]
+#@markdown - Default: v4-Small (unified text / reference / caption model, Duration Predictor + always-on SilentCipher watermark). This wrapper currently exposes text-only, no-reference inference.
+#@markdown - Older variants: v3, v2, or v1 (v1 also needs codec_repo="facebook/dacvae-watermarked").
+#@markdown - License: MIT for code ([Aratako/Irodori-TTS](https://github.com/Aratako/Irodori-TTS)), all weight variants (v1/v2/v3/v4), and the Aratako/Semantic-DACVAE-Japanese-32dim codec. Commercial use OK. The author requests ethical use (no impersonation/deepfake).
+IRODORI_HF_CHECKPOINT = "Aratako/Irodori-TTS-v4-Small"  #@param ["Aratako/Irodori-TTS-v4-Small", "Aratako/Irodori-TTS-500M-v3", "Aratako/Irodori-TTS-500M-v2", "Aratako/Irodori-TTS-500M"]
 IRODORI_CODEC_REPO = "Aratako/Semantic-DACVAE-Japanese-32dim"  #@param {type:"string"}
 IRODORI_MODEL_PRECISION = "fp32"  #@param ["fp32", "bf16", "fp16"]
 IRODORI_CODEC_PRECISION = "fp32"  #@param ["fp32", "bf16", "fp16"]

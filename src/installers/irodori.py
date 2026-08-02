@@ -10,7 +10,8 @@ def install(settings: Settings) -> dict:
     repo_dir = settings.engines_dir / "Irodori-TTS"
     ensure_git_clone("https://github.com/Aratako/Irodori-TTS", repo_dir)
     write_text(repo_dir / "app.py", settings.read_repo_text("src/apps/irodori_app.py"))
-    run(["uv", "sync"], cwd=str(repo_dir))
+    # Follow upstream's supported NVIDIA environment so uv resolves CUDA wheels.
+    run(["uv", "sync", "--extra", "cu128"], cwd=str(repo_dir))
     python_bin = repo_dir / ".venv" / "bin" / "python"
     uv_pip_install(
         python_bin,
