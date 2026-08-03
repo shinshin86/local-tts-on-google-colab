@@ -671,6 +671,22 @@ def print_engine_voice_hints(settings: Settings):
         print("emotion: neutral, joy, sad, angry, surprise, calm, fear")
         print("注意: 人間の発話ではなく、言葉として聞き取れないビープ音声です。")
         print("ライセンス: MIT（モデル重みなし、商用利用可）。")
+    elif settings.engine == "Irodori-TTS":
+        print("Irodori-TTS は日本語向けの Flow Matching TTS です（48kHz、MIT）。")
+        print(f"モデル: {settings.irodori_hf_checkpoint}")
+        print(f"コーデック: {settings.irodori_codec_repo}")
+        print(
+            f"精度: model={settings.irodori_model_precision} / "
+            f"codec={settings.irodori_codec_precision}"
+        )
+        if "v4" in settings.irodori_hf_checkpoint.lower():
+            print("v4-Small: text / reference / caption を統合したモデルです。")
+            print("           現在の OpenAI 互換ラッパーは text-only・参照音声なしで推論します。")
+        print("Duration Predictor の有無はチェックポイントのメタデータから自動判定します。")
+        print("voice パラメータによる話者切り替え・Voice cloning は現在未対応です。")
+        print("生成音声には上流ランタイムが SilentCipher ウォーターマークを適用します。")
+        print("ライセンス: コード・v1/v2/v3/v4 重み・既定コーデックはいずれも MIT。")
+        print("乱用防止: なりすまし・ディープフェイク用途には使用しないでください。")
     elif settings.engine == "Irodori-TTS-Lite":
         print("Irodori-TTS-Lite は Irodori-TTS の int4 量子化ランタイムです（~1GB VRAM、音質ほぼ無劣化、MIT）。")
         print(f"モデル: {settings.irodori_lite_hf_checkpoint} / file: {settings.irodori_lite_checkpoint_file}")
@@ -711,7 +727,7 @@ def print_engine_voice_hints(settings: Settings):
         print(f"ライセンス: コードは Apache-2.0、現在選択中の重みは {_vyvo_w_lic}（いずれも商用 OK）。ただし kyutai/mimi コーデックは CC-BY-4.0 で帰属表示が必要です。")
         print("乱用防止: 参照音声は権利のあるもの（話者の同意）のみを使用してください。")
     else:
-        print("Irodori-TTS は現状 voice 切り替えを持たない想定です。")
+        print(f"{settings.engine} の追加情報はありません。")
 
 
 def launch_cloudflared(settings: Settings) -> str | None:

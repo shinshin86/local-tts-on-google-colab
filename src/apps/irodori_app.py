@@ -10,12 +10,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
-from huggingface_hub import hf_hub_download
 from irodori_tts.inference_runtime import (
     InferenceRuntime,
     RuntimeKey,
     SamplingRequest,
     default_runtime_device,
+    download_hf_checkpoint,
     resolve_cfg_scales,
     save_wav,
 )
@@ -23,8 +23,8 @@ from irodori_tts.inference_runtime import (
 logger = logging.getLogger("uvicorn.error")
 
 # V1: checkpoint="Aratako/Irodori-TTS-500M", codec_repo="facebook/dacvae-watermarked"
-# V2: checkpoint="Aratako/Irodori-TTS-500M-v2"
-HF_CHECKPOINT = os.environ.get("IRODORI_HF_CHECKPOINT", "Aratako/Irodori-TTS-500M-v3")
+# V2/V3 remain supported by the current upstream runtime.
+HF_CHECKPOINT = os.environ.get("IRODORI_HF_CHECKPOINT", "Aratako/Irodori-TTS-v4-Small")
 MODEL_DEVICE = os.environ.get("IRODORI_MODEL_DEVICE", default_runtime_device())
 CODEC_DEVICE = os.environ.get("IRODORI_CODEC_DEVICE", default_runtime_device())
 MODEL_PRECISION = os.environ.get("IRODORI_MODEL_PRECISION", "fp32")
@@ -32,9 +32,7 @@ CODEC_PRECISION = os.environ.get("IRODORI_CODEC_PRECISION", "fp32")
 CODEC_REPO = os.environ.get("IRODORI_CODEC_REPO", "Aratako/Semantic-DACVAE-Japanese-32dim")
 OPENAI_MODEL_ID = os.environ.get("OPENAI_MODEL_ID", HF_CHECKPOINT)
 
-# v3 uses the Duration Predictor when seconds is None; v2/v1 need an explicit length.
-IS_V3 = "v3" in HF_CHECKPOINT.lower()
-# v3 upstream ships SilentCipher; it is initialized unconditionally inside InferenceRuntime
+# v3/v4 upstream ship SilentCipher; it is initialized unconditionally inside InferenceRuntime
 # and applied automatically when the watermarker reports ready=True. There is no public
 # kill-switch and that is intentional — per the model release the watermark must remain.
 
@@ -65,10 +63,7 @@ _runtime = None
 def get_runtime():
     global _runtime
     if _runtime is None:
-        checkpoint_path = hf_hub_download(
-            repo_id=HF_CHECKPOINT,
-            filename="model.safetensors",
-        )
+        checkpoint_path = download_hf_checkpoint(HF_CHECKPOINT)
         _runtime = InferenceRuntime.from_key(
             RuntimeKey(
                 checkpoint=checkpoint_path,
@@ -131,8 +126,9 @@ async def audio_speech(payload: AudioSpeechRequest):
         cfg_scale=None,
     )
 
-    # v3 uses the Duration Predictor when seconds is None; v2/v1 require an explicit length.
-    seconds = None if IS_V3 else 30.0
+    # Use checkpoint metadata instead of its versioned repo name. v3/v4 expose a
+    # Duration Predictor; legacy checkpoints fall back to their fixed 30-second slot.
+    seconds = None if runtime.model_cfg.use_duration_predictor else 30.0
     result = runtime.synthesize(
         SamplingRequest(
             text=payload.input,
