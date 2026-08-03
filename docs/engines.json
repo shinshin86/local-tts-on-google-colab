@@ -892,8 +892,8 @@
     {
       "id": "Irodori-TTS",
       "title": "Irodori-TTS",
-      "status": "v4 Colab verification pending (GPU required)",
-      "status_ja": "v4 Colab 検証待ち（GPU 必須）",
+      "status": "Works on L4 (GPU required, v4-Small)",
+      "status_ja": "L4 で動作確認済み（GPU 必須、v4-Small）",
       "languages": "Japanese",
       "languages_ja": "日本語",
       "description": "A Japanese TTS using [Aratako/Irodori-TTS](https://github.com/Aratako/Irodori-TTS). The default is the approximately 766M-parameter `Aratako/Irodori-TTS-v4-Small`, which unifies text, reference-speech, and caption conditioning in one Rectified Flow DiT checkpoint. The released v3, v2, and v1 checkpoints remain selectable. Output is high-quality 48 kHz, but this OpenAI-compatible wrapper currently exposes text-only, no-reference inference and does not switch voices.",

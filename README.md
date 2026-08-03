@@ -12,7 +12,7 @@ Supported engines:
 |---|---|---|
 | Kokoro | Works | Japanese / English / Chinese and more |
 | Kokoro-ONNX | Works | Japanese / English / Chinese and more |
-| Irodori-TTS | v4 Colab verification pending (GPU required) | Japanese |
+| Irodori-TTS | Works on L4 (GPU required, v4-Small) | Japanese |
 | Irodori-TTS-Lite | Works (GPU required, ~1GB VRAM, int4-quantized) | Japanese |
 | Piper | Works | English (default) / multilingual |
 | Piper-Plus | Works | Japanese / English / Chinese and 6 languages |
@@ -1235,7 +1235,7 @@ The wrapper handles these version differences automatically:
 - **Duration Predictor**: the wrapper reads the checkpoint metadata instead of guessing from the repository name. V4 and V3 therefore use automatic duration prediction, while legacy fixed-duration checkpoints retain their 30-second slot.
 - **Integrated SilentCipher watermark**: V4 and V3 use [SilentCipher](https://github.com/sony/silentcipher), initialized inside the upstream `InferenceRuntime`. Generated audio is watermarked whenever the SilentCipher weights are available. **Do not strip the watermark**; it is part of the model release.
 
-V4-Small also supports VoiceDesign captions, style-controlled voice cloning, and up to 120 seconds of combined reference audio in the upstream runtime. Those inputs are not yet part of this wrapper's `/v1/audio/speech` contract. The FP32 checkpoint is about 3 GB, so GPU use is recommended. Colab verification of the new default is pending.
+V4-Small also supports VoiceDesign captions, style-controlled voice cloning, and up to 120 seconds of combined reference audio in the upstream runtime. Those inputs are not yet part of this wrapper's `/v1/audio/speech` contract. The FP32 checkpoint is about 3 GB, so GPU use is recommended. The v4-Small default was verified on an NVIDIA L4 Colab runtime: installation and startup completed successfully, the OpenAI-compatible `/v1/audio/speech` endpoint returned a 48 kHz WAV through both local and public `trycloudflare` access, and caption-only VoiceDesign was exercised separately through the upstream runtime.
 
 ### Irodori-TTS-Lite
 
