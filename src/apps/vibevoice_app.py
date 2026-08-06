@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import copy
+import io
 import logging
 import os
+import pickle
 import tempfile
 from pathlib import Path
 from typing import Any
@@ -12,8 +14,6 @@ from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-from transformers.cache_utils import DynamicCache
-from transformers.modeling_outputs import BaseModelOutputWithPast
 from vibevoice.modular.modeling_vibevoice_streaming_inference import (
     VibeVoiceStreamingForConditionalGenerationInference,
 )
@@ -57,6 +57,42 @@ _processor: VibeVoiceStreamingProcessor | None = None
 _model: VibeVoiceStreamingForConditionalGenerationInference | None = None
 
 
+# The official prompt caches contain BaseModelOutputWithPast and DynamicCache
+# dict subclasses. PyTorch's weights-only loader cannot rebuild them (upstream
+# issue #392), so restrict full pickle semantics to the exact classes and tensor
+# primitives used by those caches. Any other global remains blocked.
+_VOICE_PRESET_SAFE_GLOBALS = {
+    ("collections", "OrderedDict"),
+    ("transformers.modeling_outputs", "BaseModelOutputWithPast"),
+    ("transformers.cache_utils", "DynamicCache"),
+}
+
+
+class _VoicePresetUnpickler(pickle.Unpickler):
+    def find_class(self, module, name):
+        if (module, name) in _VOICE_PRESET_SAFE_GLOBALS:
+            return super().find_class(module, name)
+        if module == "torch._utils" and name.startswith("_rebuild_"):
+            return super().find_class(module, name)
+        if module == "torch" and name.endswith("Storage"):
+            return super().find_class(module, name)
+        raise pickle.UnpicklingError(
+            f"Refusing to load disallowed global '{module}.{name}' from voice preset"
+        )
+
+
+class _RestrictedPickleModule:
+    Unpickler = _VoicePresetUnpickler
+
+    @staticmethod
+    def load(file, **kwargs):
+        return _VoicePresetUnpickler(file, **kwargs).load()
+
+    @staticmethod
+    def loads(data, **kwargs):
+        return _VoicePresetUnpickler(io.BytesIO(data), **kwargs).load()
+
+
 def _voice_presets() -> dict[str, Path]:
     return {path.stem.lower(): path for path in sorted(VIBEVOICE_VOICES_DIR.rglob("*.pt"))}
 
@@ -98,8 +134,12 @@ def get_model() -> tuple[VibeVoiceStreamingProcessor, VibeVoiceStreamingForCondi
 
 
 def _load_cached_prompt(path: Path) -> dict[str, Any]:
-    with torch.serialization.safe_globals([BaseModelOutputWithPast, DynamicCache]):
-        return torch.load(path, map_location="cuda", weights_only=True)
+    return torch.load(
+        path,
+        map_location="cuda",
+        pickle_module=_RestrictedPickleModule,
+        weights_only=False,
+    )
 
 
 @app.exception_handler(Exception)

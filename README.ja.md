@@ -1529,7 +1529,7 @@ upstream がピンを緩めた段階で再アクティベートできるよう�
 
 [microsoft/VibeVoice-Realtime-0.5B](https://huggingface.co/microsoft/VibeVoice-Realtime-0.5B) は、[microsoft/VibeVoice](https://github.com/microsoft/VibeVoice) の軽量な単一話者ストリーミング版です。初回可聴音声まで約200–300msを目標にし、内部ではストリーミングテキスト入力、最大約10分の長尺生成に対応します。本OpenAI互換ラッパーは、上流WebSocketの逐次配信ではなく完成したWAVを返します。
 
-Microsoft提供の事前計算済み `.pt` prompt cacheを使用します。`voice="default"` は `VIBEVOICE_DEFAULT_SPEAKER` を選択し、`/v1/voices` に出るIDも直接指定できます。デフォルトは実験的日本語プリセット `jp-Spk1_woman` です。独自参照音声によるvoice cloning、マルチスピーカー、速度変更は非対応です。正式対象は英語で、日本語・独語・仏語・伊語・韓国語・蘭語・波語・葡語・西語は実験的なため、出力が不安定な可能性があります。依存するQwen2.5-0.5B tokenizerも別途固定し、そのファイルはApache 2.0です。
+Microsoft提供の事前計算済み `.pt` prompt cacheを使用します。`voice="default"` は `VIBEVOICE_DEFAULT_SPEAKER` を選択し、`/v1/voices` に出るIDも直接指定できます。デフォルトは実験的日本語プリセット `jp-Spk1_woman` です。独自参照音声によるvoice cloning、マルチスピーカー、速度変更は非対応です。正式対象は英語で、日本語・独語・仏語・伊語・韓国語・蘭語・波語・葡語・西語は実験的なため、出力が不安定な可能性があります。依存するQwen2.5-0.5B tokenizerも別途固定し、そのファイルはApache 2.0です。さらに[上流issue #392](https://github.com/microsoft/VibeVoice/issues/392)のPyTorch互換問題に対して、[上流PR #397](https://github.com/microsoft/VibeVoice/pull/397)で提案されたrestricted unpicklerを取り込み、任意のpickle globalを信頼しないallowlistを維持します。
 
 コードと重みの表記はMITですが、モデルカードは意図する用途を研究開発に限定し、記録された同意のないなりすまし、偽情報、低遅延voice conversion、安全策の回避、非対応言語などを対象外としています。Microsoftは商用・実運用を推奨していません。生成音声にはAI生成を示す可聴ディスクレーマーと不可聴の来歴ウォーターマークが入るため、除去・回避しないでください。
 
