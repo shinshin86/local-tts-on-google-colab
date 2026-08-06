@@ -36,6 +36,7 @@
       "GPT-SoVITS",
       "Higgs-Audio-v2",
       "Higgs-Audio-v3",
+      "IndexTTS2",
       "Irodori-TTS",
       "Irodori-TTS-Lite",
       "KittenTTS",
@@ -1032,6 +1033,87 @@
           "default": 2048,
           "type": "integer",
           "flag": "--higgs-v3-max-new-tokens"
+        }
+      ]
+    },
+    {
+      "id": "IndexTTS2",
+      "title": "IndexTTS2 (GPU recommended; CPU possible but slow; EN/ZH; zero-shot cloning + emotion control)",
+      "status": "Implemented; Colab validation pending (GPU recommended, CPU possible but slow, fp16)",
+      "status_ja": "実装済み・Colab検証待ち（GPU推奨、CPU実行可だが低速、fp16）",
+      "languages": "English / Chinese",
+      "languages_ja": "英語 / 中国語",
+      "description": "[index-tts/index-tts](https://github.com/index-tts/index-tts) is an English/Chinese zero-shot TTS that separates speaker identity from emotional expression. The wrapper pins source commit `90ca4d6` and `IndexTeam/IndexTTS-2` revision `740dcaf`, and also pins the required W2V-BERT, MaskGCT semantic codec, CAMPPlus and BigVGAN resources. It uses a dedicated Python 3.11 environment with PyTorch 2.8/CUDA 12.8; GPU fp16 is the default, while the upstream CPU path remains available but is expected to be much slower.",
+      "description_ja": "[index-tts/index-tts](https://github.com/index-tts/index-tts) は、話者の音色と感情表現を分離して制御できる英語・中国語向けzero-shot TTSです。ラッパーはソースcommit `90ca4d6`、`IndexTeam/IndexTTS-2` revision `740dcaf` に加え、必須のW2V-BERT、MaskGCT semantic codec、CAMPPlus、BigVGANも固定revisionで取得します。Python 3.11 + PyTorch 2.8/CUDA 12.8の専用環境を使い、GPUではfp16が既定です。上流のCPU経路も残していますが、大幅に低速になる想定です。",
+      "notes": [
+        "- `default` uses the official demo reference; set `INDEXTTS2_PROMPT_WAV` and use `clone` for your own speaker.",
+        "- Emotion can come from a separate audio reference, natural-language description, or an 8-value vector ordered as happy, angry, sad, afraid, disgusted, melancholic, surprised, calm.",
+        "- The advertised precise duration control is explicitly not enabled in the public release, so `speed` remains 1.0.",
+        "- License: Bilibili Model Use License (separate permission above 100M monthly users or RMB 1B annual revenue). The required MaskGCT semantic codec is CC-BY-NC-4.0, making the effective stack non-commercial."
+      ],
+      "notes_ja": [
+        "- ライセンス: コードは Bilibili Model Use License、モデル重みは Bilibili Model Use License + CC-BY-NC-4.0 MaskGCT codec。商用利用: **不可**。 備考: 英語・中国語zero-shot cloning、感情を独立制御。月間1億ユーザー超または年間売上10億元超はBilibiliの別途許諾が必要。公開releaseでは精密な尺制御は未有効"
+      ],
+      "prefix": "INDEXTTS2",
+      "params": [
+        {
+          "name": "INDEXTTS2_HF_MODEL",
+          "default": "IndexTeam/IndexTTS-2",
+          "type": "string",
+          "flag": "--indextts2-hf-model"
+        },
+        {
+          "name": "INDEXTTS2_DEFAULT_VOICE",
+          "default": "default",
+          "type": "select",
+          "options": [
+            "default",
+            "clone"
+          ],
+          "flag": "--indextts2-default-voice"
+        },
+        {
+          "name": "INDEXTTS2_PROMPT_WAV",
+          "default": "",
+          "type": "string",
+          "flag": "--indextts2-prompt-wav"
+        },
+        {
+          "name": "INDEXTTS2_EMOTION_WAV",
+          "default": "",
+          "type": "string",
+          "flag": "--indextts2-emotion-wav"
+        },
+        {
+          "name": "INDEXTTS2_EMOTION_TEXT",
+          "default": "",
+          "type": "string",
+          "flag": "--indextts2-emotion-text"
+        },
+        {
+          "name": "INDEXTTS2_EMOTION_VECTOR",
+          "default": "",
+          "type": "string",
+          "flag": "--indextts2-emotion-vector"
+        },
+        {
+          "name": "INDEXTTS2_EMOTION_ALPHA",
+          "default": 0.6,
+          "type": "number",
+          "flag": "--indextts2-emotion-alpha"
+        },
+        {
+          "name": "INDEXTTS2_USE_RANDOM",
+          "default": false,
+          "type": "boolean",
+          "true_flag": "--indextts2-use-random",
+          "false_flag": null
+        },
+        {
+          "name": "INDEXTTS2_USE_FP16",
+          "default": true,
+          "type": "boolean",
+          "flag": null
         }
       ]
     },

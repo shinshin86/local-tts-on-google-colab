@@ -222,6 +222,19 @@ class Settings:
     fireredtts2_temperature: float = 0.75
     fireredtts2_topk: int = 20
     fireredtts2_use_bf16: bool = True
+    # IndexTTS2: EN/ZH zero-shot cloning with speaker/emotion disentanglement.
+    # The advertised duration-control path is not enabled in the public release.
+    # The effective stack is non-commercial because its required MaskGCT
+    # semantic codec weights are CC-BY-NC-4.0.
+    indextts2_hf_model: str = "IndexTeam/IndexTTS-2"
+    indextts2_default_voice: str = "default"
+    indextts2_prompt_wav: str = ""
+    indextts2_emotion_wav: str = ""
+    indextts2_emotion_text: str = ""
+    indextts2_emotion_vector: str = ""
+    indextts2_emotion_alpha: float = 0.6
+    indextts2_use_random: bool = False
+    indextts2_use_fp16: bool = True
     bark_default_voice: str = "v2/en_speaker_6"
     bark_use_small_models: bool = False
     chattts_default_voice: str = "default"

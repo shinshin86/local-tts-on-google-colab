@@ -60,6 +60,8 @@ def resolve_selected_voice(settings: Settings) -> str:
         return settings.omnivoice_default_voice
     if settings.engine == "FireRedTTS2":
         return settings.fireredtts2_default_voice
+    if settings.engine == "IndexTTS2":
+        return settings.indextts2_default_voice
     if settings.engine == "Kyutai-TTS":
         return settings.kyutai_default_voice
     if settings.engine == "Pocket-TTS":
@@ -654,6 +656,16 @@ def print_engine_voice_hints(settings: Settings):
         print("注意: CUDA GPU必須。モードごとに約8.27GBのLLM checkpointを別途取得します。")
         print("ライセンス: コード・重み・Qwen tokenizerはApache-2.0。")
         print("             上流READMEはzero-shot voice cloningを学術研究目的に限定しています。")
+    elif settings.engine == "IndexTTS2":
+        print("IndexTTS2 は英語・中国語向けのzero-shot voice cloning TTSです。")
+        print(f"モデル: {settings.indextts2_hf_model} / fp16: {settings.indextts2_use_fp16}")
+        print(f"デフォルト voice: {settings.indextts2_default_voice}")
+        print(f"emotion alpha: {settings.indextts2_emotion_alpha} / random: {settings.indextts2_use_random}")
+        print("voice: default（公式demo参照音声）、または --indextts2-prompt-wav で clone。")
+        print("感情は参照音声・自然言語説明・8次元vectorのいずれかで話者音色と独立に制御できます。")
+        print("注意: GPU推奨（CPUも上流で対応するが低速）。公開版では尺指定・speed変更は未有効です。")
+        print("ライセンス警告: 本体はBilibili Model Use License。大規模事業者は別途許諾が必要です。")
+        print("                 必須のMaskGCT semantic codecがCC-BY-NC-4.0のため実効上は非商用です。")
     elif settings.engine == "DramaBox":
         print("DramaBox は Resemble AI の表現力豊か（directable）な TTS です（LTX-2.3 + IC-LoRA、英語中心）。")
         print(f"モデル: {settings.dramabox_hf_model} + Gemma snapshot: {settings.dramabox_gemma_repo}")

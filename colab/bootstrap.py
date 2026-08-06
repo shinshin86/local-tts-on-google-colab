@@ -176,6 +176,15 @@ def parse_args():
     parser.add_argument("--fireredtts2-temperature", type=float, default=0.75)
     parser.add_argument("--fireredtts2-topk", type=int, default=20)
     parser.add_argument("--fireredtts2-no-bf16", action="store_true")
+    parser.add_argument("--indextts2-hf-model", default="IndexTeam/IndexTTS-2")
+    parser.add_argument("--indextts2-default-voice", default="default")
+    parser.add_argument("--indextts2-prompt-wav", default="")
+    parser.add_argument("--indextts2-emotion-wav", default="")
+    parser.add_argument("--indextts2-emotion-text", default="")
+    parser.add_argument("--indextts2-emotion-vector", default="")
+    parser.add_argument("--indextts2-emotion-alpha", type=float, default=0.6)
+    parser.add_argument("--indextts2-use-random", action="store_true")
+    parser.add_argument("--indextts2-no-fp16", action="store_true")
     parser.add_argument("--bark-default-voice", default="v2/en_speaker_6")
     parser.add_argument("--bark-use-small-models", action="store_true")
     parser.add_argument("--chattts-default-voice", default="default")
@@ -467,6 +476,15 @@ def main():
         fireredtts2_temperature=args.fireredtts2_temperature,
         fireredtts2_topk=args.fireredtts2_topk,
         fireredtts2_use_bf16=not args.fireredtts2_no_bf16,
+        indextts2_hf_model=args.indextts2_hf_model,
+        indextts2_default_voice=args.indextts2_default_voice,
+        indextts2_prompt_wav=args.indextts2_prompt_wav,
+        indextts2_emotion_wav=args.indextts2_emotion_wav,
+        indextts2_emotion_text=args.indextts2_emotion_text,
+        indextts2_emotion_vector=args.indextts2_emotion_vector,
+        indextts2_emotion_alpha=args.indextts2_emotion_alpha,
+        indextts2_use_random=args.indextts2_use_random,
+        indextts2_use_fp16=not args.indextts2_no_fp16,
         bark_default_voice=args.bark_default_voice,
         bark_use_small_models=args.bark_use_small_models,
         chattts_default_voice=args.chattts_default_voice,

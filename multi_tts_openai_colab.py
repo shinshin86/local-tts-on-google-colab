@@ -11,7 +11,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "FireRedTTS2", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "Irodori-TTS", "Irodori-TTS-Lite", "KittenTTS", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "Zonos", "ZONOS2"]
+ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "FireRedTTS2", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "IndexTTS2", "Irodori-TTS", "Irodori-TTS-Lite", "KittenTTS", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "Zonos", "ZONOS2"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -301,6 +301,22 @@ FIREREDTTS2_PROMPT_TEXT = ""  #@param {type:"string"}
 FIREREDTTS2_TEMPERATURE = 0.75  #@param {type:"number"}
 FIREREDTTS2_TOPK = 20  #@param {type:"integer"}
 FIREREDTTS2_USE_BF16 = True  #@param {type:"boolean"}
+
+#@markdown ---
+#@markdown IndexTTS2 (GPU recommended; CPU possible but slow; EN/ZH; zero-shot cloning + emotion control)
+#@markdown - `default` uses the official demo reference; set `INDEXTTS2_PROMPT_WAV` and use `clone` for your own speaker.
+#@markdown - Emotion can come from a separate audio reference, natural-language description, or an 8-value vector ordered as happy, angry, sad, afraid, disgusted, melancholic, surprised, calm.
+#@markdown - The advertised precise duration control is explicitly not enabled in the public release, so `speed` remains 1.0.
+#@markdown - License: Bilibili Model Use License (separate permission above 100M monthly users or RMB 1B annual revenue). The required MaskGCT semantic codec is CC-BY-NC-4.0, making the effective stack non-commercial.
+INDEXTTS2_HF_MODEL = "IndexTeam/IndexTTS-2"  #@param {type:"string"}
+INDEXTTS2_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+INDEXTTS2_PROMPT_WAV = ""  #@param {type:"string"}
+INDEXTTS2_EMOTION_WAV = ""  #@param {type:"string"}
+INDEXTTS2_EMOTION_TEXT = ""  #@param {type:"string"}
+INDEXTTS2_EMOTION_VECTOR = ""  #@param {type:"string"}
+INDEXTTS2_EMOTION_ALPHA = 0.6  #@param {type:"number"}
+INDEXTTS2_USE_RANDOM = False  #@param {type:"boolean"}
+INDEXTTS2_USE_FP16 = True  #@param {type:"boolean"}
 
 #@markdown ---
 #@markdown Bark (GPU recommended, 13 languages, MIT)
@@ -857,6 +873,20 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         str(FIREREDTTS2_TEMPERATURE),
         "--fireredtts2-topk",
         str(FIREREDTTS2_TOPK),
+        "--indextts2-hf-model",
+        INDEXTTS2_HF_MODEL,
+        "--indextts2-default-voice",
+        INDEXTTS2_DEFAULT_VOICE,
+        "--indextts2-prompt-wav",
+        INDEXTTS2_PROMPT_WAV,
+        "--indextts2-emotion-wav",
+        INDEXTTS2_EMOTION_WAV,
+        "--indextts2-emotion-text",
+        INDEXTTS2_EMOTION_TEXT,
+        "--indextts2-emotion-vector",
+        INDEXTTS2_EMOTION_VECTOR,
+        "--indextts2-emotion-alpha",
+        str(INDEXTTS2_EMOTION_ALPHA),
         "--bark-default-voice",
         BARK_DEFAULT_VOICE,
         "--chattts-default-voice",
@@ -1120,6 +1150,10 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         cmd.append("--bark-use-small-models")
     if not FIREREDTTS2_USE_BF16:
         cmd.append("--fireredtts2-no-bf16")
+    if INDEXTTS2_USE_RANDOM:
+        cmd.append("--indextts2-use-random")
+    if not INDEXTTS2_USE_FP16:
+        cmd.append("--indextts2-no-fp16")
     if DRAMABOX_COMPILE:
         cmd.append("--dramabox-compile")
     if DRAMABOX_NO_BNB_4BIT:

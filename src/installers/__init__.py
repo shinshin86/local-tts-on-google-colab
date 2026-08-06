@@ -13,6 +13,7 @@ from .fireredtts2 import install as install_fireredtts2
 from .gpt_sovits import install as install_gpt_sovits
 from .higgs_audio import install as install_higgs_audio
 from .higgs_v3 import install as install_higgs_v3
+from .indextts2 import install as install_indextts2
 from .irodori import install as install_irodori
 from .irodori_lite import install as install_irodori_lite
 from .kitten_tts import install as install_kitten_tts
@@ -69,6 +70,7 @@ INSTALLERS = {
     "GPT-SoVITS": install_gpt_sovits,
     "Higgs-Audio-v2": install_higgs_audio,
     "Higgs-Audio-v3": install_higgs_v3,
+    "IndexTTS2": install_indextts2,
     "Irodori-TTS": install_irodori,
     "Irodori-TTS-Lite": install_irodori_lite,
     "KittenTTS": install_kitten_tts,
