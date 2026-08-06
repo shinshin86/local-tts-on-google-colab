@@ -47,7 +47,10 @@ _tts: KittenTTS | None = None
 def get_tts() -> KittenTTS:
     global _tts
     if _tts is None:
-        _tts = KittenTTS(HF_MODEL, backend="cpu")
+        # v0.8.1's released wheel does not expose the newer ``backend``
+        # constructor argument. The installer forces CPU execution by hiding
+        # CUDA from this process instead.
+        _tts = KittenTTS(HF_MODEL)
     return _tts
 
 
