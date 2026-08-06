@@ -48,6 +48,11 @@ def install(settings: Settings) -> dict:
             "torchaudio==2.8.0+cu128",
         ]
     )
+    # The upstream librosa dependency only declares a lower bound for numba.
+    # uv can otherwise select numba 0.53.1 / llvmlite 0.36, which cannot run
+    # on the Python 3.12 environment used here. Pin the verified compatible pair
+    # before resolving the editable OmniVoice package.
+    uv_pip_install(python_bin, ["numba==0.66.0", "llvmlite==0.48.0"])
     uv_pip_install(python_bin, ["-e", str(repo_dir)])
     uv_pip_install(python_bin, ["fastapi", "uvicorn", "soundfile"])
 
