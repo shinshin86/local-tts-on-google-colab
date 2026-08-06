@@ -11,7 +11,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "Irodori-TTS", "Irodori-TTS-Lite", "KittenTTS", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "Zonos", "ZONOS2"]
+ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "FireRedTTS2", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "Irodori-TTS", "Irodori-TTS-Lite", "KittenTTS", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "Zonos", "ZONOS2"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -288,6 +288,19 @@ OMNIVOICE_PROMPT_TEXT = ""  #@param {type:"string"}
 OMNIVOICE_INSTRUCT = ""  #@param {type:"string"}
 OMNIVOICE_NUM_STEPS = 32  #@param {type:"integer"}
 OMNIVOICE_GUIDANCE_SCALE = 2.0  #@param {type:"number"}
+
+#@markdown ---
+#@markdown FireRedTTS2 (CUDA GPU required, 1.5B, 7 languages incl JP, long-form dialogue)
+#@markdown - `monologue`: random speaker or clone. `dialogue`: random speakers with `[S1]`...`[S4]` input.
+#@markdown - Code/weights/Qwen tokenizer: Apache-2.0. Upstream restricts zero-shot cloning to academic research.
+FIREREDTTS2_HF_MODEL = "FireRedTeam/FireRedTTS2"  #@param {type:"string"}
+FIREREDTTS2_GENERATION_MODE = "monologue"  #@param ["monologue", "dialogue"]
+FIREREDTTS2_DEFAULT_VOICE = "random"  #@param ["random", "clone"]
+FIREREDTTS2_PROMPT_WAV = ""  #@param {type:"string"}
+FIREREDTTS2_PROMPT_TEXT = ""  #@param {type:"string"}
+FIREREDTTS2_TEMPERATURE = 0.75  #@param {type:"number"}
+FIREREDTTS2_TOPK = 20  #@param {type:"integer"}
+FIREREDTTS2_USE_BF16 = True  #@param {type:"boolean"}
 
 #@markdown ---
 #@markdown Bark (GPU recommended, 13 languages, MIT)
@@ -830,6 +843,20 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         str(OMNIVOICE_NUM_STEPS),
         "--omnivoice-guidance-scale",
         str(OMNIVOICE_GUIDANCE_SCALE),
+        "--fireredtts2-hf-model",
+        FIREREDTTS2_HF_MODEL,
+        "--fireredtts2-generation-mode",
+        FIREREDTTS2_GENERATION_MODE,
+        "--fireredtts2-default-voice",
+        FIREREDTTS2_DEFAULT_VOICE,
+        "--fireredtts2-prompt-wav",
+        FIREREDTTS2_PROMPT_WAV,
+        "--fireredtts2-prompt-text",
+        FIREREDTTS2_PROMPT_TEXT,
+        "--fireredtts2-temperature",
+        str(FIREREDTTS2_TEMPERATURE),
+        "--fireredtts2-topk",
+        str(FIREREDTTS2_TOPK),
         "--bark-default-voice",
         BARK_DEFAULT_VOICE,
         "--chattts-default-voice",
@@ -1091,6 +1118,8 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         cmd.append("--sarashina-use-vllm")
     if BARK_USE_SMALL_MODELS:
         cmd.append("--bark-use-small-models")
+    if not FIREREDTTS2_USE_BF16:
+        cmd.append("--fireredtts2-no-bf16")
     if DRAMABOX_COMPILE:
         cmd.append("--dramabox-compile")
     if DRAMABOX_NO_BNB_4BIT:

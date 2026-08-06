@@ -211,6 +211,17 @@ class Settings:
     omnivoice_instruct: str = ""
     omnivoice_num_steps: int = 32
     omnivoice_guidance_scale: float = 2.0
+    # FireRedTTS2: 1.5B long-form multilingual TTS. Monologue loads the
+    # pretrain checkpoint; dialogue loads the posttrain checkpoint and accepts
+    # [S1]...[S4]. Code/weights Apache-2.0; cloning is academic-use-only upstream.
+    fireredtts2_hf_model: str = "FireRedTeam/FireRedTTS2"
+    fireredtts2_generation_mode: str = "monologue"
+    fireredtts2_default_voice: str = "random"
+    fireredtts2_prompt_wav: str = ""
+    fireredtts2_prompt_text: str = ""
+    fireredtts2_temperature: float = 0.75
+    fireredtts2_topk: int = 20
+    fireredtts2_use_bf16: bool = True
     bark_default_voice: str = "v2/en_speaker_6"
     bark_use_small_models: bool = False
     chattts_default_voice: str = "default"

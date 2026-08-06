@@ -58,6 +58,8 @@ def resolve_selected_voice(settings: Settings) -> str:
         return settings.vibevoice_default_speaker
     if settings.engine == "OmniVoice":
         return settings.omnivoice_default_voice
+    if settings.engine == "FireRedTTS2":
+        return settings.fireredtts2_default_voice
     if settings.engine == "Kyutai-TTS":
         return settings.kyutai_default_voice
     if settings.engine == "Pocket-TTS":
@@ -643,6 +645,15 @@ def print_engine_voice_hints(settings: Settings):
         print("注意: GPU推奨（CPUでも実行可能ですが低速）。音声クローンは同意済み音声のみ使用してください。")
         print("ライセンス: コード Apache-2.0、主モデル重み CC-BY-NC（商用不可）。")
         print("             同梱Higgs Audio 2 tokenizerはBoson Community License（年次利用者10万人超は追加許諾）。")
+    elif settings.engine == "FireRedTTS2":
+        print("FireRedTTS2 は1.5Bの長尺・多話者・多言語TTSです（日本語を含む7言語）。")
+        print(f"モデル: {settings.fireredtts2_hf_model} / mode: {settings.fireredtts2_generation_mode}")
+        print(f"デフォルト voice: {settings.fireredtts2_default_voice}")
+        print(f"temperature: {settings.fireredtts2_temperature} / topk: {settings.fireredtts2_topk} / bf16: {settings.fireredtts2_use_bf16}")
+        print("monologue: random、またはprompt wav + textでclone。dialogue: inputに[S1]...[S4]を指定。")
+        print("注意: CUDA GPU必須。モードごとに約8.27GBのLLM checkpointを別途取得します。")
+        print("ライセンス: コード・重み・Qwen tokenizerはApache-2.0。")
+        print("             上流READMEはzero-shot voice cloningを学術研究目的に限定しています。")
     elif settings.engine == "DramaBox":
         print("DramaBox は Resemble AI の表現力豊か（directable）な TTS です（LTX-2.3 + IC-LoRA、英語中心）。")
         print(f"モデル: {settings.dramabox_hf_model} + Gemma snapshot: {settings.dramabox_gemma_repo}")

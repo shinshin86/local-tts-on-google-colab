@@ -43,6 +43,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | OpenVoice-V2 | 動作不可（Python 3.13 で `av==10` がビルドできない） | 日本語 / 英語 / 西 / 仏 / 中 / 韓 |
 | VibeVoice-Realtime | 動作OK (GPU必須・0.5B・単一話者) | 英語、実験的に日本語 / 独 / 仏 / 伊 / 韓 / 蘭 / 波 / 葡 / 西 |
 | OmniVoice | Colab L4動作確認済み（GPU推奨、CPU実行可だが低速、0.6B、VRAM約2.35GB） | 日本語 / 英語 / 中国語など600言語以上 |
+| FireRedTTS2 | 実装済み・Colab検証待ち（CUDA GPU必須、1.5B、bf16） | 日本語 / 英語 / 中国語 / 韓国語 / フランス語 / ドイツ語 / ロシア語 |
 | Fish-Speech | 動作不可 | 日本語 / 英語 / 中国語 他 80言語以上 |
 | MeloTTS | 動作不可 | - |
 | Style-Bert-VITS2 | 動作不可 | - |
@@ -125,7 +126,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "Irodori-TTS", "Irodori-TTS-Lite", "KittenTTS", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "Zonos", "ZONOS2"]
+ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "FireRedTTS2", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "Irodori-TTS", "Irodori-TTS-Lite", "KittenTTS", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "Zonos", "ZONOS2"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -402,6 +403,19 @@ OMNIVOICE_PROMPT_TEXT = ""  #@param {type:"string"}
 OMNIVOICE_INSTRUCT = ""  #@param {type:"string"}
 OMNIVOICE_NUM_STEPS = 32  #@param {type:"integer"}
 OMNIVOICE_GUIDANCE_SCALE = 2.0  #@param {type:"number"}
+
+#@markdown ---
+#@markdown FireRedTTS2 (CUDA GPU required, 1.5B, 7 languages incl JP, long-form dialogue)
+#@markdown - `monologue`: random speaker or clone. `dialogue`: random speakers with `[S1]`...`[S4]` input.
+#@markdown - Code/weights/Qwen tokenizer: Apache-2.0. Upstream restricts zero-shot cloning to academic research.
+FIREREDTTS2_HF_MODEL = "FireRedTeam/FireRedTTS2"  #@param {type:"string"}
+FIREREDTTS2_GENERATION_MODE = "monologue"  #@param ["monologue", "dialogue"]
+FIREREDTTS2_DEFAULT_VOICE = "random"  #@param ["random", "clone"]
+FIREREDTTS2_PROMPT_WAV = ""  #@param {type:"string"}
+FIREREDTTS2_PROMPT_TEXT = ""  #@param {type:"string"}
+FIREREDTTS2_TEMPERATURE = 0.75  #@param {type:"number"}
+FIREREDTTS2_TOPK = 20  #@param {type:"integer"}
+FIREREDTTS2_USE_BF16 = True  #@param {type:"boolean"}
 
 #@markdown ---
 #@markdown Bark (GPU recommended, 13 languages, MIT)
@@ -944,6 +958,20 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         str(OMNIVOICE_NUM_STEPS),
         "--omnivoice-guidance-scale",
         str(OMNIVOICE_GUIDANCE_SCALE),
+        "--fireredtts2-hf-model",
+        FIREREDTTS2_HF_MODEL,
+        "--fireredtts2-generation-mode",
+        FIREREDTTS2_GENERATION_MODE,
+        "--fireredtts2-default-voice",
+        FIREREDTTS2_DEFAULT_VOICE,
+        "--fireredtts2-prompt-wav",
+        FIREREDTTS2_PROMPT_WAV,
+        "--fireredtts2-prompt-text",
+        FIREREDTTS2_PROMPT_TEXT,
+        "--fireredtts2-temperature",
+        str(FIREREDTTS2_TEMPERATURE),
+        "--fireredtts2-topk",
+        str(FIREREDTTS2_TOPK),
         "--bark-default-voice",
         BARK_DEFAULT_VOICE,
         "--chattts-default-voice",
@@ -1205,6 +1233,8 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         cmd.append("--sarashina-use-vllm")
     if BARK_USE_SMALL_MODELS:
         cmd.append("--bark-use-small-models")
+    if not FIREREDTTS2_USE_BF16:
+        cmd.append("--fireredtts2-no-bf16")
     if DRAMABOX_COMPILE:
         cmd.append("--dramabox-compile")
     if DRAMABOX_NO_BNB_4BIT:
@@ -1572,6 +1602,14 @@ OpenAIの `voice` は既定で `auto` です。`--omnivoice-instruct` を設定�
 **ライセンス警告:** リポジトリのコードはApache-2.0ですが、主モデル重みはEmilia等の学習データ制約により **CC-BY-NC** で、商用利用できません。またcheckpoint同梱のHiggs Audio 2 tokenizerには **Boson Higgs Audio 2 Community License** が適用され、再配布・帰属表示義務、年間アクティブユーザー10万人超での追加許諾、出力を他LLMの改善へ使うことの禁止があります。同梱tokenizerのモデルカード自体にはlicense記載がないため、このコンポーネントは `audio_tokenizer/LICENSE` の規約を基準にしています。
 
 プッシュ済みfeature branchからColab L4でend-to-end検証済みです。公開trycloudflareの `/v1/audio/speech` は有効な24kHz mono WAVを返し、GPU使用量は約2.35GB、日本語テスト文はWhisperで完全一致しました。
+
+### FireRedTTS2
+
+[FireRedTeam/FireRedTTS2](https://github.com/FireRedTeam/FireRedTTS2) は、monologueと最大4話者の文脈付きdialogueに対応する1.5Bの長尺streaming TTSです。英語・中国語・日本語・韓国語・フランス語・ドイツ語・ロシア語に対応し、cross-lingual/code-switchingのzero-shot cloningも備えます。インストーラはソースcommit `404f3f6` とモデルrevision `4af3f5c` を固定し、上流推奨のPython 3.11 + PyTorch 2.7.1/CUDA 12.6構成で、LLMを既定bf16で読み込みます。
+
+既定の `--fireredtts2-generation-mode monologue` は8.27GBのpretrain checkpointを取得し、`voice="random"` を提供します。`--fireredtts2-prompt-wav` と `--fireredtts2-prompt-text` の両方を設定すると `voice="clone"` も有効になります。`dialogue` は別の8.27GB post-train checkpointを取得し、入力内の `[S1]`〜`[S4]` タグで話者を切り替えます。タグなし入力は `[S1]` として扱います。共通codecのダウンロードは約4.30GBで、出力は24kHz mono WAVです。20.8GBのモデルrepo全体ではなく、選択モードに必要な大容量checkpointだけを取得します。上流は `speed` を公開していませんが、temperatureとtop-kは設定できます。
+
+コード・重み・同梱Qwen2.5-1.5B tokenizerはいずれもApache-2.0です。ただし上流のusage disclaimerはzero-shot voice cloningを学術研究目的に限定し、違法利用を禁止しています。FireRedTeamから別の明示がない限り `clone` は研究用途限定として扱い、必ず話者本人の明示的な同意がある参照音声だけを使用してください。
 
 ### Fish-Speech (現在動作不可)
 
@@ -1980,6 +2018,7 @@ Colab T4 で確認済み: エンジン・`/v1` エンドポイント・trycloudf
 | OpenVoice-V2 | MIT | MIT | OK | 多言語（日本語含む）。voice cloning。現在動作不可: `faster-whisper==0.9.0` 経由の `av==10` が Python 3.13 でビルドできない |
 | VibeVoice-Realtime | MIT | MIT | 要注意（研究/R&D用途のみ） | 0.5B単一話者ストリーミング。英語正式対応、日+8言語は実験的。voice cloning不可。可聴AIディスクレーマー+来歴ウォーターマーク |
 | OmniVoice | Apache 2.0 | CC-BY-NC | **不可** | 0.6B・600言語以上、auto/design/clone。同梱Higgs Audio 2 tokenizerは別のBoson Community License（年間利用者10万人超は追加許諾、帰属・再配布制約） |
+| FireRedTTS2 | Apache 2.0 | Apache 2.0 | 要注意 | 1.5B・日本語含む7言語、monologueまたは4話者dialogue。上流はzero-shot cloningを学術研究目的に限定 |
 | Fish-Speech | Apache 2.0 | Apache 2.0 | OK | A100/L4 GPU 必須（VRAM 24GB+） |
 | Bark | MIT | MIT | OK | 13言語（日本語含む）。生成的（笑い声 / SFX）。著者は重みを research-oriented と表記 |
 | ChatTTS | AGPL-3.0+ | CC BY-NC 4.0 | **不可** | 英 / 中 の対話 TTS。重みには乱用防止用の高周波ノイズが意図的に入っている |
@@ -2100,6 +2139,10 @@ Colab T4 で確認済み: エンジン・`/v1` エンドポイント・trycloudf
   https://github.com/k2-fsa/OmniVoice
 - OmniVoice モデル
   https://huggingface.co/k2-fsa/OmniVoice
+- FireRedTTS2
+  https://github.com/FireRedTeam/FireRedTTS2
+- FireRedTTS2 モデル
+  https://huggingface.co/FireRedTeam/FireRedTTS2
 - Fish Speech
   https://github.com/fishaudio/fish-speech
 - CosyVoice

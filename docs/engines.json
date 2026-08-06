@@ -31,6 +31,7 @@
       "dots.tts",
       "DramaBox",
       "F5-TTS",
+      "FireRedTTS2",
       "Fish-Speech",
       "GPT-SoVITS",
       "Higgs-Audio-v2",
@@ -716,6 +717,82 @@
           "default": "",
           "type": "string",
           "flag": "--f5tts-vocab-file"
+        }
+      ]
+    },
+    {
+      "id": "FireRedTTS2",
+      "title": "FireRedTTS2 (CUDA GPU required, 1.5B, 7 languages incl JP, long-form dialogue)",
+      "status": "Implemented; Colab validation pending (CUDA GPU required, 1.5B, bf16)",
+      "status_ja": "実装済み・Colab検証待ち（CUDA GPU必須、1.5B、bf16）",
+      "languages": "Japanese / English / Chinese / Korean / French / German / Russian",
+      "languages_ja": "日本語 / 英語 / 中国語 / 韓国語 / フランス語 / ドイツ語 / ロシア語",
+      "description": "[FireRedTeam/FireRedTTS2](https://github.com/FireRedTeam/FireRedTTS2) is a 1.5B long-form streaming TTS for monologues and context-aware dialogue with up to four speakers. It supports English, Chinese, Japanese, Korean, French, German and Russian, including cross-lingual/code-switching zero-shot cloning. The installer pins source commit `404f3f6` and model revision `4af3f5c`, uses the upstream-recommended Python 3.11 + PyTorch 2.7.1/CUDA 12.6 stack, and loads the LLM in bf16 by default.",
+      "description_ja": "[FireRedTeam/FireRedTTS2](https://github.com/FireRedTeam/FireRedTTS2) は、monologueと最大4話者の文脈付きdialogueに対応する1.5Bの長尺streaming TTSです。英語・中国語・日本語・韓国語・フランス語・ドイツ語・ロシア語に対応し、cross-lingual/code-switchingのzero-shot cloningも備えます。インストーラはソースcommit `404f3f6` とモデルrevision `4af3f5c` を固定し、上流推奨のPython 3.11 + PyTorch 2.7.1/CUDA 12.6構成で、LLMを既定bf16で読み込みます。",
+      "notes": [
+        "- `monologue`: random speaker or clone. `dialogue`: random speakers with `[S1]`...`[S4]` input.",
+        "- Code/weights/Qwen tokenizer: Apache-2.0. Upstream restricts zero-shot cloning to academic research."
+      ],
+      "notes_ja": [
+        "- ライセンス: コードは Apache 2.0、モデル重みは Apache 2.0。商用利用: 要注意。 備考: 1.5B・日本語含む7言語、monologueまたは4話者dialogue。上流はzero-shot cloningを学術研究目的に限定"
+      ],
+      "prefix": "FIREREDTTS2",
+      "params": [
+        {
+          "name": "FIREREDTTS2_HF_MODEL",
+          "default": "FireRedTeam/FireRedTTS2",
+          "type": "string",
+          "flag": "--fireredtts2-hf-model"
+        },
+        {
+          "name": "FIREREDTTS2_GENERATION_MODE",
+          "default": "monologue",
+          "type": "select",
+          "options": [
+            "monologue",
+            "dialogue"
+          ],
+          "flag": "--fireredtts2-generation-mode"
+        },
+        {
+          "name": "FIREREDTTS2_DEFAULT_VOICE",
+          "default": "random",
+          "type": "select",
+          "options": [
+            "random",
+            "clone"
+          ],
+          "flag": "--fireredtts2-default-voice"
+        },
+        {
+          "name": "FIREREDTTS2_PROMPT_WAV",
+          "default": "",
+          "type": "string",
+          "flag": "--fireredtts2-prompt-wav"
+        },
+        {
+          "name": "FIREREDTTS2_PROMPT_TEXT",
+          "default": "",
+          "type": "string",
+          "flag": "--fireredtts2-prompt-text"
+        },
+        {
+          "name": "FIREREDTTS2_TEMPERATURE",
+          "default": 0.75,
+          "type": "number",
+          "flag": "--fireredtts2-temperature"
+        },
+        {
+          "name": "FIREREDTTS2_TOPK",
+          "default": 20,
+          "type": "integer",
+          "flag": "--fireredtts2-topk"
+        },
+        {
+          "name": "FIREREDTTS2_USE_BF16",
+          "default": true,
+          "type": "boolean",
+          "flag": null
         }
       ]
     },

@@ -168,6 +168,14 @@ def parse_args():
     parser.add_argument("--omnivoice-instruct", default="")
     parser.add_argument("--omnivoice-num-steps", type=int, default=32)
     parser.add_argument("--omnivoice-guidance-scale", type=float, default=2.0)
+    parser.add_argument("--fireredtts2-hf-model", default="FireRedTeam/FireRedTTS2")
+    parser.add_argument("--fireredtts2-generation-mode", default="monologue", choices=["monologue", "dialogue"])
+    parser.add_argument("--fireredtts2-default-voice", default="random")
+    parser.add_argument("--fireredtts2-prompt-wav", default="")
+    parser.add_argument("--fireredtts2-prompt-text", default="")
+    parser.add_argument("--fireredtts2-temperature", type=float, default=0.75)
+    parser.add_argument("--fireredtts2-topk", type=int, default=20)
+    parser.add_argument("--fireredtts2-no-bf16", action="store_true")
     parser.add_argument("--bark-default-voice", default="v2/en_speaker_6")
     parser.add_argument("--bark-use-small-models", action="store_true")
     parser.add_argument("--chattts-default-voice", default="default")
@@ -451,6 +459,14 @@ def main():
         omnivoice_instruct=args.omnivoice_instruct,
         omnivoice_num_steps=args.omnivoice_num_steps,
         omnivoice_guidance_scale=args.omnivoice_guidance_scale,
+        fireredtts2_hf_model=args.fireredtts2_hf_model,
+        fireredtts2_generation_mode=args.fireredtts2_generation_mode,
+        fireredtts2_default_voice=args.fireredtts2_default_voice,
+        fireredtts2_prompt_wav=args.fireredtts2_prompt_wav,
+        fireredtts2_prompt_text=args.fireredtts2_prompt_text,
+        fireredtts2_temperature=args.fireredtts2_temperature,
+        fireredtts2_topk=args.fireredtts2_topk,
+        fireredtts2_use_bf16=not args.fireredtts2_no_bf16,
         bark_default_voice=args.bark_default_voice,
         bark_use_small_models=args.bark_use_small_models,
         chattts_default_voice=args.chattts_default_voice,

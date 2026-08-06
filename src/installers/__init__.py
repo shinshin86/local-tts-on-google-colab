@@ -9,6 +9,7 @@ from .dots_tts import install as install_dots_tts
 from .dramabox import install as install_dramabox
 from .f5tts import install as install_f5tts
 from .fish_speech import install as install_fish_speech
+from .fireredtts2 import install as install_fireredtts2
 from .gpt_sovits import install as install_gpt_sovits
 from .higgs_audio import install as install_higgs_audio
 from .higgs_v3 import install as install_higgs_v3
@@ -64,6 +65,7 @@ INSTALLERS = {
     "DramaBox": install_dramabox,
     "F5-TTS": install_f5tts,
     "Fish-Speech": install_fish_speech,
+    "FireRedTTS2": install_fireredtts2,
     "GPT-SoVITS": install_gpt_sovits,
     "Higgs-Audio-v2": install_higgs_audio,
     "Higgs-Audio-v3": install_higgs_v3,
