@@ -11,7 +11,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "Irodori-TTS", "Irodori-TTS-Lite", "KittenTTS", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "Zonos", "ZONOS2"]
+ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "Irodori-TTS", "Irodori-TTS-Lite", "KittenTTS", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "Zonos", "ZONOS2"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -275,6 +275,19 @@ VIBEVOICE_HF_MODEL = "microsoft/VibeVoice-Realtime-0.5B"  #@param {type:"string"
 VIBEVOICE_DEFAULT_SPEAKER = "jp-Spk1_woman"  #@param {type:"string"}
 VIBEVOICE_DDPM_STEPS = 5  #@param {type:"integer"}
 VIBEVOICE_CFG_SCALE = 1.5  #@param {type:"number"}
+
+#@markdown ---
+#@markdown OmniVoice (GPU recommended; CPU possible but slow; 0.6B; 600+ languages)
+#@markdown - `auto` needs no reference. `design` needs `OMNIVOICE_INSTRUCT`; `clone` needs both prompt fields.
+#@markdown - Code: Apache-2.0. Main weights: **CC-BY-NC** (non-commercial). The bundled Higgs Audio 2 tokenizer uses the Boson Community License (>100k annual users need an expanded license).
+OMNIVOICE_HF_MODEL = "k2-fsa/OmniVoice"  #@param {type:"string"}
+OMNIVOICE_LANGUAGE = "ja"  #@param {type:"string"}
+OMNIVOICE_DEFAULT_VOICE = "auto"  #@param ["auto", "design", "clone"]
+OMNIVOICE_PROMPT_WAV = ""  #@param {type:"string"}
+OMNIVOICE_PROMPT_TEXT = ""  #@param {type:"string"}
+OMNIVOICE_INSTRUCT = ""  #@param {type:"string"}
+OMNIVOICE_NUM_STEPS = 32  #@param {type:"integer"}
+OMNIVOICE_GUIDANCE_SCALE = 2.0  #@param {type:"number"}
 
 #@markdown ---
 #@markdown Bark (GPU recommended, 13 languages, MIT)
@@ -801,6 +814,22 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         str(VIBEVOICE_DDPM_STEPS),
         "--vibevoice-cfg-scale",
         str(VIBEVOICE_CFG_SCALE),
+        "--omnivoice-hf-model",
+        OMNIVOICE_HF_MODEL,
+        "--omnivoice-language",
+        OMNIVOICE_LANGUAGE,
+        "--omnivoice-default-voice",
+        OMNIVOICE_DEFAULT_VOICE,
+        "--omnivoice-prompt-wav",
+        OMNIVOICE_PROMPT_WAV,
+        "--omnivoice-prompt-text",
+        OMNIVOICE_PROMPT_TEXT,
+        "--omnivoice-instruct",
+        OMNIVOICE_INSTRUCT,
+        "--omnivoice-num-steps",
+        str(OMNIVOICE_NUM_STEPS),
+        "--omnivoice-guidance-scale",
+        str(OMNIVOICE_GUIDANCE_SCALE),
         "--bark-default-voice",
         BARK_DEFAULT_VOICE,
         "--chattts-default-voice",

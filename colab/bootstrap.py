@@ -160,6 +160,14 @@ def parse_args():
     parser.add_argument("--vibevoice-default-speaker", default="jp-Spk1_woman")
     parser.add_argument("--vibevoice-ddpm-steps", type=int, default=5)
     parser.add_argument("--vibevoice-cfg-scale", type=float, default=1.5)
+    parser.add_argument("--omnivoice-hf-model", default="k2-fsa/OmniVoice")
+    parser.add_argument("--omnivoice-language", default="ja")
+    parser.add_argument("--omnivoice-default-voice", default="auto")
+    parser.add_argument("--omnivoice-prompt-wav", default="")
+    parser.add_argument("--omnivoice-prompt-text", default="")
+    parser.add_argument("--omnivoice-instruct", default="")
+    parser.add_argument("--omnivoice-num-steps", type=int, default=32)
+    parser.add_argument("--omnivoice-guidance-scale", type=float, default=2.0)
     parser.add_argument("--bark-default-voice", default="v2/en_speaker_6")
     parser.add_argument("--bark-use-small-models", action="store_true")
     parser.add_argument("--chattts-default-voice", default="default")
@@ -435,6 +443,14 @@ def main():
         vibevoice_default_speaker=args.vibevoice_default_speaker,
         vibevoice_ddpm_steps=args.vibevoice_ddpm_steps,
         vibevoice_cfg_scale=args.vibevoice_cfg_scale,
+        omnivoice_hf_model=args.omnivoice_hf_model,
+        omnivoice_language=args.omnivoice_language,
+        omnivoice_default_voice=args.omnivoice_default_voice,
+        omnivoice_prompt_wav=args.omnivoice_prompt_wav,
+        omnivoice_prompt_text=args.omnivoice_prompt_text,
+        omnivoice_instruct=args.omnivoice_instruct,
+        omnivoice_num_steps=args.omnivoice_num_steps,
+        omnivoice_guidance_scale=args.omnivoice_guidance_scale,
         bark_default_voice=args.bark_default_voice,
         bark_use_small_models=args.bark_use_small_models,
         chattts_default_voice=args.chattts_default_voice,

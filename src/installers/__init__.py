@@ -30,6 +30,7 @@ from .moss_tts_v1_5 import install as install_moss_tts_v1_5
 from .moss_tts_local_v1_5 import install as install_moss_tts_local_v1_5
 from .neutts import install as install_neutts
 from .openvoice_v2 import install as install_openvoice_v2
+from .omnivoice import install as install_omnivoice
 from .orpheus import install as install_orpheus
 from .outetts import install as install_outetts
 from .piper import install as install_piper
@@ -83,6 +84,7 @@ INSTALLERS = {
     "MOSS-TTS-Local-v1.5": install_moss_tts_local_v1_5,
     "NeuTTS": install_neutts,
     "OpenVoice-V2": install_openvoice_v2,
+    "OmniVoice": install_omnivoice,
     "Orpheus-TTS": install_orpheus,
     "OuteTTS": install_outetts,
     "Style-Bert-VITS2": install_style_bert,

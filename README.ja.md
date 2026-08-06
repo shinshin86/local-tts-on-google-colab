@@ -42,6 +42,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | Spark-TTS | 動作OK (GPU推奨) | 英語 / 中国語（重みは非商用） |
 | OpenVoice-V2 | 動作不可（Python 3.13 で `av==10` がビルドできない） | 日本語 / 英語 / 西 / 仏 / 中 / 韓 |
 | VibeVoice-Realtime | 動作OK (GPU必須・0.5B・単一話者) | 英語、実験的に日本語 / 独 / 仏 / 伊 / 韓 / 蘭 / 波 / 葡 / 西 |
+| OmniVoice | 実装済み・Colab検証待ち（GPU推奨、CPU実行可だが低速、0.6B） | 日本語 / 英語 / 中国語など600言語以上 |
 | Fish-Speech | 動作不可 | 日本語 / 英語 / 中国語 他 80言語以上 |
 | MeloTTS | 動作不可 | - |
 | Style-Bert-VITS2 | 動作不可 | - |
@@ -124,7 +125,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "Irodori-TTS", "Irodori-TTS-Lite", "KittenTTS", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "Zonos", "ZONOS2"]
+ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "Irodori-TTS", "Irodori-TTS-Lite", "KittenTTS", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "Zonos", "ZONOS2"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -388,6 +389,19 @@ VIBEVOICE_HF_MODEL = "microsoft/VibeVoice-Realtime-0.5B"  #@param {type:"string"
 VIBEVOICE_DEFAULT_SPEAKER = "jp-Spk1_woman"  #@param {type:"string"}
 VIBEVOICE_DDPM_STEPS = 5  #@param {type:"integer"}
 VIBEVOICE_CFG_SCALE = 1.5  #@param {type:"number"}
+
+#@markdown ---
+#@markdown OmniVoice (GPU recommended; CPU possible but slow; 0.6B; 600+ languages)
+#@markdown - `auto` needs no reference. `design` needs `OMNIVOICE_INSTRUCT`; `clone` needs both prompt fields.
+#@markdown - Code: Apache-2.0. Main weights: **CC-BY-NC** (non-commercial). The bundled Higgs Audio 2 tokenizer uses the Boson Community License (>100k annual users need an expanded license).
+OMNIVOICE_HF_MODEL = "k2-fsa/OmniVoice"  #@param {type:"string"}
+OMNIVOICE_LANGUAGE = "ja"  #@param {type:"string"}
+OMNIVOICE_DEFAULT_VOICE = "auto"  #@param ["auto", "design", "clone"]
+OMNIVOICE_PROMPT_WAV = ""  #@param {type:"string"}
+OMNIVOICE_PROMPT_TEXT = ""  #@param {type:"string"}
+OMNIVOICE_INSTRUCT = ""  #@param {type:"string"}
+OMNIVOICE_NUM_STEPS = 32  #@param {type:"integer"}
+OMNIVOICE_GUIDANCE_SCALE = 2.0  #@param {type:"number"}
 
 #@markdown ---
 #@markdown Bark (GPU recommended, 13 languages, MIT)
@@ -914,6 +928,22 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         str(VIBEVOICE_DDPM_STEPS),
         "--vibevoice-cfg-scale",
         str(VIBEVOICE_CFG_SCALE),
+        "--omnivoice-hf-model",
+        OMNIVOICE_HF_MODEL,
+        "--omnivoice-language",
+        OMNIVOICE_LANGUAGE,
+        "--omnivoice-default-voice",
+        OMNIVOICE_DEFAULT_VOICE,
+        "--omnivoice-prompt-wav",
+        OMNIVOICE_PROMPT_WAV,
+        "--omnivoice-prompt-text",
+        OMNIVOICE_PROMPT_TEXT,
+        "--omnivoice-instruct",
+        OMNIVOICE_INSTRUCT,
+        "--omnivoice-num-steps",
+        str(OMNIVOICE_NUM_STEPS),
+        "--omnivoice-guidance-scale",
+        str(OMNIVOICE_GUIDANCE_SCALE),
         "--bark-default-voice",
         BARK_DEFAULT_VOICE,
         "--chattts-default-voice",
@@ -1533,6 +1563,14 @@ Microsoft提供の事前計算済み `.pt` prompt cacheを使用します。`voi
 
 コードと重みの表記はMITですが、モデルカードは意図する用途を研究開発に限定し、記録された同意のないなりすまし、偽情報、低遅延voice conversion、安全策の回避、非対応言語などを対象外としています。Microsoftは商用・実運用を推奨していません。生成音声にはAI生成を示す可聴ディスクレーマーと不可聴の来歴ウォーターマークが入るため、除去・回避しないでください。
 
+### OmniVoice
+
+[k2-fsa/OmniVoice](https://github.com/k2-fsa/OmniVoice) は、日本語を含む600言語以上に対応する0.6Bのdiffusion language model型TTSです。参照不要の `auto`、性別・年齢・ピッチ・アクセント・囁き等を指定する `design`、3〜10秒の参照音声と書き起こしを使う `clone` の3モードがあります。インストーラはソースcommit `38e992b` とモデルrevision `c5fdb5c` を固定し、`HF_TOKEN` 不要のungated checkpointを取得して、Python 3.12 + PyTorch 2.8.0/CUDA 12.8の専用環境を作ります。GPU推奨ですがCPU経路もあり、CPUでは大幅に低速です。
+
+OpenAIの `voice` は既定で `auto` です。`--omnivoice-instruct` を設定すると `design`、`--omnivoice-prompt-wav` と `--omnivoice-prompt-text` の両方を設定すると `clone` が有効になります。`--omnivoice-language` は既定 `ja` で、言語を明示した方がlanguage-agnostic推論より性能が安定します。`speed` は0.5〜1.5、品質と計算量は `--omnivoice-num-steps`（既定32）と `--omnivoice-guidance-scale`（既定2.0）で調整できます。voice designの主な学習言語は中国語・英語のため、それ以外では不安定な場合があります。音声クローンは必ず本人の明示的な許可がある音声だけに使用してください。
+
+**ライセンス警告:** リポジトリのコードはApache-2.0ですが、主モデル重みはEmilia等の学習データ制約により **CC-BY-NC** で、商用利用できません。またcheckpoint同梱のHiggs Audio 2 tokenizerには **Boson Higgs Audio 2 Community License** が適用され、再配布・帰属表示義務、年間アクティブユーザー10万人超での追加許諾、出力を他LLMの改善へ使うことの禁止があります。同梱tokenizerのモデルカード自体にはlicense記載がないため、このコンポーネントは `audio_tokenizer/LICENSE` の規約を基準にしています。
+
 ### Fish-Speech (現在動作不可)
 
 [fishaudio/fish-speech](https://github.com/fishaudio/fish-speech) を使った高品質 TTS です。日本語は Tier 1 サポート（最高品質）で、80 言語以上に対応しています。VRAM 24GB 以上が必要で A100/L4 GPU を想定していますが、Colab 環境ではモデルロード時に OOM（メモリ不足）でランタイムがクラッシュするため、現時点では動作しません。ライセンス: Apache 2.0。
@@ -1939,6 +1977,7 @@ Colab T4 で確認済み: エンジン・`/v1` エンドポイント・trycloudf
 | Spark-TTS | Apache 2.0 | CC BY-NC-SA 4.0 | 不可 | 英 / 中のみ。重みは学習データ制約で Apache 2.0 から再ライセンス |
 | OpenVoice-V2 | MIT | MIT | OK | 多言語（日本語含む）。voice cloning。現在動作不可: `faster-whisper==0.9.0` 経由の `av==10` が Python 3.13 でビルドできない |
 | VibeVoice-Realtime | MIT | MIT | 要注意（研究/R&D用途のみ） | 0.5B単一話者ストリーミング。英語正式対応、日+8言語は実験的。voice cloning不可。可聴AIディスクレーマー+来歴ウォーターマーク |
+| OmniVoice | Apache 2.0 | CC-BY-NC | **不可** | 0.6B・600言語以上、auto/design/clone。同梱Higgs Audio 2 tokenizerは別のBoson Community License（年間利用者10万人超は追加許諾、帰属・再配布制約） |
 | Fish-Speech | Apache 2.0 | Apache 2.0 | OK | A100/L4 GPU 必須（VRAM 24GB+） |
 | Bark | MIT | MIT | OK | 13言語（日本語含む）。生成的（笑い声 / SFX）。著者は重みを research-oriented と表記 |
 | ChatTTS | AGPL-3.0+ | CC BY-NC 4.0 | **不可** | 英 / 中 の対話 TTS。重みには乱用防止用の高周波ノイズが意図的に入っている |
@@ -2055,6 +2094,10 @@ Colab T4 で確認済み: エンジン・`/v1` エンドポイント・trycloudf
   https://github.com/microsoft/VibeVoice
 - VibeVoice-Realtime-0.5B
   https://huggingface.co/microsoft/VibeVoice-Realtime-0.5B
+- OmniVoice
+  https://github.com/k2-fsa/OmniVoice
+- OmniVoice モデル
+  https://huggingface.co/k2-fsa/OmniVoice
 - Fish Speech
   https://github.com/fishaudio/fish-speech
 - CosyVoice

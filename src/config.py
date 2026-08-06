@@ -199,6 +199,18 @@ class Settings:
     vibevoice_default_speaker: str = "jp-Spk1_woman"
     vibevoice_ddpm_steps: int = 5
     vibevoice_cfg_scale: float = 1.5
+    # OmniVoice: 0.6B massively multilingual diffusion TTS. `auto` needs no
+    # reference; `design` needs instruct; `clone` needs prompt wav + transcript.
+    # Code Apache-2.0. Main weights CC-BY-NC; bundled Higgs Audio 2 tokenizer
+    # carries the Boson community license (extra license above 100k annual users).
+    omnivoice_hf_model: str = "k2-fsa/OmniVoice"
+    omnivoice_language: str = "ja"
+    omnivoice_default_voice: str = "auto"
+    omnivoice_prompt_wav: str = ""
+    omnivoice_prompt_text: str = ""
+    omnivoice_instruct: str = ""
+    omnivoice_num_steps: int = 32
+    omnivoice_guidance_scale: float = 2.0
     bark_default_voice: str = "v2/en_speaker_6"
     bark_use_small_models: bool = False
     chattts_default_voice: str = "default"

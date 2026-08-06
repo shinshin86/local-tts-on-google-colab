@@ -56,6 +56,8 @@ def resolve_selected_voice(settings: Settings) -> str:
         return settings.openvoice_default_voice
     if settings.engine == "VibeVoice-Realtime":
         return settings.vibevoice_default_speaker
+    if settings.engine == "OmniVoice":
+        return settings.omnivoice_default_voice
     if settings.engine == "Kyutai-TTS":
         return settings.kyutai_default_voice
     if settings.engine == "Pocket-TTS":
@@ -632,6 +634,15 @@ def print_engine_voice_hints(settings: Settings):
         print("注意: GPU 必須。speed変更・マルチスピーカー・独自参照音声は非対応です。")
         print("ライセンス: コード・重みはMIT。ただしモデルカードは研究開発用途に限定し、")
         print("           商用/実運用、非合意のなりすまし、偽情報、低遅延voice conversion等を対象外とします。")
+    elif settings.engine == "OmniVoice":
+        print("OmniVoice は0.6Bの拡散型TTSです（600言語以上、auto / voice design / voice cloning）。")
+        print(f"モデル: {settings.omnivoice_hf_model} / language: {settings.omnivoice_language}")
+        print(f"デフォルト voice: {settings.omnivoice_default_voice}")
+        print(f"diffusion steps: {settings.omnivoice_num_steps} / guidance: {settings.omnivoice_guidance_scale}")
+        print("voice: auto。--omnivoice-instruct で design、prompt wav + text で clone が有効になります。")
+        print("注意: GPU推奨（CPUでも実行可能ですが低速）。音声クローンは同意済み音声のみ使用してください。")
+        print("ライセンス: コード Apache-2.0、主モデル重み CC-BY-NC（商用不可）。")
+        print("             同梱Higgs Audio 2 tokenizerはBoson Community License（年次利用者10万人超は追加許諾）。")
     elif settings.engine == "DramaBox":
         print("DramaBox は Resemble AI の表現力豊か（directable）な TTS です（LTX-2.3 + IC-LoRA、英語中心）。")
         print(f"モデル: {settings.dramabox_hf_model} + Gemma snapshot: {settings.dramabox_gemma_repo}")

@@ -51,6 +51,7 @@
       "MOSS-TTS-v1.5",
       "MOSS-TTS-Local-v1.5",
       "NeuTTS",
+      "OmniVoice",
       "OpenVoice-V2",
       "Orpheus-TTS",
       "OuteTTS",
@@ -2064,6 +2065,79 @@
             "mateo"
           ],
           "flag": "--neutts-default-voice"
+        }
+      ]
+    },
+    {
+      "id": "OmniVoice",
+      "title": "OmniVoice (GPU recommended; CPU possible but slow; 0.6B; 600+ languages)",
+      "status": "Implemented; Colab validation pending (GPU recommended, CPU possible but slow, 0.6B)",
+      "status_ja": "実装済み・Colab検証待ち（GPU推奨、CPU実行可だが低速、0.6B）",
+      "languages": "Japanese / English / Chinese and 600+ languages",
+      "languages_ja": "日本語 / 英語 / 中国語など600言語以上",
+      "description": "[k2-fsa/OmniVoice](https://github.com/k2-fsa/OmniVoice) is a 0.6B diffusion-language-model-style TTS supporting more than 600 languages, including Japanese. It provides three modes: `auto` (no reference), `design` (speaker attributes such as gender, age, pitch, accent or whisper), and `clone` (a 3–10 second reference clip plus transcript). The installer pins source commit `38e992b` and model revision `c5fdb5c`, downloads the ungated checkpoint without `HF_TOKEN`, and creates a Python 3.12 environment with PyTorch 2.8.0/CUDA 12.8. GPU is recommended; the wrapper also has a CPU path, although generation will be much slower.",
+      "description_ja": "[k2-fsa/OmniVoice](https://github.com/k2-fsa/OmniVoice) は、日本語を含む600言語以上に対応する0.6Bのdiffusion language model型TTSです。参照不要の `auto`、性別・年齢・ピッチ・アクセント・囁き等を指定する `design`、3〜10秒の参照音声と書き起こしを使う `clone` の3モードがあります。インストーラはソースcommit `38e992b` とモデルrevision `c5fdb5c` を固定し、`HF_TOKEN` 不要のungated checkpointを取得して、Python 3.12 + PyTorch 2.8.0/CUDA 12.8の専用環境を作ります。GPU推奨ですがCPU経路もあり、CPUでは大幅に低速です。",
+      "notes": [
+        "- `auto` needs no reference. `design` needs `OMNIVOICE_INSTRUCT`; `clone` needs both prompt fields.",
+        "- Code: Apache-2.0. Main weights: **CC-BY-NC** (non-commercial). The bundled Higgs Audio 2 tokenizer uses the Boson Community License (>100k annual users need an expanded license)."
+      ],
+      "notes_ja": [
+        "- ライセンス: コードは Apache 2.0、モデル重みは CC-BY-NC。商用利用: **不可**。 備考: 0.6B・600言語以上、auto/design/clone。同梱Higgs Audio 2 tokenizerは別のBoson Community License（年間利用者10万人超は追加許諾、帰属・再配布制約）"
+      ],
+      "prefix": "OMNIVOICE",
+      "params": [
+        {
+          "name": "OMNIVOICE_HF_MODEL",
+          "default": "k2-fsa/OmniVoice",
+          "type": "string",
+          "flag": "--omnivoice-hf-model"
+        },
+        {
+          "name": "OMNIVOICE_LANGUAGE",
+          "default": "ja",
+          "type": "string",
+          "flag": "--omnivoice-language"
+        },
+        {
+          "name": "OMNIVOICE_DEFAULT_VOICE",
+          "default": "auto",
+          "type": "select",
+          "options": [
+            "auto",
+            "design",
+            "clone"
+          ],
+          "flag": "--omnivoice-default-voice"
+        },
+        {
+          "name": "OMNIVOICE_PROMPT_WAV",
+          "default": "",
+          "type": "string",
+          "flag": "--omnivoice-prompt-wav"
+        },
+        {
+          "name": "OMNIVOICE_PROMPT_TEXT",
+          "default": "",
+          "type": "string",
+          "flag": "--omnivoice-prompt-text"
+        },
+        {
+          "name": "OMNIVOICE_INSTRUCT",
+          "default": "",
+          "type": "string",
+          "flag": "--omnivoice-instruct"
+        },
+        {
+          "name": "OMNIVOICE_NUM_STEPS",
+          "default": 32,
+          "type": "integer",
+          "flag": "--omnivoice-num-steps"
+        },
+        {
+          "name": "OMNIVOICE_GUIDANCE_SCALE",
+          "default": 2.0,
+          "type": "number",
+          "flag": "--omnivoice-guidance-scale"
         }
       ]
     },
