@@ -44,7 +44,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | VibeVoice-Realtime | 動作OK (GPU必須・0.5B・単一話者) | 英語、実験的に日本語 / 独 / 仏 / 伊 / 韓 / 蘭 / 波 / 葡 / 西 |
 | OmniVoice | Colab L4動作確認済み（GPU推奨、CPU実行可だが低速、0.6B、VRAM約2.35GB） | 日本語 / 英語 / 中国語など600言語以上 |
 | FireRedTTS2 | Colab L4動作確認済み（CUDA GPU必須、1.5B、bf16、VRAM約8.8GB） | 日本語 / 英語 / 中国語 / 韓国語 / フランス語 / ドイツ語 / ロシア語 |
-| IndexTTS2 | 実装済み・Colab検証待ち（GPU推奨、CPU実行可だが低速、fp16） | 英語 / 中国語 |
+| IndexTTS2 | Colab L4動作確認済み（GPU推奨、CPUは上流対応・未検証、fp16、VRAM約7.1GB） | 英語 / 中国語 |
 | Fish-Speech | 動作不可 | 日本語 / 英語 / 中国語 他 80言語以上 |
 | MeloTTS | 動作不可 | - |
 | Style-Bert-VITS2 | 動作不可 | - |
@@ -1657,6 +1657,8 @@ OpenAIの `voice` は既定で `auto` です。`--omnivoice-instruct` を設定�
 IndexTTS2は尺制御を特徴とする研究ですが、公式READMEは精密なduration controlが公開releaseでは未有効だと明記しています。そのため本ラッパーは未対応機能を提供済みと扱わず、`speed` が `1.0` 以外のリクエストを拒否します。
 
 **ライセンス警告:** IndexTTS2のコードと重みはApache-2.0ではなく、独自の **Bilibili Model Use License** です。利用者または関連会社が月間アクティブユーザー1億人超、または年間売上10億元超の場合は別途許諾が必要です。再配布時のライセンス保持、モデルや出力を他の商用AIモデル改善に使うことの制限、コンプライアンスおよびhigh-risk useに関する追加条件もあります。さらに実行時に必須の `amphion/MaskGCT` semantic codecは **CC-BY-NC-4.0** のため、このリポジトリでのIndexTTS2実効stackは **非商用** です。参照音声は必ず話者本人の明示的な同意があるものだけを使用してください。
+
+プッシュ済みfeature branchからColab L4でend-to-end検証済みです。感情vector付きの公開trycloudflareリクエストは有効な22.05kHz・16-bit・mono WAVを返し、GPU使用量は約7.1GB、warm-up後は5.06秒の音声を10.15秒で生成しました。Whisperは英語テスト文を正しく復元し、macOS側でもWAVの取得・形式確認・実再生まで成功しています。CPU経路は上流実装を利用できますが、今回の検証ではbenchmarkしていません。
 
 ### Fish-Speech (現在動作不可)
 

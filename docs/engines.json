@@ -1039,8 +1039,8 @@
     {
       "id": "IndexTTS2",
       "title": "IndexTTS2 (GPU recommended; CPU possible but slow; EN/ZH; zero-shot cloning + emotion control)",
-      "status": "Implemented; Colab validation pending (GPU recommended, CPU possible but slow, fp16)",
-      "status_ja": "実装済み・Colab検証待ち（GPU推奨、CPU実行可だが低速、fp16）",
+      "status": "Works on Colab L4 (GPU recommended, CPU supported upstream but unverified, fp16, ~7.1GB VRAM)",
+      "status_ja": "Colab L4動作確認済み（GPU推奨、CPUは上流対応・未検証、fp16、VRAM約7.1GB）",
       "languages": "English / Chinese",
       "languages_ja": "英語 / 中国語",
       "description": "[index-tts/index-tts](https://github.com/index-tts/index-tts) is an English/Chinese zero-shot TTS that separates speaker identity from emotional expression. The wrapper pins source commit `90ca4d6` and `IndexTeam/IndexTTS-2` revision `740dcaf`, and also pins the required W2V-BERT, MaskGCT semantic codec, CAMPPlus and BigVGAN resources. It uses a dedicated Python 3.11 environment with PyTorch 2.8/CUDA 12.8; GPU fp16 is the default, while the upstream CPU path remains available but is expected to be much slower.",

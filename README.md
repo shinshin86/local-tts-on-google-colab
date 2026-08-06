@@ -44,7 +44,7 @@ Supported engines:
 | VibeVoice-Realtime | Works (GPU required, 0.5B, single speaker) | English; experimental Japanese / German / French / Italian / Korean / Dutch / Polish / Portuguese / Spanish |
 | OmniVoice | Works on Colab L4 (GPU recommended, CPU possible but slow, 0.6B, ~2.35GB VRAM) | Japanese / English / Chinese and 600+ languages |
 | FireRedTTS2 | Works on Colab L4 (CUDA GPU required, 1.5B, bf16, ~8.8GB VRAM) | Japanese / English / Chinese / Korean / French / German / Russian |
-| IndexTTS2 | Implemented; Colab validation pending (GPU recommended, CPU possible but slow, fp16) | English / Chinese |
+| IndexTTS2 | Works on Colab L4 (GPU recommended, CPU supported upstream but unverified, fp16, ~7.1GB VRAM) | English / Chinese |
 | Fish-Speech | Not working | Japanese / English / Chinese and 80+ languages |
 | MeloTTS | Not working | - |
 | Style-Bert-VITS2 | Not working | - |
@@ -1656,6 +1656,8 @@ Verified end-to-end on Colab L4 from the pushed feature branch. The public trycl
 Although IndexTTS2 is presented as duration-controllable research, the official README explicitly says precise duration control is not enabled in the public release. This wrapper therefore rejects `speed` values other than `1.0` instead of claiming unsupported duration control.
 
 **License warning:** the IndexTTS2 code and weights use the custom **Bilibili Model Use License**, not Apache-2.0. A separate license is required if the user or an affiliate exceeds 100 million monthly active users or RMB 1 billion annual revenue. The license must be retained with redistributed copies, restricts using the model or its outputs to improve other commercial AI models, and includes additional compliance and high-risk-use terms. The runtime also requires the `amphion/MaskGCT` semantic codec under **CC-BY-NC-4.0**, so the effective IndexTTS2 stack in this repository is **non-commercial**. Use only reference audio for which the speaker has given explicit consent.
+
+Verified end-to-end on Colab L4 from the pushed feature branch. A public trycloudflare request with an emotion vector returned a valid 22.05 kHz, 16-bit mono WAV, used about 7.1 GB of GPU memory, and generated 5.06 seconds of speech in 10.15 seconds after warm-up. Whisper recovered the English test sentence correctly, and the WAV was also downloaded, inspected, and played successfully on macOS. The CPU path is provided by upstream but was not benchmarked in this verification.
 
 ### Fish-Speech (currently not working)
 
