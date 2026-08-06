@@ -41,7 +41,7 @@ Supported engines:
 | Kyutai-TTS | Works (GPU recommended) | English / French |
 | Pocket-TTS | Works (CPU OK, ~6x real-time) | English / French / German / Italian / Portuguese / Spanish |
 | OpenVoice-V2 | Not working (Python 3.13 / `av==10` build failure) | Japanese / English / Spanish / French / Chinese / Korean |
-| VibeVoice | Not working (upstream API churn) | English / Chinese (long-form, up to 4 speakers) |
+| VibeVoice-Realtime | Works (GPU required, 0.5B, single speaker) | English; experimental Japanese / German / French / Italian / Korean / Dutch / Polish / Portuguese / Spanish |
 | Fish-Speech | Not working | Japanese / English / Chinese and 80+ languages |
 | MeloTTS | Not working | - |
 | Style-Bert-VITS2 | Not working | - |
@@ -123,7 +123,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "Irodori-TTS", "Irodori-TTS-Lite", "KittenTTS", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "Zonos", "ZONOS2"]
+ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "Irodori-TTS", "Irodori-TTS-Lite", "KittenTTS", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "Zonos", "ZONOS2"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -380,15 +380,13 @@ ORPHEUS_DEFAULT_VOICE = "tara"  #@param ["tara", "leah", "jess", "leo", "dan", "
 ORPHEUS_MAX_MODEL_LEN = 2048  #@param {type:"integer"}
 
 #@markdown ---
-#@markdown VibeVoice (GPU required, English/Chinese, long-form multi-speaker)
-#@markdown - License: MIT, but Microsoft tags this as "research purpose only".
-#@markdown - Non-EN/ZH languages, voice impersonation, and disinformation use are prohibited.
-VIBEVOICE_HF_MODEL = "microsoft/VibeVoice-1.5B"  #@param {type:"string"}
-VIBEVOICE_DEFAULT_SPEAKER = "en-Alice_woman"  #@param {type:"string"}
-VIBEVOICE_PROMPT_WAV = ""  #@param {type:"string"}
-VIBEVOICE_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
-VIBEVOICE_DDPM_STEPS = 10  #@param {type:"integer"}
-VIBEVOICE_CFG_SCALE = 1.3  #@param {type:"number"}
+#@markdown VibeVoice-Realtime (GPU required, 0.5B, single speaker, ~10 min)
+#@markdown - English is the supported language; Japanese and eight other languages have experimental preset voices.
+#@markdown - Code/weights: MIT, but the model card limits intended use to research and development. No custom voice cloning.
+VIBEVOICE_HF_MODEL = "microsoft/VibeVoice-Realtime-0.5B"  #@param {type:"string"}
+VIBEVOICE_DEFAULT_SPEAKER = "jp-Spk1_woman"  #@param {type:"string"}
+VIBEVOICE_DDPM_STEPS = 5  #@param {type:"integer"}
+VIBEVOICE_CFG_SCALE = 1.5  #@param {type:"number"}
 
 #@markdown ---
 #@markdown Bark (GPU recommended, 13 languages, MIT)
@@ -911,10 +909,6 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         VIBEVOICE_HF_MODEL,
         "--vibevoice-default-speaker",
         VIBEVOICE_DEFAULT_SPEAKER,
-        "--vibevoice-prompt-wav",
-        VIBEVOICE_PROMPT_WAV,
-        "--vibevoice-default-voice",
-        VIBEVOICE_DEFAULT_VOICE,
         "--vibevoice-ddpm-steps",
         str(VIBEVOICE_DDPM_STEPS),
         "--vibevoice-cfg-scale",
@@ -1530,15 +1524,13 @@ Pre-installing `faster-whisper>=1.0` (which has `av==17.x` with py3.13 wheels) d
 
 The wrapper code is kept in tree so OpenVoice V2 can be reactivated once upstream relaxes its pins. **License (when working):** MIT for both code and weights (since April 2024).
 
-### VibeVoice (currently not working)
+### VibeVoice-Realtime
 
-Intended to use [microsoft/VibeVoice](https://github.com/microsoft/VibeVoice) — a 1.5B-parameter long-form multi-speaker TTS that can generate up to ~90 minutes of audio with up to 4 speakers in a single pass. The wrapper has been verified end-to-end up to model load on a Colab L4 GPU, but the upstream Microsoft repository is in the middle of a breaking API migration and synthesis cannot complete cleanly today:
+[microsoft/VibeVoice-Realtime-0.5B](https://huggingface.co/microsoft/VibeVoice-Realtime-0.5B) is the lightweight single-speaker streaming variant of [microsoft/VibeVoice](https://github.com/microsoft/VibeVoice). It targets roughly 200–300 ms first audible latency, accepts streaming text internally, and supports robust long-form generation up to about 10 minutes. This OpenAI-compatible wrapper returns a completed WAV response rather than exposing the upstream WebSocket streaming protocol.
 
-- The reference inference class was renamed: `VibeVoiceForConditionalGenerationInference` → `VibeVoiceForConditionalGeneration` (this part the wrapper now handles).
-- `model.set_ddpm_inference_steps(...)` has been removed; DDPM steps must now be set via `model.model.noise_scheduler.set_timesteps(...)` (handled).
-- The bigger break: upstream **stopped shipping reference `.wav` speaker files** in `demo/voices/`. They now ship pre-extracted `.pt` prompt caches (e.g. `en-Carter_man.pt`, `jp-Spk1_woman.pt`) and the recommended path is `processor.process_input_with_cached_prompt(cached_prompt=torch.load(...))` rather than `processor(text=..., voice_samples=[wav_path])`. The non-streaming `voice_samples`-based path the wrapper currently uses no longer has working defaults.
+The engine uses Microsoft's precomputed `.pt` prompt caches. `voice="default"` selects `VIBEVOICE_DEFAULT_SPEAKER`; any ID from `/v1/voices` can be passed directly. The default is the experimental Japanese preset `jp-Spk1_woman`. Custom reference audio and voice cloning are intentionally unavailable in this release, as are multi-speaker synthesis and speed control. English is the supported language; Japanese, German, French, Italian, Korean, Dutch, Polish, Portuguese and Spanish presets are experimental and may behave unpredictably.
 
-The wrapper code is kept in tree so it can be rebuilt against the upstream API once it stabilises. **License caveat:** even when working, the model card tags VibeVoice as **"research purpose only"**: non-EN/ZH languages, voice impersonation, disinformation, and real-time voice conversion are prohibited. Don't ship into commercial / real-world products regardless of how the API ends up.
+Code and weights are marked MIT, but the model card limits intended use to research and development and places voice impersonation without recorded consent, disinformation, low-latency voice conversion, safeguard circumvention and unsupported languages out of scope. Microsoft does not recommend commercial or real-world deployment. Generated audio includes an audible AI-generation disclosure and an imperceptible provenance watermark; do not remove or bypass them.
 
 ### Fish-Speech (currently not working)
 
@@ -1945,7 +1937,7 @@ The license for each engine is as follows. When using them, always check each pr
 | Pocket-TTS (model) | MIT | CC-BY-4.0 | OK (with attribution) | 100M params, CPU-only. EN / FR / DE / IT / PT / ES |
 | Pocket-TTS (voices) | — | Per-voice (mixed) | Check per voice | Voice licenses listed at [kyutai/tts-voices](https://huggingface.co/kyutai/tts-voices); upstream prohibits non-consensual impersonation |
 | OpenVoice-V2 | MIT | MIT | OK | Multilingual (incl JP). Voice cloning. Currently not working: `av==10` (via `faster-whisper==0.9.0` pin) won't build on Python 3.13 |
-| VibeVoice | MIT | MIT | Caution (research-only) | EN/ZH only per model card. Currently not working: upstream is mid-API migration (.wav speakers replaced with .pt caches) |
+| VibeVoice-Realtime | MIT | MIT | Caution (research/R&D only) | 0.5B single-speaker streaming model. English supported; JP + 8 languages experimental. No voice cloning. Audible AI disclosure + provenance watermark |
 | Fish-Speech | Apache 2.0 | Apache 2.0 | OK | Requires A100/L4 GPU (VRAM 24GB+) |
 | Bark | MIT | MIT | OK | 13 languages incl JP. Generative (laughter / SFX). Author labels weights as research-oriented |
 | ChatTTS | AGPL-3.0+ | CC BY-NC 4.0 | **Not allowed** | EN / ZH conversational TTS. Weights contain intentional high-frequency noise to deter misuse |
@@ -2060,6 +2052,8 @@ This repository itself is intended for short-term operational verification and t
   https://github.com/myshell-ai/OpenVoice
 - VibeVoice
   https://github.com/microsoft/VibeVoice
+- VibeVoice-Realtime-0.5B
+  https://huggingface.co/microsoft/VibeVoice-Realtime-0.5B
 - Fish Speech
   https://github.com/fishaudio/fish-speech
 - CosyVoice

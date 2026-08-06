@@ -11,7 +11,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "Irodori-TTS", "Irodori-TTS-Lite", "KittenTTS", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "Zonos", "ZONOS2"]
+ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "Irodori-TTS", "Irodori-TTS-Lite", "KittenTTS", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "Zonos", "ZONOS2"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -268,15 +268,13 @@ ORPHEUS_DEFAULT_VOICE = "tara"  #@param ["tara", "leah", "jess", "leo", "dan", "
 ORPHEUS_MAX_MODEL_LEN = 2048  #@param {type:"integer"}
 
 #@markdown ---
-#@markdown VibeVoice (GPU required, English/Chinese, long-form multi-speaker)
-#@markdown - License: MIT, but Microsoft tags this as "research purpose only".
-#@markdown - Non-EN/ZH languages, voice impersonation, and disinformation use are prohibited.
-VIBEVOICE_HF_MODEL = "microsoft/VibeVoice-1.5B"  #@param {type:"string"}
-VIBEVOICE_DEFAULT_SPEAKER = "en-Alice_woman"  #@param {type:"string"}
-VIBEVOICE_PROMPT_WAV = ""  #@param {type:"string"}
-VIBEVOICE_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
-VIBEVOICE_DDPM_STEPS = 10  #@param {type:"integer"}
-VIBEVOICE_CFG_SCALE = 1.3  #@param {type:"number"}
+#@markdown VibeVoice-Realtime (GPU required, 0.5B, single speaker, ~10 min)
+#@markdown - English is the supported language; Japanese and eight other languages have experimental preset voices.
+#@markdown - Code/weights: MIT, but the model card limits intended use to research and development. No custom voice cloning.
+VIBEVOICE_HF_MODEL = "microsoft/VibeVoice-Realtime-0.5B"  #@param {type:"string"}
+VIBEVOICE_DEFAULT_SPEAKER = "jp-Spk1_woman"  #@param {type:"string"}
+VIBEVOICE_DDPM_STEPS = 5  #@param {type:"integer"}
+VIBEVOICE_CFG_SCALE = 1.5  #@param {type:"number"}
 
 #@markdown ---
 #@markdown Bark (GPU recommended, 13 languages, MIT)
@@ -799,10 +797,6 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         VIBEVOICE_HF_MODEL,
         "--vibevoice-default-speaker",
         VIBEVOICE_DEFAULT_SPEAKER,
-        "--vibevoice-prompt-wav",
-        VIBEVOICE_PROMPT_WAV,
-        "--vibevoice-default-voice",
-        VIBEVOICE_DEFAULT_VOICE,
         "--vibevoice-ddpm-steps",
         str(VIBEVOICE_DDPM_STEPS),
         "--vibevoice-cfg-scale",

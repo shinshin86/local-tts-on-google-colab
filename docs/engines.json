@@ -66,7 +66,7 @@
       "StyleTTS2",
       "Supertonic",
       "TinyTTS",
-      "VibeVoice",
+      "VibeVoice-Realtime",
       "VoxCPM2",
       "Voxtral-TTS",
       "Vyvo-Multilingual",
@@ -2955,60 +2955,44 @@
       "params": []
     },
     {
-      "id": "VibeVoice",
-      "title": "VibeVoice (GPU required, English/Chinese, long-form multi-speaker)",
-      "status": "Not working (upstream API churn)",
-      "status_ja": "動作不可（upstream API 移行中）",
-      "languages": "English / Chinese (long-form, up to 4 speakers)",
-      "languages_ja": "英語 / 中国語（長尺・最大 4 話者）",
-      "description": "Intended to use [microsoft/VibeVoice](https://github.com/microsoft/VibeVoice) — a 1.5B-parameter long-form multi-speaker TTS that can generate up to ~90 minutes of audio with up to 4 speakers in a single pass. The wrapper has been verified end-to-end up to model load on a Colab L4 GPU, but the upstream Microsoft repository is in the middle of a breaking API migration and synthesis cannot complete cleanly today:",
-      "description_ja": "[microsoft/VibeVoice](https://github.com/microsoft/VibeVoice) を使う構成で、1.5B パラメータの長尺・マルチスピーカー TTS（最大 4 話者・約 90 分を 1 パスで生成）として実装しています。Colab L4 GPU 上でモデルロードまでは到達しますが、upstream Microsoft リポジトリが現在 **破壊的な API 移行中** で、合成リクエストが完了しません:",
+      "id": "VibeVoice-Realtime",
+      "title": "VibeVoice-Realtime (GPU required, 0.5B, single speaker, ~10 min)",
+      "status": "Works (GPU required, 0.5B, single speaker)",
+      "status_ja": "動作OK (GPU必須・0.5B・単一話者)",
+      "languages": "English; experimental Japanese / German / French / Italian / Korean / Dutch / Polish / Portuguese / Spanish",
+      "languages_ja": "英語、実験的に日本語 / 独 / 仏 / 伊 / 韓 / 蘭 / 波 / 葡 / 西",
+      "description": "[microsoft/VibeVoice-Realtime-0.5B](https://huggingface.co/microsoft/VibeVoice-Realtime-0.5B) is the lightweight single-speaker streaming variant of [microsoft/VibeVoice](https://github.com/microsoft/VibeVoice). It targets roughly 200–300 ms first audible latency, accepts streaming text internally, and supports robust long-form generation up to about 10 minutes. This OpenAI-compatible wrapper returns a completed WAV response rather than exposing the upstream WebSocket streaming protocol.",
+      "description_ja": "[microsoft/VibeVoice-Realtime-0.5B](https://huggingface.co/microsoft/VibeVoice-Realtime-0.5B) は、[microsoft/VibeVoice](https://github.com/microsoft/VibeVoice) の軽量な単一話者ストリーミング版です。初回可聴音声まで約200–300msを目標にし、内部ではストリーミングテキスト入力、最大約10分の長尺生成に対応します。本OpenAI互換ラッパーは、上流WebSocketの逐次配信ではなく完成したWAVを返します。",
       "notes": [
-        "- License: MIT, but Microsoft tags this as \"research purpose only\".",
-        "- Non-EN/ZH languages, voice impersonation, and disinformation use are prohibited."
+        "- English is the supported language; Japanese and eight other languages have experimental preset voices.",
+        "- Code/weights: MIT, but the model card limits intended use to research and development. No custom voice cloning."
       ],
       "notes_ja": [
-        "- ライセンス: コードは MIT、モデル重みは MIT。商用利用: 要注意（research-only）。 備考: 英 / 中のみ。現在は動作不可: upstream API 移行中（.wav speaker ファイル → .pt prompt cache へ移行）"
+        "- ライセンス: コードは MIT、モデル重みは MIT。商用利用: 要注意（研究/R&D用途のみ）。 備考: 0.5B単一話者ストリーミング。英語正式対応、日+8言語は実験的。voice cloning不可。可聴AIディスクレーマー+来歴ウォーターマーク"
       ],
       "prefix": "VIBEVOICE",
       "params": [
         {
           "name": "VIBEVOICE_HF_MODEL",
-          "default": "microsoft/VibeVoice-1.5B",
+          "default": "microsoft/VibeVoice-Realtime-0.5B",
           "type": "string",
           "flag": "--vibevoice-hf-model"
         },
         {
           "name": "VIBEVOICE_DEFAULT_SPEAKER",
-          "default": "en-Alice_woman",
+          "default": "jp-Spk1_woman",
           "type": "string",
           "flag": "--vibevoice-default-speaker"
         },
         {
-          "name": "VIBEVOICE_PROMPT_WAV",
-          "default": "",
-          "type": "string",
-          "flag": "--vibevoice-prompt-wav"
-        },
-        {
-          "name": "VIBEVOICE_DEFAULT_VOICE",
-          "default": "default",
-          "type": "select",
-          "options": [
-            "default",
-            "clone"
-          ],
-          "flag": "--vibevoice-default-voice"
-        },
-        {
           "name": "VIBEVOICE_DDPM_STEPS",
-          "default": 10,
+          "default": 5,
           "type": "integer",
           "flag": "--vibevoice-ddpm-steps"
         },
         {
           "name": "VIBEVOICE_CFG_SCALE",
-          "default": 1.3,
+          "default": 1.5,
           "type": "number",
           "flag": "--vibevoice-cfg-scale"
         }

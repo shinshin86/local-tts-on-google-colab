@@ -156,12 +156,10 @@ def parse_args():
     parser.add_argument("--spark-default-speed", default="moderate")
     parser.add_argument("--spark-prompt-wav", default="")
     parser.add_argument("--spark-prompt-text", default="")
-    parser.add_argument("--vibevoice-hf-model", default="microsoft/VibeVoice-1.5B")
-    parser.add_argument("--vibevoice-default-speaker", default="en-Alice_woman")
-    parser.add_argument("--vibevoice-prompt-wav", default="")
-    parser.add_argument("--vibevoice-default-voice", default="default")
-    parser.add_argument("--vibevoice-ddpm-steps", type=int, default=10)
-    parser.add_argument("--vibevoice-cfg-scale", type=float, default=1.3)
+    parser.add_argument("--vibevoice-hf-model", default="microsoft/VibeVoice-Realtime-0.5B")
+    parser.add_argument("--vibevoice-default-speaker", default="jp-Spk1_woman")
+    parser.add_argument("--vibevoice-ddpm-steps", type=int, default=5)
+    parser.add_argument("--vibevoice-cfg-scale", type=float, default=1.5)
     parser.add_argument("--bark-default-voice", default="v2/en_speaker_6")
     parser.add_argument("--bark-use-small-models", action="store_true")
     parser.add_argument("--chattts-default-voice", default="default")
@@ -435,8 +433,6 @@ def main():
         spark_prompt_text=args.spark_prompt_text,
         vibevoice_hf_model=args.vibevoice_hf_model,
         vibevoice_default_speaker=args.vibevoice_default_speaker,
-        vibevoice_prompt_wav=args.vibevoice_prompt_wav,
-        vibevoice_default_voice=args.vibevoice_default_voice,
         vibevoice_ddpm_steps=args.vibevoice_ddpm_steps,
         vibevoice_cfg_scale=args.vibevoice_cfg_scale,
         bark_default_voice=args.bark_default_voice,

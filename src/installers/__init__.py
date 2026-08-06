@@ -97,7 +97,7 @@ INSTALLERS = {
     "Sine-Wave-TTS": install_sine_wave_tts,
     "Spark-TTS": install_spark_tts,
     "TinyTTS": install_tiny_tts,
-    "VibeVoice": install_vibevoice,
+    "VibeVoice-Realtime": install_vibevoice,
     "VoxCPM2": install_voxcpm,
     "Voxtral-TTS": install_voxtral,
     "Vyvo-Multilingual": install_vyvo_multilingual,

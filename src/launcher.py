@@ -54,8 +54,8 @@ def resolve_selected_voice(settings: Settings) -> str:
         return settings.dia_default_voice
     if settings.engine == "OpenVoice-V2":
         return settings.openvoice_default_voice
-    if settings.engine == "VibeVoice":
-        return settings.vibevoice_default_voice
+    if settings.engine == "VibeVoice-Realtime":
+        return settings.vibevoice_default_speaker
     if settings.engine == "Kyutai-TTS":
         return settings.kyutai_default_voice
     if settings.engine == "Pocket-TTS":
@@ -622,20 +622,16 @@ def print_engine_voice_hints(settings: Settings):
         print("対応言語: en, de, es, fr, hi, it, ja, ko, pl, pt, ru, tr, zh")
         print("注意: GPU 推奨。生成プロセスはランダム性があり、同じ入力でも結果が変わります。")
         print("ライセンス: コードと重みとも MIT（商用 OK、ただし研究目的での提供を上流が明記）。")
-    elif settings.engine == "VibeVoice":
-        print("VibeVoice は Microsoft の長尺マルチスピーカー TTS です（最大 90 分・4 話者の一括生成）。")
+    elif settings.engine == "VibeVoice-Realtime":
+        print("VibeVoice-Realtime は Microsoft の0.5Bリアルタイム単一話者TTSです（最大約10分）。")
         print(f"モデル: {settings.vibevoice_hf_model}")
-        print(f"デフォルト speaker: {settings.vibevoice_default_speaker}（demo/voices/<speaker>.wav）")
-        print(f"デフォルト voice: {settings.vibevoice_default_voice}")
+        print(f"デフォルト speaker: {settings.vibevoice_default_speaker}（公式の事前計算済み.pt）")
         print(f"DDPM steps: {settings.vibevoice_ddpm_steps} / cfg_scale: {settings.vibevoice_cfg_scale}")
-        print("voice 候補: default（VIBEVOICE_DEFAULT_SPEAKER 名で demo/voices から参照音声を選択）")
-        if settings.vibevoice_prompt_wav:
-            print(f"             clone（参照音声: {settings.vibevoice_prompt_wav}）")
-        else:
-            print("             clone は --vibevoice-prompt-wav を指定すると有効になります")
-        print("対応言語: 英語 / 中国語のみ（モデル規約上、それ以外の言語は禁止）")
-        print("注意: ライセンスは MIT ですが、Microsoft 公式に「research purpose only」と明記されており、")
-        print("      なりすまし・ディスインフォ・実時間音声変換などは禁止です。商用 / 実運用での利用は推奨されていません。")
+        print("voice: default または /v1/voices に表示されるプリセット名。voice cloning は非対応です。")
+        print("対応言語: 英語が正式対象。日/独/仏/伊/韓/蘭/波/葡/西は実験的プリセットです。")
+        print("注意: GPU 必須。speed変更・マルチスピーカー・独自参照音声は非対応です。")
+        print("ライセンス: コード・重みはMIT。ただしモデルカードは研究開発用途に限定し、")
+        print("           商用/実運用、非合意のなりすまし、偽情報、低遅延voice conversion等を対象外とします。")
     elif settings.engine == "DramaBox":
         print("DramaBox は Resemble AI の表現力豊か（directable）な TTS です（LTX-2.3 + IC-LoRA、英語中心）。")
         print(f"モデル: {settings.dramabox_hf_model} + Gemma snapshot: {settings.dramabox_gemma_repo}")

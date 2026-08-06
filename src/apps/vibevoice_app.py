@@ -1,30 +1,37 @@
 from __future__ import annotations
 
+import copy
 import logging
 import os
 import tempfile
 from pathlib import Path
+from typing import Any
 
 import torch
 from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-from vibevoice.modular.modeling_vibevoice import VibeVoiceForConditionalGeneration
-from vibevoice.processor.vibevoice_processor import VibeVoiceProcessor
+from transformers.cache_utils import DynamicCache
+from transformers.modeling_outputs import BaseModelOutputWithPast
+from vibevoice.modular.modeling_vibevoice_streaming_inference import (
+    VibeVoiceStreamingForConditionalGenerationInference,
+)
+from vibevoice.processor.vibevoice_streaming_processor import VibeVoiceStreamingProcessor
 
 logger = logging.getLogger("uvicorn.error")
 
-OPENAI_MODEL_ID = os.environ.get("OPENAI_MODEL_ID", "vibevoice")
-VIBEVOICE_HF_MODEL = os.environ.get("VIBEVOICE_HF_MODEL", "microsoft/VibeVoice-1.5B")
-VIBEVOICE_VOICES_DIR = Path(os.environ.get("VIBEVOICE_VOICES_DIR", "demo/voices"))
-VIBEVOICE_DEFAULT_SPEAKER = os.environ.get("VIBEVOICE_DEFAULT_SPEAKER", "en-Alice_woman")
-VIBEVOICE_PROMPT_WAV = os.environ.get("VIBEVOICE_PROMPT_WAV", "")
-VIBEVOICE_DEFAULT_VOICE = os.environ.get("VIBEVOICE_DEFAULT_VOICE", "default")
-VIBEVOICE_DDPM_STEPS = int(os.environ.get("VIBEVOICE_DDPM_STEPS", "10"))
-VIBEVOICE_CFG_SCALE = float(os.environ.get("VIBEVOICE_CFG_SCALE", "1.3"))
+OPENAI_MODEL_ID = os.environ.get("OPENAI_MODEL_ID", "vibevoice-realtime")
+VIBEVOICE_HF_MODEL = os.environ.get(
+    "VIBEVOICE_HF_MODEL", "microsoft/VibeVoice-Realtime-0.5B"
+)
+VIBEVOICE_HF_REVISION = os.environ.get("VIBEVOICE_HF_REVISION", "")
+VIBEVOICE_VOICES_DIR = Path(os.environ.get("VIBEVOICE_VOICES_DIR", "demo/voices/streaming_model"))
+VIBEVOICE_DEFAULT_SPEAKER = os.environ.get("VIBEVOICE_DEFAULT_SPEAKER", "jp-Spk1_woman")
+VIBEVOICE_DDPM_STEPS = int(os.environ.get("VIBEVOICE_DDPM_STEPS", "5"))
+VIBEVOICE_CFG_SCALE = float(os.environ.get("VIBEVOICE_CFG_SCALE", "1.5"))
 
-app = FastAPI(title="VibeVoice OpenAI Compatible TTS")
+app = FastAPI(title="VibeVoice-Realtime OpenAI Compatible TTS")
 
 app.add_middleware(
     CORSMiddleware,
@@ -45,84 +52,75 @@ class AudioSpeechRequest(BaseModel):
     speed: float = 1.0
 
 
-_processor: VibeVoiceProcessor | None = None
-_model: VibeVoiceForConditionalGeneration | None = None
+_processor: VibeVoiceStreamingProcessor | None = None
+_model: VibeVoiceStreamingForConditionalGenerationInference | None = None
 
 
-def _device() -> str:
-    return "cuda" if torch.cuda.is_available() else "cpu"
+def _voice_presets() -> dict[str, Path]:
+    return {path.stem.lower(): path for path in sorted(VIBEVOICE_VOICES_DIR.rglob("*.pt"))}
 
 
-def get_model() -> tuple[VibeVoiceProcessor, VibeVoiceForConditionalGeneration]:
+def _resolve_voice(voice: str | None) -> tuple[str, Path]:
+    requested = VIBEVOICE_DEFAULT_SPEAKER if not voice or voice == "default" else voice
+    presets = _voice_presets()
+    path = presets.get(requested.lower())
+    if path is None:
+        available = ", ".join(sorted(presets))
+        raise HTTPException(
+            status_code=400,
+            detail=f"Unknown voice '{requested}'. Available presets: {available}",
+        )
+    return path.stem, path
+
+
+def get_model() -> tuple[VibeVoiceStreamingProcessor, VibeVoiceStreamingForConditionalGenerationInference]:
     global _processor, _model
     if _processor is None or _model is None:
-        device = _device()
-        dtype = torch.bfloat16 if device == "cuda" else torch.float32
-        logger.info("Loading VibeVoice processor + model: %s on %s (%s)", VIBEVOICE_HF_MODEL, device, dtype)
-        _processor = VibeVoiceProcessor.from_pretrained(VIBEVOICE_HF_MODEL)
-        # transformers deprecated `torch_dtype` in favor of `dtype`; pass both
-        # via `dtype` so we work on current versions.
-        _model = VibeVoiceForConditionalGeneration.from_pretrained(
+        if not torch.cuda.is_available():
+            raise RuntimeError("VibeVoice-Realtime currently requires a CUDA GPU in this wrapper.")
+        revision = VIBEVOICE_HF_REVISION or None
+        logger.info("Loading VibeVoice-Realtime: %s (revision=%s)", VIBEVOICE_HF_MODEL, revision)
+        _processor = VibeVoiceStreamingProcessor.from_pretrained(
             VIBEVOICE_HF_MODEL,
-            dtype=dtype,
-            device_map=device,
+            revision=revision,
         )
-        # Upstream `model.set_ddpm_inference_steps(...)` was removed when the
-        # class was renamed; configure the diffusion scheduler directly.
-        if hasattr(_model, "set_ddpm_inference_steps"):
-            _model.set_ddpm_inference_steps(num_steps=VIBEVOICE_DDPM_STEPS)
-        else:
-            _model.model.noise_scheduler.set_timesteps(
-                num_inference_steps=VIBEVOICE_DDPM_STEPS
-            )
-        logger.info("VibeVoice ready (ddpm_steps=%s, cfg_scale=%s)", VIBEVOICE_DDPM_STEPS, VIBEVOICE_CFG_SCALE)
+        _model = VibeVoiceStreamingForConditionalGenerationInference.from_pretrained(
+            VIBEVOICE_HF_MODEL,
+            revision=revision,
+            torch_dtype=torch.bfloat16,
+            device_map="cuda",
+            attn_implementation="sdpa",
+        )
+        _model.eval()
+        _model.set_ddpm_inference_steps(num_steps=VIBEVOICE_DDPM_STEPS)
+        logger.info(
+            "VibeVoice-Realtime ready (ddpm_steps=%s, cfg_scale=%s)",
+            VIBEVOICE_DDPM_STEPS,
+            VIBEVOICE_CFG_SCALE,
+        )
     return _processor, _model
 
 
-def _resolve_speaker_path(voice: str) -> Path:
-    if voice == "clone":
-        if not VIBEVOICE_PROMPT_WAV:
-            raise HTTPException(
-                status_code=400,
-                detail="voice='clone' requires --vibevoice-prompt-wav at startup.",
-            )
-        return Path(VIBEVOICE_PROMPT_WAV)
-    candidate = VIBEVOICE_VOICES_DIR / f"{VIBEVOICE_DEFAULT_SPEAKER}.wav"
-    if not candidate.exists():
-        raise HTTPException(
-            status_code=500,
-            detail=f"Bundled speaker file not found: {candidate}",
-        )
-    return candidate
-
-
-def _format_text(text: str) -> str:
-    # VibeVoice expects "Speaker N: ..." per line. If the user did not provide a
-    # speaker prefix, prepend "Speaker 1:" so single-speaker TTS still works.
-    stripped = text.lstrip()
-    if stripped.lower().startswith("speaker "):
-        return text
-    return f"Speaker 1: {text}"
+def _load_cached_prompt(path: Path) -> dict[str, Any]:
+    with torch.serialization.safe_globals([BaseModelOutputWithPast, DynamicCache]):
+        return torch.load(path, map_location="cuda", weights_only=True)
 
 
 @app.exception_handler(Exception)
 async def unhandled_exception_handler(request: Request, exc: Exception):
     logger.exception("Unhandled exception while serving request")
-    return JSONResponse(
-        status_code=500,
-        content={"error": type(exc).__name__, "detail": str(exc)},
-    )
+    return JSONResponse(status_code=500, content={"error": type(exc).__name__, "detail": str(exc)})
 
 
 @app.get("/")
 def root():
     return {
         "ok": True,
-        "engine": "VibeVoice",
+        "engine": "VibeVoice-Realtime",
         "model": OPENAI_MODEL_ID,
         "hf_model": VIBEVOICE_HF_MODEL,
         "default_speaker": VIBEVOICE_DEFAULT_SPEAKER,
-        "default_voice": VIBEVOICE_DEFAULT_VOICE,
+        "voice_count": len(_voice_presets()),
     }
 
 
@@ -136,9 +134,10 @@ def list_models():
 
 @app.get("/v1/voices")
 def list_voices():
-    voices = [{"id": "default", "object": "voice", "speaker": VIBEVOICE_DEFAULT_SPEAKER}]
-    if VIBEVOICE_PROMPT_WAV:
-        voices.append({"id": "clone", "object": "voice"})
+    voices = [
+        {"id": path.stem, "object": "voice", "language": path.stem.split("-", 1)[0]}
+        for path in _voice_presets().values()
+    ]
     return {"object": "list", "data": voices}
 
 
@@ -146,48 +145,46 @@ def list_voices():
 async def audio_speech(payload: AudioSpeechRequest):
     if payload.response_format.lower() != "wav":
         raise HTTPException(status_code=400, detail="This wrapper currently supports only wav.")
+    if payload.speed != 1.0:
+        raise HTTPException(status_code=400, detail="VibeVoice-Realtime does not support speed control.")
 
-    voice = payload.voice or VIBEVOICE_DEFAULT_VOICE
-    if voice not in {"default", "clone"}:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Unknown voice '{voice}'. Use 'default' or 'clone'.",
-        )
-
+    voice, voice_path = _resolve_voice(payload.voice)
     processor, model = get_model()
-    speaker_path = _resolve_speaker_path(voice)
-
-    text = _format_text(payload.input)
-    inputs = processor(
-        text=[text],
-        voice_samples=[[str(speaker_path)]],
+    cached_prompt = _load_cached_prompt(voice_path)
+    inputs = processor.process_input_with_cached_prompt(
+        text=payload.input,
+        cached_prompt=cached_prompt,
         padding=True,
         return_tensors="pt",
+        return_attention_mask=True,
     )
+    for key, value in inputs.items():
+        if torch.is_tensor(value):
+            inputs[key] = value.to("cuda")
 
-    outputs = model.generate(
-        **inputs,
-        max_new_tokens=None,
-        cfg_scale=VIBEVOICE_CFG_SCALE,
-        tokenizer=processor.tokenizer,
-        generation_config={"do_sample": False},
-    )
+    with torch.inference_mode():
+        outputs = model.generate(
+            **inputs,
+            max_new_tokens=None,
+            cfg_scale=VIBEVOICE_CFG_SCALE,
+            tokenizer=processor.tokenizer,
+            generation_config={"do_sample": False},
+            all_prefilled_outputs=copy.deepcopy(cached_prompt),
+        )
 
-    if not getattr(outputs, "speech_outputs", None):
+    if not getattr(outputs, "speech_outputs", None) or outputs.speech_outputs[0] is None:
         raise HTTPException(status_code=500, detail="No audio was generated.")
 
     with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp:
-        tmp_path = tmp.name
-
+        tmp_path = Path(tmp.name)
     try:
-        processor.save_audio(outputs.speech_outputs[0], tmp_path)
-        audio_bytes = Path(tmp_path).read_bytes()
+        processor.save_audio(outputs.speech_outputs[0], output_path=str(tmp_path))
+        audio_bytes = tmp_path.read_bytes()
     finally:
-        Path(tmp_path).unlink(missing_ok=True)
+        tmp_path.unlink(missing_ok=True)
 
     if not audio_bytes:
         raise HTTPException(status_code=500, detail="No audio was generated.")
-
     return Response(
         content=audio_bytes,
         media_type="audio/wav",

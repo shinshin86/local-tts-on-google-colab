@@ -195,12 +195,10 @@ class Settings:
     spark_default_speed: str = "moderate"
     spark_prompt_wav: str = ""
     spark_prompt_text: str = ""
-    vibevoice_hf_model: str = "microsoft/VibeVoice-1.5B"
-    vibevoice_default_speaker: str = "en-Alice_woman"
-    vibevoice_prompt_wav: str = ""
-    vibevoice_default_voice: str = "default"
-    vibevoice_ddpm_steps: int = 10
-    vibevoice_cfg_scale: float = 1.3
+    vibevoice_hf_model: str = "microsoft/VibeVoice-Realtime-0.5B"
+    vibevoice_default_speaker: str = "jp-Spk1_woman"
+    vibevoice_ddpm_steps: int = 5
+    vibevoice_cfg_scale: float = 1.5
     bark_default_voice: str = "v2/en_speaker_6"
     bark_use_small_models: bool = False
     chattts_default_voice: str = "default"
