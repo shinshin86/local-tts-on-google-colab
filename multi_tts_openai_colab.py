@@ -11,7 +11,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "Irodori-TTS", "Irodori-TTS-Lite", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "Zonos", "ZONOS2"]
+ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "FireRedTTS2", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "IndexTTS2", "Irodori-TTS", "Irodori-TTS-Lite", "KittenTTS", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "Zonos", "ZONOS2"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -168,8 +168,12 @@ SARASHINA_PROMPT_TEXT = ""  #@param {type:"string"}
 SARASHINA_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
 
 #@markdown ---
-#@markdown Chatterbox (GPU recommended, multilingual incl JP, voice cloning)
+#@markdown Chatterbox Multilingual V3 (GPU recommended, 0.5B, 23 languages incl JP, voice cloning)
+#@markdown - V3 improves speaker similarity, naturalness, and stability while reducing hallucinations versus V2.
+#@markdown - V3 is not yet in PyPI 0.1.7; the installer pins an official GitHub commit that contains the V3 API.
+#@markdown - Code and V3 weights: MIT. All outputs include Resemble's imperceptible Perth watermark.
 CHATTERBOX_LANGUAGE = "ja"  #@param ["ar", "da", "de", "el", "en", "es", "fi", "fr", "he", "hi", "it", "ja", "ko", "ms", "nl", "no", "pl", "pt", "ru", "sv", "sw", "tr", "zh"]
+CHATTERBOX_T3_MODEL = "v3"  #@param ["v3", "v2"]
 CHATTERBOX_PROMPT_WAV = ""  #@param {type:"string"}
 CHATTERBOX_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
 
@@ -231,6 +235,16 @@ COSYVOICE_PROMPT_TEXT = ""  #@param {type:"string"}
 COSYVOICE_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
 
 #@markdown ---
+#@markdown CosyVoice3 (GPU recommended, 9 languages incl JP, voice cloning + instruction control)
+#@markdown - Japanese text must be converted to Katakana per upstream guidance.
+#@markdown - Code and `Fun-CosyVoice3-0.5B-2512` weights are Apache 2.0. The upstream README also includes an academic/demo disclaimer and takedown request.
+COSYVOICE3_HF_MODEL = "FunAudioLLM/Fun-CosyVoice3-0.5B-2512"  #@param {type:"string"}
+COSYVOICE3_PROMPT_WAV = ""  #@param {type:"string"}
+COSYVOICE3_PROMPT_TEXT = ""  #@param {type:"string"}
+COSYVOICE3_INSTRUCT = ""  #@param {type:"string"}
+COSYVOICE3_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+
+#@markdown ---
 #@markdown Spark-TTS (GPU recommended, EN/ZH only, voice cloning + gender/pitch/speed control)
 #@markdown - Code: Apache 2.0. Weights: CC BY-NC-SA 4.0 (non-commercial only) due to training data license.
 SPARK_HF_MODEL = "SparkAudio/Spark-TTS-0.5B"  #@param {type:"string"}
@@ -254,15 +268,55 @@ ORPHEUS_DEFAULT_VOICE = "tara"  #@param ["tara", "leah", "jess", "leo", "dan", "
 ORPHEUS_MAX_MODEL_LEN = 2048  #@param {type:"integer"}
 
 #@markdown ---
-#@markdown VibeVoice (GPU required, English/Chinese, long-form multi-speaker)
-#@markdown - License: MIT, but Microsoft tags this as "research purpose only".
-#@markdown - Non-EN/ZH languages, voice impersonation, and disinformation use are prohibited.
-VIBEVOICE_HF_MODEL = "microsoft/VibeVoice-1.5B"  #@param {type:"string"}
-VIBEVOICE_DEFAULT_SPEAKER = "en-Alice_woman"  #@param {type:"string"}
-VIBEVOICE_PROMPT_WAV = ""  #@param {type:"string"}
-VIBEVOICE_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
-VIBEVOICE_DDPM_STEPS = 10  #@param {type:"integer"}
-VIBEVOICE_CFG_SCALE = 1.3  #@param {type:"number"}
+#@markdown VibeVoice-Realtime (GPU required, 0.5B, single speaker, ~10 min)
+#@markdown - English is the supported language; Japanese and eight other languages have experimental preset voices.
+#@markdown - Code/weights: MIT, but the model card limits intended use to research and development. No custom voice cloning.
+VIBEVOICE_HF_MODEL = "microsoft/VibeVoice-Realtime-0.5B"  #@param {type:"string"}
+VIBEVOICE_DEFAULT_SPEAKER = "jp-Spk1_woman"  #@param {type:"string"}
+VIBEVOICE_DDPM_STEPS = 5  #@param {type:"integer"}
+VIBEVOICE_CFG_SCALE = 1.5  #@param {type:"number"}
+
+#@markdown ---
+#@markdown OmniVoice (GPU recommended; CPU possible but slow; 0.6B; 600+ languages)
+#@markdown - `auto` needs no reference. `design` needs `OMNIVOICE_INSTRUCT`; `clone` needs both prompt fields.
+#@markdown - Code: Apache-2.0. Main weights: **CC-BY-NC** (non-commercial). The bundled Higgs Audio 2 tokenizer uses the Boson Community License (>100k annual users need an expanded license).
+OMNIVOICE_HF_MODEL = "k2-fsa/OmniVoice"  #@param {type:"string"}
+OMNIVOICE_LANGUAGE = "ja"  #@param {type:"string"}
+OMNIVOICE_DEFAULT_VOICE = "auto"  #@param ["auto", "design", "clone"]
+OMNIVOICE_PROMPT_WAV = ""  #@param {type:"string"}
+OMNIVOICE_PROMPT_TEXT = ""  #@param {type:"string"}
+OMNIVOICE_INSTRUCT = ""  #@param {type:"string"}
+OMNIVOICE_NUM_STEPS = 32  #@param {type:"integer"}
+OMNIVOICE_GUIDANCE_SCALE = 2.0  #@param {type:"number"}
+
+#@markdown ---
+#@markdown FireRedTTS2 (CUDA GPU required, 1.5B, 7 languages incl JP, long-form dialogue)
+#@markdown - `monologue`: random speaker or clone. `dialogue`: random speakers with `[S1]`...`[S4]` input.
+#@markdown - Code/weights/Qwen tokenizer: Apache-2.0. Upstream restricts zero-shot cloning to academic research.
+FIREREDTTS2_HF_MODEL = "FireRedTeam/FireRedTTS2"  #@param {type:"string"}
+FIREREDTTS2_GENERATION_MODE = "monologue"  #@param ["monologue", "dialogue"]
+FIREREDTTS2_DEFAULT_VOICE = "random"  #@param ["random", "clone"]
+FIREREDTTS2_PROMPT_WAV = ""  #@param {type:"string"}
+FIREREDTTS2_PROMPT_TEXT = ""  #@param {type:"string"}
+FIREREDTTS2_TEMPERATURE = 0.75  #@param {type:"number"}
+FIREREDTTS2_TOPK = 20  #@param {type:"integer"}
+FIREREDTTS2_USE_BF16 = True  #@param {type:"boolean"}
+
+#@markdown ---
+#@markdown IndexTTS2 (GPU recommended; CPU possible but slow; EN/ZH; zero-shot cloning + emotion control)
+#@markdown - `default` uses the official demo reference; set `INDEXTTS2_PROMPT_WAV` and use `clone` for your own speaker.
+#@markdown - Emotion can come from a separate audio reference, natural-language description, or an 8-value vector ordered as happy, angry, sad, afraid, disgusted, melancholic, surprised, calm.
+#@markdown - The advertised precise duration control is explicitly not enabled in the public release, so `speed` remains 1.0.
+#@markdown - License: Bilibili Model Use License (separate permission above 100M monthly users or RMB 1B annual revenue). The required MaskGCT semantic codec is CC-BY-NC-4.0, making the effective stack non-commercial.
+INDEXTTS2_HF_MODEL = "IndexTeam/IndexTTS-2"  #@param {type:"string"}
+INDEXTTS2_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+INDEXTTS2_PROMPT_WAV = ""  #@param {type:"string"}
+INDEXTTS2_EMOTION_WAV = ""  #@param {type:"string"}
+INDEXTTS2_EMOTION_TEXT = ""  #@param {type:"string"}
+INDEXTTS2_EMOTION_VECTOR = ""  #@param {type:"string"}
+INDEXTTS2_EMOTION_ALPHA = 0.6  #@param {type:"number"}
+INDEXTTS2_USE_RANDOM = False  #@param {type:"boolean"}
+INDEXTTS2_USE_FP16 = True  #@param {type:"boolean"}
 
 #@markdown ---
 #@markdown Bark (GPU recommended, 13 languages, MIT)
@@ -466,6 +520,14 @@ SCENEMA_SKIP_VC = False  #@param {type:"boolean"}
 SCENEMA_VC_STEPS = 25  #@param {type:"integer"}
 SCENEMA_VC_CFG_RATE = 0.5  #@param {type:"number"}
 SCENEMA_BACKGROUND_SFX = False  #@param {type:"boolean"}
+
+#@markdown ---
+#@markdown KittenTTS (CPU only, English, ONNX, 15M–80M params)
+#@markdown - Eight preset voices and adjustable speed; native output is 24 kHz WAV.
+#@markdown - Code and official v0.8 weights: Apache-2.0. No GPU or `HF_TOKEN` required.
+#@markdown - Developer preview: pinning the v0.8.1 wheel because upstream APIs may change.
+KITTEN_TTS_HF_MODEL = "KittenML/kitten-tts-mini-0.8"  #@param ["KittenML/kitten-tts-mini-0.8", "KittenML/kitten-tts-micro-0.8", "KittenML/kitten-tts-nano-0.8-fp32", "KittenML/kitten-tts-nano-0.8-int8"]
+KITTEN_TTS_DEFAULT_VOICE = "Jasper"  #@param ["Bella", "Jasper", "Luna", "Bruno", "Rosie", "Hugo", "Kiki", "Leo"]
 
 #@markdown ---
 #@markdown Supertonic (CPU OK, 31 languages incl JP/KO/EN, ONNX)
@@ -681,6 +743,8 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         SARASHINA_DEFAULT_VOICE,
         "--chatterbox-language",
         CHATTERBOX_LANGUAGE,
+        "--chatterbox-t3-model",
+        CHATTERBOX_T3_MODEL,
         "--chatterbox-prompt-wav",
         CHATTERBOX_PROMPT_WAV,
         "--chatterbox-default-voice",
@@ -741,6 +805,16 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         COSYVOICE_PROMPT_TEXT,
         "--cosyvoice-default-voice",
         COSYVOICE_DEFAULT_VOICE,
+        "--cosyvoice3-hf-model",
+        COSYVOICE3_HF_MODEL,
+        "--cosyvoice3-prompt-wav",
+        COSYVOICE3_PROMPT_WAV,
+        "--cosyvoice3-prompt-text",
+        COSYVOICE3_PROMPT_TEXT,
+        "--cosyvoice3-instruct",
+        COSYVOICE3_INSTRUCT,
+        "--cosyvoice3-default-voice",
+        COSYVOICE3_DEFAULT_VOICE,
         "--spark-hf-model",
         SPARK_HF_MODEL,
         "--spark-default-voice",
@@ -765,14 +839,54 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         VIBEVOICE_HF_MODEL,
         "--vibevoice-default-speaker",
         VIBEVOICE_DEFAULT_SPEAKER,
-        "--vibevoice-prompt-wav",
-        VIBEVOICE_PROMPT_WAV,
-        "--vibevoice-default-voice",
-        VIBEVOICE_DEFAULT_VOICE,
         "--vibevoice-ddpm-steps",
         str(VIBEVOICE_DDPM_STEPS),
         "--vibevoice-cfg-scale",
         str(VIBEVOICE_CFG_SCALE),
+        "--omnivoice-hf-model",
+        OMNIVOICE_HF_MODEL,
+        "--omnivoice-language",
+        OMNIVOICE_LANGUAGE,
+        "--omnivoice-default-voice",
+        OMNIVOICE_DEFAULT_VOICE,
+        "--omnivoice-prompt-wav",
+        OMNIVOICE_PROMPT_WAV,
+        "--omnivoice-prompt-text",
+        OMNIVOICE_PROMPT_TEXT,
+        "--omnivoice-instruct",
+        OMNIVOICE_INSTRUCT,
+        "--omnivoice-num-steps",
+        str(OMNIVOICE_NUM_STEPS),
+        "--omnivoice-guidance-scale",
+        str(OMNIVOICE_GUIDANCE_SCALE),
+        "--fireredtts2-hf-model",
+        FIREREDTTS2_HF_MODEL,
+        "--fireredtts2-generation-mode",
+        FIREREDTTS2_GENERATION_MODE,
+        "--fireredtts2-default-voice",
+        FIREREDTTS2_DEFAULT_VOICE,
+        "--fireredtts2-prompt-wav",
+        FIREREDTTS2_PROMPT_WAV,
+        "--fireredtts2-prompt-text",
+        FIREREDTTS2_PROMPT_TEXT,
+        "--fireredtts2-temperature",
+        str(FIREREDTTS2_TEMPERATURE),
+        "--fireredtts2-topk",
+        str(FIREREDTTS2_TOPK),
+        "--indextts2-hf-model",
+        INDEXTTS2_HF_MODEL,
+        "--indextts2-default-voice",
+        INDEXTTS2_DEFAULT_VOICE,
+        "--indextts2-prompt-wav",
+        INDEXTTS2_PROMPT_WAV,
+        "--indextts2-emotion-wav",
+        INDEXTTS2_EMOTION_WAV,
+        "--indextts2-emotion-text",
+        INDEXTTS2_EMOTION_TEXT,
+        "--indextts2-emotion-vector",
+        INDEXTTS2_EMOTION_VECTOR,
+        "--indextts2-emotion-alpha",
+        str(INDEXTTS2_EMOTION_ALPHA),
         "--bark-default-voice",
         BARK_DEFAULT_VOICE,
         "--chattts-default-voice",
@@ -957,6 +1071,10 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         SUPERTONIC_DEFAULT_LANG,
         "--supertonic-total-steps",
         str(SUPERTONIC_TOTAL_STEPS),
+        "--kitten-tts-hf-model",
+        KITTEN_TTS_HF_MODEL,
+        "--kitten-tts-default-voice",
+        KITTEN_TTS_DEFAULT_VOICE,
         "--sine-wave-tts-ref",
         SINE_WAVE_TTS_REF,
         "--sine-wave-tts-default-speaker",
@@ -1030,6 +1148,12 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         cmd.append("--sarashina-use-vllm")
     if BARK_USE_SMALL_MODELS:
         cmd.append("--bark-use-small-models")
+    if not FIREREDTTS2_USE_BF16:
+        cmd.append("--fireredtts2-no-bf16")
+    if INDEXTTS2_USE_RANDOM:
+        cmd.append("--indextts2-use-random")
+    if not INDEXTTS2_USE_FP16:
+        cmd.append("--indextts2-no-fp16")
     if DRAMABOX_COMPILE:
         cmd.append("--dramabox-compile")
     if DRAMABOX_NO_BNB_4BIT:

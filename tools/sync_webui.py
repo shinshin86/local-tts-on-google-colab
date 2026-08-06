@@ -31,6 +31,7 @@ DIVIDER = "#@markdown ---"
 # Section header → ENGINE dropdown id, for cases where the #@markdown title
 # does not exactly match the engine id used in INSTALLERS / --engine.
 SECTION_TO_ENGINE = {
+    "Chatterbox Multilingual V3": "Chatterbox",
     "OpenVoice V2": "OpenVoice-V2",
     "Sesame CSM-1B": "CSM-1B",
     "StyleTTS 2": "StyleTTS2",

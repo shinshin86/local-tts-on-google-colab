@@ -6,6 +6,11 @@ from src.config import Settings
 from src.runtime import ensure_venv, popen, uv_pip_install, write_text
 
 
+# Multilingual V3 support is newer than the latest PyPI release (0.1.7), so
+# pin the official repository to a reviewed commit instead of tracking master.
+CHATTERBOX_V3_REF = "5de7a54aa4e5e2baadb0182dde554908b48b85c2"
+
+
 def install(settings: Settings) -> dict:
     engine_dir = settings.engines_dir / "chatterbox"
     engine_dir.mkdir(parents=True, exist_ok=True)
@@ -26,7 +31,7 @@ def install(settings: Settings) -> dict:
             "soundfile",
             "numpy",
             "setuptools<81",
-            "chatterbox-tts",
+            f"git+https://github.com/resemble-ai/chatterbox.git@{CHATTERBOX_V3_REF}",
         ],
     )
 
@@ -37,6 +42,7 @@ def install(settings: Settings) -> dict:
         "PYTHONUNBUFFERED": "1",
         "OPENAI_MODEL_ID": settings.openai_model_id or "chatterbox",
         "CHATTERBOX_LANGUAGE": settings.chatterbox_language,
+        "CHATTERBOX_T3_MODEL": settings.chatterbox_t3_model,
         "CHATTERBOX_PROMPT_WAV": settings.chatterbox_prompt_wav,
         "CHATTERBOX_DEFAULT_VOICE": settings.chatterbox_default_voice,
     }

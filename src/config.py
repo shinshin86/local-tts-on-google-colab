@@ -139,6 +139,7 @@ class Settings:
     sarashina_prompt_text: str = ""
     sarashina_default_voice: str = "default"
     chatterbox_language: str = "ja"
+    chatterbox_t3_model: str = "v3"
     chatterbox_prompt_wav: str = ""
     chatterbox_default_voice: str = "default"
     zonos_hf_model: str = "Zyphra/Zonos-v0.1-transformer"
@@ -182,6 +183,11 @@ class Settings:
     cosyvoice_prompt_wav: str = ""
     cosyvoice_prompt_text: str = ""
     cosyvoice_default_voice: str = "default"
+    cosyvoice3_hf_model: str = "FunAudioLLM/Fun-CosyVoice3-0.5B-2512"
+    cosyvoice3_prompt_wav: str = ""
+    cosyvoice3_prompt_text: str = ""
+    cosyvoice3_instruct: str = ""
+    cosyvoice3_default_voice: str = "default"
     spark_hf_model: str = "SparkAudio/Spark-TTS-0.5B"
     spark_default_voice: str = "default"
     spark_default_gender: str = "female"
@@ -189,12 +195,46 @@ class Settings:
     spark_default_speed: str = "moderate"
     spark_prompt_wav: str = ""
     spark_prompt_text: str = ""
-    vibevoice_hf_model: str = "microsoft/VibeVoice-1.5B"
-    vibevoice_default_speaker: str = "en-Alice_woman"
-    vibevoice_prompt_wav: str = ""
-    vibevoice_default_voice: str = "default"
-    vibevoice_ddpm_steps: int = 10
-    vibevoice_cfg_scale: float = 1.3
+    vibevoice_hf_model: str = "microsoft/VibeVoice-Realtime-0.5B"
+    vibevoice_default_speaker: str = "jp-Spk1_woman"
+    vibevoice_ddpm_steps: int = 5
+    vibevoice_cfg_scale: float = 1.5
+    # OmniVoice: 0.6B massively multilingual diffusion TTS. `auto` needs no
+    # reference; `design` needs instruct; `clone` needs prompt wav + transcript.
+    # Code Apache-2.0. Main weights CC-BY-NC; bundled Higgs Audio 2 tokenizer
+    # carries the Boson community license (extra license above 100k annual users).
+    omnivoice_hf_model: str = "k2-fsa/OmniVoice"
+    omnivoice_language: str = "ja"
+    omnivoice_default_voice: str = "auto"
+    omnivoice_prompt_wav: str = ""
+    omnivoice_prompt_text: str = ""
+    omnivoice_instruct: str = ""
+    omnivoice_num_steps: int = 32
+    omnivoice_guidance_scale: float = 2.0
+    # FireRedTTS2: 1.5B long-form multilingual TTS. Monologue loads the
+    # pretrain checkpoint; dialogue loads the posttrain checkpoint and accepts
+    # [S1]...[S4]. Code/weights Apache-2.0; cloning is academic-use-only upstream.
+    fireredtts2_hf_model: str = "FireRedTeam/FireRedTTS2"
+    fireredtts2_generation_mode: str = "monologue"
+    fireredtts2_default_voice: str = "random"
+    fireredtts2_prompt_wav: str = ""
+    fireredtts2_prompt_text: str = ""
+    fireredtts2_temperature: float = 0.75
+    fireredtts2_topk: int = 20
+    fireredtts2_use_bf16: bool = True
+    # IndexTTS2: EN/ZH zero-shot cloning with speaker/emotion disentanglement.
+    # The advertised duration-control path is not enabled in the public release.
+    # The effective stack is non-commercial because its required MaskGCT
+    # semantic codec weights are CC-BY-NC-4.0.
+    indextts2_hf_model: str = "IndexTeam/IndexTTS-2"
+    indextts2_default_voice: str = "default"
+    indextts2_prompt_wav: str = ""
+    indextts2_emotion_wav: str = ""
+    indextts2_emotion_text: str = ""
+    indextts2_emotion_vector: str = ""
+    indextts2_emotion_alpha: float = 0.6
+    indextts2_use_random: bool = False
+    indextts2_use_fp16: bool = True
     bark_default_voice: str = "v2/en_speaker_6"
     bark_use_small_models: bool = False
     chattts_default_voice: str = "default"
@@ -278,6 +318,10 @@ class Settings:
     higgs_v3_top_k: int = 50
     higgs_v3_max_new_tokens: int = 2048
     higgs_v3_backend_port: int = 5002
+    # KittenTTS v0.8: English-only CPU ONNX TTS with 8 preset voices.
+    # Code and all selectable official weights are Apache-2.0.
+    kitten_tts_hf_model: str = "KittenML/kitten-tts-mini-0.8"
+    kitten_tts_default_voice: str = "Jasper"
     supertonic_model: str = "supertonic-3"
     supertonic_default_voice: str = "M1"
     supertonic_default_lang: str = "en"

@@ -2,17 +2,21 @@ from .bark import install as install_bark
 from .chatterbox import install as install_chatterbox
 from .chattts import install as install_chattts
 from .cosyvoice2 import install as install_cosyvoice2
+from .cosyvoice3 import install as install_cosyvoice3
 from .csm import install as install_csm
 from .dia import install as install_dia
 from .dots_tts import install as install_dots_tts
 from .dramabox import install as install_dramabox
 from .f5tts import install as install_f5tts
 from .fish_speech import install as install_fish_speech
+from .fireredtts2 import install as install_fireredtts2
 from .gpt_sovits import install as install_gpt_sovits
 from .higgs_audio import install as install_higgs_audio
 from .higgs_v3 import install as install_higgs_v3
+from .indextts2 import install as install_indextts2
 from .irodori import install as install_irodori
 from .irodori_lite import install as install_irodori_lite
+from .kitten_tts import install as install_kitten_tts
 from .qwen3_tts import install as install_qwen3_tts
 from .kokoro import install as install_kokoro
 from .kokoro_onnx import install as install_kokoro_onnx
@@ -28,6 +32,7 @@ from .moss_tts_v1_5 import install as install_moss_tts_v1_5
 from .moss_tts_local_v1_5 import install as install_moss_tts_local_v1_5
 from .neutts import install as install_neutts
 from .openvoice_v2 import install as install_openvoice_v2
+from .omnivoice import install as install_omnivoice
 from .orpheus import install as install_orpheus
 from .outetts import install as install_outetts
 from .piper import install as install_piper
@@ -54,17 +59,21 @@ INSTALLERS = {
     "ChatTTS": install_chattts,
     "Chatterbox": install_chatterbox,
     "CosyVoice2": install_cosyvoice2,
+    "CosyVoice3": install_cosyvoice3,
     "CSM-1B": install_csm,
     "Dia": install_dia,
     "dots.tts": install_dots_tts,
     "DramaBox": install_dramabox,
     "F5-TTS": install_f5tts,
     "Fish-Speech": install_fish_speech,
+    "FireRedTTS2": install_fireredtts2,
     "GPT-SoVITS": install_gpt_sovits,
     "Higgs-Audio-v2": install_higgs_audio,
     "Higgs-Audio-v3": install_higgs_v3,
+    "IndexTTS2": install_indextts2,
     "Irodori-TTS": install_irodori,
     "Irodori-TTS-Lite": install_irodori_lite,
+    "KittenTTS": install_kitten_tts,
     "Kokoro": install_kokoro,
     "Kokoro-ONNX": install_kokoro_onnx,
     "Kyutai-TTS": install_kyutai_tts,
@@ -79,6 +88,7 @@ INSTALLERS = {
     "MOSS-TTS-Local-v1.5": install_moss_tts_local_v1_5,
     "NeuTTS": install_neutts,
     "OpenVoice-V2": install_openvoice_v2,
+    "OmniVoice": install_omnivoice,
     "Orpheus-TTS": install_orpheus,
     "OuteTTS": install_outetts,
     "Style-Bert-VITS2": install_style_bert,
@@ -93,7 +103,7 @@ INSTALLERS = {
     "Sine-Wave-TTS": install_sine_wave_tts,
     "Spark-TTS": install_spark_tts,
     "TinyTTS": install_tiny_tts,
-    "VibeVoice": install_vibevoice,
+    "VibeVoice-Realtime": install_vibevoice,
     "VoxCPM2": install_voxcpm,
     "Voxtral-TTS": install_voxtral,
     "Vyvo-Multilingual": install_vyvo_multilingual,

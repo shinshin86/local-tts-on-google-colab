@@ -104,6 +104,7 @@ def parse_args():
     parser.add_argument("--sarashina-prompt-text", default="")
     parser.add_argument("--sarashina-default-voice", default="default")
     parser.add_argument("--chatterbox-language", default="ja")
+    parser.add_argument("--chatterbox-t3-model", default="v3", choices=["v3", "v2"])
     parser.add_argument("--chatterbox-prompt-wav", default="")
     parser.add_argument("--chatterbox-default-voice", default="default")
     parser.add_argument("--zonos-hf-model", default="Zyphra/Zonos-v0.1-transformer")
@@ -143,6 +144,11 @@ def parse_args():
     parser.add_argument("--cosyvoice-prompt-wav", default="")
     parser.add_argument("--cosyvoice-prompt-text", default="")
     parser.add_argument("--cosyvoice-default-voice", default="default")
+    parser.add_argument("--cosyvoice3-hf-model", default="FunAudioLLM/Fun-CosyVoice3-0.5B-2512")
+    parser.add_argument("--cosyvoice3-prompt-wav", default="")
+    parser.add_argument("--cosyvoice3-prompt-text", default="")
+    parser.add_argument("--cosyvoice3-instruct", default="")
+    parser.add_argument("--cosyvoice3-default-voice", default="default")
     parser.add_argument("--spark-hf-model", default="SparkAudio/Spark-TTS-0.5B")
     parser.add_argument("--spark-default-voice", default="default")
     parser.add_argument("--spark-default-gender", default="female")
@@ -150,12 +156,35 @@ def parse_args():
     parser.add_argument("--spark-default-speed", default="moderate")
     parser.add_argument("--spark-prompt-wav", default="")
     parser.add_argument("--spark-prompt-text", default="")
-    parser.add_argument("--vibevoice-hf-model", default="microsoft/VibeVoice-1.5B")
-    parser.add_argument("--vibevoice-default-speaker", default="en-Alice_woman")
-    parser.add_argument("--vibevoice-prompt-wav", default="")
-    parser.add_argument("--vibevoice-default-voice", default="default")
-    parser.add_argument("--vibevoice-ddpm-steps", type=int, default=10)
-    parser.add_argument("--vibevoice-cfg-scale", type=float, default=1.3)
+    parser.add_argument("--vibevoice-hf-model", default="microsoft/VibeVoice-Realtime-0.5B")
+    parser.add_argument("--vibevoice-default-speaker", default="jp-Spk1_woman")
+    parser.add_argument("--vibevoice-ddpm-steps", type=int, default=5)
+    parser.add_argument("--vibevoice-cfg-scale", type=float, default=1.5)
+    parser.add_argument("--omnivoice-hf-model", default="k2-fsa/OmniVoice")
+    parser.add_argument("--omnivoice-language", default="ja")
+    parser.add_argument("--omnivoice-default-voice", default="auto")
+    parser.add_argument("--omnivoice-prompt-wav", default="")
+    parser.add_argument("--omnivoice-prompt-text", default="")
+    parser.add_argument("--omnivoice-instruct", default="")
+    parser.add_argument("--omnivoice-num-steps", type=int, default=32)
+    parser.add_argument("--omnivoice-guidance-scale", type=float, default=2.0)
+    parser.add_argument("--fireredtts2-hf-model", default="FireRedTeam/FireRedTTS2")
+    parser.add_argument("--fireredtts2-generation-mode", default="monologue", choices=["monologue", "dialogue"])
+    parser.add_argument("--fireredtts2-default-voice", default="random")
+    parser.add_argument("--fireredtts2-prompt-wav", default="")
+    parser.add_argument("--fireredtts2-prompt-text", default="")
+    parser.add_argument("--fireredtts2-temperature", type=float, default=0.75)
+    parser.add_argument("--fireredtts2-topk", type=int, default=20)
+    parser.add_argument("--fireredtts2-no-bf16", action="store_true")
+    parser.add_argument("--indextts2-hf-model", default="IndexTeam/IndexTTS-2")
+    parser.add_argument("--indextts2-default-voice", default="default")
+    parser.add_argument("--indextts2-prompt-wav", default="")
+    parser.add_argument("--indextts2-emotion-wav", default="")
+    parser.add_argument("--indextts2-emotion-text", default="")
+    parser.add_argument("--indextts2-emotion-vector", default="")
+    parser.add_argument("--indextts2-emotion-alpha", type=float, default=0.6)
+    parser.add_argument("--indextts2-use-random", action="store_true")
+    parser.add_argument("--indextts2-no-fp16", action="store_true")
     parser.add_argument("--bark-default-voice", default="v2/en_speaker_6")
     parser.add_argument("--bark-use-small-models", action="store_true")
     parser.add_argument("--chattts-default-voice", default="default")
@@ -256,6 +285,8 @@ def parse_args():
     parser.add_argument("--supertonic-default-voice", default="M1")
     parser.add_argument("--supertonic-default-lang", default="en")
     parser.add_argument("--supertonic-total-steps", type=int, default=5)
+    parser.add_argument("--kitten-tts-hf-model", default="KittenML/kitten-tts-mini-0.8")
+    parser.add_argument("--kitten-tts-default-voice", default="Jasper")
     parser.add_argument("--sine-wave-tts-ref", default="v0.1.0")
     parser.add_argument("--sine-wave-tts-default-speaker", default="default")
     parser.add_argument("--sine-wave-tts-default-emotion", default="neutral")
@@ -377,6 +408,7 @@ def main():
         sarashina_prompt_text=args.sarashina_prompt_text,
         sarashina_default_voice=args.sarashina_default_voice,
         chatterbox_language=args.chatterbox_language,
+        chatterbox_t3_model=args.chatterbox_t3_model,
         chatterbox_prompt_wav=args.chatterbox_prompt_wav,
         chatterbox_default_voice=args.chatterbox_default_voice,
         zonos_hf_model=args.zonos_hf_model,
@@ -412,6 +444,11 @@ def main():
         cosyvoice_prompt_wav=args.cosyvoice_prompt_wav,
         cosyvoice_prompt_text=args.cosyvoice_prompt_text,
         cosyvoice_default_voice=args.cosyvoice_default_voice,
+        cosyvoice3_hf_model=args.cosyvoice3_hf_model,
+        cosyvoice3_prompt_wav=args.cosyvoice3_prompt_wav,
+        cosyvoice3_prompt_text=args.cosyvoice3_prompt_text,
+        cosyvoice3_instruct=args.cosyvoice3_instruct,
+        cosyvoice3_default_voice=args.cosyvoice3_default_voice,
         spark_hf_model=args.spark_hf_model,
         spark_default_voice=args.spark_default_voice,
         spark_default_gender=args.spark_default_gender,
@@ -421,10 +458,33 @@ def main():
         spark_prompt_text=args.spark_prompt_text,
         vibevoice_hf_model=args.vibevoice_hf_model,
         vibevoice_default_speaker=args.vibevoice_default_speaker,
-        vibevoice_prompt_wav=args.vibevoice_prompt_wav,
-        vibevoice_default_voice=args.vibevoice_default_voice,
         vibevoice_ddpm_steps=args.vibevoice_ddpm_steps,
         vibevoice_cfg_scale=args.vibevoice_cfg_scale,
+        omnivoice_hf_model=args.omnivoice_hf_model,
+        omnivoice_language=args.omnivoice_language,
+        omnivoice_default_voice=args.omnivoice_default_voice,
+        omnivoice_prompt_wav=args.omnivoice_prompt_wav,
+        omnivoice_prompt_text=args.omnivoice_prompt_text,
+        omnivoice_instruct=args.omnivoice_instruct,
+        omnivoice_num_steps=args.omnivoice_num_steps,
+        omnivoice_guidance_scale=args.omnivoice_guidance_scale,
+        fireredtts2_hf_model=args.fireredtts2_hf_model,
+        fireredtts2_generation_mode=args.fireredtts2_generation_mode,
+        fireredtts2_default_voice=args.fireredtts2_default_voice,
+        fireredtts2_prompt_wav=args.fireredtts2_prompt_wav,
+        fireredtts2_prompt_text=args.fireredtts2_prompt_text,
+        fireredtts2_temperature=args.fireredtts2_temperature,
+        fireredtts2_topk=args.fireredtts2_topk,
+        fireredtts2_use_bf16=not args.fireredtts2_no_bf16,
+        indextts2_hf_model=args.indextts2_hf_model,
+        indextts2_default_voice=args.indextts2_default_voice,
+        indextts2_prompt_wav=args.indextts2_prompt_wav,
+        indextts2_emotion_wav=args.indextts2_emotion_wav,
+        indextts2_emotion_text=args.indextts2_emotion_text,
+        indextts2_emotion_vector=args.indextts2_emotion_vector,
+        indextts2_emotion_alpha=args.indextts2_emotion_alpha,
+        indextts2_use_random=args.indextts2_use_random,
+        indextts2_use_fp16=not args.indextts2_no_fp16,
         bark_default_voice=args.bark_default_voice,
         bark_use_small_models=args.bark_use_small_models,
         chattts_default_voice=args.chattts_default_voice,
@@ -522,6 +582,8 @@ def main():
         supertonic_default_voice=args.supertonic_default_voice,
         supertonic_default_lang=args.supertonic_default_lang,
         supertonic_total_steps=args.supertonic_total_steps,
+        kitten_tts_hf_model=args.kitten_tts_hf_model,
+        kitten_tts_default_voice=args.kitten_tts_default_voice,
         sine_wave_tts_ref=args.sine_wave_tts_ref,
         sine_wave_tts_default_speaker=args.sine_wave_tts_default_speaker,
         sine_wave_tts_default_emotion=args.sine_wave_tts_default_emotion,

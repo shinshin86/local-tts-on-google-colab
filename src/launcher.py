@@ -54,8 +54,14 @@ def resolve_selected_voice(settings: Settings) -> str:
         return settings.dia_default_voice
     if settings.engine == "OpenVoice-V2":
         return settings.openvoice_default_voice
-    if settings.engine == "VibeVoice":
-        return settings.vibevoice_default_voice
+    if settings.engine == "VibeVoice-Realtime":
+        return settings.vibevoice_default_speaker
+    if settings.engine == "OmniVoice":
+        return settings.omnivoice_default_voice
+    if settings.engine == "FireRedTTS2":
+        return settings.fireredtts2_default_voice
+    if settings.engine == "IndexTTS2":
+        return settings.indextts2_default_voice
     if settings.engine == "Kyutai-TTS":
         return settings.kyutai_default_voice
     if settings.engine == "Pocket-TTS":
@@ -64,6 +70,8 @@ def resolve_selected_voice(settings: Settings) -> str:
         return settings.orpheus_default_voice
     if settings.engine == "CosyVoice2":
         return settings.cosyvoice_default_voice
+    if settings.engine == "CosyVoice3":
+        return settings.cosyvoice3_default_voice
     if settings.engine == "Spark-TTS":
         return settings.spark_default_voice
     if settings.engine == "Bark":
@@ -88,6 +96,8 @@ def resolve_selected_voice(settings: Settings) -> str:
         return settings.dots_tts_default_voice
     if settings.engine == "Ming-omni-TTS":
         return settings.ming_omni_tts_default_voice
+    if settings.engine == "KittenTTS":
+        return settings.kitten_tts_default_voice
     if settings.engine == "Supertonic":
         return settings.supertonic_default_voice
     if settings.engine == "Sine-Wave-TTS":
@@ -234,8 +244,17 @@ def print_engine_voice_hints(settings: Settings):
         print("TinyTTS は超軽量（~3.4MB）の英語専用 TTS です（CPU 動作、GPU 不要）。")
         print("voice パラメータは現在 'default' のみ対応です。")
         print("注意: 英語のみ対応。日本語テキストは正しく発音されません。ライセンス: Apache-2.0")
+    elif settings.engine == "KittenTTS":
+        print("KittenTTS v0.8 は軽量な英語専用 TTS です（15M〜80M params、CPU ONNX）。")
+        print(f"モデル: {settings.kitten_tts_hf_model}")
+        print(f"デフォルト voice: {settings.kitten_tts_default_voice}")
+        print("voice 候補: Bella, Jasper, Luna, Bruno, Rosie, Hugo, Kiki, Leo")
+        print("出力: 24kHz WAV。GPU は使用しません。速度は OpenAI 互換 speed で調整できます。")
+        print("注意: 英語のみ対応。Developer preview のため API は将来変更される可能性があります。")
+        print("ライセンス: コード・公式 v0.8 重みとも Apache-2.0（商用 OK）。")
     elif settings.engine == "Chatterbox":
-        print("Chatterbox は Resemble AI の多言語 TTS です（23言語対応、ゼロショット voice cloning 対応）。")
+        print("Chatterbox Multilingual V3 は Resemble AI の 0.5B 多言語 TTS です（23言語、voice cloning）。")
+        print(f"T3 model: {settings.chatterbox_t3_model}")
         print(f"language: {settings.chatterbox_language}")
         print(f"デフォルト voice: {settings.chatterbox_default_voice}")
         print("voice 候補: default（プロンプトなしの plain TTS）")
@@ -244,7 +263,9 @@ def print_engine_voice_hints(settings: Settings):
         else:
             print("             clone は --chatterbox-prompt-wav を指定すると有効になります")
         print("対応言語: ar, da, de, el, en, es, fi, fr, he, hi, it, ja, ko, ms, nl, no, pl, pt, ru, sv, sw, tr, zh")
-        print("注意: GPU 推奨（VRAM ~2-4GB）。ライセンス: MIT（コードと重み）")
+        print("特徴: V2 より話者類似度・自然さ・安定性が向上し、hallucination を低減。")
+        print("生成音声には Resemble Perth の不可聴ウォーターマークが適用されます。")
+        print("注意: GPU 推奨（VRAM ~2-4GB）。ライセンス: MIT（コードと V3 重み）")
     elif settings.engine == "Zonos":
         print("Zonos は Zyphra の多言語 TTS です（5言語対応・日本語含む、ゼロショット voice cloning 対応）。")
         print(f"モデル: {settings.zonos_hf_model}")
@@ -396,6 +417,22 @@ def print_engine_voice_hints(settings: Settings):
         print("注意: 上流要件により Python 3.10 専用 venv を作成します（uv venv --python 3.10）。")
         print("      GPU 推奨（VRAM ~4GB）。")
         print("ライセンス: コードは Apache 2.0、重み（CosyVoice2-0.5B）も Apache 2.0（HF モデルカード）。")
+    elif settings.engine == "CosyVoice3":
+        print("CosyVoice3 は FunAudioLLM の0.5B多言語ゼロショット voice cloning TTS です。")
+        print(f"モデル: {settings.cosyvoice3_hf_model}")
+        print(f"デフォルト voice: {settings.cosyvoice3_default_voice}")
+        print("voice 候補: default（同梱参照音声を使った cross_lingual 推論）")
+        if settings.cosyvoice3_prompt_wav:
+            print(f"             clone（参照音声: {settings.cosyvoice3_prompt_wav}）")
+            if settings.cosyvoice3_prompt_text:
+                print(f"             prompt_text: {settings.cosyvoice3_prompt_text}（zero_shot 推論）")
+        else:
+            print("             clone は --cosyvoice3-prompt-wav を指定すると有効になります")
+        if settings.cosyvoice3_instruct:
+            print(f"instruction: {settings.cosyvoice3_instruct}")
+        print("対応言語: 中国語 / 英語 / 日本語 / 韓国語 / 独語 / 西語 / 仏語 / 伊語 / 露語 + 中国方言")
+        print("日本語入力: 上流仕様では漢字・ひらがなをカタカナへ変換して入力する必要があります。")
+        print("注意: Python 3.10 venv、GPU推奨。コードと重みはApache 2.0です。")
     elif settings.engine == "Orpheus-TTS":
         print("Orpheus-TTS は Canopy Labs の英語 LLM-TTS です（Llama-3.2-3B ベース、vLLM バックエンド）。")
         print(f"モデル: {settings.orpheus_hf_model}")
@@ -591,20 +628,44 @@ def print_engine_voice_hints(settings: Settings):
         print("対応言語: en, de, es, fr, hi, it, ja, ko, pl, pt, ru, tr, zh")
         print("注意: GPU 推奨。生成プロセスはランダム性があり、同じ入力でも結果が変わります。")
         print("ライセンス: コードと重みとも MIT（商用 OK、ただし研究目的での提供を上流が明記）。")
-    elif settings.engine == "VibeVoice":
-        print("VibeVoice は Microsoft の長尺マルチスピーカー TTS です（最大 90 分・4 話者の一括生成）。")
+    elif settings.engine == "VibeVoice-Realtime":
+        print("VibeVoice-Realtime は Microsoft の0.5Bリアルタイム単一話者TTSです（最大約10分）。")
         print(f"モデル: {settings.vibevoice_hf_model}")
-        print(f"デフォルト speaker: {settings.vibevoice_default_speaker}（demo/voices/<speaker>.wav）")
-        print(f"デフォルト voice: {settings.vibevoice_default_voice}")
+        print(f"デフォルト speaker: {settings.vibevoice_default_speaker}（公式の事前計算済み.pt）")
         print(f"DDPM steps: {settings.vibevoice_ddpm_steps} / cfg_scale: {settings.vibevoice_cfg_scale}")
-        print("voice 候補: default（VIBEVOICE_DEFAULT_SPEAKER 名で demo/voices から参照音声を選択）")
-        if settings.vibevoice_prompt_wav:
-            print(f"             clone（参照音声: {settings.vibevoice_prompt_wav}）")
-        else:
-            print("             clone は --vibevoice-prompt-wav を指定すると有効になります")
-        print("対応言語: 英語 / 中国語のみ（モデル規約上、それ以外の言語は禁止）")
-        print("注意: ライセンスは MIT ですが、Microsoft 公式に「research purpose only」と明記されており、")
-        print("      なりすまし・ディスインフォ・実時間音声変換などは禁止です。商用 / 実運用での利用は推奨されていません。")
+        print("voice: default または /v1/voices に表示されるプリセット名。voice cloning は非対応です。")
+        print("対応言語: 英語が正式対象。日/独/仏/伊/韓/蘭/波/葡/西は実験的プリセットです。")
+        print("注意: GPU 必須。speed変更・マルチスピーカー・独自参照音声は非対応です。")
+        print("ライセンス: コード・重みはMIT。ただしモデルカードは研究開発用途に限定し、")
+        print("           商用/実運用、非合意のなりすまし、偽情報、低遅延voice conversion等を対象外とします。")
+    elif settings.engine == "OmniVoice":
+        print("OmniVoice は0.6Bの拡散型TTSです（600言語以上、auto / voice design / voice cloning）。")
+        print(f"モデル: {settings.omnivoice_hf_model} / language: {settings.omnivoice_language}")
+        print(f"デフォルト voice: {settings.omnivoice_default_voice}")
+        print(f"diffusion steps: {settings.omnivoice_num_steps} / guidance: {settings.omnivoice_guidance_scale}")
+        print("voice: auto。--omnivoice-instruct で design、prompt wav + text で clone が有効になります。")
+        print("注意: GPU推奨（CPUでも実行可能ですが低速）。音声クローンは同意済み音声のみ使用してください。")
+        print("ライセンス: コード Apache-2.0、主モデル重み CC-BY-NC（商用不可）。")
+        print("             同梱Higgs Audio 2 tokenizerはBoson Community License（年次利用者10万人超は追加許諾）。")
+    elif settings.engine == "FireRedTTS2":
+        print("FireRedTTS2 は1.5Bの長尺・多話者・多言語TTSです（日本語を含む7言語）。")
+        print(f"モデル: {settings.fireredtts2_hf_model} / mode: {settings.fireredtts2_generation_mode}")
+        print(f"デフォルト voice: {settings.fireredtts2_default_voice}")
+        print(f"temperature: {settings.fireredtts2_temperature} / topk: {settings.fireredtts2_topk} / bf16: {settings.fireredtts2_use_bf16}")
+        print("monologue: random、またはprompt wav + textでclone。dialogue: inputに[S1]...[S4]を指定。")
+        print("注意: CUDA GPU必須。モードごとに約8.27GBのLLM checkpointを別途取得します。")
+        print("ライセンス: コード・重み・Qwen tokenizerはApache-2.0。")
+        print("             上流READMEはzero-shot voice cloningを学術研究目的に限定しています。")
+    elif settings.engine == "IndexTTS2":
+        print("IndexTTS2 は英語・中国語向けのzero-shot voice cloning TTSです。")
+        print(f"モデル: {settings.indextts2_hf_model} / fp16: {settings.indextts2_use_fp16}")
+        print(f"デフォルト voice: {settings.indextts2_default_voice}")
+        print(f"emotion alpha: {settings.indextts2_emotion_alpha} / random: {settings.indextts2_use_random}")
+        print("voice: default（公式demo参照音声）、または --indextts2-prompt-wav で clone。")
+        print("感情は参照音声・自然言語説明・8次元vectorのいずれかで話者音色と独立に制御できます。")
+        print("注意: GPU推奨（CPUも上流で対応するが低速）。公開版では尺指定・speed変更は未有効です。")
+        print("ライセンス警告: 本体はBilibili Model Use License。大規模事業者は別途許諾が必要です。")
+        print("                 必須のMaskGCT semantic codecがCC-BY-NC-4.0のため実効上は非商用です。")
     elif settings.engine == "DramaBox":
         print("DramaBox は Resemble AI の表現力豊か（directable）な TTS です（LTX-2.3 + IC-LoRA、英語中心）。")
         print(f"モデル: {settings.dramabox_hf_model} + Gemma snapshot: {settings.dramabox_gemma_repo}")

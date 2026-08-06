@@ -25,17 +25,21 @@
       "ChatTTS",
       "Chatterbox",
       "CosyVoice2",
+      "CosyVoice3",
       "CSM-1B",
       "Dia",
       "dots.tts",
       "DramaBox",
       "F5-TTS",
+      "FireRedTTS2",
       "Fish-Speech",
       "GPT-SoVITS",
       "Higgs-Audio-v2",
       "Higgs-Audio-v3",
+      "IndexTTS2",
       "Irodori-TTS",
       "Irodori-TTS-Lite",
+      "KittenTTS",
       "Kokoro",
       "Kokoro-ONNX",
       "Kyutai-TTS",
@@ -49,6 +53,7 @@
       "MOSS-TTS-v1.5",
       "MOSS-TTS-Local-v1.5",
       "NeuTTS",
+      "OmniVoice",
       "OpenVoice-V2",
       "Orpheus-TTS",
       "OuteTTS",
@@ -64,7 +69,7 @@
       "StyleTTS2",
       "Supertonic",
       "TinyTTS",
-      "VibeVoice",
+      "VibeVoice-Realtime",
       "VoxCPM2",
       "Voxtral-TTS",
       "Vyvo-Multilingual",
@@ -199,17 +204,19 @@
     },
     {
       "id": "Chatterbox",
-      "title": "Chatterbox (GPU recommended, multilingual incl JP, voice cloning)",
-      "status": "Works (GPU recommended)",
-      "status_ja": "動作OK (GPU推奨)",
-      "languages": "Japanese / English / Chinese and 23 languages",
-      "languages_ja": "日本語 / 英語 / 中国語 他 23言語",
-      "description": "A multilingual TTS using [resemble-ai/chatterbox](https://github.com/resemble-ai/chatterbox) by Resemble AI. The Chatterbox Multilingual model supports 23 languages including Japanese, English, Chinese, French, German, Spanish, Korean, etc., and supports zero-shot voice cloning. Default language is `ja` (Japanese). When `--chatterbox-prompt-wav` is provided, the `clone` voice becomes available and uses the reference audio. A GPU runtime is recommended (VRAM ~2-4GB). License: MIT (both code and weights).",
-      "description_ja": "Resemble AI の [resemble-ai/chatterbox](https://github.com/resemble-ai/chatterbox) を使った多言語 TTS です。Chatterbox Multilingual モデルは日本語・英語・中国語・フランス語・ドイツ語・スペイン語・韓国語など 23 言語に対応し、ゼロショット音声クローンを備えています。デフォルト言語は `ja`（日本語）。`--chatterbox-prompt-wav` を指定すると `clone` voice が有効になり、参照音声の声色で合成されます。GPU 推奨（VRAM ~2-4GB）。ライセンス: MIT（コードと重みの両方）。",
-      "notes": [],
-      "notes_ja": [
-        "- ライセンス: コードは MIT、モデル重みは MIT。商用利用: OK。 備考: 多言語（23言語、日本語含む）。ゼロショット voice cloning"
+      "title": "Chatterbox Multilingual V3 (GPU recommended, 0.5B, 23 languages incl JP, voice cloning)",
+      "status": "",
+      "status_ja": "",
+      "languages": "",
+      "languages_ja": "",
+      "description": "This integration now defaults to Resemble AI's [Chatterbox Multilingual V3](https://github.com/resemble-ai/chatterbox), the current 0.5B general-purpose multilingual checkpoint. V3 retains the 23-language coverage (including Japanese, English, Chinese, French, German, Spanish, and Korean) while improving speaker similarity, naturalness, and stability and reducing unwanted continuation or repetition compared with V2. Set `CHATTERBOX_T3_MODEL=\"v2\"` only when legacy comparison is needed. The V3 API is newer than PyPI `0.1.7`, so the installer pins a reviewed official GitHub commit instead of following `master`.",
+      "description_ja": "この統合は Resemble AI の [Chatterbox Multilingual V3](https://github.com/resemble-ai/chatterbox)（0.5B、現行の汎用多言語チェックポイント）を既定にします。V3 は日本語・英語・中国語・フランス語・ドイツ語・スペイン語・韓国語など 23 言語への対応を維持しつつ、V2 より話者類似度・自然さ・安定性を高め、不要な継続や反復を低減しています。旧版との比較が必要な場合だけ `CHATTERBOX_T3_MODEL=\"v2\"` を選択してください。V3 API は PyPI `0.1.7` より新しいため、インストーラは `master` 追従ではなく、確認済みの公式GitHubコミットへ固定します。",
+      "notes": [
+        "- V3 improves speaker similarity, naturalness, and stability while reducing hallucinations versus V2.",
+        "- V3 is not yet in PyPI 0.1.7; the installer pins an official GitHub commit that contains the V3 API.",
+        "- Code and V3 weights: MIT. All outputs include Resemble's imperceptible Perth watermark."
       ],
+      "notes_ja": [],
       "prefix": "CHATTERBOX",
       "params": [
         {
@@ -242,6 +249,16 @@
             "zh"
           ],
           "flag": "--chatterbox-language"
+        },
+        {
+          "name": "CHATTERBOX_T3_MODEL",
+          "default": "v3",
+          "type": "select",
+          "options": [
+            "v3",
+            "v2"
+          ],
+          "flag": "--chatterbox-t3-model"
         },
         {
           "name": "CHATTERBOX_PROMPT_WAV",
@@ -306,6 +323,60 @@
             "clone"
           ],
           "flag": "--cosyvoice-default-voice"
+        }
+      ]
+    },
+    {
+      "id": "CosyVoice3",
+      "title": "CosyVoice3 (GPU recommended, 9 languages incl JP, voice cloning + instruction control)",
+      "status": "Works (GPU recommended, Python 3.10 venv)",
+      "status_ja": "動作OK (GPU推奨・Python 3.10 venv)",
+      "languages": "Japanese / English / Chinese / Korean / German and 9 languages + Chinese dialects",
+      "languages_ja": "日本語 / 英語 / 中 / 韓 / 独 他 9言語 + 中国方言",
+      "description": "The 0.5B-parameter [Fun-CosyVoice3-0.5B-2512](https://huggingface.co/FunAudioLLM/Fun-CosyVoice3-0.5B-2512) checkpoint adds stronger content consistency, speaker similarity and prosody control to [FunAudioLLM/CosyVoice](https://github.com/FunAudioLLM/CosyVoice). It supports Japanese, English, Chinese, Korean, German, Spanish, French, Italian and Russian, plus 18+ Chinese dialects. The wrapper pins both the upstream source and model revision and uses a separate Python 3.10 venv, so the existing CosyVoice2 engine remains unchanged.",
+      "description_ja": "0.5B パラメータの [Fun-CosyVoice3-0.5B-2512](https://huggingface.co/FunAudioLLM/Fun-CosyVoice3-0.5B-2512) は、[FunAudioLLM/CosyVoice](https://github.com/FunAudioLLM/CosyVoice) の内容一貫性・話者類似度・韻律制御を強化したモデルです。日本語・英語・中国語・韓国語・独語・西語・仏語・伊語・露語の9言語と中国方言18種類以上に対応します。上流ソースとモデルのリビジョンを固定し、CosyVoice2とは別のPython 3.10 venvへ導入します。",
+      "notes": [
+        "- Japanese text must be converted to Katakana per upstream guidance.",
+        "- Code and `Fun-CosyVoice3-0.5B-2512` weights are Apache 2.0. The upstream README also includes an academic/demo disclaimer and takedown request."
+      ],
+      "notes_ja": [
+        "- ライセンス: コードは Apache 2.0、モデル重みは Apache 2.0。商用利用: OK。 備考: 0.5B、9言語（日本語含む）+ 中国方言。voice cloning・instruction制御。日本語はカタカナ入力必須"
+      ],
+      "prefix": "COSYVOICE3",
+      "params": [
+        {
+          "name": "COSYVOICE3_HF_MODEL",
+          "default": "FunAudioLLM/Fun-CosyVoice3-0.5B-2512",
+          "type": "string",
+          "flag": "--cosyvoice3-hf-model"
+        },
+        {
+          "name": "COSYVOICE3_PROMPT_WAV",
+          "default": "",
+          "type": "string",
+          "flag": "--cosyvoice3-prompt-wav"
+        },
+        {
+          "name": "COSYVOICE3_PROMPT_TEXT",
+          "default": "",
+          "type": "string",
+          "flag": "--cosyvoice3-prompt-text"
+        },
+        {
+          "name": "COSYVOICE3_INSTRUCT",
+          "default": "",
+          "type": "string",
+          "flag": "--cosyvoice3-instruct"
+        },
+        {
+          "name": "COSYVOICE3_DEFAULT_VOICE",
+          "default": "default",
+          "type": "select",
+          "options": [
+            "default",
+            "clone"
+          ],
+          "flag": "--cosyvoice3-default-voice"
         }
       ]
     },
@@ -651,6 +722,82 @@
       ]
     },
     {
+      "id": "FireRedTTS2",
+      "title": "FireRedTTS2 (CUDA GPU required, 1.5B, 7 languages incl JP, long-form dialogue)",
+      "status": "Works on Colab L4 (CUDA GPU required, 1.5B, bf16, ~8.8GB VRAM)",
+      "status_ja": "Colab L4動作確認済み（CUDA GPU必須、1.5B、bf16、VRAM約8.8GB）",
+      "languages": "Japanese / English / Chinese / Korean / French / German / Russian",
+      "languages_ja": "日本語 / 英語 / 中国語 / 韓国語 / フランス語 / ドイツ語 / ロシア語",
+      "description": "[FireRedTeam/FireRedTTS2](https://github.com/FireRedTeam/FireRedTTS2) is a 1.5B long-form streaming TTS for monologues and context-aware dialogue with up to four speakers. It supports English, Chinese, Japanese, Korean, French, German and Russian, including cross-lingual/code-switching zero-shot cloning. The installer pins source commit `404f3f6` and model revision `4af3f5c`, uses the upstream-recommended Python 3.11 + PyTorch 2.7.1/CUDA 12.6 stack, and loads the LLM in bf16 by default.",
+      "description_ja": "[FireRedTeam/FireRedTTS2](https://github.com/FireRedTeam/FireRedTTS2) は、monologueと最大4話者の文脈付きdialogueに対応する1.5Bの長尺streaming TTSです。英語・中国語・日本語・韓国語・フランス語・ドイツ語・ロシア語に対応し、cross-lingual/code-switchingのzero-shot cloningも備えます。インストーラはソースcommit `404f3f6` とモデルrevision `4af3f5c` を固定し、上流推奨のPython 3.11 + PyTorch 2.7.1/CUDA 12.6構成で、LLMを既定bf16で読み込みます。",
+      "notes": [
+        "- `monologue`: random speaker or clone. `dialogue`: random speakers with `[S1]`...`[S4]` input.",
+        "- Code/weights/Qwen tokenizer: Apache-2.0. Upstream restricts zero-shot cloning to academic research."
+      ],
+      "notes_ja": [
+        "- ライセンス: コードは Apache 2.0、モデル重みは Apache 2.0。商用利用: 要注意。 備考: 1.5B・日本語含む7言語、monologueまたは4話者dialogue。上流はzero-shot cloningを学術研究目的に限定"
+      ],
+      "prefix": "FIREREDTTS2",
+      "params": [
+        {
+          "name": "FIREREDTTS2_HF_MODEL",
+          "default": "FireRedTeam/FireRedTTS2",
+          "type": "string",
+          "flag": "--fireredtts2-hf-model"
+        },
+        {
+          "name": "FIREREDTTS2_GENERATION_MODE",
+          "default": "monologue",
+          "type": "select",
+          "options": [
+            "monologue",
+            "dialogue"
+          ],
+          "flag": "--fireredtts2-generation-mode"
+        },
+        {
+          "name": "FIREREDTTS2_DEFAULT_VOICE",
+          "default": "random",
+          "type": "select",
+          "options": [
+            "random",
+            "clone"
+          ],
+          "flag": "--fireredtts2-default-voice"
+        },
+        {
+          "name": "FIREREDTTS2_PROMPT_WAV",
+          "default": "",
+          "type": "string",
+          "flag": "--fireredtts2-prompt-wav"
+        },
+        {
+          "name": "FIREREDTTS2_PROMPT_TEXT",
+          "default": "",
+          "type": "string",
+          "flag": "--fireredtts2-prompt-text"
+        },
+        {
+          "name": "FIREREDTTS2_TEMPERATURE",
+          "default": 0.75,
+          "type": "number",
+          "flag": "--fireredtts2-temperature"
+        },
+        {
+          "name": "FIREREDTTS2_TOPK",
+          "default": 20,
+          "type": "integer",
+          "flag": "--fireredtts2-topk"
+        },
+        {
+          "name": "FIREREDTTS2_USE_BF16",
+          "default": true,
+          "type": "boolean",
+          "flag": null
+        }
+      ]
+    },
+    {
       "id": "Fish-Speech",
       "title": "Fish-Speech (A100/L4 GPU required, VRAM 24GB+)",
       "status": "Not working",
@@ -890,6 +1037,87 @@
       ]
     },
     {
+      "id": "IndexTTS2",
+      "title": "IndexTTS2 (GPU recommended; CPU possible but slow; EN/ZH; zero-shot cloning + emotion control)",
+      "status": "Works on Colab L4 (GPU recommended, CPU supported upstream but unverified, fp16, ~7.1GB VRAM)",
+      "status_ja": "Colab L4動作確認済み（GPU推奨、CPUは上流対応・未検証、fp16、VRAM約7.1GB）",
+      "languages": "English / Chinese",
+      "languages_ja": "英語 / 中国語",
+      "description": "[index-tts/index-tts](https://github.com/index-tts/index-tts) is an English/Chinese zero-shot TTS that separates speaker identity from emotional expression. The wrapper pins source commit `90ca4d6` and `IndexTeam/IndexTTS-2` revision `740dcaf`, and also pins the required W2V-BERT, MaskGCT semantic codec, CAMPPlus and BigVGAN resources. It uses a dedicated Python 3.11 environment with PyTorch 2.8/CUDA 12.8; GPU fp16 is the default, while the upstream CPU path remains available but is expected to be much slower.",
+      "description_ja": "[index-tts/index-tts](https://github.com/index-tts/index-tts) は、話者の音色と感情表現を分離して制御できる英語・中国語向けzero-shot TTSです。ラッパーはソースcommit `90ca4d6`、`IndexTeam/IndexTTS-2` revision `740dcaf` に加え、必須のW2V-BERT、MaskGCT semantic codec、CAMPPlus、BigVGANも固定revisionで取得します。Python 3.11 + PyTorch 2.8/CUDA 12.8の専用環境を使い、GPUではfp16が既定です。上流のCPU経路も残していますが、大幅に低速になる想定です。",
+      "notes": [
+        "- `default` uses the official demo reference; set `INDEXTTS2_PROMPT_WAV` and use `clone` for your own speaker.",
+        "- Emotion can come from a separate audio reference, natural-language description, or an 8-value vector ordered as happy, angry, sad, afraid, disgusted, melancholic, surprised, calm.",
+        "- The advertised precise duration control is explicitly not enabled in the public release, so `speed` remains 1.0.",
+        "- License: Bilibili Model Use License (separate permission above 100M monthly users or RMB 1B annual revenue). The required MaskGCT semantic codec is CC-BY-NC-4.0, making the effective stack non-commercial."
+      ],
+      "notes_ja": [
+        "- ライセンス: コードは Bilibili Model Use License、モデル重みは Bilibili Model Use License + CC-BY-NC-4.0 MaskGCT codec。商用利用: **不可**。 備考: 英語・中国語zero-shot cloning、感情を独立制御。月間1億ユーザー超または年間売上10億元超はBilibiliの別途許諾が必要。公開releaseでは精密な尺制御は未有効"
+      ],
+      "prefix": "INDEXTTS2",
+      "params": [
+        {
+          "name": "INDEXTTS2_HF_MODEL",
+          "default": "IndexTeam/IndexTTS-2",
+          "type": "string",
+          "flag": "--indextts2-hf-model"
+        },
+        {
+          "name": "INDEXTTS2_DEFAULT_VOICE",
+          "default": "default",
+          "type": "select",
+          "options": [
+            "default",
+            "clone"
+          ],
+          "flag": "--indextts2-default-voice"
+        },
+        {
+          "name": "INDEXTTS2_PROMPT_WAV",
+          "default": "",
+          "type": "string",
+          "flag": "--indextts2-prompt-wav"
+        },
+        {
+          "name": "INDEXTTS2_EMOTION_WAV",
+          "default": "",
+          "type": "string",
+          "flag": "--indextts2-emotion-wav"
+        },
+        {
+          "name": "INDEXTTS2_EMOTION_TEXT",
+          "default": "",
+          "type": "string",
+          "flag": "--indextts2-emotion-text"
+        },
+        {
+          "name": "INDEXTTS2_EMOTION_VECTOR",
+          "default": "",
+          "type": "string",
+          "flag": "--indextts2-emotion-vector"
+        },
+        {
+          "name": "INDEXTTS2_EMOTION_ALPHA",
+          "default": 0.6,
+          "type": "number",
+          "flag": "--indextts2-emotion-alpha"
+        },
+        {
+          "name": "INDEXTTS2_USE_RANDOM",
+          "default": false,
+          "type": "boolean",
+          "true_flag": "--indextts2-use-random",
+          "false_flag": null
+        },
+        {
+          "name": "INDEXTTS2_USE_FP16",
+          "default": true,
+          "type": "boolean",
+          "flag": null
+        }
+      ]
+    },
+    {
       "id": "Irodori-TTS",
       "title": "Irodori-TTS",
       "status": "Works on L4 (GPU required, v4-Small)",
@@ -1002,6 +1230,55 @@
           "type": "boolean",
           "true_flag": "--irodori-lite-codec-int4",
           "false_flag": null
+        }
+      ]
+    },
+    {
+      "id": "KittenTTS",
+      "title": "KittenTTS (CPU only, English, ONNX, 15M–80M params)",
+      "status": "Works (CPU only, ONNX, 15M–80M params)",
+      "status_ja": "動作OK（CPU のみ・ONNX・15M〜80M params）",
+      "languages": "English",
+      "languages_ja": "英語",
+      "description": "[KittenML/KittenTTS](https://github.com/KittenML/KittenTTS) v0.8 is a lightweight English TTS that runs entirely on CPU through ONNX Runtime. The selectable official checkpoints range from 15M to 80M parameters (about 25–80 MB), require no `HF_TOKEN`, and produce 24 kHz WAV audio. The wrapper pins the upstream v0.8.1 wheel because KittenTTS is currently a developer preview whose APIs may change.",
+      "description_ja": "[KittenML/KittenTTS](https://github.com/KittenML/KittenTTS) v0.8 は、ONNX Runtime により完全に CPU で動く軽量な英語 TTS です。選択できる公式チェックポイントは 15M〜80M パラメータ（約 25〜80MB）で、`HF_TOKEN` は不要、24kHz WAV を出力します。KittenTTS は API が変更される可能性のある Developer preview のため、本ラッパーは上流 v0.8.1 wheel に固定しています。",
+      "notes": [
+        "- Eight preset voices and adjustable speed; native output is 24 kHz WAV.",
+        "- Code and official v0.8 weights: Apache-2.0. No GPU or `HF_TOKEN` required.",
+        "- Developer preview: pinning the v0.8.1 wheel because upstream APIs may change."
+      ],
+      "notes_ja": [
+        "- ライセンス: コードは Apache 2.0、モデル重みは Apache 2.0。商用利用: OK。 備考: 英語専用の CPU ONNX TTS。内蔵 8 voice。Developer preview のため v0.8.1 に固定"
+      ],
+      "prefix": "KITTEN_TTS",
+      "params": [
+        {
+          "name": "KITTEN_TTS_HF_MODEL",
+          "default": "KittenML/kitten-tts-mini-0.8",
+          "type": "select",
+          "options": [
+            "KittenML/kitten-tts-mini-0.8",
+            "KittenML/kitten-tts-micro-0.8",
+            "KittenML/kitten-tts-nano-0.8-fp32",
+            "KittenML/kitten-tts-nano-0.8-int8"
+          ],
+          "flag": "--kitten-tts-hf-model"
+        },
+        {
+          "name": "KITTEN_TTS_DEFAULT_VOICE",
+          "default": "Jasper",
+          "type": "select",
+          "options": [
+            "Bella",
+            "Jasper",
+            "Luna",
+            "Bruno",
+            "Rosie",
+            "Hugo",
+            "Kiki",
+            "Leo"
+          ],
+          "flag": "--kitten-tts-default-voice"
         }
       ]
     },
@@ -1951,6 +2228,79 @@
       ]
     },
     {
+      "id": "OmniVoice",
+      "title": "OmniVoice (GPU recommended; CPU possible but slow; 0.6B; 600+ languages)",
+      "status": "Works on Colab L4 (GPU recommended, CPU possible but slow, 0.6B, ~2.35GB VRAM)",
+      "status_ja": "Colab L4動作確認済み（GPU推奨、CPU実行可だが低速、0.6B、VRAM約2.35GB）",
+      "languages": "Japanese / English / Chinese and 600+ languages",
+      "languages_ja": "日本語 / 英語 / 中国語など600言語以上",
+      "description": "[k2-fsa/OmniVoice](https://github.com/k2-fsa/OmniVoice) is a 0.6B diffusion-language-model-style TTS supporting more than 600 languages, including Japanese. It provides three modes: `auto` (no reference), `design` (speaker attributes such as gender, age, pitch, accent or whisper), and `clone` (a 3–10 second reference clip plus transcript). The installer pins source commit `38e992b` and model revision `c5fdb5c`, downloads the ungated checkpoint without `HF_TOKEN`, and creates a Python 3.12 environment with PyTorch 2.8.0/CUDA 12.8. GPU is recommended; the wrapper also has a CPU path, although generation will be much slower.",
+      "description_ja": "[k2-fsa/OmniVoice](https://github.com/k2-fsa/OmniVoice) は、日本語を含む600言語以上に対応する0.6Bのdiffusion language model型TTSです。参照不要の `auto`、性別・年齢・ピッチ・アクセント・囁き等を指定する `design`、3〜10秒の参照音声と書き起こしを使う `clone` の3モードがあります。インストーラはソースcommit `38e992b` とモデルrevision `c5fdb5c` を固定し、`HF_TOKEN` 不要のungated checkpointを取得して、Python 3.12 + PyTorch 2.8.0/CUDA 12.8の専用環境を作ります。GPU推奨ですがCPU経路もあり、CPUでは大幅に低速です。",
+      "notes": [
+        "- `auto` needs no reference. `design` needs `OMNIVOICE_INSTRUCT`; `clone` needs both prompt fields.",
+        "- Code: Apache-2.0. Main weights: **CC-BY-NC** (non-commercial). The bundled Higgs Audio 2 tokenizer uses the Boson Community License (>100k annual users need an expanded license)."
+      ],
+      "notes_ja": [
+        "- ライセンス: コードは Apache 2.0、モデル重みは CC-BY-NC。商用利用: **不可**。 備考: 0.6B・600言語以上、auto/design/clone。同梱Higgs Audio 2 tokenizerは別のBoson Community License（年間利用者10万人超は追加許諾、帰属・再配布制約）"
+      ],
+      "prefix": "OMNIVOICE",
+      "params": [
+        {
+          "name": "OMNIVOICE_HF_MODEL",
+          "default": "k2-fsa/OmniVoice",
+          "type": "string",
+          "flag": "--omnivoice-hf-model"
+        },
+        {
+          "name": "OMNIVOICE_LANGUAGE",
+          "default": "ja",
+          "type": "string",
+          "flag": "--omnivoice-language"
+        },
+        {
+          "name": "OMNIVOICE_DEFAULT_VOICE",
+          "default": "auto",
+          "type": "select",
+          "options": [
+            "auto",
+            "design",
+            "clone"
+          ],
+          "flag": "--omnivoice-default-voice"
+        },
+        {
+          "name": "OMNIVOICE_PROMPT_WAV",
+          "default": "",
+          "type": "string",
+          "flag": "--omnivoice-prompt-wav"
+        },
+        {
+          "name": "OMNIVOICE_PROMPT_TEXT",
+          "default": "",
+          "type": "string",
+          "flag": "--omnivoice-prompt-text"
+        },
+        {
+          "name": "OMNIVOICE_INSTRUCT",
+          "default": "",
+          "type": "string",
+          "flag": "--omnivoice-instruct"
+        },
+        {
+          "name": "OMNIVOICE_NUM_STEPS",
+          "default": 32,
+          "type": "integer",
+          "flag": "--omnivoice-num-steps"
+        },
+        {
+          "name": "OMNIVOICE_GUIDANCE_SCALE",
+          "default": 2.0,
+          "type": "number",
+          "flag": "--omnivoice-guidance-scale"
+        }
+      ]
+    },
+    {
       "id": "OpenVoice-V2",
       "title": "OpenVoice V2 (GPU recommended, multilingual incl JP, voice cloning, MIT)",
       "status": "Not working (Python 3.13 / `av==10` build failure)",
@@ -2838,60 +3188,44 @@
       "params": []
     },
     {
-      "id": "VibeVoice",
-      "title": "VibeVoice (GPU required, English/Chinese, long-form multi-speaker)",
-      "status": "Not working (upstream API churn)",
-      "status_ja": "動作不可（upstream API 移行中）",
-      "languages": "English / Chinese (long-form, up to 4 speakers)",
-      "languages_ja": "英語 / 中国語（長尺・最大 4 話者）",
-      "description": "Intended to use [microsoft/VibeVoice](https://github.com/microsoft/VibeVoice) — a 1.5B-parameter long-form multi-speaker TTS that can generate up to ~90 minutes of audio with up to 4 speakers in a single pass. The wrapper has been verified end-to-end up to model load on a Colab L4 GPU, but the upstream Microsoft repository is in the middle of a breaking API migration and synthesis cannot complete cleanly today:",
-      "description_ja": "[microsoft/VibeVoice](https://github.com/microsoft/VibeVoice) を使う構成で、1.5B パラメータの長尺・マルチスピーカー TTS（最大 4 話者・約 90 分を 1 パスで生成）として実装しています。Colab L4 GPU 上でモデルロードまでは到達しますが、upstream Microsoft リポジトリが現在 **破壊的な API 移行中** で、合成リクエストが完了しません:",
+      "id": "VibeVoice-Realtime",
+      "title": "VibeVoice-Realtime (GPU required, 0.5B, single speaker, ~10 min)",
+      "status": "Works (GPU required, 0.5B, single speaker)",
+      "status_ja": "動作OK (GPU必須・0.5B・単一話者)",
+      "languages": "English; experimental Japanese / German / French / Italian / Korean / Dutch / Polish / Portuguese / Spanish",
+      "languages_ja": "英語、実験的に日本語 / 独 / 仏 / 伊 / 韓 / 蘭 / 波 / 葡 / 西",
+      "description": "[microsoft/VibeVoice-Realtime-0.5B](https://huggingface.co/microsoft/VibeVoice-Realtime-0.5B) is the lightweight single-speaker streaming variant of [microsoft/VibeVoice](https://github.com/microsoft/VibeVoice). It targets roughly 200–300 ms first audible latency, accepts streaming text internally, and supports robust long-form generation up to about 10 minutes. This OpenAI-compatible wrapper returns a completed WAV response rather than exposing the upstream WebSocket streaming protocol.",
+      "description_ja": "[microsoft/VibeVoice-Realtime-0.5B](https://huggingface.co/microsoft/VibeVoice-Realtime-0.5B) は、[microsoft/VibeVoice](https://github.com/microsoft/VibeVoice) の軽量な単一話者ストリーミング版です。初回可聴音声まで約200–300msを目標にし、内部ではストリーミングテキスト入力、最大約10分の長尺生成に対応します。本OpenAI互換ラッパーは、上流WebSocketの逐次配信ではなく完成したWAVを返します。",
       "notes": [
-        "- License: MIT, but Microsoft tags this as \"research purpose only\".",
-        "- Non-EN/ZH languages, voice impersonation, and disinformation use are prohibited."
+        "- English is the supported language; Japanese and eight other languages have experimental preset voices.",
+        "- Code/weights: MIT, but the model card limits intended use to research and development. No custom voice cloning."
       ],
       "notes_ja": [
-        "- ライセンス: コードは MIT、モデル重みは MIT。商用利用: 要注意（research-only）。 備考: 英 / 中のみ。現在は動作不可: upstream API 移行中（.wav speaker ファイル → .pt prompt cache へ移行）"
+        "- ライセンス: コードは MIT、モデル重みは MIT。商用利用: 要注意（研究/R&D用途のみ）。 備考: 0.5B単一話者ストリーミング。英語正式対応、日+8言語は実験的。voice cloning不可。可聴AIディスクレーマー+来歴ウォーターマーク"
       ],
       "prefix": "VIBEVOICE",
       "params": [
         {
           "name": "VIBEVOICE_HF_MODEL",
-          "default": "microsoft/VibeVoice-1.5B",
+          "default": "microsoft/VibeVoice-Realtime-0.5B",
           "type": "string",
           "flag": "--vibevoice-hf-model"
         },
         {
           "name": "VIBEVOICE_DEFAULT_SPEAKER",
-          "default": "en-Alice_woman",
+          "default": "jp-Spk1_woman",
           "type": "string",
           "flag": "--vibevoice-default-speaker"
         },
         {
-          "name": "VIBEVOICE_PROMPT_WAV",
-          "default": "",
-          "type": "string",
-          "flag": "--vibevoice-prompt-wav"
-        },
-        {
-          "name": "VIBEVOICE_DEFAULT_VOICE",
-          "default": "default",
-          "type": "select",
-          "options": [
-            "default",
-            "clone"
-          ],
-          "flag": "--vibevoice-default-voice"
-        },
-        {
           "name": "VIBEVOICE_DDPM_STEPS",
-          "default": 10,
+          "default": 5,
           "type": "integer",
           "flag": "--vibevoice-ddpm-steps"
         },
         {
           "name": "VIBEVOICE_CFG_SCALE",
-          "default": 1.3,
+          "default": 1.5,
           "type": "number",
           "flag": "--vibevoice-cfg-scale"
         }

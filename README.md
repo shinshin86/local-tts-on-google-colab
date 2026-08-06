@@ -23,15 +23,17 @@ Supported engines:
 | MOSS-TTS-Local-v1.5 | Works on L4 (~4B MossTTSLocal, ~12.4GB VRAM — fits where the 8B v1.5 OOMs) | Japanese / English / Chinese / Korean and 31 languages |
 | NeuTTS | Works (CPU OK, voice cloning) | English / Spanish / German / French |
 | TinyTTS | Works | English |
+| KittenTTS | Works (CPU only, ONNX, 15M–80M params) | English |
 | Sine-Wave-TTS | Works on Colab (CPU only, no model weights, Node.js 20+) | Japanese electronic vocalization (not intelligible speech) |
 | Supertonic | Works (CPU OK, ONNX, ~99M params) | English / Japanese / Korean and 31 languages |
 | Voxtral-TTS | Works (GPU required, VRAM 16GB+) | English / French / Spanish and 9 languages |
 | Orpheus-TTS | Not working (HF-gated weights, requires Llama 3.2 license acceptance + `HF_TOKEN`) | English (Llama-3.2-3B base, vLLM) |
 | CosyVoice2 | Works (GPU recommended, Python 3.10 venv) | Japanese / English / Chinese / Korean / German and 9 languages |
+| CosyVoice3 | Works (GPU recommended, Python 3.10 venv) | Japanese / English / Chinese / Korean / German and 9 languages + Chinese dialects |
 | Spark-TTS | Works (GPU recommended) | English / Chinese (non-commercial weights) |
 | Sarashina-TTS | Works (GPU required, ~6GB VRAM) | Japanese / English |
 | F5-TTS | Works (GPU required) | English / Chinese (Japanese via separate model) |
-| Chatterbox | Works (GPU recommended) | Japanese / English / Chinese and 23 languages |
+| Chatterbox Multilingual V3 | Works (GPU recommended, 0.5B) | Japanese / English / Chinese and 23 languages |
 | Zonos | Works (GPU required, ~6GB VRAM) | Japanese / English / Chinese / French / German |
 | ZONOS2 | Works (L4 verified, sm_80+ required) | 41 languages (tier-1: Japanese / English / Chinese) |
 | OuteTTS | Works (CPU OK) | Japanese / English / Chinese and many languages |
@@ -39,7 +41,10 @@ Supported engines:
 | Kyutai-TTS | Works (GPU recommended) | English / French |
 | Pocket-TTS | Works (CPU OK, ~6x real-time) | English / French / German / Italian / Portuguese / Spanish |
 | OpenVoice-V2 | Not working (Python 3.13 / `av==10` build failure) | Japanese / English / Spanish / French / Chinese / Korean |
-| VibeVoice | Not working (upstream API churn) | English / Chinese (long-form, up to 4 speakers) |
+| VibeVoice-Realtime | Works (GPU required, 0.5B, single speaker) | English; experimental Japanese / German / French / Italian / Korean / Dutch / Polish / Portuguese / Spanish |
+| OmniVoice | Works on Colab L4 (GPU recommended, CPU possible but slow, 0.6B, ~2.35GB VRAM) | Japanese / English / Chinese and 600+ languages |
+| FireRedTTS2 | Works on Colab L4 (CUDA GPU required, 1.5B, bf16, ~8.8GB VRAM) | Japanese / English / Chinese / Korean / French / German / Russian |
+| IndexTTS2 | Works on Colab L4 (GPU recommended, CPU supported upstream but unverified, fp16, ~7.1GB VRAM) | English / Chinese |
 | Fish-Speech | Not working | Japanese / English / Chinese and 80+ languages |
 | MeloTTS | Not working | - |
 | Style-Bert-VITS2 | Not working | - |
@@ -121,7 +126,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "Irodori-TTS", "Irodori-TTS-Lite", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "Zonos", "ZONOS2"]
+ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "FireRedTTS2", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "IndexTTS2", "Irodori-TTS", "Irodori-TTS-Lite", "KittenTTS", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "Zonos", "ZONOS2"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -278,8 +283,12 @@ SARASHINA_PROMPT_TEXT = ""  #@param {type:"string"}
 SARASHINA_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
 
 #@markdown ---
-#@markdown Chatterbox (GPU recommended, multilingual incl JP, voice cloning)
+#@markdown Chatterbox Multilingual V3 (GPU recommended, 0.5B, 23 languages incl JP, voice cloning)
+#@markdown - V3 improves speaker similarity, naturalness, and stability while reducing hallucinations versus V2.
+#@markdown - V3 is not yet in PyPI 0.1.7; the installer pins an official GitHub commit that contains the V3 API.
+#@markdown - Code and V3 weights: MIT. All outputs include Resemble's imperceptible Perth watermark.
 CHATTERBOX_LANGUAGE = "ja"  #@param ["ar", "da", "de", "el", "en", "es", "fi", "fr", "he", "hi", "it", "ja", "ko", "ms", "nl", "no", "pl", "pt", "ru", "sv", "sw", "tr", "zh"]
+CHATTERBOX_T3_MODEL = "v3"  #@param ["v3", "v2"]
 CHATTERBOX_PROMPT_WAV = ""  #@param {type:"string"}
 CHATTERBOX_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
 
@@ -341,6 +350,16 @@ COSYVOICE_PROMPT_TEXT = ""  #@param {type:"string"}
 COSYVOICE_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
 
 #@markdown ---
+#@markdown CosyVoice3 (GPU recommended, 9 languages incl JP, voice cloning + instruction control)
+#@markdown - Japanese text must be converted to Katakana per upstream guidance.
+#@markdown - Code and `Fun-CosyVoice3-0.5B-2512` weights are Apache 2.0. The upstream README also includes an academic/demo disclaimer and takedown request.
+COSYVOICE3_HF_MODEL = "FunAudioLLM/Fun-CosyVoice3-0.5B-2512"  #@param {type:"string"}
+COSYVOICE3_PROMPT_WAV = ""  #@param {type:"string"}
+COSYVOICE3_PROMPT_TEXT = ""  #@param {type:"string"}
+COSYVOICE3_INSTRUCT = ""  #@param {type:"string"}
+COSYVOICE3_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+
+#@markdown ---
 #@markdown Spark-TTS (GPU recommended, EN/ZH only, voice cloning + gender/pitch/speed control)
 #@markdown - Code: Apache 2.0. Weights: CC BY-NC-SA 4.0 (non-commercial only) due to training data license.
 SPARK_HF_MODEL = "SparkAudio/Spark-TTS-0.5B"  #@param {type:"string"}
@@ -364,15 +383,55 @@ ORPHEUS_DEFAULT_VOICE = "tara"  #@param ["tara", "leah", "jess", "leo", "dan", "
 ORPHEUS_MAX_MODEL_LEN = 2048  #@param {type:"integer"}
 
 #@markdown ---
-#@markdown VibeVoice (GPU required, English/Chinese, long-form multi-speaker)
-#@markdown - License: MIT, but Microsoft tags this as "research purpose only".
-#@markdown - Non-EN/ZH languages, voice impersonation, and disinformation use are prohibited.
-VIBEVOICE_HF_MODEL = "microsoft/VibeVoice-1.5B"  #@param {type:"string"}
-VIBEVOICE_DEFAULT_SPEAKER = "en-Alice_woman"  #@param {type:"string"}
-VIBEVOICE_PROMPT_WAV = ""  #@param {type:"string"}
-VIBEVOICE_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
-VIBEVOICE_DDPM_STEPS = 10  #@param {type:"integer"}
-VIBEVOICE_CFG_SCALE = 1.3  #@param {type:"number"}
+#@markdown VibeVoice-Realtime (GPU required, 0.5B, single speaker, ~10 min)
+#@markdown - English is the supported language; Japanese and eight other languages have experimental preset voices.
+#@markdown - Code/weights: MIT, but the model card limits intended use to research and development. No custom voice cloning.
+VIBEVOICE_HF_MODEL = "microsoft/VibeVoice-Realtime-0.5B"  #@param {type:"string"}
+VIBEVOICE_DEFAULT_SPEAKER = "jp-Spk1_woman"  #@param {type:"string"}
+VIBEVOICE_DDPM_STEPS = 5  #@param {type:"integer"}
+VIBEVOICE_CFG_SCALE = 1.5  #@param {type:"number"}
+
+#@markdown ---
+#@markdown OmniVoice (GPU recommended; CPU possible but slow; 0.6B; 600+ languages)
+#@markdown - `auto` needs no reference. `design` needs `OMNIVOICE_INSTRUCT`; `clone` needs both prompt fields.
+#@markdown - Code: Apache-2.0. Main weights: **CC-BY-NC** (non-commercial). The bundled Higgs Audio 2 tokenizer uses the Boson Community License (>100k annual users need an expanded license).
+OMNIVOICE_HF_MODEL = "k2-fsa/OmniVoice"  #@param {type:"string"}
+OMNIVOICE_LANGUAGE = "ja"  #@param {type:"string"}
+OMNIVOICE_DEFAULT_VOICE = "auto"  #@param ["auto", "design", "clone"]
+OMNIVOICE_PROMPT_WAV = ""  #@param {type:"string"}
+OMNIVOICE_PROMPT_TEXT = ""  #@param {type:"string"}
+OMNIVOICE_INSTRUCT = ""  #@param {type:"string"}
+OMNIVOICE_NUM_STEPS = 32  #@param {type:"integer"}
+OMNIVOICE_GUIDANCE_SCALE = 2.0  #@param {type:"number"}
+
+#@markdown ---
+#@markdown FireRedTTS2 (CUDA GPU required, 1.5B, 7 languages incl JP, long-form dialogue)
+#@markdown - `monologue`: random speaker or clone. `dialogue`: random speakers with `[S1]`...`[S4]` input.
+#@markdown - Code/weights/Qwen tokenizer: Apache-2.0. Upstream restricts zero-shot cloning to academic research.
+FIREREDTTS2_HF_MODEL = "FireRedTeam/FireRedTTS2"  #@param {type:"string"}
+FIREREDTTS2_GENERATION_MODE = "monologue"  #@param ["monologue", "dialogue"]
+FIREREDTTS2_DEFAULT_VOICE = "random"  #@param ["random", "clone"]
+FIREREDTTS2_PROMPT_WAV = ""  #@param {type:"string"}
+FIREREDTTS2_PROMPT_TEXT = ""  #@param {type:"string"}
+FIREREDTTS2_TEMPERATURE = 0.75  #@param {type:"number"}
+FIREREDTTS2_TOPK = 20  #@param {type:"integer"}
+FIREREDTTS2_USE_BF16 = True  #@param {type:"boolean"}
+
+#@markdown ---
+#@markdown IndexTTS2 (GPU recommended; CPU possible but slow; EN/ZH; zero-shot cloning + emotion control)
+#@markdown - `default` uses the official demo reference; set `INDEXTTS2_PROMPT_WAV` and use `clone` for your own speaker.
+#@markdown - Emotion can come from a separate audio reference, natural-language description, or an 8-value vector ordered as happy, angry, sad, afraid, disgusted, melancholic, surprised, calm.
+#@markdown - The advertised precise duration control is explicitly not enabled in the public release, so `speed` remains 1.0.
+#@markdown - License: Bilibili Model Use License (separate permission above 100M monthly users or RMB 1B annual revenue). The required MaskGCT semantic codec is CC-BY-NC-4.0, making the effective stack non-commercial.
+INDEXTTS2_HF_MODEL = "IndexTeam/IndexTTS-2"  #@param {type:"string"}
+INDEXTTS2_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+INDEXTTS2_PROMPT_WAV = ""  #@param {type:"string"}
+INDEXTTS2_EMOTION_WAV = ""  #@param {type:"string"}
+INDEXTTS2_EMOTION_TEXT = ""  #@param {type:"string"}
+INDEXTTS2_EMOTION_VECTOR = ""  #@param {type:"string"}
+INDEXTTS2_EMOTION_ALPHA = 0.6  #@param {type:"number"}
+INDEXTTS2_USE_RANDOM = False  #@param {type:"boolean"}
+INDEXTTS2_USE_FP16 = True  #@param {type:"boolean"}
 
 #@markdown ---
 #@markdown Bark (GPU recommended, 13 languages, MIT)
@@ -576,6 +635,14 @@ SCENEMA_SKIP_VC = False  #@param {type:"boolean"}
 SCENEMA_VC_STEPS = 25  #@param {type:"integer"}
 SCENEMA_VC_CFG_RATE = 0.5  #@param {type:"number"}
 SCENEMA_BACKGROUND_SFX = False  #@param {type:"boolean"}
+
+#@markdown ---
+#@markdown KittenTTS (CPU only, English, ONNX, 15M–80M params)
+#@markdown - Eight preset voices and adjustable speed; native output is 24 kHz WAV.
+#@markdown - Code and official v0.8 weights: Apache-2.0. No GPU or `HF_TOKEN` required.
+#@markdown - Developer preview: pinning the v0.8.1 wheel because upstream APIs may change.
+KITTEN_TTS_HF_MODEL = "KittenML/kitten-tts-mini-0.8"  #@param ["KittenML/kitten-tts-mini-0.8", "KittenML/kitten-tts-micro-0.8", "KittenML/kitten-tts-nano-0.8-fp32", "KittenML/kitten-tts-nano-0.8-int8"]
+KITTEN_TTS_DEFAULT_VOICE = "Jasper"  #@param ["Bella", "Jasper", "Luna", "Bruno", "Rosie", "Hugo", "Kiki", "Leo"]
 
 #@markdown ---
 #@markdown Supertonic (CPU OK, 31 languages incl JP/KO/EN, ONNX)
@@ -791,6 +858,8 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         SARASHINA_DEFAULT_VOICE,
         "--chatterbox-language",
         CHATTERBOX_LANGUAGE,
+        "--chatterbox-t3-model",
+        CHATTERBOX_T3_MODEL,
         "--chatterbox-prompt-wav",
         CHATTERBOX_PROMPT_WAV,
         "--chatterbox-default-voice",
@@ -851,6 +920,16 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         COSYVOICE_PROMPT_TEXT,
         "--cosyvoice-default-voice",
         COSYVOICE_DEFAULT_VOICE,
+        "--cosyvoice3-hf-model",
+        COSYVOICE3_HF_MODEL,
+        "--cosyvoice3-prompt-wav",
+        COSYVOICE3_PROMPT_WAV,
+        "--cosyvoice3-prompt-text",
+        COSYVOICE3_PROMPT_TEXT,
+        "--cosyvoice3-instruct",
+        COSYVOICE3_INSTRUCT,
+        "--cosyvoice3-default-voice",
+        COSYVOICE3_DEFAULT_VOICE,
         "--spark-hf-model",
         SPARK_HF_MODEL,
         "--spark-default-voice",
@@ -875,14 +954,54 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         VIBEVOICE_HF_MODEL,
         "--vibevoice-default-speaker",
         VIBEVOICE_DEFAULT_SPEAKER,
-        "--vibevoice-prompt-wav",
-        VIBEVOICE_PROMPT_WAV,
-        "--vibevoice-default-voice",
-        VIBEVOICE_DEFAULT_VOICE,
         "--vibevoice-ddpm-steps",
         str(VIBEVOICE_DDPM_STEPS),
         "--vibevoice-cfg-scale",
         str(VIBEVOICE_CFG_SCALE),
+        "--omnivoice-hf-model",
+        OMNIVOICE_HF_MODEL,
+        "--omnivoice-language",
+        OMNIVOICE_LANGUAGE,
+        "--omnivoice-default-voice",
+        OMNIVOICE_DEFAULT_VOICE,
+        "--omnivoice-prompt-wav",
+        OMNIVOICE_PROMPT_WAV,
+        "--omnivoice-prompt-text",
+        OMNIVOICE_PROMPT_TEXT,
+        "--omnivoice-instruct",
+        OMNIVOICE_INSTRUCT,
+        "--omnivoice-num-steps",
+        str(OMNIVOICE_NUM_STEPS),
+        "--omnivoice-guidance-scale",
+        str(OMNIVOICE_GUIDANCE_SCALE),
+        "--fireredtts2-hf-model",
+        FIREREDTTS2_HF_MODEL,
+        "--fireredtts2-generation-mode",
+        FIREREDTTS2_GENERATION_MODE,
+        "--fireredtts2-default-voice",
+        FIREREDTTS2_DEFAULT_VOICE,
+        "--fireredtts2-prompt-wav",
+        FIREREDTTS2_PROMPT_WAV,
+        "--fireredtts2-prompt-text",
+        FIREREDTTS2_PROMPT_TEXT,
+        "--fireredtts2-temperature",
+        str(FIREREDTTS2_TEMPERATURE),
+        "--fireredtts2-topk",
+        str(FIREREDTTS2_TOPK),
+        "--indextts2-hf-model",
+        INDEXTTS2_HF_MODEL,
+        "--indextts2-default-voice",
+        INDEXTTS2_DEFAULT_VOICE,
+        "--indextts2-prompt-wav",
+        INDEXTTS2_PROMPT_WAV,
+        "--indextts2-emotion-wav",
+        INDEXTTS2_EMOTION_WAV,
+        "--indextts2-emotion-text",
+        INDEXTTS2_EMOTION_TEXT,
+        "--indextts2-emotion-vector",
+        INDEXTTS2_EMOTION_VECTOR,
+        "--indextts2-emotion-alpha",
+        str(INDEXTTS2_EMOTION_ALPHA),
         "--bark-default-voice",
         BARK_DEFAULT_VOICE,
         "--chattts-default-voice",
@@ -1067,6 +1186,10 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         SUPERTONIC_DEFAULT_LANG,
         "--supertonic-total-steps",
         str(SUPERTONIC_TOTAL_STEPS),
+        "--kitten-tts-hf-model",
+        KITTEN_TTS_HF_MODEL,
+        "--kitten-tts-default-voice",
+        KITTEN_TTS_DEFAULT_VOICE,
         "--sine-wave-tts-ref",
         SINE_WAVE_TTS_REF,
         "--sine-wave-tts-default-speaker",
@@ -1140,6 +1263,12 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         cmd.append("--sarashina-use-vllm")
     if BARK_USE_SMALL_MODELS:
         cmd.append("--bark-use-small-models")
+    if not FIREREDTTS2_USE_BF16:
+        cmd.append("--fireredtts2-no-bf16")
+    if INDEXTTS2_USE_RANDOM:
+        cmd.append("--indextts2-use-random")
+    if not INDEXTTS2_USE_FP16:
+        cmd.append("--indextts2-no-fp16")
     if DRAMABOX_COMPILE:
         cmd.append("--dramabox-compile")
     if DRAMABOX_NO_BNB_4BIT:
@@ -1296,6 +1425,12 @@ Default backbone: `neuphonic/neutts-air` (~360M params, English only, Apache 2.0
 
 An ultra-lightweight English TTS using [ecyht2/tiny-tts](https://github.com/ecyht2/tiny-tts). The model has only 1.6M parameters (~3.4 MB), no GPU required, and can synthesize speech at 53× real-time on CPU alone. Audio is output at 44.1 kHz. There is no voice switching. License: Apache 2.0.
 
+### KittenTTS
+
+[KittenML/KittenTTS](https://github.com/KittenML/KittenTTS) v0.8 is a lightweight English TTS that runs entirely on CPU through ONNX Runtime. The selectable official checkpoints range from 15M to 80M parameters (about 25–80 MB), require no `HF_TOKEN`, and produce 24 kHz WAV audio. The wrapper pins the upstream v0.8.1 wheel because KittenTTS is currently a developer preview whose APIs may change.
+
+The OpenAI-compatible `voice` parameter exposes eight built-in presets: `Bella`, `Jasper`, `Luna`, `Bruno`, `Rosie`, `Hugo`, `Kiki`, and `Leo`; `default` maps to `--kitten-tts-default-voice` (`Jasper` by default). `speed` is passed through to the upstream synthesizer. The default checkpoint is `KittenML/kitten-tts-mini-0.8`; Micro, Nano FP32, and Nano INT8 are also selectable. Upstream notes that some users have reported issues with the INT8 checkpoint. English is the only supported language. Code and every selectable official v0.8 checkpoint are Apache 2.0.
+
 ### Sine-Wave-TTS
 
 [shinshin86/sine-wave-tts](https://github.com/shinshin86/sine-wave-tts) turns Japanese text into deterministic beeping sine-wave tones for robots, mascots, and game characters. It follows Japanese readings and accents through Kuromoji and outputs 44.1 kHz mono 16-bit WAV. It runs entirely on CPU, downloads no model weights, and pins the upstream `v0.1.0` tag by default.
@@ -1345,7 +1480,9 @@ A zero-shot voice cloning TTS using [SWivid/F5-TTS](https://github.com/SWivid/F5
 
 ### Chatterbox
 
-A multilingual TTS using [resemble-ai/chatterbox](https://github.com/resemble-ai/chatterbox) by Resemble AI. The Chatterbox Multilingual model supports 23 languages including Japanese, English, Chinese, French, German, Spanish, Korean, etc., and supports zero-shot voice cloning. Default language is `ja` (Japanese). When `--chatterbox-prompt-wav` is provided, the `clone` voice becomes available and uses the reference audio. A GPU runtime is recommended (VRAM ~2-4GB). License: MIT (both code and weights).
+This integration now defaults to Resemble AI's [Chatterbox Multilingual V3](https://github.com/resemble-ai/chatterbox), the current 0.5B general-purpose multilingual checkpoint. V3 retains the 23-language coverage (including Japanese, English, Chinese, French, German, Spanish, and Korean) while improving speaker similarity, naturalness, and stability and reducing unwanted continuation or repetition compared with V2. Set `CHATTERBOX_T3_MODEL="v2"` only when legacy comparison is needed. The V3 API is newer than PyPI `0.1.7`, so the installer pins a reviewed official GitHub commit instead of following `master`.
+
+The default language is `ja` (Japanese). When `--chatterbox-prompt-wav` is provided, the `clone` voice becomes available and uses the reference audio. A GPU runtime is recommended (VRAM ~2-4GB). Every generated file retains Resemble AI's imperceptible Perth watermark. License: MIT for both the code and V3 weights.
 
 The `voice` parameter exposes:
 
@@ -1482,15 +1619,45 @@ Pre-installing `faster-whisper>=1.0` (which has `av==17.x` with py3.13 wheels) d
 
 The wrapper code is kept in tree so OpenVoice V2 can be reactivated once upstream relaxes its pins. **License (when working):** MIT for both code and weights (since April 2024).
 
-### VibeVoice (currently not working)
+### VibeVoice-Realtime
 
-Intended to use [microsoft/VibeVoice](https://github.com/microsoft/VibeVoice) — a 1.5B-parameter long-form multi-speaker TTS that can generate up to ~90 minutes of audio with up to 4 speakers in a single pass. The wrapper has been verified end-to-end up to model load on a Colab L4 GPU, but the upstream Microsoft repository is in the middle of a breaking API migration and synthesis cannot complete cleanly today:
+[microsoft/VibeVoice-Realtime-0.5B](https://huggingface.co/microsoft/VibeVoice-Realtime-0.5B) is the lightweight single-speaker streaming variant of [microsoft/VibeVoice](https://github.com/microsoft/VibeVoice). It targets roughly 200–300 ms first audible latency, accepts streaming text internally, and supports robust long-form generation up to about 10 minutes. This OpenAI-compatible wrapper returns a completed WAV response rather than exposing the upstream WebSocket streaming protocol.
 
-- The reference inference class was renamed: `VibeVoiceForConditionalGenerationInference` → `VibeVoiceForConditionalGeneration` (this part the wrapper now handles).
-- `model.set_ddpm_inference_steps(...)` has been removed; DDPM steps must now be set via `model.model.noise_scheduler.set_timesteps(...)` (handled).
-- The bigger break: upstream **stopped shipping reference `.wav` speaker files** in `demo/voices/`. They now ship pre-extracted `.pt` prompt caches (e.g. `en-Carter_man.pt`, `jp-Spk1_woman.pt`) and the recommended path is `processor.process_input_with_cached_prompt(cached_prompt=torch.load(...))` rather than `processor(text=..., voice_samples=[wav_path])`. The non-streaming `voice_samples`-based path the wrapper currently uses no longer has working defaults.
+The engine uses Microsoft's precomputed `.pt` prompt caches. `voice="default"` selects `VIBEVOICE_DEFAULT_SPEAKER`; any ID from `/v1/voices` can be passed directly. The default is the experimental Japanese preset `jp-Spk1_woman`. Custom reference audio and voice cloning are intentionally unavailable in this release, as are multi-speaker synthesis and speed control. English is the supported language; Japanese, German, French, Italian, Korean, Dutch, Polish, Portuguese and Spanish presets are experimental and may behave unpredictably. The bundled Qwen2.5-0.5B tokenizer dependency is pinned separately; its files are Apache 2.0. The wrapper also includes the restricted-unpickler workaround proposed in [upstream PR #397](https://github.com/microsoft/VibeVoice/pull/397) for [PyTorch compatibility issue #392](https://github.com/microsoft/VibeVoice/issues/392), retaining an allowlist instead of trusting arbitrary pickle globals.
 
-The wrapper code is kept in tree so it can be rebuilt against the upstream API once it stabilises. **License caveat:** even when working, the model card tags VibeVoice as **"research purpose only"**: non-EN/ZH languages, voice impersonation, disinformation, and real-time voice conversion are prohibited. Don't ship into commercial / real-world products regardless of how the API ends up.
+Code and weights are marked MIT, but the model card limits intended use to research and development and places voice impersonation without recorded consent, disinformation, low-latency voice conversion, safeguard circumvention and unsupported languages out of scope. Microsoft does not recommend commercial or real-world deployment. Generated audio includes an audible AI-generation disclosure and an imperceptible provenance watermark; do not remove or bypass them.
+
+### OmniVoice
+
+[k2-fsa/OmniVoice](https://github.com/k2-fsa/OmniVoice) is a 0.6B diffusion-language-model-style TTS supporting more than 600 languages, including Japanese. It provides three modes: `auto` (no reference), `design` (speaker attributes such as gender, age, pitch, accent or whisper), and `clone` (a 3–10 second reference clip plus transcript). The installer pins source commit `38e992b` and model revision `c5fdb5c`, downloads the ungated checkpoint without `HF_TOKEN`, and creates a Python 3.12 environment with PyTorch 2.8.0/CUDA 12.8. GPU is recommended; the wrapper also has a CPU path, although generation will be much slower.
+
+The OpenAI `voice` parameter exposes `auto` by default. Set `--omnivoice-instruct` to enable `design`; set both `--omnivoice-prompt-wav` and `--omnivoice-prompt-text` to enable `clone`. `--omnivoice-language` defaults to `ja`; providing the language improves performance over automatic language-agnostic inference. `speed` supports 0.5–1.5, while diffusion quality/cost is controlled with `--omnivoice-num-steps` (32 by default) and `--omnivoice-guidance-scale` (2.0). Voice design was trained mainly on Chinese and English and may be unstable in other languages. Only clone voices for which you have explicit permission.
+
+**License warning:** the repository code is Apache-2.0, but the primary OmniVoice weights are **CC-BY-NC** because of training-data constraints such as Emilia, so commercial use is not allowed. The checkpoint also bundles a Higgs Audio 2 tokenizer under the **Boson Higgs Audio 2 Community License**: redistribution/attribution obligations apply, annual active users above 100,000 require an expanded Boson license, and its outputs may not be used to improve another LLM. The embedded tokenizer model card itself does not declare a license, so the bundled `audio_tokenizer/LICENSE` is the authoritative notice for that component.
+
+Verified end-to-end on Colab L4 from the pushed feature branch: the public trycloudflare `/v1/audio/speech` endpoint returned a valid 24 kHz mono WAV, used about 2.35 GB of GPU memory, and the Japanese test sentence was transcribed exactly by Whisper.
+
+### FireRedTTS2
+
+[FireRedTeam/FireRedTTS2](https://github.com/FireRedTeam/FireRedTTS2) is a 1.5B long-form streaming TTS for monologues and context-aware dialogue with up to four speakers. It supports English, Chinese, Japanese, Korean, French, German and Russian, including cross-lingual/code-switching zero-shot cloning. The installer pins source commit `404f3f6` and model revision `4af3f5c`, uses the upstream-recommended Python 3.11 + PyTorch 2.7.1/CUDA 12.6 stack, and loads the LLM in bf16 by default.
+
+`--fireredtts2-generation-mode monologue` (default) downloads the 8.27 GB pretrain checkpoint and exposes `voice="random"`; supplying both `--fireredtts2-prompt-wav` and `--fireredtts2-prompt-text` also enables `voice="clone"`. `dialogue` instead downloads the separate 8.27 GB post-train checkpoint and accepts `[S1]` through `[S4]` tags in `input`; untagged input is treated as `[S1]`. In both modes the shared codec adds about 4.30 GB of download, and output is 24 kHz mono WAV. The two large mode checkpoints are fetched selectively rather than downloading the full 20.8 GB model repository. `speed` is not exposed upstream; temperature and top-k are configurable.
+
+Code, weights and the bundled Qwen2.5-1.5B tokenizer are Apache-2.0. However, the upstream usage disclaimer says the zero-shot voice-cloning capability is solely for academic research and prohibits illegal use. Treat `clone` as research-only unless FireRedTeam clarifies otherwise, and only use reference audio with the speaker's explicit consent.
+
+Verified end-to-end on Colab L4 from the pushed feature branch. The public trycloudflare `/v1/audio/speech` endpoint returned a 24 kHz mono WAV, the model used about 8.8 GB of GPU memory, and a 5.36-second Japanese sample was generated in 11.44 seconds after warm-up. Whisper recovered the sentence with one word-level error, and the WAV was also downloaded and played successfully on macOS.
+
+### IndexTTS2
+
+[index-tts/index-tts](https://github.com/index-tts/index-tts) is an English/Chinese zero-shot TTS that separates speaker identity from emotional expression. The wrapper pins source commit `90ca4d6` and `IndexTeam/IndexTTS-2` revision `740dcaf`, and also pins the required W2V-BERT, MaskGCT semantic codec, CAMPPlus and BigVGAN resources. It uses a dedicated Python 3.11 environment with PyTorch 2.8/CUDA 12.8; GPU fp16 is the default, while the upstream CPU path remains available but is expected to be much slower.
+
+`voice="default"` uses `voice_01.wav` from the official IndexTTS2 demo Space at a fixed revision. Set `INDEXTTS2_PROMPT_WAV` and select `voice="clone"` to use a consented speaker reference. Emotion can be controlled independently with `INDEXTTS2_EMOTION_WAV`, a natural-language `INDEXTTS2_EMOTION_TEXT`, or an eight-value `INDEXTTS2_EMOTION_VECTOR` ordered as `[happy, angry, sad, afraid, disgusted, melancholic, surprised, calm]`. Requests can override text/vector control using `emotion_text`, `emotion_vector`, `emotion_weight`, and `emotion_random` extension fields. Only one emotion source is used at a time.
+
+Although IndexTTS2 is presented as duration-controllable research, the official README explicitly says precise duration control is not enabled in the public release. This wrapper therefore rejects `speed` values other than `1.0` instead of claiming unsupported duration control.
+
+**License warning:** the IndexTTS2 code and weights use the custom **Bilibili Model Use License**, not Apache-2.0. A separate license is required if the user or an affiliate exceeds 100 million monthly active users or RMB 1 billion annual revenue. The license must be retained with redistributed copies, restricts using the model or its outputs to improve other commercial AI models, and includes additional compliance and high-risk-use terms. The runtime also requires the `amphion/MaskGCT` semantic codec under **CC-BY-NC-4.0**, so the effective IndexTTS2 stack in this repository is **non-commercial**. Use only reference audio for which the speaker has given explicit consent.
+
+Verified end-to-end on Colab L4 from the pushed feature branch. A public trycloudflare request with an emotion vector returned a valid 22.05 kHz, 16-bit mono WAV, used about 7.1 GB of GPU memory, and generated 5.06 seconds of speech in 10.15 seconds after warm-up. Whisper recovered the English test sentence correctly, and the WAV was also downloaded, inspected, and played successfully on macOS. The CPU path is provided by upstream but was not benchmarked in this verification.
 
 ### Fish-Speech (currently not working)
 
@@ -1510,6 +1677,16 @@ The `voice` parameter exposes:
 For voice cloning, only use reference audio you have rights to (consent of the speaker).
 
 License: Apache 2.0 for both code (CosyVoice repo) and the `CosyVoice2-0.5B` weights (per the Hugging Face model card).
+
+### CosyVoice3
+
+The 0.5B-parameter [Fun-CosyVoice3-0.5B-2512](https://huggingface.co/FunAudioLLM/Fun-CosyVoice3-0.5B-2512) checkpoint adds stronger content consistency, speaker similarity and prosody control to [FunAudioLLM/CosyVoice](https://github.com/FunAudioLLM/CosyVoice). It supports Japanese, English, Chinese, Korean, German, Spanish, French, Italian and Russian, plus 18+ Chinese dialects. The wrapper pins both the upstream source and model revision and uses a separate Python 3.10 venv, so the existing CosyVoice2 engine remains unchanged.
+
+The `voice` parameter exposes `default` (the bundled reference through cross-lingual inference) and `clone` (a reference supplied with `--cosyvoice3-prompt-wav`). Add `--cosyvoice3-prompt-text` for transcript-matched zero-shot cloning. `--cosyvoice3-instruct` enables V3 instruction control for characteristics such as emotion, speaking rate, volume, language or dialect. Only clone voices for which you have the speaker's consent.
+
+**Japanese input note:** upstream requires Japanese text to be converted to **Katakana** before synthesis. The wrapper does not transliterate it automatically.
+
+License: Apache 2.0 for the source code and model weights. The upstream README separately describes its examples as academic/demo material and includes a takedown request; review that disclaimer as well as the license before deployment.
 
 ### Bark
 
@@ -1867,15 +2044,17 @@ The license for each engine is as follows. When using them, always check each pr
 | MOSS-TTS-Local-v1.5 | Apache 2.0 | Apache 2.0 | OK | ~4B MossTTSLocal params, verified on L4 (~12.4GB; the 8B v1.5 OOMs there). 48kHz stereo. 31 languages incl JP. Zero-shot voice cloning |
 | NeuTTS | Apache 2.0 | Apache 2.0 (Air) / NeuTTS Open License 1.0 (Nano) | OK (Air) / Check terms (Nano) | Voice cloning. EN / ES / DE / FR |
 | TinyTTS | Apache 2.0 | Apache 2.0 | OK | |
+| KittenTTS | Apache 2.0 | Apache 2.0 | OK | English-only CPU ONNX TTS. Eight preset voices. Developer preview; wrapper pins v0.8.1 |
 | Sine-Wave-TTS | MIT | N/A (no model weights) | OK | Japanese electronic vocalization, not intelligible speech. CPU only. Kuromoji-based analysis |
 | Supertonic | MIT | OpenRAIL-M | OK | 31 languages incl JP/KO/EN. CPU OK (ONNX). Use-based ethical restrictions (no impersonation/deepfakes) |
 | Voxtral-TTS | — | CC BY-NC 4.0 | Not allowed | Via vLLM + vllm-omni. Non-commercial due to voice dataset license constraints |
 | Orpheus-TTS | Apache 2.0 | Apache 2.0 + Llama 3.2 Community License | Caution | Llama-3.2-3B-Instruct base; Llama Community License applies in practice. EN only. **Currently not working: weights are HF-gated and require Llama 3.2 license acceptance + `HF_TOKEN`** |
 | CosyVoice2 | Apache 2.0 | Apache 2.0 | OK | Multilingual incl JP. Zero-shot voice cloning. Requires Python 3.10 venv |
+| CosyVoice3 | Apache 2.0 | Apache 2.0 | OK | 0.5B; 9 languages incl JP + Chinese dialects. Voice cloning and instruction control. Japanese input requires Katakana |
 | Spark-TTS | Apache 2.0 | CC BY-NC-SA 4.0 | Not allowed | EN / ZH only. Weights re-licensed from Apache 2.0 due to training-data constraints |
 | Sarashina-TTS | — | Sarashina Model NonCommercial License | Not allowed | Japanese / English. Zero-shot voice cloning. Output contains a SilentCipher watermark (do not remove) |
 | F5-TTS | MIT | CC-BY-NC | Not allowed (model) | Model weights are non-commercial due to Emilia dataset constraints |
-| Chatterbox | MIT | MIT | OK | Multilingual (23 languages incl JP). Zero-shot voice cloning |
+| Chatterbox Multilingual V3 | MIT | MIT | OK | 0.5B, 23 languages incl JP. Zero-shot voice cloning. Perth watermark is retained |
 | Zonos | Apache 2.0 | Apache 2.0 | OK | EN/JA/ZH/FR/DE. Zero-shot voice cloning. Requires `espeak-ng` |
 | ZONOS2 | MIT | Apache 2.0 | OK | 41 languages (tier-1 EN/ZH/JA). Zero-shot voice cloning. Mini-SGLang backend; GPU sm_80+ (L4/A100) |
 | OuteTTS (0.6B) | Apache 2.0 | Apache 2.0 | OK | Multilingual incl JP. CPU OK. Voice cloning |
@@ -1885,7 +2064,10 @@ The license for each engine is as follows. When using them, always check each pr
 | Pocket-TTS (model) | MIT | CC-BY-4.0 | OK (with attribution) | 100M params, CPU-only. EN / FR / DE / IT / PT / ES |
 | Pocket-TTS (voices) | — | Per-voice (mixed) | Check per voice | Voice licenses listed at [kyutai/tts-voices](https://huggingface.co/kyutai/tts-voices); upstream prohibits non-consensual impersonation |
 | OpenVoice-V2 | MIT | MIT | OK | Multilingual (incl JP). Voice cloning. Currently not working: `av==10` (via `faster-whisper==0.9.0` pin) won't build on Python 3.13 |
-| VibeVoice | MIT | MIT | Caution (research-only) | EN/ZH only per model card. Currently not working: upstream is mid-API migration (.wav speakers replaced with .pt caches) |
+| VibeVoice-Realtime | MIT | MIT | Caution (research/R&D only) | 0.5B single-speaker streaming model. English supported; JP + 8 languages experimental. No voice cloning. Audible AI disclosure + provenance watermark |
+| OmniVoice | Apache 2.0 | CC-BY-NC | **Not allowed** | 0.6B, 600+ languages, auto/design/clone. Bundled Higgs Audio 2 tokenizer has a separate Boson Community License (>100k annual users require expanded license; attribution/redistribution restrictions) |
+| FireRedTTS2 | Apache 2.0 | Apache 2.0 | Caution | 1.5B, 7 languages incl JP, monologue or 4-speaker dialogue. Upstream limits zero-shot cloning to academic research |
+| IndexTTS2 | Bilibili Model Use License | Bilibili Model Use License + CC-BY-NC-4.0 MaskGCT codec | **Not allowed** | EN/ZH zero-shot cloning with independent emotion control. Separate Bilibili permission at >100M monthly users or >RMB 1B annual revenue. Public release does not enable precise duration control |
 | Fish-Speech | Apache 2.0 | Apache 2.0 | OK | Requires A100/L4 GPU (VRAM 24GB+) |
 | Bark | MIT | MIT | OK | 13 languages incl JP. Generative (laughter / SFX). Author labels weights as research-oriented |
 | ChatTTS | AGPL-3.0+ | CC BY-NC 4.0 | **Not allowed** | EN / ZH conversational TTS. Weights contain intentional high-frequency noise to deter misuse |
@@ -1958,6 +2140,8 @@ This repository itself is intended for short-term operational verification and t
   https://github.com/OpenBMB/VoxCPM
 - TinyTTS
   https://github.com/ecyht2/tiny-tts
+- KittenTTS
+  https://github.com/KittenML/KittenTTS
 - Sine-Wave-TTS
   https://github.com/shinshin86/sine-wave-tts
 - Supertonic
@@ -1998,10 +2182,26 @@ This repository itself is intended for short-term operational verification and t
   https://github.com/myshell-ai/OpenVoice
 - VibeVoice
   https://github.com/microsoft/VibeVoice
+- VibeVoice-Realtime-0.5B
+  https://huggingface.co/microsoft/VibeVoice-Realtime-0.5B
+- OmniVoice
+  https://github.com/k2-fsa/OmniVoice
+- OmniVoice model
+  https://huggingface.co/k2-fsa/OmniVoice
+- FireRedTTS2
+  https://github.com/FireRedTeam/FireRedTTS2
+- FireRedTTS2 model
+  https://huggingface.co/FireRedTeam/FireRedTTS2
+- IndexTTS2
+  https://github.com/index-tts/index-tts
+- IndexTTS2 model
+  https://huggingface.co/IndexTeam/IndexTTS-2
 - Fish Speech
   https://github.com/fishaudio/fish-speech
 - CosyVoice
   https://github.com/FunAudioLLM/CosyVoice
+- CosyVoice3 model
+  https://huggingface.co/FunAudioLLM/Fun-CosyVoice3-0.5B-2512
 - Bark
   https://github.com/suno-ai/bark
 - ChatTTS
