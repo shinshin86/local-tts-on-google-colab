@@ -200,17 +200,18 @@
     },
     {
       "id": "Chatterbox",
-      "title": "Chatterbox (GPU recommended, multilingual incl JP, voice cloning)",
-      "status": "Works (GPU recommended)",
-      "status_ja": "動作OK (GPU推奨)",
-      "languages": "Japanese / English / Chinese and 23 languages",
-      "languages_ja": "日本語 / 英語 / 中国語 他 23言語",
-      "description": "A multilingual TTS using [resemble-ai/chatterbox](https://github.com/resemble-ai/chatterbox) by Resemble AI. The Chatterbox Multilingual model supports 23 languages including Japanese, English, Chinese, French, German, Spanish, Korean, etc., and supports zero-shot voice cloning. Default language is `ja` (Japanese). When `--chatterbox-prompt-wav` is provided, the `clone` voice becomes available and uses the reference audio. A GPU runtime is recommended (VRAM ~2-4GB). License: MIT (both code and weights).",
-      "description_ja": "Resemble AI の [resemble-ai/chatterbox](https://github.com/resemble-ai/chatterbox) を使った多言語 TTS です。Chatterbox Multilingual モデルは日本語・英語・中国語・フランス語・ドイツ語・スペイン語・韓国語など 23 言語に対応し、ゼロショット音声クローンを備えています。デフォルト言語は `ja`（日本語）。`--chatterbox-prompt-wav` を指定すると `clone` voice が有効になり、参照音声の声色で合成されます。GPU 推奨（VRAM ~2-4GB）。ライセンス: MIT（コードと重みの両方）。",
-      "notes": [],
-      "notes_ja": [
-        "- ライセンス: コードは MIT、モデル重みは MIT。商用利用: OK。 備考: 多言語（23言語、日本語含む）。ゼロショット voice cloning"
+      "title": "Chatterbox Multilingual V3 (GPU recommended, 0.5B, 23 languages incl JP, voice cloning)",
+      "status": "",
+      "status_ja": "",
+      "languages": "",
+      "languages_ja": "",
+      "description": "This integration now defaults to Resemble AI's [Chatterbox Multilingual V3](https://github.com/resemble-ai/chatterbox), the current 0.5B general-purpose multilingual checkpoint. V3 retains the 23-language coverage (including Japanese, English, Chinese, French, German, Spanish, and Korean) while improving speaker similarity, naturalness, and stability and reducing unwanted continuation or repetition compared with V2. Set `CHATTERBOX_T3_MODEL=\"v2\"` only when legacy comparison is needed.",
+      "description_ja": "この統合は Resemble AI の [Chatterbox Multilingual V3](https://github.com/resemble-ai/chatterbox)（0.5B、現行の汎用多言語チェックポイント）を既定にします。V3 は日本語・英語・中国語・フランス語・ドイツ語・スペイン語・韓国語など 23 言語への対応を維持しつつ、V2 より話者類似度・自然さ・安定性を高め、不要な継続や反復を低減しています。旧版との比較が必要な場合だけ `CHATTERBOX_T3_MODEL=\"v2\"` を選択してください。",
+      "notes": [
+        "- V3 improves speaker similarity, naturalness, and stability while reducing hallucinations versus V2.",
+        "- Code and V3 weights: MIT. All outputs include Resemble's imperceptible Perth watermark."
       ],
+      "notes_ja": [],
       "prefix": "CHATTERBOX",
       "params": [
         {
@@ -243,6 +244,16 @@
             "zh"
           ],
           "flag": "--chatterbox-language"
+        },
+        {
+          "name": "CHATTERBOX_T3_MODEL",
+          "default": "v3",
+          "type": "select",
+          "options": [
+            "v3",
+            "v2"
+          ],
+          "flag": "--chatterbox-t3-model"
         },
         {
           "name": "CHATTERBOX_PROMPT_WAV",

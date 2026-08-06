@@ -104,6 +104,7 @@ def parse_args():
     parser.add_argument("--sarashina-prompt-text", default="")
     parser.add_argument("--sarashina-default-voice", default="default")
     parser.add_argument("--chatterbox-language", default="ja")
+    parser.add_argument("--chatterbox-t3-model", default="v3", choices=["v3", "v2"])
     parser.add_argument("--chatterbox-prompt-wav", default="")
     parser.add_argument("--chatterbox-default-voice", default="default")
     parser.add_argument("--zonos-hf-model", default="Zyphra/Zonos-v0.1-transformer")
@@ -379,6 +380,7 @@ def main():
         sarashina_prompt_text=args.sarashina_prompt_text,
         sarashina_default_voice=args.sarashina_default_voice,
         chatterbox_language=args.chatterbox_language,
+        chatterbox_t3_model=args.chatterbox_t3_model,
         chatterbox_prompt_wav=args.chatterbox_prompt_wav,
         chatterbox_default_voice=args.chatterbox_default_voice,
         zonos_hf_model=args.zonos_hf_model,

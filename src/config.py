@@ -139,6 +139,7 @@ class Settings:
     sarashina_prompt_text: str = ""
     sarashina_default_voice: str = "default"
     chatterbox_language: str = "ja"
+    chatterbox_t3_model: str = "v3"
     chatterbox_prompt_wav: str = ""
     chatterbox_default_voice: str = "default"
     zonos_hf_model: str = "Zyphra/Zonos-v0.1-transformer"

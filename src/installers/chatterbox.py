@@ -26,7 +26,7 @@ def install(settings: Settings) -> dict:
             "soundfile",
             "numpy",
             "setuptools<81",
-            "chatterbox-tts",
+            "chatterbox-tts==0.1.7",
         ],
     )
 
@@ -37,6 +37,7 @@ def install(settings: Settings) -> dict:
         "PYTHONUNBUFFERED": "1",
         "OPENAI_MODEL_ID": settings.openai_model_id or "chatterbox",
         "CHATTERBOX_LANGUAGE": settings.chatterbox_language,
+        "CHATTERBOX_T3_MODEL": settings.chatterbox_t3_model,
         "CHATTERBOX_PROMPT_WAV": settings.chatterbox_prompt_wav,
         "CHATTERBOX_DEFAULT_VOICE": settings.chatterbox_default_voice,
     }

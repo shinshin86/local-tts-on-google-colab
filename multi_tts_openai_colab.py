@@ -168,8 +168,11 @@ SARASHINA_PROMPT_TEXT = ""  #@param {type:"string"}
 SARASHINA_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
 
 #@markdown ---
-#@markdown Chatterbox (GPU recommended, multilingual incl JP, voice cloning)
+#@markdown Chatterbox Multilingual V3 (GPU recommended, 0.5B, 23 languages incl JP, voice cloning)
+#@markdown - V3 improves speaker similarity, naturalness, and stability while reducing hallucinations versus V2.
+#@markdown - Code and V3 weights: MIT. All outputs include Resemble's imperceptible Perth watermark.
 CHATTERBOX_LANGUAGE = "ja"  #@param ["ar", "da", "de", "el", "en", "es", "fi", "fr", "he", "hi", "it", "ja", "ko", "ms", "nl", "no", "pl", "pt", "ru", "sv", "sw", "tr", "zh"]
+CHATTERBOX_T3_MODEL = "v3"  #@param ["v3", "v2"]
 CHATTERBOX_PROMPT_WAV = ""  #@param {type:"string"}
 CHATTERBOX_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
 
@@ -689,6 +692,8 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         SARASHINA_DEFAULT_VOICE,
         "--chatterbox-language",
         CHATTERBOX_LANGUAGE,
+        "--chatterbox-t3-model",
+        CHATTERBOX_T3_MODEL,
         "--chatterbox-prompt-wav",
         CHATTERBOX_PROMPT_WAV,
         "--chatterbox-default-voice",

@@ -32,7 +32,7 @@ Supported engines:
 | Spark-TTS | Works (GPU recommended) | English / Chinese (non-commercial weights) |
 | Sarashina-TTS | Works (GPU required, ~6GB VRAM) | Japanese / English |
 | F5-TTS | Works (GPU required) | English / Chinese (Japanese via separate model) |
-| Chatterbox | Works (GPU recommended) | Japanese / English / Chinese and 23 languages |
+| Chatterbox Multilingual V3 | Works (GPU recommended, 0.5B) | Japanese / English / Chinese and 23 languages |
 | Zonos | Works (GPU required, ~6GB VRAM) | Japanese / English / Chinese / French / German |
 | ZONOS2 | Works (L4 verified, sm_80+ required) | 41 languages (tier-1: Japanese / English / Chinese) |
 | OuteTTS | Works (CPU OK) | Japanese / English / Chinese and many languages |
@@ -279,8 +279,11 @@ SARASHINA_PROMPT_TEXT = ""  #@param {type:"string"}
 SARASHINA_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
 
 #@markdown ---
-#@markdown Chatterbox (GPU recommended, multilingual incl JP, voice cloning)
+#@markdown Chatterbox Multilingual V3 (GPU recommended, 0.5B, 23 languages incl JP, voice cloning)
+#@markdown - V3 improves speaker similarity, naturalness, and stability while reducing hallucinations versus V2.
+#@markdown - Code and V3 weights: MIT. All outputs include Resemble's imperceptible Perth watermark.
 CHATTERBOX_LANGUAGE = "ja"  #@param ["ar", "da", "de", "el", "en", "es", "fi", "fr", "he", "hi", "it", "ja", "ko", "ms", "nl", "no", "pl", "pt", "ru", "sv", "sw", "tr", "zh"]
+CHATTERBOX_T3_MODEL = "v3"  #@param ["v3", "v2"]
 CHATTERBOX_PROMPT_WAV = ""  #@param {type:"string"}
 CHATTERBOX_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
 
@@ -800,6 +803,8 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         SARASHINA_DEFAULT_VOICE,
         "--chatterbox-language",
         CHATTERBOX_LANGUAGE,
+        "--chatterbox-t3-model",
+        CHATTERBOX_T3_MODEL,
         "--chatterbox-prompt-wav",
         CHATTERBOX_PROMPT_WAV,
         "--chatterbox-default-voice",
@@ -1364,7 +1369,9 @@ A zero-shot voice cloning TTS using [SWivid/F5-TTS](https://github.com/SWivid/F5
 
 ### Chatterbox
 
-A multilingual TTS using [resemble-ai/chatterbox](https://github.com/resemble-ai/chatterbox) by Resemble AI. The Chatterbox Multilingual model supports 23 languages including Japanese, English, Chinese, French, German, Spanish, Korean, etc., and supports zero-shot voice cloning. Default language is `ja` (Japanese). When `--chatterbox-prompt-wav` is provided, the `clone` voice becomes available and uses the reference audio. A GPU runtime is recommended (VRAM ~2-4GB). License: MIT (both code and weights).
+This integration now defaults to Resemble AI's [Chatterbox Multilingual V3](https://github.com/resemble-ai/chatterbox), the current 0.5B general-purpose multilingual checkpoint. V3 retains the 23-language coverage (including Japanese, English, Chinese, French, German, Spanish, and Korean) while improving speaker similarity, naturalness, and stability and reducing unwanted continuation or repetition compared with V2. Set `CHATTERBOX_T3_MODEL="v2"` only when legacy comparison is needed.
+
+The default language is `ja` (Japanese). When `--chatterbox-prompt-wav` is provided, the `clone` voice becomes available and uses the reference audio. A GPU runtime is recommended (VRAM ~2-4GB). Every generated file retains Resemble AI's imperceptible Perth watermark. License: MIT for both the code and V3 weights.
 
 The `voice` parameter exposes:
 
@@ -1895,7 +1902,7 @@ The license for each engine is as follows. When using them, always check each pr
 | Spark-TTS | Apache 2.0 | CC BY-NC-SA 4.0 | Not allowed | EN / ZH only. Weights re-licensed from Apache 2.0 due to training-data constraints |
 | Sarashina-TTS | — | Sarashina Model NonCommercial License | Not allowed | Japanese / English. Zero-shot voice cloning. Output contains a SilentCipher watermark (do not remove) |
 | F5-TTS | MIT | CC-BY-NC | Not allowed (model) | Model weights are non-commercial due to Emilia dataset constraints |
-| Chatterbox | MIT | MIT | OK | Multilingual (23 languages incl JP). Zero-shot voice cloning |
+| Chatterbox Multilingual V3 | MIT | MIT | OK | 0.5B, 23 languages incl JP. Zero-shot voice cloning. Perth watermark is retained |
 | Zonos | Apache 2.0 | Apache 2.0 | OK | EN/JA/ZH/FR/DE. Zero-shot voice cloning. Requires `espeak-ng` |
 | ZONOS2 | MIT | Apache 2.0 | OK | 41 languages (tier-1 EN/ZH/JA). Zero-shot voice cloning. Mini-SGLang backend; GPU sm_80+ (L4/A100) |
 | OuteTTS (0.6B) | Apache 2.0 | Apache 2.0 | OK | Multilingual incl JP. CPU OK. Voice cloning |

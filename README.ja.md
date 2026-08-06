@@ -29,7 +29,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | Voxtral-TTS | 動作OK (GPU必須・VRAM 16GB+) | 英語 / フランス語 / スペイン語 他 9言語 |
 | Sarashina-TTS | 動作OK (GPU必須・VRAM ~6GB) | 日本語 / 英語 |
 | F5-TTS | 動作OK (GPU必須) | 英語 / 中国語（日本語は別モデル） |
-| Chatterbox | 動作OK (GPU推奨) | 日本語 / 英語 / 中国語 他 23言語 |
+| Chatterbox Multilingual V3 | 動作OK (GPU推奨・0.5B) | 日本語 / 英語 / 中国語 他 23言語 |
 | Zonos | 動作OK (GPU必須・VRAM ~6GB) | 日本語 / 英語 / 中国語 / フランス語 / ドイツ語 |
 | ZONOS2 | 動作OK (L4検証済・sm_80+必須) | 41言語 (tier-1: 日本語 / 英語 / 中国語) |
 | OuteTTS | 動作OK (CPU可) | 日本語 / 英語 / 中国語 他 多言語 |
@@ -280,8 +280,11 @@ SARASHINA_PROMPT_TEXT = ""  #@param {type:"string"}
 SARASHINA_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
 
 #@markdown ---
-#@markdown Chatterbox (GPU recommended, multilingual incl JP, voice cloning)
+#@markdown Chatterbox Multilingual V3 (GPU recommended, 0.5B, 23 languages incl JP, voice cloning)
+#@markdown - V3 improves speaker similarity, naturalness, and stability while reducing hallucinations versus V2.
+#@markdown - Code and V3 weights: MIT. All outputs include Resemble's imperceptible Perth watermark.
 CHATTERBOX_LANGUAGE = "ja"  #@param ["ar", "da", "de", "el", "en", "es", "fi", "fr", "he", "hi", "it", "ja", "ko", "ms", "nl", "no", "pl", "pt", "ru", "sv", "sw", "tr", "zh"]
+CHATTERBOX_T3_MODEL = "v3"  #@param ["v3", "v2"]
 CHATTERBOX_PROMPT_WAV = ""  #@param {type:"string"}
 CHATTERBOX_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
 
@@ -801,6 +804,8 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         SARASHINA_DEFAULT_VOICE,
         "--chatterbox-language",
         CHATTERBOX_LANGUAGE,
+        "--chatterbox-t3-model",
+        CHATTERBOX_T3_MODEL,
         "--chatterbox-prompt-wav",
         CHATTERBOX_PROMPT_WAV,
         "--chatterbox-default-voice",
@@ -1365,7 +1370,9 @@ SB Intuitions の [sbintuitions/sarashina2.2-tts](https://huggingface.co/sbintui
 
 ### Chatterbox
 
-Resemble AI の [resemble-ai/chatterbox](https://github.com/resemble-ai/chatterbox) を使った多言語 TTS です。Chatterbox Multilingual モデルは日本語・英語・中国語・フランス語・ドイツ語・スペイン語・韓国語など 23 言語に対応し、ゼロショット音声クローンを備えています。デフォルト言語は `ja`（日本語）。`--chatterbox-prompt-wav` を指定すると `clone` voice が有効になり、参照音声の声色で合成されます。GPU 推奨（VRAM ~2-4GB）。ライセンス: MIT（コードと重みの両方）。
+この統合は Resemble AI の [Chatterbox Multilingual V3](https://github.com/resemble-ai/chatterbox)（0.5B、現行の汎用多言語チェックポイント）を既定にします。V3 は日本語・英語・中国語・フランス語・ドイツ語・スペイン語・韓国語など 23 言語への対応を維持しつつ、V2 より話者類似度・自然さ・安定性を高め、不要な継続や反復を低減しています。旧版との比較が必要な場合だけ `CHATTERBOX_T3_MODEL="v2"` を選択してください。
+
+デフォルト言語は `ja`（日本語）。`--chatterbox-prompt-wav` を指定すると `clone` voice が有効になり、参照音声の声色で合成されます。GPU 推奨（VRAM ~2-4GB）。生成音声には Resemble AI の不可聴 Perth ウォーターマークをそのまま保持します。ライセンスはコード・V3 重みとも MIT です。
 
 `voice` パラメータには次の値を指定できます。
 
@@ -1893,7 +1900,7 @@ Colab T4 で確認済み: エンジン・`/v1` エンドポイント・trycloudf
 | Voxtral-TTS | — | CC BY-NC 4.0 | 不可 | vLLM + vllm-omni 経由。音声データセットのライセンス制約により非商用 |
 | Sarashina-TTS | — | Sarashina Model NonCommercial License | 不可 | 日本語 / 英語。ゼロショット音声クローン対応。出力には SilentCipher のウォーターマークが付与される（除去禁止） |
 | F5-TTS | MIT | CC-BY-NC | 不可（モデル） | モデル重みは Emilia データセットの制約により非商用 |
-| Chatterbox | MIT | MIT | OK | 多言語（23言語、日本語含む）。ゼロショット voice cloning |
+| Chatterbox Multilingual V3 | MIT | MIT | OK | 0.5B、23言語（日本語含む）。ゼロショット voice cloning。Perth ウォーターマークを保持 |
 | Zonos | Apache 2.0 | Apache 2.0 | OK | 英 / 日 / 中 / 仏 / 独。ゼロショット voice cloning。`espeak-ng` 必須 |
 | ZONOS2 | MIT | Apache 2.0 | OK | 41言語（tier-1 英/中/日）。ゼロショット voice cloning。Mini-SGLang バックエンド。GPU sm_80+（L4/A100） |
 | OuteTTS (0.6B) | Apache 2.0 | Apache 2.0 | OK | 日本語含む多言語、CPU 動作可、voice cloning |

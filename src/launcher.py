@@ -245,7 +245,8 @@ def print_engine_voice_hints(settings: Settings):
         print("注意: 英語のみ対応。Developer preview のため API は将来変更される可能性があります。")
         print("ライセンス: コード・公式 v0.8 重みとも Apache-2.0（商用 OK）。")
     elif settings.engine == "Chatterbox":
-        print("Chatterbox は Resemble AI の多言語 TTS です（23言語対応、ゼロショット voice cloning 対応）。")
+        print("Chatterbox Multilingual V3 は Resemble AI の 0.5B 多言語 TTS です（23言語、voice cloning）。")
+        print(f"T3 model: {settings.chatterbox_t3_model}")
         print(f"language: {settings.chatterbox_language}")
         print(f"デフォルト voice: {settings.chatterbox_default_voice}")
         print("voice 候補: default（プロンプトなしの plain TTS）")
@@ -254,7 +255,9 @@ def print_engine_voice_hints(settings: Settings):
         else:
             print("             clone は --chatterbox-prompt-wav を指定すると有効になります")
         print("対応言語: ar, da, de, el, en, es, fi, fr, he, hi, it, ja, ko, ms, nl, no, pl, pt, ru, sv, sw, tr, zh")
-        print("注意: GPU 推奨（VRAM ~2-4GB）。ライセンス: MIT（コードと重み）")
+        print("特徴: V2 より話者類似度・自然さ・安定性が向上し、hallucination を低減。")
+        print("生成音声には Resemble Perth の不可聴ウォーターマークが適用されます。")
+        print("注意: GPU 推奨（VRAM ~2-4GB）。ライセンス: MIT（コードと V3 重み）")
     elif settings.engine == "Zonos":
         print("Zonos は Zyphra の多言語 TTS です（5言語対応・日本語含む、ゼロショット voice cloning 対応）。")
         print(f"モデル: {settings.zonos_hf_model}")

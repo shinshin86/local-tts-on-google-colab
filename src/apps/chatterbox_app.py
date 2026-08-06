@@ -18,6 +18,7 @@ logger = logging.getLogger("uvicorn.error")
 
 OPENAI_MODEL_ID = os.environ.get("OPENAI_MODEL_ID", "chatterbox")
 CHATTERBOX_LANGUAGE = os.environ.get("CHATTERBOX_LANGUAGE", "ja")
+CHATTERBOX_T3_MODEL = os.environ.get("CHATTERBOX_T3_MODEL", "v3")
 CHATTERBOX_PROMPT_WAV = os.environ.get("CHATTERBOX_PROMPT_WAV", "")
 CHATTERBOX_DEFAULT_VOICE = os.environ.get("CHATTERBOX_DEFAULT_VOICE", "default")
 
@@ -60,8 +61,15 @@ def get_model() -> ChatterboxMultilingualTTS:
     if _model is None:
         device = _device()
         logger.info("Loading Chatterbox multilingual model on %s", device)
-        _model = ChatterboxMultilingualTTS.from_pretrained(device=device)
-        logger.info("Chatterbox model loaded (sr=%s)", getattr(_model, "sr", "?"))
+        _model = ChatterboxMultilingualTTS.from_pretrained(
+            device=device,
+            t3_model=CHATTERBOX_T3_MODEL,
+        )
+        logger.info(
+            "Chatterbox multilingual %s model loaded (sr=%s)",
+            CHATTERBOX_T3_MODEL,
+            getattr(_model, "sr", "?"),
+        )
     return _model
 
 
@@ -81,6 +89,7 @@ def root():
         "engine": "Chatterbox",
         "model": OPENAI_MODEL_ID,
         "language": CHATTERBOX_LANGUAGE,
+        "t3_model": CHATTERBOX_T3_MODEL,
         "default_voice": CHATTERBOX_DEFAULT_VOICE,
     }
 
