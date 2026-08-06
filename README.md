@@ -43,7 +43,7 @@ Supported engines:
 | OpenVoice-V2 | Not working (Python 3.13 / `av==10` build failure) | Japanese / English / Spanish / French / Chinese / Korean |
 | VibeVoice-Realtime | Works (GPU required, 0.5B, single speaker) | English; experimental Japanese / German / French / Italian / Korean / Dutch / Polish / Portuguese / Spanish |
 | OmniVoice | Works on Colab L4 (GPU recommended, CPU possible but slow, 0.6B, ~2.35GB VRAM) | Japanese / English / Chinese and 600+ languages |
-| FireRedTTS2 | Implemented; Colab validation pending (CUDA GPU required, 1.5B, bf16) | Japanese / English / Chinese / Korean / French / German / Russian |
+| FireRedTTS2 | Works on Colab L4 (CUDA GPU required, 1.5B, bf16, ~8.8GB VRAM) | Japanese / English / Chinese / Korean / French / German / Russian |
 | Fish-Speech | Not working | Japanese / English / Chinese and 80+ languages |
 | MeloTTS | Not working | - |
 | Style-Bert-VITS2 | Not working | - |
@@ -1609,6 +1609,8 @@ Verified end-to-end on Colab L4 from the pushed feature branch: the public trycl
 `--fireredtts2-generation-mode monologue` (default) downloads the 8.27 GB pretrain checkpoint and exposes `voice="random"`; supplying both `--fireredtts2-prompt-wav` and `--fireredtts2-prompt-text` also enables `voice="clone"`. `dialogue` instead downloads the separate 8.27 GB post-train checkpoint and accepts `[S1]` through `[S4]` tags in `input`; untagged input is treated as `[S1]`. In both modes the shared codec adds about 4.30 GB of download, and output is 24 kHz mono WAV. The two large mode checkpoints are fetched selectively rather than downloading the full 20.8 GB model repository. `speed` is not exposed upstream; temperature and top-k are configurable.
 
 Code, weights and the bundled Qwen2.5-1.5B tokenizer are Apache-2.0. However, the upstream usage disclaimer says the zero-shot voice-cloning capability is solely for academic research and prohibits illegal use. Treat `clone` as research-only unless FireRedTeam clarifies otherwise, and only use reference audio with the speaker's explicit consent.
+
+Verified end-to-end on Colab L4 from the pushed feature branch. The public trycloudflare `/v1/audio/speech` endpoint returned a 24 kHz mono WAV, the model used about 8.8 GB of GPU memory, and a 5.36-second Japanese sample was generated in 11.44 seconds after warm-up. Whisper recovered the sentence with one word-level error, and the WAV was also downloaded and played successfully on macOS.
 
 ### Fish-Speech (currently not working)
 

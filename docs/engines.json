@@ -723,8 +723,8 @@
     {
       "id": "FireRedTTS2",
       "title": "FireRedTTS2 (CUDA GPU required, 1.5B, 7 languages incl JP, long-form dialogue)",
-      "status": "Implemented; Colab validation pending (CUDA GPU required, 1.5B, bf16)",
-      "status_ja": "実装済み・Colab検証待ち（CUDA GPU必須、1.5B、bf16）",
+      "status": "Works on Colab L4 (CUDA GPU required, 1.5B, bf16, ~8.8GB VRAM)",
+      "status_ja": "Colab L4動作確認済み（CUDA GPU必須、1.5B、bf16、VRAM約8.8GB）",
       "languages": "Japanese / English / Chinese / Korean / French / German / Russian",
       "languages_ja": "日本語 / 英語 / 中国語 / 韓国語 / フランス語 / ドイツ語 / ロシア語",
       "description": "[FireRedTeam/FireRedTTS2](https://github.com/FireRedTeam/FireRedTTS2) is a 1.5B long-form streaming TTS for monologues and context-aware dialogue with up to four speakers. It supports English, Chinese, Japanese, Korean, French, German and Russian, including cross-lingual/code-switching zero-shot cloning. The installer pins source commit `404f3f6` and model revision `4af3f5c`, uses the upstream-recommended Python 3.11 + PyTorch 2.7.1/CUDA 12.6 stack, and loads the LLM in bf16 by default.",

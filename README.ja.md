@@ -43,7 +43,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | OpenVoice-V2 | 動作不可（Python 3.13 で `av==10` がビルドできない） | 日本語 / 英語 / 西 / 仏 / 中 / 韓 |
 | VibeVoice-Realtime | 動作OK (GPU必須・0.5B・単一話者) | 英語、実験的に日本語 / 独 / 仏 / 伊 / 韓 / 蘭 / 波 / 葡 / 西 |
 | OmniVoice | Colab L4動作確認済み（GPU推奨、CPU実行可だが低速、0.6B、VRAM約2.35GB） | 日本語 / 英語 / 中国語など600言語以上 |
-| FireRedTTS2 | 実装済み・Colab検証待ち（CUDA GPU必須、1.5B、bf16） | 日本語 / 英語 / 中国語 / 韓国語 / フランス語 / ドイツ語 / ロシア語 |
+| FireRedTTS2 | Colab L4動作確認済み（CUDA GPU必須、1.5B、bf16、VRAM約8.8GB） | 日本語 / 英語 / 中国語 / 韓国語 / フランス語 / ドイツ語 / ロシア語 |
 | Fish-Speech | 動作不可 | 日本語 / 英語 / 中国語 他 80言語以上 |
 | MeloTTS | 動作不可 | - |
 | Style-Bert-VITS2 | 動作不可 | - |
@@ -1610,6 +1610,8 @@ OpenAIの `voice` は既定で `auto` です。`--omnivoice-instruct` を設定�
 既定の `--fireredtts2-generation-mode monologue` は8.27GBのpretrain checkpointを取得し、`voice="random"` を提供します。`--fireredtts2-prompt-wav` と `--fireredtts2-prompt-text` の両方を設定すると `voice="clone"` も有効になります。`dialogue` は別の8.27GB post-train checkpointを取得し、入力内の `[S1]`〜`[S4]` タグで話者を切り替えます。タグなし入力は `[S1]` として扱います。共通codecのダウンロードは約4.30GBで、出力は24kHz mono WAVです。20.8GBのモデルrepo全体ではなく、選択モードに必要な大容量checkpointだけを取得します。上流は `speed` を公開していませんが、temperatureとtop-kは設定できます。
 
 コード・重み・同梱Qwen2.5-1.5B tokenizerはいずれもApache-2.0です。ただし上流のusage disclaimerはzero-shot voice cloningを学術研究目的に限定し、違法利用を禁止しています。FireRedTeamから別の明示がない限り `clone` は研究用途限定として扱い、必ず話者本人の明示的な同意がある参照音声だけを使用してください。
+
+プッシュ済みfeature branchからColab L4でend-to-end検証済みです。公開trycloudflareの `/v1/audio/speech` は24kHz mono WAVを返し、GPU使用量は約8.8GB、warm-up後は5.36秒の日本語音声を11.44秒で生成しました。Whisperでは単語1箇所の誤認識を除いて文を復元でき、macOSへ取得したWAVの実再生にも成功しています。
 
 ### Fish-Speech (現在動作不可)
 
