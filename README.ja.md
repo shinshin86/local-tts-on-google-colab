@@ -42,7 +42,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | Spark-TTS | 動作OK (GPU推奨) | 英語 / 中国語（重みは非商用） |
 | OpenVoice-V2 | 動作不可（Python 3.13 で `av==10` がビルドできない） | 日本語 / 英語 / 西 / 仏 / 中 / 韓 |
 | VibeVoice-Realtime | 動作OK (GPU必須・0.5B・単一話者) | 英語、実験的に日本語 / 独 / 仏 / 伊 / 韓 / 蘭 / 波 / 葡 / 西 |
-| OmniVoice | 実装済み・Colab検証待ち（GPU推奨、CPU実行可だが低速、0.6B） | 日本語 / 英語 / 中国語など600言語以上 |
+| OmniVoice | Colab L4動作確認済み（GPU推奨、CPU実行可だが低速、0.6B、VRAM約2.35GB） | 日本語 / 英語 / 中国語など600言語以上 |
 | Fish-Speech | 動作不可 | 日本語 / 英語 / 中国語 他 80言語以上 |
 | MeloTTS | 動作不可 | - |
 | Style-Bert-VITS2 | 動作不可 | - |
@@ -1570,6 +1570,8 @@ Microsoft提供の事前計算済み `.pt` prompt cacheを使用します。`voi
 OpenAIの `voice` は既定で `auto` です。`--omnivoice-instruct` を設定すると `design`、`--omnivoice-prompt-wav` と `--omnivoice-prompt-text` の両方を設定すると `clone` が有効になります。`--omnivoice-language` は既定 `ja` で、言語を明示した方がlanguage-agnostic推論より性能が安定します。`speed` は0.5〜1.5、品質と計算量は `--omnivoice-num-steps`（既定32）と `--omnivoice-guidance-scale`（既定2.0）で調整できます。voice designの主な学習言語は中国語・英語のため、それ以外では不安定な場合があります。音声クローンは必ず本人の明示的な許可がある音声だけに使用してください。
 
 **ライセンス警告:** リポジトリのコードはApache-2.0ですが、主モデル重みはEmilia等の学習データ制約により **CC-BY-NC** で、商用利用できません。またcheckpoint同梱のHiggs Audio 2 tokenizerには **Boson Higgs Audio 2 Community License** が適用され、再配布・帰属表示義務、年間アクティブユーザー10万人超での追加許諾、出力を他LLMの改善へ使うことの禁止があります。同梱tokenizerのモデルカード自体にはlicense記載がないため、このコンポーネントは `audio_tokenizer/LICENSE` の規約を基準にしています。
+
+プッシュ済みfeature branchからColab L4でend-to-end検証済みです。公開trycloudflareの `/v1/audio/speech` は有効な24kHz mono WAVを返し、GPU使用量は約2.35GB、日本語テスト文はWhisperで完全一致しました。
 
 ### Fish-Speech (現在動作不可)
 

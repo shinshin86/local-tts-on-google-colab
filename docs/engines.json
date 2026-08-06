@@ -2071,8 +2071,8 @@
     {
       "id": "OmniVoice",
       "title": "OmniVoice (GPU recommended; CPU possible but slow; 0.6B; 600+ languages)",
-      "status": "Implemented; Colab validation pending (GPU recommended, CPU possible but slow, 0.6B)",
-      "status_ja": "実装済み・Colab検証待ち（GPU推奨、CPU実行可だが低速、0.6B）",
+      "status": "Works on Colab L4 (GPU recommended, CPU possible but slow, 0.6B, ~2.35GB VRAM)",
+      "status_ja": "Colab L4動作確認済み（GPU推奨、CPU実行可だが低速、0.6B、VRAM約2.35GB）",
       "languages": "Japanese / English / Chinese and 600+ languages",
       "languages_ja": "日本語 / 英語 / 中国語など600言語以上",
       "description": "[k2-fsa/OmniVoice](https://github.com/k2-fsa/OmniVoice) is a 0.6B diffusion-language-model-style TTS supporting more than 600 languages, including Japanese. It provides three modes: `auto` (no reference), `design` (speaker attributes such as gender, age, pitch, accent or whisper), and `clone` (a 3–10 second reference clip plus transcript). The installer pins source commit `38e992b` and model revision `c5fdb5c`, downloads the ungated checkpoint without `HF_TOKEN`, and creates a Python 3.12 environment with PyTorch 2.8.0/CUDA 12.8. GPU is recommended; the wrapper also has a CPU path, although generation will be much slower.",

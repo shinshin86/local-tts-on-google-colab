@@ -42,7 +42,7 @@ Supported engines:
 | Pocket-TTS | Works (CPU OK, ~6x real-time) | English / French / German / Italian / Portuguese / Spanish |
 | OpenVoice-V2 | Not working (Python 3.13 / `av==10` build failure) | Japanese / English / Spanish / French / Chinese / Korean |
 | VibeVoice-Realtime | Works (GPU required, 0.5B, single speaker) | English; experimental Japanese / German / French / Italian / Korean / Dutch / Polish / Portuguese / Spanish |
-| OmniVoice | Implemented; Colab validation pending (GPU recommended, CPU possible but slow, 0.6B) | Japanese / English / Chinese and 600+ languages |
+| OmniVoice | Works on Colab L4 (GPU recommended, CPU possible but slow, 0.6B, ~2.35GB VRAM) | Japanese / English / Chinese and 600+ languages |
 | Fish-Speech | Not working | Japanese / English / Chinese and 80+ languages |
 | MeloTTS | Not working | - |
 | Style-Bert-VITS2 | Not working | - |
@@ -1569,6 +1569,8 @@ Code and weights are marked MIT, but the model card limits intended use to resea
 The OpenAI `voice` parameter exposes `auto` by default. Set `--omnivoice-instruct` to enable `design`; set both `--omnivoice-prompt-wav` and `--omnivoice-prompt-text` to enable `clone`. `--omnivoice-language` defaults to `ja`; providing the language improves performance over automatic language-agnostic inference. `speed` supports 0.5–1.5, while diffusion quality/cost is controlled with `--omnivoice-num-steps` (32 by default) and `--omnivoice-guidance-scale` (2.0). Voice design was trained mainly on Chinese and English and may be unstable in other languages. Only clone voices for which you have explicit permission.
 
 **License warning:** the repository code is Apache-2.0, but the primary OmniVoice weights are **CC-BY-NC** because of training-data constraints such as Emilia, so commercial use is not allowed. The checkpoint also bundles a Higgs Audio 2 tokenizer under the **Boson Higgs Audio 2 Community License**: redistribution/attribution obligations apply, annual active users above 100,000 require an expanded Boson license, and its outputs may not be used to improve another LLM. The embedded tokenizer model card itself does not declare a license, so the bundled `audio_tokenizer/LICENSE` is the authoritative notice for that component.
+
+Verified end-to-end on Colab L4 from the pushed feature branch: the public trycloudflare `/v1/audio/speech` endpoint returned a valid 24 kHz mono WAV, used about 2.35 GB of GPU memory, and the Japanese test sentence was transcribed exactly by Whisper.
 
 ### Fish-Speech (currently not working)
 
