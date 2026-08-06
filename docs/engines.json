@@ -25,6 +25,7 @@
       "ChatTTS",
       "Chatterbox",
       "CosyVoice2",
+      "CosyVoice3",
       "CSM-1B",
       "Dia",
       "dots.tts",
@@ -319,6 +320,60 @@
             "clone"
           ],
           "flag": "--cosyvoice-default-voice"
+        }
+      ]
+    },
+    {
+      "id": "CosyVoice3",
+      "title": "CosyVoice3 (GPU recommended, 9 languages incl JP, voice cloning + instruction control)",
+      "status": "Works (GPU recommended, Python 3.10 venv)",
+      "status_ja": "動作OK (GPU推奨・Python 3.10 venv)",
+      "languages": "Japanese / English / Chinese / Korean / German and 9 languages + Chinese dialects",
+      "languages_ja": "日本語 / 英語 / 中 / 韓 / 独 他 9言語 + 中国方言",
+      "description": "The 0.5B-parameter [Fun-CosyVoice3-0.5B-2512](https://huggingface.co/FunAudioLLM/Fun-CosyVoice3-0.5B-2512) checkpoint adds stronger content consistency, speaker similarity and prosody control to [FunAudioLLM/CosyVoice](https://github.com/FunAudioLLM/CosyVoice). It supports Japanese, English, Chinese, Korean, German, Spanish, French, Italian and Russian, plus 18+ Chinese dialects. The wrapper pins both the upstream source and model revision and uses a separate Python 3.10 venv, so the existing CosyVoice2 engine remains unchanged.",
+      "description_ja": "0.5B パラメータの [Fun-CosyVoice3-0.5B-2512](https://huggingface.co/FunAudioLLM/Fun-CosyVoice3-0.5B-2512) は、[FunAudioLLM/CosyVoice](https://github.com/FunAudioLLM/CosyVoice) の内容一貫性・話者類似度・韻律制御を強化したモデルです。日本語・英語・中国語・韓国語・独語・西語・仏語・伊語・露語の9言語と中国方言18種類以上に対応します。上流ソースとモデルのリビジョンを固定し、CosyVoice2とは別のPython 3.10 venvへ導入します。",
+      "notes": [
+        "- Japanese text must be converted to Katakana per upstream guidance.",
+        "- Code and `Fun-CosyVoice3-0.5B-2512` weights are Apache 2.0. The upstream README also includes an academic/demo disclaimer and takedown request."
+      ],
+      "notes_ja": [
+        "- ライセンス: コードは Apache 2.0、モデル重みは Apache 2.0。商用利用: OK。 備考: 0.5B、9言語（日本語含む）+ 中国方言。voice cloning・instruction制御。日本語はカタカナ入力必須"
+      ],
+      "prefix": "COSYVOICE3",
+      "params": [
+        {
+          "name": "COSYVOICE3_HF_MODEL",
+          "default": "FunAudioLLM/Fun-CosyVoice3-0.5B-2512",
+          "type": "string",
+          "flag": "--cosyvoice3-hf-model"
+        },
+        {
+          "name": "COSYVOICE3_PROMPT_WAV",
+          "default": "",
+          "type": "string",
+          "flag": "--cosyvoice3-prompt-wav"
+        },
+        {
+          "name": "COSYVOICE3_PROMPT_TEXT",
+          "default": "",
+          "type": "string",
+          "flag": "--cosyvoice3-prompt-text"
+        },
+        {
+          "name": "COSYVOICE3_INSTRUCT",
+          "default": "",
+          "type": "string",
+          "flag": "--cosyvoice3-instruct"
+        },
+        {
+          "name": "COSYVOICE3_DEFAULT_VOICE",
+          "default": "default",
+          "type": "select",
+          "options": [
+            "default",
+            "clone"
+          ],
+          "flag": "--cosyvoice3-default-voice"
         }
       ]
     },

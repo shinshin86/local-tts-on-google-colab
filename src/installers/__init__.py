@@ -2,6 +2,7 @@ from .bark import install as install_bark
 from .chatterbox import install as install_chatterbox
 from .chattts import install as install_chattts
 from .cosyvoice2 import install as install_cosyvoice2
+from .cosyvoice3 import install as install_cosyvoice3
 from .csm import install as install_csm
 from .dia import install as install_dia
 from .dots_tts import install as install_dots_tts
@@ -55,6 +56,7 @@ INSTALLERS = {
     "ChatTTS": install_chattts,
     "Chatterbox": install_chatterbox,
     "CosyVoice2": install_cosyvoice2,
+    "CosyVoice3": install_cosyvoice3,
     "CSM-1B": install_csm,
     "Dia": install_dia,
     "dots.tts": install_dots_tts,

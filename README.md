@@ -29,6 +29,7 @@ Supported engines:
 | Voxtral-TTS | Works (GPU required, VRAM 16GB+) | English / French / Spanish and 9 languages |
 | Orpheus-TTS | Not working (HF-gated weights, requires Llama 3.2 license acceptance + `HF_TOKEN`) | English (Llama-3.2-3B base, vLLM) |
 | CosyVoice2 | Works (GPU recommended, Python 3.10 venv) | Japanese / English / Chinese / Korean / German and 9 languages |
+| CosyVoice3 | Works (GPU recommended, Python 3.10 venv) | Japanese / English / Chinese / Korean / German and 9 languages + Chinese dialects |
 | Spark-TTS | Works (GPU recommended) | English / Chinese (non-commercial weights) |
 | Sarashina-TTS | Works (GPU required, ~6GB VRAM) | Japanese / English |
 | F5-TTS | Works (GPU required) | English / Chinese (Japanese via separate model) |
@@ -122,7 +123,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "Irodori-TTS", "Irodori-TTS-Lite", "KittenTTS", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "Zonos", "ZONOS2"]
+ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "Irodori-TTS", "Irodori-TTS-Lite", "KittenTTS", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "Zonos", "ZONOS2"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -344,6 +345,16 @@ COSYVOICE_HF_MODEL = "FunAudioLLM/CosyVoice2-0.5B"  #@param {type:"string"}
 COSYVOICE_PROMPT_WAV = ""  #@param {type:"string"}
 COSYVOICE_PROMPT_TEXT = ""  #@param {type:"string"}
 COSYVOICE_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+
+#@markdown ---
+#@markdown CosyVoice3 (GPU recommended, 9 languages incl JP, voice cloning + instruction control)
+#@markdown - Japanese text must be converted to Katakana per upstream guidance.
+#@markdown - Code and `Fun-CosyVoice3-0.5B-2512` weights are Apache 2.0. The upstream README also includes an academic/demo disclaimer and takedown request.
+COSYVOICE3_HF_MODEL = "FunAudioLLM/Fun-CosyVoice3-0.5B-2512"  #@param {type:"string"}
+COSYVOICE3_PROMPT_WAV = ""  #@param {type:"string"}
+COSYVOICE3_PROMPT_TEXT = ""  #@param {type:"string"}
+COSYVOICE3_INSTRUCT = ""  #@param {type:"string"}
+COSYVOICE3_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
 
 #@markdown ---
 #@markdown Spark-TTS (GPU recommended, EN/ZH only, voice cloning + gender/pitch/speed control)
@@ -866,6 +877,16 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         COSYVOICE_PROMPT_TEXT,
         "--cosyvoice-default-voice",
         COSYVOICE_DEFAULT_VOICE,
+        "--cosyvoice3-hf-model",
+        COSYVOICE3_HF_MODEL,
+        "--cosyvoice3-prompt-wav",
+        COSYVOICE3_PROMPT_WAV,
+        "--cosyvoice3-prompt-text",
+        COSYVOICE3_PROMPT_TEXT,
+        "--cosyvoice3-instruct",
+        COSYVOICE3_INSTRUCT,
+        "--cosyvoice3-default-voice",
+        COSYVOICE3_DEFAULT_VOICE,
         "--spark-hf-model",
         SPARK_HF_MODEL,
         "--spark-default-voice",
@@ -1538,6 +1559,16 @@ For voice cloning, only use reference audio you have rights to (consent of the s
 
 License: Apache 2.0 for both code (CosyVoice repo) and the `CosyVoice2-0.5B` weights (per the Hugging Face model card).
 
+### CosyVoice3
+
+The 0.5B-parameter [Fun-CosyVoice3-0.5B-2512](https://huggingface.co/FunAudioLLM/Fun-CosyVoice3-0.5B-2512) checkpoint adds stronger content consistency, speaker similarity and prosody control to [FunAudioLLM/CosyVoice](https://github.com/FunAudioLLM/CosyVoice). It supports Japanese, English, Chinese, Korean, German, Spanish, French, Italian and Russian, plus 18+ Chinese dialects. The wrapper pins both the upstream source and model revision and uses a separate Python 3.10 venv, so the existing CosyVoice2 engine remains unchanged.
+
+The `voice` parameter exposes `default` (the bundled reference through cross-lingual inference) and `clone` (a reference supplied with `--cosyvoice3-prompt-wav`). Add `--cosyvoice3-prompt-text` for transcript-matched zero-shot cloning. `--cosyvoice3-instruct` enables V3 instruction control for characteristics such as emotion, speaking rate, volume, language or dialect. Only clone voices for which you have the speaker's consent.
+
+**Japanese input note:** upstream requires Japanese text to be converted to **Katakana** before synthesis. The wrapper does not transliterate it automatically.
+
+License: Apache 2.0 for the source code and model weights. The upstream README separately describes its examples as academic/demo material and includes a takedown request; review that disclaimer as well as the license before deployment.
+
 ### Bark
 
 A text-prompted generative audio model from Suno using [suno-ai/bark](https://github.com/suno-ai/bark). Supports 13 languages (English, German, Spanish, French, Hindi, Italian, **Japanese**, Korean, Polish, Portuguese, Russian, Turkish, Simplified Chinese) and can produce non-verbal sounds (laughter, sighs, simple SFX). Voice presets follow the upstream Speaker Library naming `v2/<lang>_speaker_<n>` (10 speakers per language).
@@ -1900,6 +1931,7 @@ The license for each engine is as follows. When using them, always check each pr
 | Voxtral-TTS | — | CC BY-NC 4.0 | Not allowed | Via vLLM + vllm-omni. Non-commercial due to voice dataset license constraints |
 | Orpheus-TTS | Apache 2.0 | Apache 2.0 + Llama 3.2 Community License | Caution | Llama-3.2-3B-Instruct base; Llama Community License applies in practice. EN only. **Currently not working: weights are HF-gated and require Llama 3.2 license acceptance + `HF_TOKEN`** |
 | CosyVoice2 | Apache 2.0 | Apache 2.0 | OK | Multilingual incl JP. Zero-shot voice cloning. Requires Python 3.10 venv |
+| CosyVoice3 | Apache 2.0 | Apache 2.0 | OK | 0.5B; 9 languages incl JP + Chinese dialects. Voice cloning and instruction control. Japanese input requires Katakana |
 | Spark-TTS | Apache 2.0 | CC BY-NC-SA 4.0 | Not allowed | EN / ZH only. Weights re-licensed from Apache 2.0 due to training-data constraints |
 | Sarashina-TTS | — | Sarashina Model NonCommercial License | Not allowed | Japanese / English. Zero-shot voice cloning. Output contains a SilentCipher watermark (do not remove) |
 | F5-TTS | MIT | CC-BY-NC | Not allowed (model) | Model weights are non-commercial due to Emilia dataset constraints |
@@ -2032,6 +2064,8 @@ This repository itself is intended for short-term operational verification and t
   https://github.com/fishaudio/fish-speech
 - CosyVoice
   https://github.com/FunAudioLLM/CosyVoice
+- CosyVoice3 model
+  https://huggingface.co/FunAudioLLM/Fun-CosyVoice3-0.5B-2512
 - Bark
   https://github.com/suno-ai/bark
 - ChatTTS

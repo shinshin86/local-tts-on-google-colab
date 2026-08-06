@@ -38,6 +38,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | Pocket-TTS | 動作OK (CPU可・~6x realtime) | 英語 / 仏 / 独 / 伊 / 葡 / 西 |
 | Orpheus-TTS | 動作不可（HF gated 重み・Llama 3.2 ライセンス同意 + `HF_TOKEN` 必須） | 英語（Llama-3.2-3B ベース、vLLM） |
 | CosyVoice2 | 動作OK (GPU推奨・Python 3.10 venv) | 日本語 / 英語 / 中 / 韓 / 独 他 9言語 |
+| CosyVoice3 | 動作OK (GPU推奨・Python 3.10 venv) | 日本語 / 英語 / 中 / 韓 / 独 他 9言語 + 中国方言 |
 | Spark-TTS | 動作OK (GPU推奨) | 英語 / 中国語（重みは非商用） |
 | OpenVoice-V2 | 動作不可（Python 3.13 で `av==10` がビルドできない） | 日本語 / 英語 / 西 / 仏 / 中 / 韓 |
 | VibeVoice | 動作不可（upstream API 移行中） | 英語 / 中国語（長尺・最大 4 話者） |
@@ -123,7 +124,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "Irodori-TTS", "Irodori-TTS-Lite", "KittenTTS", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "Zonos", "ZONOS2"]
+ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "Irodori-TTS", "Irodori-TTS-Lite", "KittenTTS", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "Zonos", "ZONOS2"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -345,6 +346,16 @@ COSYVOICE_HF_MODEL = "FunAudioLLM/CosyVoice2-0.5B"  #@param {type:"string"}
 COSYVOICE_PROMPT_WAV = ""  #@param {type:"string"}
 COSYVOICE_PROMPT_TEXT = ""  #@param {type:"string"}
 COSYVOICE_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+
+#@markdown ---
+#@markdown CosyVoice3 (GPU recommended, 9 languages incl JP, voice cloning + instruction control)
+#@markdown - Japanese text must be converted to Katakana per upstream guidance.
+#@markdown - Code and `Fun-CosyVoice3-0.5B-2512` weights are Apache 2.0. The upstream README also includes an academic/demo disclaimer and takedown request.
+COSYVOICE3_HF_MODEL = "FunAudioLLM/Fun-CosyVoice3-0.5B-2512"  #@param {type:"string"}
+COSYVOICE3_PROMPT_WAV = ""  #@param {type:"string"}
+COSYVOICE3_PROMPT_TEXT = ""  #@param {type:"string"}
+COSYVOICE3_INSTRUCT = ""  #@param {type:"string"}
+COSYVOICE3_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
 
 #@markdown ---
 #@markdown Spark-TTS (GPU recommended, EN/ZH only, voice cloning + gender/pitch/speed control)
@@ -867,6 +878,16 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         COSYVOICE_PROMPT_TEXT,
         "--cosyvoice-default-voice",
         COSYVOICE_DEFAULT_VOICE,
+        "--cosyvoice3-hf-model",
+        COSYVOICE3_HF_MODEL,
+        "--cosyvoice3-prompt-wav",
+        COSYVOICE3_PROMPT_WAV,
+        "--cosyvoice3-prompt-text",
+        COSYVOICE3_PROMPT_TEXT,
+        "--cosyvoice3-instruct",
+        COSYVOICE3_INSTRUCT,
+        "--cosyvoice3-default-voice",
+        COSYVOICE3_DEFAULT_VOICE,
         "--spark-hf-model",
         SPARK_HF_MODEL,
         "--spark-default-voice",
@@ -1539,6 +1560,16 @@ voice cloning では、必ず権利を持つ参照音声（話者本人の同意
 
 ライセンス: コード（CosyVoice リポジトリ）も重み（`CosyVoice2-0.5B`、HF モデルカード明記）も Apache 2.0。
 
+### CosyVoice3
+
+0.5B パラメータの [Fun-CosyVoice3-0.5B-2512](https://huggingface.co/FunAudioLLM/Fun-CosyVoice3-0.5B-2512) は、[FunAudioLLM/CosyVoice](https://github.com/FunAudioLLM/CosyVoice) の内容一貫性・話者類似度・韻律制御を強化したモデルです。日本語・英語・中国語・韓国語・独語・西語・仏語・伊語・露語の9言語と中国方言18種類以上に対応します。上流ソースとモデルのリビジョンを固定し、CosyVoice2とは別のPython 3.10 venvへ導入します。
+
+`voice` は、同梱参照音声によるcross-lingual推論の `default` と、`--cosyvoice3-prompt-wav` を使う `clone` を提供します。参照音声の書き起こしを `--cosyvoice3-prompt-text` に指定するとzero-shot推論になります。`--cosyvoice3-instruct` では、感情・速度・音量・言語・方言などのV3 instruction制御を有効化できます。voice cloningには話者本人の同意がある音声だけを使用してください。
+
+**日本語入力の注意:** 上流仕様では、合成前に日本語テキストを**カタカナへ変換**する必要があります。本ラッパーは自動変換しません。
+
+ライセンス: ソースコード・モデル重みともApache 2.0。上流READMEには、例示をacademic/demo目的とする説明とtakedown requestも別途記載されています。配備前にライセンスと併せて確認してください。
+
 ### Bark
 
 [suno-ai/bark](https://github.com/suno-ai/bark) を使った Suno の生成的 text-to-audio モデルです。13 言語対応（英 / 独 / 西 / 仏 / ヒンディー / 伊 / **日本語** / 韓 / ポーランド / 葡 / 露 / トルコ / 簡体中）で、笑い声・ため息などのノンバーバル音や簡単な効果音も生成できます。voice プリセットは upstream の Speaker Library 名 `v2/<lang>_speaker_<n>`（言語ごとに 10 話者）です。
@@ -1912,6 +1943,7 @@ Colab T4 で確認済み: エンジン・`/v1` エンドポイント・trycloudf
 | Pocket-TTS (voices) | — | voice ごとに異なる | 各 voice で要確認 | voice ライセンスは [kyutai/tts-voices](https://huggingface.co/kyutai/tts-voices) を参照。上流規約により非合意のなりすまし禁止 |
 | Orpheus-TTS | Apache 2.0 | Apache 2.0 + Llama 3.2 Community License | 要注意 | ベースが Llama-3.2-3B-Instruct のため Llama Community License も実質適用。英語のみ。**現在動作不可: 重みが HF gated で Llama 3.2 ライセンス同意 + `HF_TOKEN` が必須** |
 | CosyVoice2 | Apache 2.0 | Apache 2.0 | OK | 多言語（日本語含む）。ゼロショット voice cloning。Python 3.10 venv 必須 |
+| CosyVoice3 | Apache 2.0 | Apache 2.0 | OK | 0.5B、9言語（日本語含む）+ 中国方言。voice cloning・instruction制御。日本語はカタカナ入力必須 |
 | Spark-TTS | Apache 2.0 | CC BY-NC-SA 4.0 | 不可 | 英 / 中のみ。重みは学習データ制約で Apache 2.0 から再ライセンス |
 | OpenVoice-V2 | MIT | MIT | OK | 多言語（日本語含む）。voice cloning。現在動作不可: `faster-whisper==0.9.0` 経由の `av==10` が Python 3.13 でビルドできない |
 | VibeVoice | MIT | MIT | 要注意（research-only） | 英 / 中のみ。現在は動作不可: upstream API 移行中（.wav speaker ファイル → .pt prompt cache へ移行） |
@@ -2033,6 +2065,8 @@ Colab T4 で確認済み: エンジン・`/v1` エンドポイント・trycloudf
   https://github.com/fishaudio/fish-speech
 - CosyVoice
   https://github.com/FunAudioLLM/CosyVoice
+- CosyVoice3 model
+  https://huggingface.co/FunAudioLLM/Fun-CosyVoice3-0.5B-2512
 - Bark
   https://github.com/suno-ai/bark
 - ChatTTS

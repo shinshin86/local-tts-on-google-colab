@@ -144,6 +144,11 @@ def parse_args():
     parser.add_argument("--cosyvoice-prompt-wav", default="")
     parser.add_argument("--cosyvoice-prompt-text", default="")
     parser.add_argument("--cosyvoice-default-voice", default="default")
+    parser.add_argument("--cosyvoice3-hf-model", default="FunAudioLLM/Fun-CosyVoice3-0.5B-2512")
+    parser.add_argument("--cosyvoice3-prompt-wav", default="")
+    parser.add_argument("--cosyvoice3-prompt-text", default="")
+    parser.add_argument("--cosyvoice3-instruct", default="")
+    parser.add_argument("--cosyvoice3-default-voice", default="default")
     parser.add_argument("--spark-hf-model", default="SparkAudio/Spark-TTS-0.5B")
     parser.add_argument("--spark-default-voice", default="default")
     parser.add_argument("--spark-default-gender", default="female")
@@ -416,6 +421,11 @@ def main():
         cosyvoice_prompt_wav=args.cosyvoice_prompt_wav,
         cosyvoice_prompt_text=args.cosyvoice_prompt_text,
         cosyvoice_default_voice=args.cosyvoice_default_voice,
+        cosyvoice3_hf_model=args.cosyvoice3_hf_model,
+        cosyvoice3_prompt_wav=args.cosyvoice3_prompt_wav,
+        cosyvoice3_prompt_text=args.cosyvoice3_prompt_text,
+        cosyvoice3_instruct=args.cosyvoice3_instruct,
+        cosyvoice3_default_voice=args.cosyvoice3_default_voice,
         spark_hf_model=args.spark_hf_model,
         spark_default_voice=args.spark_default_voice,
         spark_default_gender=args.spark_default_gender,

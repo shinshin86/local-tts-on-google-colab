@@ -11,7 +11,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "Irodori-TTS", "Irodori-TTS-Lite", "KittenTTS", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "Zonos", "ZONOS2"]
+ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "Irodori-TTS", "Irodori-TTS-Lite", "KittenTTS", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "Zonos", "ZONOS2"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -233,6 +233,16 @@ COSYVOICE_HF_MODEL = "FunAudioLLM/CosyVoice2-0.5B"  #@param {type:"string"}
 COSYVOICE_PROMPT_WAV = ""  #@param {type:"string"}
 COSYVOICE_PROMPT_TEXT = ""  #@param {type:"string"}
 COSYVOICE_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+
+#@markdown ---
+#@markdown CosyVoice3 (GPU recommended, 9 languages incl JP, voice cloning + instruction control)
+#@markdown - Japanese text must be converted to Katakana per upstream guidance.
+#@markdown - Code and `Fun-CosyVoice3-0.5B-2512` weights are Apache 2.0. The upstream README also includes an academic/demo disclaimer and takedown request.
+COSYVOICE3_HF_MODEL = "FunAudioLLM/Fun-CosyVoice3-0.5B-2512"  #@param {type:"string"}
+COSYVOICE3_PROMPT_WAV = ""  #@param {type:"string"}
+COSYVOICE3_PROMPT_TEXT = ""  #@param {type:"string"}
+COSYVOICE3_INSTRUCT = ""  #@param {type:"string"}
+COSYVOICE3_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
 
 #@markdown ---
 #@markdown Spark-TTS (GPU recommended, EN/ZH only, voice cloning + gender/pitch/speed control)
@@ -755,6 +765,16 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         COSYVOICE_PROMPT_TEXT,
         "--cosyvoice-default-voice",
         COSYVOICE_DEFAULT_VOICE,
+        "--cosyvoice3-hf-model",
+        COSYVOICE3_HF_MODEL,
+        "--cosyvoice3-prompt-wav",
+        COSYVOICE3_PROMPT_WAV,
+        "--cosyvoice3-prompt-text",
+        COSYVOICE3_PROMPT_TEXT,
+        "--cosyvoice3-instruct",
+        COSYVOICE3_INSTRUCT,
+        "--cosyvoice3-default-voice",
+        COSYVOICE3_DEFAULT_VOICE,
         "--spark-hf-model",
         SPARK_HF_MODEL,
         "--spark-default-voice",

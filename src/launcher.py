@@ -64,6 +64,8 @@ def resolve_selected_voice(settings: Settings) -> str:
         return settings.orpheus_default_voice
     if settings.engine == "CosyVoice2":
         return settings.cosyvoice_default_voice
+    if settings.engine == "CosyVoice3":
+        return settings.cosyvoice3_default_voice
     if settings.engine == "Spark-TTS":
         return settings.spark_default_voice
     if settings.engine == "Bark":
@@ -409,6 +411,22 @@ def print_engine_voice_hints(settings: Settings):
         print("注意: 上流要件により Python 3.10 専用 venv を作成します（uv venv --python 3.10）。")
         print("      GPU 推奨（VRAM ~4GB）。")
         print("ライセンス: コードは Apache 2.0、重み（CosyVoice2-0.5B）も Apache 2.0（HF モデルカード）。")
+    elif settings.engine == "CosyVoice3":
+        print("CosyVoice3 は FunAudioLLM の0.5B多言語ゼロショット voice cloning TTS です。")
+        print(f"モデル: {settings.cosyvoice3_hf_model}")
+        print(f"デフォルト voice: {settings.cosyvoice3_default_voice}")
+        print("voice 候補: default（同梱参照音声を使った cross_lingual 推論）")
+        if settings.cosyvoice3_prompt_wav:
+            print(f"             clone（参照音声: {settings.cosyvoice3_prompt_wav}）")
+            if settings.cosyvoice3_prompt_text:
+                print(f"             prompt_text: {settings.cosyvoice3_prompt_text}（zero_shot 推論）")
+        else:
+            print("             clone は --cosyvoice3-prompt-wav を指定すると有効になります")
+        if settings.cosyvoice3_instruct:
+            print(f"instruction: {settings.cosyvoice3_instruct}")
+        print("対応言語: 中国語 / 英語 / 日本語 / 韓国語 / 独語 / 西語 / 仏語 / 伊語 / 露語 + 中国方言")
+        print("日本語入力: 上流仕様では漢字・ひらがなをカタカナへ変換して入力する必要があります。")
+        print("注意: Python 3.10 venv、GPU推奨。コードと重みはApache 2.0です。")
     elif settings.engine == "Orpheus-TTS":
         print("Orpheus-TTS は Canopy Labs の英語 LLM-TTS です（Llama-3.2-3B ベース、vLLM バックエンド）。")
         print(f"モデル: {settings.orpheus_hf_model}")
