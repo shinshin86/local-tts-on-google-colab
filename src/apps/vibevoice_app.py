@@ -25,7 +25,8 @@ OPENAI_MODEL_ID = os.environ.get("OPENAI_MODEL_ID", "vibevoice-realtime")
 VIBEVOICE_HF_MODEL = os.environ.get(
     "VIBEVOICE_HF_MODEL", "microsoft/VibeVoice-Realtime-0.5B"
 )
-VIBEVOICE_HF_REVISION = os.environ.get("VIBEVOICE_HF_REVISION", "")
+VIBEVOICE_MODEL_DIR = os.environ.get("VIBEVOICE_MODEL_DIR", VIBEVOICE_HF_MODEL)
+VIBEVOICE_PROCESSOR_DIR = os.environ.get("VIBEVOICE_PROCESSOR_DIR", VIBEVOICE_MODEL_DIR)
 VIBEVOICE_VOICES_DIR = Path(os.environ.get("VIBEVOICE_VOICES_DIR", "demo/voices/streaming_model"))
 VIBEVOICE_DEFAULT_SPEAKER = os.environ.get("VIBEVOICE_DEFAULT_SPEAKER", "jp-Spk1_woman")
 VIBEVOICE_DDPM_STEPS = int(os.environ.get("VIBEVOICE_DDPM_STEPS", "5"))
@@ -78,15 +79,10 @@ def get_model() -> tuple[VibeVoiceStreamingProcessor, VibeVoiceStreamingForCondi
     if _processor is None or _model is None:
         if not torch.cuda.is_available():
             raise RuntimeError("VibeVoice-Realtime currently requires a CUDA GPU in this wrapper.")
-        revision = VIBEVOICE_HF_REVISION or None
-        logger.info("Loading VibeVoice-Realtime: %s (revision=%s)", VIBEVOICE_HF_MODEL, revision)
-        _processor = VibeVoiceStreamingProcessor.from_pretrained(
-            VIBEVOICE_HF_MODEL,
-            revision=revision,
-        )
+        logger.info("Loading VibeVoice-Realtime: %s", VIBEVOICE_HF_MODEL)
+        _processor = VibeVoiceStreamingProcessor.from_pretrained(VIBEVOICE_PROCESSOR_DIR)
         _model = VibeVoiceStreamingForConditionalGenerationInference.from_pretrained(
-            VIBEVOICE_HF_MODEL,
-            revision=revision,
+            VIBEVOICE_MODEL_DIR,
             torch_dtype=torch.bfloat16,
             device_map="cuda",
             attn_implementation="sdpa",
