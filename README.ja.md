@@ -282,6 +282,7 @@ SARASHINA_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
 #@markdown ---
 #@markdown Chatterbox Multilingual V3 (GPU recommended, 0.5B, 23 languages incl JP, voice cloning)
 #@markdown - V3 improves speaker similarity, naturalness, and stability while reducing hallucinations versus V2.
+#@markdown - V3 is not yet in PyPI 0.1.7; the installer pins an official GitHub commit that contains the V3 API.
 #@markdown - Code and V3 weights: MIT. All outputs include Resemble's imperceptible Perth watermark.
 CHATTERBOX_LANGUAGE = "ja"  #@param ["ar", "da", "de", "el", "en", "es", "fi", "fr", "he", "hi", "it", "ja", "ko", "ms", "nl", "no", "pl", "pt", "ru", "sv", "sw", "tr", "zh"]
 CHATTERBOX_T3_MODEL = "v3"  #@param ["v3", "v2"]
@@ -1370,7 +1371,7 @@ SB Intuitions の [sbintuitions/sarashina2.2-tts](https://huggingface.co/sbintui
 
 ### Chatterbox
 
-この統合は Resemble AI の [Chatterbox Multilingual V3](https://github.com/resemble-ai/chatterbox)（0.5B、現行の汎用多言語チェックポイント）を既定にします。V3 は日本語・英語・中国語・フランス語・ドイツ語・スペイン語・韓国語など 23 言語への対応を維持しつつ、V2 より話者類似度・自然さ・安定性を高め、不要な継続や反復を低減しています。旧版との比較が必要な場合だけ `CHATTERBOX_T3_MODEL="v2"` を選択してください。
+この統合は Resemble AI の [Chatterbox Multilingual V3](https://github.com/resemble-ai/chatterbox)（0.5B、現行の汎用多言語チェックポイント）を既定にします。V3 は日本語・英語・中国語・フランス語・ドイツ語・スペイン語・韓国語など 23 言語への対応を維持しつつ、V2 より話者類似度・自然さ・安定性を高め、不要な継続や反復を低減しています。旧版との比較が必要な場合だけ `CHATTERBOX_T3_MODEL="v2"` を選択してください。V3 API は PyPI `0.1.7` より新しいため、インストーラは `master` 追従ではなく、確認済みの公式GitHubコミットへ固定します。
 
 デフォルト言語は `ja`（日本語）。`--chatterbox-prompt-wav` を指定すると `clone` voice が有効になり、参照音声の声色で合成されます。GPU 推奨（VRAM ~2-4GB）。生成音声には Resemble AI の不可聴 Perth ウォーターマークをそのまま保持します。ライセンスはコード・V3 重みとも MIT です。
 

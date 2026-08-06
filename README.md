@@ -281,6 +281,7 @@ SARASHINA_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
 #@markdown ---
 #@markdown Chatterbox Multilingual V3 (GPU recommended, 0.5B, 23 languages incl JP, voice cloning)
 #@markdown - V3 improves speaker similarity, naturalness, and stability while reducing hallucinations versus V2.
+#@markdown - V3 is not yet in PyPI 0.1.7; the installer pins an official GitHub commit that contains the V3 API.
 #@markdown - Code and V3 weights: MIT. All outputs include Resemble's imperceptible Perth watermark.
 CHATTERBOX_LANGUAGE = "ja"  #@param ["ar", "da", "de", "el", "en", "es", "fi", "fr", "he", "hi", "it", "ja", "ko", "ms", "nl", "no", "pl", "pt", "ru", "sv", "sw", "tr", "zh"]
 CHATTERBOX_T3_MODEL = "v3"  #@param ["v3", "v2"]
@@ -1369,7 +1370,7 @@ A zero-shot voice cloning TTS using [SWivid/F5-TTS](https://github.com/SWivid/F5
 
 ### Chatterbox
 
-This integration now defaults to Resemble AI's [Chatterbox Multilingual V3](https://github.com/resemble-ai/chatterbox), the current 0.5B general-purpose multilingual checkpoint. V3 retains the 23-language coverage (including Japanese, English, Chinese, French, German, Spanish, and Korean) while improving speaker similarity, naturalness, and stability and reducing unwanted continuation or repetition compared with V2. Set `CHATTERBOX_T3_MODEL="v2"` only when legacy comparison is needed.
+This integration now defaults to Resemble AI's [Chatterbox Multilingual V3](https://github.com/resemble-ai/chatterbox), the current 0.5B general-purpose multilingual checkpoint. V3 retains the 23-language coverage (including Japanese, English, Chinese, French, German, Spanish, and Korean) while improving speaker similarity, naturalness, and stability and reducing unwanted continuation or repetition compared with V2. Set `CHATTERBOX_T3_MODEL="v2"` only when legacy comparison is needed. The V3 API is newer than PyPI `0.1.7`, so the installer pins a reviewed official GitHub commit instead of following `master`.
 
 The default language is `ja` (Japanese). When `--chatterbox-prompt-wav` is provided, the `clone` voice becomes available and uses the reference audio. A GPU runtime is recommended (VRAM ~2-4GB). Every generated file retains Resemble AI's imperceptible Perth watermark. License: MIT for both the code and V3 weights.
 

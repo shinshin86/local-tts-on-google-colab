@@ -205,10 +205,11 @@
       "status_ja": "",
       "languages": "",
       "languages_ja": "",
-      "description": "This integration now defaults to Resemble AI's [Chatterbox Multilingual V3](https://github.com/resemble-ai/chatterbox), the current 0.5B general-purpose multilingual checkpoint. V3 retains the 23-language coverage (including Japanese, English, Chinese, French, German, Spanish, and Korean) while improving speaker similarity, naturalness, and stability and reducing unwanted continuation or repetition compared with V2. Set `CHATTERBOX_T3_MODEL=\"v2\"` only when legacy comparison is needed.",
-      "description_ja": "この統合は Resemble AI の [Chatterbox Multilingual V3](https://github.com/resemble-ai/chatterbox)（0.5B、現行の汎用多言語チェックポイント）を既定にします。V3 は日本語・英語・中国語・フランス語・ドイツ語・スペイン語・韓国語など 23 言語への対応を維持しつつ、V2 より話者類似度・自然さ・安定性を高め、不要な継続や反復を低減しています。旧版との比較が必要な場合だけ `CHATTERBOX_T3_MODEL=\"v2\"` を選択してください。",
+      "description": "This integration now defaults to Resemble AI's [Chatterbox Multilingual V3](https://github.com/resemble-ai/chatterbox), the current 0.5B general-purpose multilingual checkpoint. V3 retains the 23-language coverage (including Japanese, English, Chinese, French, German, Spanish, and Korean) while improving speaker similarity, naturalness, and stability and reducing unwanted continuation or repetition compared with V2. Set `CHATTERBOX_T3_MODEL=\"v2\"` only when legacy comparison is needed. The V3 API is newer than PyPI `0.1.7`, so the installer pins a reviewed official GitHub commit instead of following `master`.",
+      "description_ja": "この統合は Resemble AI の [Chatterbox Multilingual V3](https://github.com/resemble-ai/chatterbox)（0.5B、現行の汎用多言語チェックポイント）を既定にします。V3 は日本語・英語・中国語・フランス語・ドイツ語・スペイン語・韓国語など 23 言語への対応を維持しつつ、V2 より話者類似度・自然さ・安定性を高め、不要な継続や反復を低減しています。旧版との比較が必要な場合だけ `CHATTERBOX_T3_MODEL=\"v2\"` を選択してください。V3 API は PyPI `0.1.7` より新しいため、インストーラは `master` 追従ではなく、確認済みの公式GitHubコミットへ固定します。",
       "notes": [
         "- V3 improves speaker similarity, naturalness, and stability while reducing hallucinations versus V2.",
+        "- V3 is not yet in PyPI 0.1.7; the installer pins an official GitHub commit that contains the V3 API.",
         "- Code and V3 weights: MIT. All outputs include Resemble's imperceptible Perth watermark."
       ],
       "notes_ja": [],

@@ -170,6 +170,7 @@ SARASHINA_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
 #@markdown ---
 #@markdown Chatterbox Multilingual V3 (GPU recommended, 0.5B, 23 languages incl JP, voice cloning)
 #@markdown - V3 improves speaker similarity, naturalness, and stability while reducing hallucinations versus V2.
+#@markdown - V3 is not yet in PyPI 0.1.7; the installer pins an official GitHub commit that contains the V3 API.
 #@markdown - Code and V3 weights: MIT. All outputs include Resemble's imperceptible Perth watermark.
 CHATTERBOX_LANGUAGE = "ja"  #@param ["ar", "da", "de", "el", "en", "es", "fi", "fr", "he", "hi", "it", "ja", "ko", "ms", "nl", "no", "pl", "pt", "ru", "sv", "sw", "tr", "zh"]
 CHATTERBOX_T3_MODEL = "v3"  #@param ["v3", "v2"]
