@@ -23,6 +23,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | MOSS-TTS-Local-v1.5 | L4 で動作確認（~4B MossTTSLocal、~12.4GB VRAM。8B 版が OOM する L4 でも動作） | 日本語 / 英語 / 中国語 / 韓国語 他 31言語 |
 | NeuTTS | 動作OK (CPU可・voice cloning) | 英語 / スペイン語 / ドイツ語 / フランス語 |
 | TinyTTS | 動作OK | 英語 |
+| KittenTTS | 動作OK（CPU のみ・ONNX・15M〜80M params） | 英語 |
 | Sine-Wave-TTS | 動作OK（CPU のみ・モデル重みなし・Node.js 20+） | 日本語の電子音声（言葉としては聞き取れない） |
 | Supertonic | 動作OK (CPU可・ONNX・~99M params) | 英語 / 日本語 / 韓国語 他 31言語 |
 | Voxtral-TTS | 動作OK (GPU必須・VRAM 16GB+) | 英語 / フランス語 / スペイン語 他 9言語 |
@@ -122,7 +123,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "Irodori-TTS", "Irodori-TTS-Lite", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "Zonos", "ZONOS2"]
+ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "Irodori-TTS", "Irodori-TTS-Lite", "KittenTTS", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "Zonos", "ZONOS2"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -577,6 +578,14 @@ SCENEMA_SKIP_VC = False  #@param {type:"boolean"}
 SCENEMA_VC_STEPS = 25  #@param {type:"integer"}
 SCENEMA_VC_CFG_RATE = 0.5  #@param {type:"number"}
 SCENEMA_BACKGROUND_SFX = False  #@param {type:"boolean"}
+
+#@markdown ---
+#@markdown KittenTTS (CPU only, English, ONNX, 15M–80M params)
+#@markdown - Eight preset voices and adjustable speed; native output is 24 kHz WAV.
+#@markdown - Code and official v0.8 weights: Apache-2.0. No GPU or `HF_TOKEN` required.
+#@markdown - Developer preview: pinning the v0.8.1 wheel because upstream APIs may change.
+KITTEN_TTS_HF_MODEL = "KittenML/kitten-tts-mini-0.8"  #@param ["KittenML/kitten-tts-mini-0.8", "KittenML/kitten-tts-micro-0.8", "KittenML/kitten-tts-nano-0.8-fp32", "KittenML/kitten-tts-nano-0.8-int8"]
+KITTEN_TTS_DEFAULT_VOICE = "Jasper"  #@param ["Bella", "Jasper", "Luna", "Bruno", "Rosie", "Hugo", "Kiki", "Leo"]
 
 #@markdown ---
 #@markdown Supertonic (CPU OK, 31 languages incl JP/KO/EN, ONNX)
@@ -1068,6 +1077,10 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         SUPERTONIC_DEFAULT_LANG,
         "--supertonic-total-steps",
         str(SUPERTONIC_TOTAL_STEPS),
+        "--kitten-tts-hf-model",
+        KITTEN_TTS_HF_MODEL,
+        "--kitten-tts-default-voice",
+        KITTEN_TTS_DEFAULT_VOICE,
         "--sine-wave-tts-ref",
         SINE_WAVE_TTS_REF,
         "--sine-wave-tts-default-speaker",
@@ -1296,6 +1309,12 @@ GPU 必須: int4 パスは Triton カーネルを使用するため、Linux + CU
 ### TinyTTS
 
 [ecyht2/tiny-tts](https://github.com/ecyht2/tiny-tts) を使った超軽量の英語 TTS です。モデルはわずか 1.6M パラメータ（約 3.4MB）で、GPU 不要・CPU のみで 53 倍速のリアルタイム合成が可能です。音声は 44.1kHz で出力されます。voice の切り替え機能はありません。ライセンス: Apache 2.0。
+
+### KittenTTS
+
+[KittenML/KittenTTS](https://github.com/KittenML/KittenTTS) v0.8 は、ONNX Runtime により完全に CPU で動く軽量な英語 TTS です。選択できる公式チェックポイントは 15M〜80M パラメータ（約 25〜80MB）で、`HF_TOKEN` は不要、24kHz WAV を出力します。KittenTTS は API が変更される可能性のある Developer preview のため、本ラッパーは上流 v0.8.1 wheel に固定しています。
+
+OpenAI 互換の `voice` パラメータでは、内蔵 8 プリセット（`Bella`, `Jasper`, `Luna`, `Bruno`, `Rosie`, `Hugo`, `Kiki`, `Leo`）を選択できます。`default` は `--kitten-tts-default-voice`（既定 `Jasper`）へ割り当てられ、`speed` は上流の合成速度へ渡されます。既定チェックポイントは `KittenML/kitten-tts-mini-0.8` で、Micro、Nano FP32、Nano INT8 も選べます。上流は INT8 チェックポイントについて一部利用者から問題が報告されている旨を注記しています。対応言語は英語のみ。コードと選択可能な公式 v0.8 重みはすべて Apache 2.0 です。
 
 ### Sine-Wave-TTS
 
@@ -1868,6 +1887,7 @@ Colab T4 で確認済み: エンジン・`/v1` エンドポイント・trycloudf
 | MOSS-TTS-Local-v1.5 | Apache 2.0 | Apache 2.0 | OK | ~4B MossTTSLocal パラメータ、L4 で動作確認（~12.4GB。8B 版は L4 で OOM）。48kHz ステレオ。31言語（日本語含む）。ゼロショット voice cloning |
 | NeuTTS | Apache 2.0 | Apache 2.0 (Air) / NeuTTS Open License 1.0 (Nano) | OK (Air) / 規約要確認 (Nano) | ボイスクローン。英 / 西 / 独 / 仏 |
 | TinyTTS | Apache 2.0 | Apache 2.0 | OK | |
+| KittenTTS | Apache 2.0 | Apache 2.0 | OK | 英語専用の CPU ONNX TTS。内蔵 8 voice。Developer preview のため v0.8.1 に固定 |
 | Sine-Wave-TTS | MIT | 対象外（モデル重みなし） | OK | 日本語の電子音声。言葉としては聞き取れない。CPUのみ。Kuromoji解析 |
 | Supertonic | MIT | OpenRAIL-M | OK | 31言語（日 / 韓 / 英含む）。CPU 動作（ONNX）。なりすまし・ディープフェイク等の use-based ethical restrictions あり |
 | Voxtral-TTS | — | CC BY-NC 4.0 | 不可 | vLLM + vllm-omni 経由。音声データセットのライセンス制約により非商用 |
@@ -1959,6 +1979,8 @@ Colab T4 で確認済み: エンジン・`/v1` エンドポイント・trycloudf
   https://github.com/OpenBMB/VoxCPM
 - TinyTTS
   https://github.com/ecyht2/tiny-tts
+- KittenTTS
+  https://github.com/KittenML/KittenTTS
 - Sine-Wave-TTS
   https://github.com/shinshin86/sine-wave-tts
 - Supertonic

@@ -36,6 +36,7 @@
       "Higgs-Audio-v3",
       "Irodori-TTS",
       "Irodori-TTS-Lite",
+      "KittenTTS",
       "Kokoro",
       "Kokoro-ONNX",
       "Kyutai-TTS",
@@ -1002,6 +1003,55 @@
           "type": "boolean",
           "true_flag": "--irodori-lite-codec-int4",
           "false_flag": null
+        }
+      ]
+    },
+    {
+      "id": "KittenTTS",
+      "title": "KittenTTS (CPU only, English, ONNX, 15M–80M params)",
+      "status": "Works (CPU only, ONNX, 15M–80M params)",
+      "status_ja": "動作OK（CPU のみ・ONNX・15M〜80M params）",
+      "languages": "English",
+      "languages_ja": "英語",
+      "description": "[KittenML/KittenTTS](https://github.com/KittenML/KittenTTS) v0.8 is a lightweight English TTS that runs entirely on CPU through ONNX Runtime. The selectable official checkpoints range from 15M to 80M parameters (about 25–80 MB), require no `HF_TOKEN`, and produce 24 kHz WAV audio. The wrapper pins the upstream v0.8.1 wheel because KittenTTS is currently a developer preview whose APIs may change.",
+      "description_ja": "[KittenML/KittenTTS](https://github.com/KittenML/KittenTTS) v0.8 は、ONNX Runtime により完全に CPU で動く軽量な英語 TTS です。選択できる公式チェックポイントは 15M〜80M パラメータ（約 25〜80MB）で、`HF_TOKEN` は不要、24kHz WAV を出力します。KittenTTS は API が変更される可能性のある Developer preview のため、本ラッパーは上流 v0.8.1 wheel に固定しています。",
+      "notes": [
+        "- Eight preset voices and adjustable speed; native output is 24 kHz WAV.",
+        "- Code and official v0.8 weights: Apache-2.0. No GPU or `HF_TOKEN` required.",
+        "- Developer preview: pinning the v0.8.1 wheel because upstream APIs may change."
+      ],
+      "notes_ja": [
+        "- ライセンス: コードは Apache 2.0、モデル重みは Apache 2.0。商用利用: OK。 備考: 英語専用の CPU ONNX TTS。内蔵 8 voice。Developer preview のため v0.8.1 に固定"
+      ],
+      "prefix": "KITTEN_TTS",
+      "params": [
+        {
+          "name": "KITTEN_TTS_HF_MODEL",
+          "default": "KittenML/kitten-tts-mini-0.8",
+          "type": "select",
+          "options": [
+            "KittenML/kitten-tts-mini-0.8",
+            "KittenML/kitten-tts-micro-0.8",
+            "KittenML/kitten-tts-nano-0.8-fp32",
+            "KittenML/kitten-tts-nano-0.8-int8"
+          ],
+          "flag": "--kitten-tts-hf-model"
+        },
+        {
+          "name": "KITTEN_TTS_DEFAULT_VOICE",
+          "default": "Jasper",
+          "type": "select",
+          "options": [
+            "Bella",
+            "Jasper",
+            "Luna",
+            "Bruno",
+            "Rosie",
+            "Hugo",
+            "Kiki",
+            "Leo"
+          ],
+          "flag": "--kitten-tts-default-voice"
         }
       ]
     },

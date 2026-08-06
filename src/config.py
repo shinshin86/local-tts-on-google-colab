@@ -278,6 +278,10 @@ class Settings:
     higgs_v3_top_k: int = 50
     higgs_v3_max_new_tokens: int = 2048
     higgs_v3_backend_port: int = 5002
+    # KittenTTS v0.8: English-only CPU ONNX TTS with 8 preset voices.
+    # Code and all selectable official weights are Apache-2.0.
+    kitten_tts_hf_model: str = "KittenML/kitten-tts-mini-0.8"
+    kitten_tts_default_voice: str = "Jasper"
     supertonic_model: str = "supertonic-3"
     supertonic_default_voice: str = "M1"
     supertonic_default_lang: str = "en"

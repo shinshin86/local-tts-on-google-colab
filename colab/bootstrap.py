@@ -256,6 +256,8 @@ def parse_args():
     parser.add_argument("--supertonic-default-voice", default="M1")
     parser.add_argument("--supertonic-default-lang", default="en")
     parser.add_argument("--supertonic-total-steps", type=int, default=5)
+    parser.add_argument("--kitten-tts-hf-model", default="KittenML/kitten-tts-mini-0.8")
+    parser.add_argument("--kitten-tts-default-voice", default="Jasper")
     parser.add_argument("--sine-wave-tts-ref", default="v0.1.0")
     parser.add_argument("--sine-wave-tts-default-speaker", default="default")
     parser.add_argument("--sine-wave-tts-default-emotion", default="neutral")
@@ -522,6 +524,8 @@ def main():
         supertonic_default_voice=args.supertonic_default_voice,
         supertonic_default_lang=args.supertonic_default_lang,
         supertonic_total_steps=args.supertonic_total_steps,
+        kitten_tts_hf_model=args.kitten_tts_hf_model,
+        kitten_tts_default_voice=args.kitten_tts_default_voice,
         sine_wave_tts_ref=args.sine_wave_tts_ref,
         sine_wave_tts_default_speaker=args.sine_wave_tts_default_speaker,
         sine_wave_tts_default_emotion=args.sine_wave_tts_default_emotion,

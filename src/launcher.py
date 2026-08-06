@@ -88,6 +88,8 @@ def resolve_selected_voice(settings: Settings) -> str:
         return settings.dots_tts_default_voice
     if settings.engine == "Ming-omni-TTS":
         return settings.ming_omni_tts_default_voice
+    if settings.engine == "KittenTTS":
+        return settings.kitten_tts_default_voice
     if settings.engine == "Supertonic":
         return settings.supertonic_default_voice
     if settings.engine == "Sine-Wave-TTS":
@@ -234,6 +236,14 @@ def print_engine_voice_hints(settings: Settings):
         print("TinyTTS は超軽量（~3.4MB）の英語専用 TTS です（CPU 動作、GPU 不要）。")
         print("voice パラメータは現在 'default' のみ対応です。")
         print("注意: 英語のみ対応。日本語テキストは正しく発音されません。ライセンス: Apache-2.0")
+    elif settings.engine == "KittenTTS":
+        print("KittenTTS v0.8 は軽量な英語専用 TTS です（15M〜80M params、CPU ONNX）。")
+        print(f"モデル: {settings.kitten_tts_hf_model}")
+        print(f"デフォルト voice: {settings.kitten_tts_default_voice}")
+        print("voice 候補: Bella, Jasper, Luna, Bruno, Rosie, Hugo, Kiki, Leo")
+        print("出力: 24kHz WAV。GPU は使用しません。速度は OpenAI 互換 speed で調整できます。")
+        print("注意: 英語のみ対応。Developer preview のため API は将来変更される可能性があります。")
+        print("ライセンス: コード・公式 v0.8 重みとも Apache-2.0（商用 OK）。")
     elif settings.engine == "Chatterbox":
         print("Chatterbox は Resemble AI の多言語 TTS です（23言語対応、ゼロショット voice cloning 対応）。")
         print(f"language: {settings.chatterbox_language}")
