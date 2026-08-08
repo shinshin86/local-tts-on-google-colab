@@ -1483,7 +1483,7 @@ SB Intuitions の [sbintuitions/sarashina2.2-tts](https://huggingface.co/sbintui
 
 この統合は Resemble AI の [Chatterbox Multilingual V3](https://github.com/resemble-ai/chatterbox)（0.5B、現行の汎用多言語チェックポイント）を既定にします。V3 は日本語・英語・中国語・フランス語・ドイツ語・スペイン語・韓国語など 23 言語への対応を維持しつつ、V2 より話者類似度・自然さ・安定性を高め、不要な継続や反復を低減しています。旧版との比較が必要な場合だけ `CHATTERBOX_T3_MODEL="v2"` を選択してください。V3 API は PyPI `0.1.7` より新しいため、インストーラは `master` 追従ではなく、確認済みの公式GitHubコミットへ固定します。
 
-デフォルト言語は `ja`（日本語）。`--chatterbox-prompt-wav` を指定すると `clone` voice が有効になり、参照音声の声色で合成されます。GPU 推奨（VRAM ~2-4GB）。生成音声には Resemble AI の不可聴 Perth ウォーターマークをそのまま保持します。ライセンスはコード・V3 重みとも MIT です。
+デフォルト言語は `ja`（日本語）。`--chatterbox-prompt-wav` を指定すると `clone` voice が有効になり、参照音声の声色で合成されます。GPU 推奨。Colab L4 での検証時は、1回の音声合成後に Chatterbox プロセスが 3,606 MiB を使用しました。実際の使用量はハードウェア、ソフトウェア構成、入力に依存します。生成音声には Resemble AI の不可聴 Perth ウォーターマークをそのまま保持します。ライセンスはコード・V3 重みとも MIT です。
 
 `voice` パラメータには次の値を指定できます。
 
@@ -1622,7 +1622,7 @@ upstream がピンを緩めた段階で再アクティベートできるよう�
 
 ### VibeVoice-Realtime
 
-[microsoft/VibeVoice-Realtime-0.5B](https://huggingface.co/microsoft/VibeVoice-Realtime-0.5B) は、[microsoft/VibeVoice](https://github.com/microsoft/VibeVoice) の軽量な単一話者ストリーミング版です。初回可聴音声まで約200–300msを目標にし、内部ではストリーミングテキスト入力、最大約10分の長尺生成に対応します。本OpenAI互換ラッパーは、上流WebSocketの逐次配信ではなく完成したWAVを返します。
+[microsoft/VibeVoice-Realtime-0.5B](https://huggingface.co/microsoft/VibeVoice-Realtime-0.5B) は、[microsoft/VibeVoice](https://github.com/microsoft/VibeVoice) の軽量な単一話者ストリーミング版です。[固定している上流モデルカード](https://huggingface.co/microsoft/VibeVoice-Realtime-0.5B/blob/6bce5f06044837fe6d2c5d7a71a84f0416bd57e4/README.md)は、ネイティブのストリーミング経路における初回可聴音声までの時間を約300ms（ハードウェア依存）としています。内部ではストリーミングテキスト入力、最大約10分の長尺生成に対応します。本OpenAI互換ラッパーは上流WebSocketの逐次配信ではなく完成したWAVを返すため、この初回可聴時間は本ラッパーの実測値ではありません。
 
 Microsoft提供の事前計算済み `.pt` prompt cacheを使用します。`voice="default"` は `VIBEVOICE_DEFAULT_SPEAKER` を選択し、`/v1/voices` に出るIDも直接指定できます。デフォルトは実験的日本語プリセット `jp-Spk1_woman` です。独自参照音声によるvoice cloning、マルチスピーカー、速度変更は非対応です。正式対象は英語で、日本語・独語・仏語・伊語・韓国語・蘭語・波語・葡語・西語は実験的なため、出力が不安定な可能性があります。依存するQwen2.5-0.5B tokenizerも別途固定し、そのファイルはApache 2.0です。さらに[上流issue #392](https://github.com/microsoft/VibeVoice/issues/392)のPyTorch互換問題に対して、[上流PR #397](https://github.com/microsoft/VibeVoice/pull/397)で提案されたrestricted unpicklerを取り込み、任意のpickle globalを信頼しないallowlistを維持します。
 
