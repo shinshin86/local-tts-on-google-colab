@@ -8,62 +8,65 @@ A sample project that temporarily launches a selected local TTS engine on Google
 
 Supported engines:
 
-| Engine | Colab Status | Languages |
-|---|---|---|
-| Kokoro | Works | Japanese / English / Chinese and more |
-| Kokoro-ONNX | Works | Japanese / English / Chinese and more |
-| Irodori-TTS | Works on L4 (GPU required, v4-Small) | Japanese |
-| Irodori-TTS-Lite | Works (GPU required, ~1GB VRAM, int4-quantized) | Japanese |
-| Piper | Works | English (default) / multilingual |
-| Piper-Plus | Works | Japanese / English / Chinese and 6 languages |
-| Qwen3-TTS | Works (GPU required) | Japanese / English / Chinese and 10 languages |
-| VoxCPM2 | Works (GPU required) | Japanese / English / Chinese and 30 languages |
-| MOSS-TTS-Nano | Works (output truncated to ~2s) | Japanese / English / Chinese and 20 languages |
-| MOSS-TTS-v1.5 | Works on A100 (L4 22GB is insufficient — model + activations + audio tokenizer exceed 22GB) | Japanese / English / Chinese / Korean and 31 languages |
-| MOSS-TTS-Local-v1.5 | Works on L4 (~4B MossTTSLocal, ~12.4GB VRAM — fits where the 8B v1.5 OOMs) | Japanese / English / Chinese / Korean and 31 languages |
-| NeuTTS | Works (CPU OK, voice cloning) | English / Spanish / German / French |
-| TinyTTS | Works | English |
-| KittenTTS | Works (CPU only, ONNX, 15M–80M params) | English |
-| Sine-Wave-TTS | Works on Colab (CPU only, no model weights, Node.js 20+) | Japanese electronic vocalization (not intelligible speech) |
-| Supertonic | Works (CPU OK, ONNX, ~99M params) | English / Japanese / Korean and 31 languages |
-| Voxtral-TTS | Works (GPU required, VRAM 16GB+) | English / French / Spanish and 9 languages |
-| Orpheus-TTS | Not working (HF-gated weights, requires Llama 3.2 license acceptance + `HF_TOKEN`) | English (Llama-3.2-3B base, vLLM) |
-| CosyVoice2 | Works (GPU recommended, Python 3.10 venv) | Japanese / English / Chinese / Korean / German and 9 languages |
-| CosyVoice3 | Works (GPU recommended, Python 3.10 venv) | Japanese / English / Chinese / Korean / German and 9 languages + Chinese dialects |
-| Spark-TTS | Works (GPU recommended) | English / Chinese (non-commercial weights) |
-| Sarashina-TTS | Works (GPU required, ~6GB VRAM) | Japanese / English |
-| F5-TTS | Works (GPU required) | English / Chinese (Japanese via separate model) |
-| Chatterbox Multilingual V3 | Works (GPU recommended, 0.5B) | Japanese / English / Chinese and 23 languages |
-| Zonos | Works (GPU required, ~6GB VRAM) | Japanese / English / Chinese / French / German |
-| ZONOS2 | Works (L4 verified, sm_80+ required) | 41 languages (tier-1: Japanese / English / Chinese) |
-| OuteTTS | Works (CPU OK) | Japanese / English / Chinese and many languages |
-| Dia | Works (GPU recommended) | English (multi-speaker dialogue) |
-| Kyutai-TTS | Works (GPU recommended) | English / French |
-| Pocket-TTS | Works (CPU OK, ~6x real-time) | English / French / German / Italian / Portuguese / Spanish |
-| OpenVoice-V2 | Not working (Python 3.13 / `av==10` build failure) | Japanese / English / Spanish / French / Chinese / Korean |
-| VibeVoice-Realtime | Works (GPU required, 0.5B, single speaker) | English; experimental Japanese / German / French / Italian / Korean / Dutch / Polish / Portuguese / Spanish |
-| OmniVoice | Works on Colab L4 (GPU recommended, CPU possible but slow, 0.6B, ~2.35GB VRAM) | Japanese / English / Chinese and 600+ languages |
-| FireRedTTS2 | Works on Colab L4 (CUDA GPU required, 1.5B, bf16, ~8.8GB VRAM) | Japanese / English / Chinese / Korean / French / German / Russian |
-| IndexTTS2 | Works on Colab L4 (GPU recommended, CPU supported upstream but unverified, fp16, ~7.1GB VRAM) | English / Chinese |
-| Fish-Speech | Not working | Japanese / English / Chinese and 80+ languages |
-| MeloTTS | Not working | - |
-| Style-Bert-VITS2 | Not working | - |
-| Bark | Working on Colab (GPU recommended, ~12GB / 8GB small) | English / Japanese / Chinese and 13 languages |
-| ChatTTS | Working on Colab (GPU recommended, **non-commercial**) | English / Chinese |
-| CSM-1B | Not working by default (HF-gated weights for `sesame/csm-1b` + `meta-llama/Llama-3.2-1B`, requires accepting both licenses + `HF_TOKEN`) | English (Llama-3.2-1B base + Mimi codec) |
-| MisoTTS | Works on A100, no `HF_TOKEN` needed (Llama 3.2 tokenizer sourced from the ungated `unsloth/Llama-3.2-1B` mirror; 8B Sesame-CSM fork, ~32GB F32 checkpoint → ~16GB bf16 on GPU; T4/L4 expected to OOM) | English-centric (Llama 8B base + Mimi codec; upstream does not document other languages) |
-| StyleTTS2 | Working on Colab (GPU recommended, Python 3.11 venv) | English |
-| MaskGCT | Working on Colab (GPU required, ~10-12GB, **non-commercial weights**) | English / Chinese |
-| GPT-SoVITS | Engine starts on Colab — reference audio required for synthesis (no default speaker mode; pass `--gpt-sovits-prompt-wav` + `--gpt-sovits-prompt-text`) | Chinese / English / Japanese / Korean / Cantonese |
-| Higgs-Audio-v2 | Not working by default (upstream HF checkpoint requires unreleased `boson_multimodal` / transformers 5.x; engine starts but inference fails inside the audio tokenizer loader) | English |
-| Higgs-Audio-v3 | Works on Colab L4 / A100 (GPU required, ~19.9GB at load; T4 unsupported, slow first launch ~10-12 min via SGLang-Omni, **non-commercial weights — no hosted API**) | 100+ languages (incl. Japanese) |
-| dots.tts | Works on Colab L4 (GPU required, bf16 resident ~5.4GB, 48 kHz output; ungated weights, no `HF_TOKEN`; zero-shot cloning model — `default` is a random speaker, use `clone` for a stable voice) | 24 languages (incl. Japanese) |
-| LFM2.5-Audio-JP | Works on Colab L4 (GPU required, ~6.3GB VRAM resident; ungated weights, no `HF_TOKEN`; single built-in Japanese voice, no cloning; 24 kHz output) | Japanese |
-| Ming-omni-TTS | Works on Colab A100 (verified; **A100 40GB required** — 16.8B-A3B MoE, ~35GB VRAM at load, needs `PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True` to fit and will not run on L4 24GB; ungated weights, no `HF_TOKEN`; zero-shot cloning; 44.1 kHz output) | Chinese / English-centric (dialect control incl. Cantonese) |
-| DramaBox | Works on Colab A100 (GPU required, VRAM ~24GB peak, **LTX-2 Community License — non-compete clause**) | English |
-| Scenema | **Not verified on Colab** — text encoder is Gemma 3 12B IT (HF-gated), so running this engine requires accepting the Gemma Terms of Use on Hugging Face and providing `HF_TOKEN` via Colab Secrets. Code paths are in place but end-to-end Colab verification was deferred because `HF_TOKEN` setup is out of scope for this repo's default workflow. **Requires Colab A100 (40GB VRAM)**. First-run downloads ~38GB. Audio model derived from LTX-2.3 → **LTX-2 Community License** (same as DramaBox) | English-centric multilingual |
-| MioTTS | Works on Colab L4 (verified; GPU required, **~4.6GB VRAM** resident — LLM ~3.2GB + codec ~1.4GB, so T4 16GB has ample headroom; LLM-based — a Qwen3-1.7B-Base GGUF hosted via a prebuilt llama-cpp-python CUDA wheel generates MioCodec tokens at 25 Hz → 44.1 kHz; **~4× faster than real time, RTF ≈ 0.25**; ungated weights, no `HF_TOKEN`; preset voices or zero-shot cloning. **Default presets are non-commercial** — clone your own voice for commercial use) | Japanese / English |
-| Vyvo-Multilingual | Works on Colab T4 (verified end-to-end via the public URL; GPU recommended, ~2-4GB VRAM; 0.9B Qwen3-0.6B-backbone LLM-TTS that emits kyutai/mimi tokens → 24 kHz; runs in-process via plain transformers, no upstream repo; ungated weights, no `HF_TOKEN`). Three ungated checkpoints via `--vyvo-hf-model`: `Vyvo-Multilingual-v0.1` (EN/JA, Apache-2.0; Japanese quality is limited), `Vyvo-Multilingual-EN-FT-v0.1` (English-only fine-tune, MIT) and `Vyvo-Multilingual-JA-FT-v0.1` (Japanese-only fine-tune, MIT; ⚠️ we could not verify normal-quality Japanese generation on our side — prefer the base checkpoint for Japanese). **Zero-shot cloning only — no built-in speaker**: every request needs `--vyvo-prompt-wav` + `--vyvo-prompt-text` (otherwise 4xx). Code Apache-2.0; the kyutai/mimi codec is CC-BY-4.0 (attribution) | English / Japanese (base); English (EN-FT); Japanese (JA-FT) |
+| Engine | Colab Status | Languages | Commercial use |
+|---|---|---|---|
+| Kokoro | Works | Japanese / English / Chinese and more | OK |
+| Kokoro-ONNX | Works | Japanese / English / Chinese and more | OK |
+| Irodori-TTS | Works on L4 (GPU required, v4-Small) | Japanese | OK |
+| Irodori-TTS-Lite | Works (GPU required, ~1GB VRAM, int4-quantized) | Japanese | OK |
+| Piper | Works | English (default) / multilingual | Not with defaults (default voice is research-only) |
+| Piper-Plus | Works | Japanese / English / Chinese and 6 languages | OK |
+| Qwen3-TTS | Works (GPU required) | Japanese / English / Chinese and 10 languages | OK |
+| VoxCPM2 | Works (GPU required) | Japanese / English / Chinese and 30 languages | OK |
+| MOSS-TTS-Nano | Works (output truncated to ~2s) | Japanese / English / Chinese and 20 languages | OK |
+| MOSS-TTS-v1.5 | Works on A100 (L4 22GB is insufficient — model + activations + audio tokenizer exceed 22GB) | Japanese / English / Chinese / Korean and 31 languages | OK |
+| MOSS-TTS-Local-v1.5 | Works on L4 (~4B MossTTSLocal, ~12.4GB VRAM — fits where the 8B v1.5 OOMs) | Japanese / English / Chinese / Korean and 31 languages | OK |
+| NeuTTS | Works (CPU OK, voice cloning) | English / Spanish / German / French | Conditional (default Air OK; Nano below $5M revenue) |
+| TinyTTS | Works | English | OK |
+| KittenTTS | Works (CPU only, ONNX, 15M–80M params) | English | OK |
+| Sine-Wave-TTS | Works on Colab (CPU only, no model weights, Node.js 20+) | Japanese electronic vocalization (not intelligible speech) | OK |
+| Supertonic | Works (CPU OK, ONNX, ~99M params) | English / Japanese / Korean and 31 languages | OK |
+| Voxtral-TTS | Works (GPU required, VRAM 16GB+) | English / French / Spanish and 9 languages | Not allowed |
+| Orpheus-TTS | Not working (HF-gated weights, requires Llama 3.2 license acceptance + `HF_TOKEN`) | English (Llama-3.2-3B base, vLLM) | Conditional (Llama Community License) |
+| CosyVoice2 | Works (GPU recommended, Python 3.10 venv) | Japanese / English / Chinese / Korean / German and 9 languages | OK |
+| CosyVoice3 | Works (GPU recommended, Python 3.10 venv) | Japanese / English / Chinese / Korean / German and 9 languages + Chinese dialects | OK |
+| Spark-TTS | Works (GPU recommended) | English / Chinese (non-commercial weights) | Not allowed |
+| Sarashina-TTS | Works (GPU required, ~6GB VRAM) | Japanese / English | Not allowed |
+| F5-TTS | Works (GPU required) | English / Chinese (Japanese via separate model) | Not allowed |
+| Chatterbox Multilingual V3 | Works (GPU recommended, 0.5B) | Japanese / English / Chinese and 23 languages | OK |
+| Zonos | Works (GPU required, ~6GB VRAM) | Japanese / English / Chinese / French / German | OK |
+| ZONOS2 | Works (L4 verified, sm_80+ required) | 41 languages (tier-1: Japanese / English / Chinese) | OK |
+| OuteTTS | Works (CPU OK) | Japanese / English / Chinese and many languages | Conditional (default 0.6B OK; 1B not allowed) |
+| Dia | Works (GPU recommended) | English (multi-speaker dialogue) | OK |
+| Kyutai-TTS | Works (GPU recommended) | English / French | Conditional (attribution required) |
+| Pocket-TTS | Works (CPU OK, ~6x real-time) | English / French / German / Italian / Portuguese / Spanish | Conditional (attribution; voice licenses vary) |
+| OpenVoice-V2 | Not working (Python 3.13 / `av==10` build failure) | Japanese / English / Spanish / French / Chinese / Korean | OK |
+| VibeVoice-Realtime | Works (GPU required, 0.5B, single speaker) | English; experimental Japanese / German / French / Italian / Korean / Dutch / Polish / Portuguese / Spanish | Not allowed (research/R&D only) |
+| OmniVoice | Works on Colab L4 (GPU recommended, CPU possible but slow, 0.6B, ~2.35GB VRAM) | Japanese / English / Chinese and 600+ languages | Not allowed |
+| FireRedTTS2 | Works on Colab L4 (CUDA GPU required, 1.5B, bf16, ~8.8GB VRAM) | Japanese / English / Chinese / Korean / French / German / Russian | Conditional (zero-shot cloning is academic-only) |
+| IndexTTS2 | Works on Colab L4 (GPU recommended, CPU supported upstream but unverified, fp16, ~7.1GB VRAM) | English / Chinese | Not allowed |
+| Fish-Speech | Not working | Japanese / English / Chinese and 80+ languages | OK |
+| MeloTTS | Not working | - | OK |
+| Style-Bert-VITS2 | Not working | - | Conditional (copyleft: AGPL-3.0 / CC-BY-SA-4.0) |
+| Bark | Working on Colab (GPU recommended, ~12GB / 8GB small) | English / Japanese / Chinese and 13 languages | OK |
+| ChatTTS | Working on Colab (GPU recommended, **non-commercial**) | English / Chinese | Not allowed |
+| CSM-1B | Not working by default (HF-gated weights for `sesame/csm-1b` + `meta-llama/Llama-3.2-1B`, requires accepting both licenses + `HF_TOKEN`) | English (Llama-3.2-1B base + Mimi codec) | OK |
+| MisoTTS | Works on A100, no `HF_TOKEN` needed (Llama 3.2 tokenizer sourced from the ungated `unsloth/Llama-3.2-1B` mirror; 8B Sesame-CSM fork, ~32GB F32 checkpoint → ~16GB bf16 on GPU; T4/L4 expected to OOM) | English-centric (Llama 8B base + Mimi codec; upstream does not document other languages) | OK |
+| StyleTTS2 | Working on Colab (GPU recommended, Python 3.11 venv) | English | Conditional (disclosure required; cloning needs consent) |
+| MaskGCT | Working on Colab (GPU required, ~10-12GB, **non-commercial weights**) | English / Chinese | Not allowed |
+| GPT-SoVITS | Engine starts on Colab — reference audio required for synthesis (no default speaker mode; pass `--gpt-sovits-prompt-wav` + `--gpt-sovits-prompt-text`) | Chinese / English / Japanese / Korean / Cantonese | OK |
+| Higgs-Audio-v2 | Not working by default (upstream HF checkpoint requires unreleased `boson_multimodal` / transformers 5.x; engine starts but inference fails inside the audio tokenizer loader) | English | Conditional (>100k MAU needs extra license) |
+| Higgs-Audio-v3 | Works on Colab L4 / A100 (GPU required, ~19.9GB at load; T4 unsupported, slow first launch ~10-12 min via SGLang-Omni, **non-commercial weights — no hosted API**) | 100+ languages (incl. Japanese) | Not allowed (non-commercial weights) |
+| dots.tts | Works on Colab L4 (GPU required, bf16 resident ~5.4GB, 48 kHz output; ungated weights, no `HF_TOKEN`; zero-shot cloning model — `default` is a random speaker, use `clone` for a stable voice) | 24 languages (incl. Japanese) | OK |
+| LFM2.5-Audio-JP | Works on Colab L4 (GPU required, ~6.3GB VRAM resident; ungated weights, no `HF_TOKEN`; single built-in Japanese voice, no cloning; 24 kHz output) | Japanese | Conditional (revenue cap) |
+| Ming-omni-TTS | Works on Colab A100 (verified; **A100 40GB required** — 16.8B-A3B MoE, ~35GB VRAM at load, needs `PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True` to fit and will not run on L4 24GB; ungated weights, no `HF_TOKEN`; zero-shot cloning; 44.1 kHz output) | Chinese / English-centric (dialect control incl. Cantonese) | OK |
+| DramaBox | Works on Colab A100 (GPU required, VRAM ~24GB peak, **LTX-2 Community License — non-compete clause**) | English | Conditional (commercial license for $10M+ revenue) |
+| Scenema | **Not verified on Colab** — text encoder is Gemma 3 12B IT (HF-gated), so running this engine requires accepting the Gemma Terms of Use on Hugging Face and providing `HF_TOKEN` via Colab Secrets. Code paths are in place but end-to-end Colab verification was deferred because `HF_TOKEN` setup is out of scope for this repo's default workflow. **Requires Colab A100 (40GB VRAM)**. First-run downloads ~38GB. Audio model derived from LTX-2.3 → **LTX-2 Community License** (same as DramaBox) | English-centric multilingual | Conditional (commercial license for $10M+ revenue; Gemma terms) |
+| MioTTS | Works on Colab L4 (verified; GPU required, **~4.6GB VRAM** resident — LLM ~3.2GB + codec ~1.4GB, so T4 16GB has ample headroom; LLM-based — a Qwen3-1.7B-Base GGUF hosted via a prebuilt llama-cpp-python CUDA wheel generates MioCodec tokens at 25 Hz → 44.1 kHz; **~4× faster than real time, RTF ≈ 0.25**; ungated weights, no `HF_TOKEN`; preset voices or zero-shot cloning. **Default presets are non-commercial** — clone your own voice for commercial use) | Japanese / English | Not with defaults (clone your own voice instead) |
+| Vyvo-Multilingual | Works on Colab T4 (verified end-to-end via the public URL; GPU recommended, ~2-4GB VRAM; 0.9B Qwen3-0.6B-backbone LLM-TTS that emits kyutai/mimi tokens → 24 kHz; runs in-process via plain transformers, no upstream repo; ungated weights, no `HF_TOKEN`). Three ungated checkpoints via `--vyvo-hf-model`: `Vyvo-Multilingual-v0.1` (EN/JA, Apache-2.0; Japanese quality is limited), `Vyvo-Multilingual-EN-FT-v0.1` (English-only fine-tune, MIT) and `Vyvo-Multilingual-JA-FT-v0.1` (Japanese-only fine-tune, MIT; ⚠️ we could not verify normal-quality Japanese generation on our side — prefer the base checkpoint for Japanese). **Zero-shot cloning only — no built-in speaker**: every request needs `--vyvo-prompt-wav` + `--vyvo-prompt-text` (otherwise 4xx). Code Apache-2.0; the kyutai/mimi codec is CC-BY-4.0 (attribution) | English / Japanese (base); English (EN-FT); Japanese (JA-FT) | Conditional (attribution required for the codec) |
+
+> **Commercial use** above is the verdict for each engine's **default model / voice**. Switching model size or voice can change it (e.g. `OuteTTS` 1B, `MioTTS` presets). See [License](#license) for the per-model breakdown.
+
 
 `MeloTTS` and `Style-Bert-VITS2` currently have dependency resolution issues under Colab's uv + venv environment and do not work.
 
@@ -2069,6 +2072,8 @@ The license for each engine is as follows. When using them, always check each pr
 | FireRedTTS2 | Apache 2.0 | Apache 2.0 | Caution | 1.5B, 7 languages incl JP, monologue or 4-speaker dialogue. Upstream limits zero-shot cloning to academic research |
 | IndexTTS2 | Bilibili Model Use License | Bilibili Model Use License + CC-BY-NC-4.0 MaskGCT codec | **Not allowed** | EN/ZH zero-shot cloning with independent emotion control. Separate Bilibili permission at >100M monthly users or >RMB 1B annual revenue. Public release does not enable precise duration control |
 | Fish-Speech | Apache 2.0 | Apache 2.0 | OK | Requires A100/L4 GPU (VRAM 24GB+) |
+| MeloTTS | MIT | MIT (per-language weight repos) | OK | Not working on Colab (Rust toolchain required by `tokenizers`) |
+| Style-Bert-VITS2 | AGPL-3.0 | CC-BY-SA-4.0 (`litagin/style_bert_vits2_jvnv`, inherited from the JVNV corpus) | Caution | Copyleft: AGPL §13 requires source disclosure to network users; CC-BY-SA requires attribution + share-alike. Not working on Colab |
 | Bark | MIT | MIT | OK | 13 languages incl JP. Generative (laughter / SFX). Author labels weights as research-oriented |
 | ChatTTS | AGPL-3.0+ | CC BY-NC 4.0 | **Not allowed** | EN / ZH conversational TTS. Weights contain intentional high-frequency noise to deter misuse |
 | CSM-1B | Apache 2.0 | Apache 2.0 | OK | EN only. Conversational. Llama-3.2-1B is also pulled in (Llama 3.2 Community License). HF gated |

@@ -8,62 +8,65 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 
 対象エンジン:
 
-| エンジン | Colab 動作確認 | 言語 |
-|---|---|---|
-| Kokoro | 動作OK | 日本語 / 英語 / 中国語 他 |
-| Kokoro-ONNX | 動作OK | 日本語 / 英語 / 中国語 他 |
-| Irodori-TTS | L4 で動作確認済み（GPU 必須、v4-Small） | 日本語 |
-| Irodori-TTS-Lite | 動作OK（GPU 必須、VRAM ~1GB、int4 量子化） | 日本語 |
-| Piper | 動作OK | 英語（デフォルト）/ 多言語 |
-| Piper-Plus | 動作OK | 日本語 / 英語 / 中国語 他 6言語 |
-| Qwen3-TTS | 動作OK (GPU必須) | 日本語 / 英語 / 中国語 他 10言語 |
-| VoxCPM2 | 動作OK (GPU必須) | 日本語 / 英語 / 中国語 他 30言語 |
-| MOSS-TTS-Nano | 動作（出力が約2秒で切れる） | 日本語 / 英語 / 中国語 他 20言語 |
-| MOSS-TTS-v1.5 | A100 で動作確認（L4 22GB は VRAM 不足：モデル+activation+音声トークナイザーで超過） | 日本語 / 英語 / 中国語 / 韓国語 他 31言語 |
-| MOSS-TTS-Local-v1.5 | L4 で動作確認（~4B MossTTSLocal、~12.4GB VRAM。8B 版が OOM する L4 でも動作） | 日本語 / 英語 / 中国語 / 韓国語 他 31言語 |
-| NeuTTS | 動作OK (CPU可・voice cloning) | 英語 / スペイン語 / ドイツ語 / フランス語 |
-| TinyTTS | 動作OK | 英語 |
-| KittenTTS | 動作OK（CPU のみ・ONNX・15M〜80M params） | 英語 |
-| Sine-Wave-TTS | 動作OK（CPU のみ・モデル重みなし・Node.js 20+） | 日本語の電子音声（言葉としては聞き取れない） |
-| Supertonic | 動作OK (CPU可・ONNX・~99M params) | 英語 / 日本語 / 韓国語 他 31言語 |
-| Voxtral-TTS | 動作OK (GPU必須・VRAM 16GB+) | 英語 / フランス語 / スペイン語 他 9言語 |
-| Sarashina-TTS | 動作OK (GPU必須・VRAM ~6GB) | 日本語 / 英語 |
-| F5-TTS | 動作OK (GPU必須) | 英語 / 中国語（日本語は別モデル） |
-| Chatterbox Multilingual V3 | 動作OK (GPU推奨・0.5B) | 日本語 / 英語 / 中国語 他 23言語 |
-| Zonos | 動作OK (GPU必須・VRAM ~6GB) | 日本語 / 英語 / 中国語 / フランス語 / ドイツ語 |
-| ZONOS2 | 動作OK (L4検証済・sm_80+必須) | 41言語 (tier-1: 日本語 / 英語 / 中国語) |
-| OuteTTS | 動作OK (CPU可) | 日本語 / 英語 / 中国語 他 多言語 |
-| Dia | 動作OK (GPU推奨) | 英語（マルチスピーカー対話） |
-| Kyutai-TTS | 動作OK (GPU推奨) | 英語 / フランス語 |
-| Pocket-TTS | 動作OK (CPU可・~6x realtime) | 英語 / 仏 / 独 / 伊 / 葡 / 西 |
-| Orpheus-TTS | 動作不可（HF gated 重み・Llama 3.2 ライセンス同意 + `HF_TOKEN` 必須） | 英語（Llama-3.2-3B ベース、vLLM） |
-| CosyVoice2 | 動作OK (GPU推奨・Python 3.10 venv) | 日本語 / 英語 / 中 / 韓 / 独 他 9言語 |
-| CosyVoice3 | 動作OK (GPU推奨・Python 3.10 venv) | 日本語 / 英語 / 中 / 韓 / 独 他 9言語 + 中国方言 |
-| Spark-TTS | 動作OK (GPU推奨) | 英語 / 中国語（重みは非商用） |
-| OpenVoice-V2 | 動作不可（Python 3.13 で `av==10` がビルドできない） | 日本語 / 英語 / 西 / 仏 / 中 / 韓 |
-| VibeVoice-Realtime | 動作OK (GPU必須・0.5B・単一話者) | 英語、実験的に日本語 / 独 / 仏 / 伊 / 韓 / 蘭 / 波 / 葡 / 西 |
-| OmniVoice | Colab L4動作確認済み（GPU推奨、CPU実行可だが低速、0.6B、VRAM約2.35GB） | 日本語 / 英語 / 中国語など600言語以上 |
-| FireRedTTS2 | Colab L4動作確認済み（CUDA GPU必須、1.5B、bf16、VRAM約8.8GB） | 日本語 / 英語 / 中国語 / 韓国語 / フランス語 / ドイツ語 / ロシア語 |
-| IndexTTS2 | Colab L4動作確認済み（GPU推奨、CPUは上流対応・未検証、fp16、VRAM約7.1GB） | 英語 / 中国語 |
-| Fish-Speech | 動作不可 | 日本語 / 英語 / 中国語 他 80言語以上 |
-| MeloTTS | 動作不可 | - |
-| Style-Bert-VITS2 | 動作不可 | - |
-| Bark | Colab 動作確認済み (GPU推奨・~12GB / small=8GB) | 英語 / 日本語 / 中国語 他 13言語 |
-| ChatTTS | Colab 動作確認済み (GPU推奨・**商用不可**) | 英語 / 中国語 |
-| CSM-1B | デフォルトで動作不可（`sesame/csm-1b` と `meta-llama/Llama-3.2-1B` の HF gated。両方のライセンス同意 + `HF_TOKEN` が必要） | 英語（Llama-3.2-1B ベース + Mimi codec） |
-| MisoTTS | A100 で動作・`HF_TOKEN` 不要（Llama 3.2 トークナイザは ungated な `unsloth/Llama-3.2-1B` ミラーから取得。8B の Sesame-CSM フォーク、~32GB F32 ckpt → GPU 上 bf16 ~16GB。T4/L4 は OOM 想定） | 英語中心（Llama 8B ベース + Mimi codec。その他言語は upstream 未記載） |
-| StyleTTS2 | Colab 動作確認済み (GPU推奨・Python 3.11 venv) | 英語 |
-| MaskGCT | Colab 動作確認済み (GPU必須・~10-12GB・**商用不可**) | 英語 / 中国語 |
-| GPT-SoVITS | Colab でエンジン起動確認済み（synthesis には参照音声必須・default speaker モード非対応・`--gpt-sovits-prompt-wav` と `--gpt-sovits-prompt-text` を指定） | 中 / 英 / 日 / 韓 / 粤 |
-| Higgs-Audio-v2 | デフォルトで動作不可（HF 上の checkpoint が未リリースの `boson_multimodal` / transformers 5.x を要求。エンジンは起動するが audio tokenizer ロード時に上流コードと config schema が一致せず推論失敗） | 英語 |
-| Higgs-Audio-v3 | Colab L4 / A100 動作確認済み（GPU 必須、ロード時 ~19.9GB。T4 非対応、SGLang-Omni 経由で初回起動が遅い ~10-12 分、**非商用の重み — hosted API 不可**） | 100+ 言語（日本語含む） |
-| dots.tts | Colab L4 動作確認済み（GPU 必須、bf16 常駐 ~5.4GB、出力 48 kHz。重みは ungated で `HF_TOKEN` 不要。ゼロショット cloning モデルのため `default` は話者がランダム、安定した声色は `clone` を使用） | 24 言語（日本語含む） |
-| LFM2.5-Audio-JP | Colab L4 動作確認済み（GPU 必須、VRAM 常駐 ~6.3GB。重みは ungated で `HF_TOKEN` 不要。内蔵の日本語ボイス1種のみ、cloning 非対応。出力 24 kHz） | 日本語 |
-| Ming-omni-TTS | Colab A100 動作確認済み（**A100 40GB 必須** — 16.8B-A3B MoE、ロード時 ~35GB VRAM。40GB に収めるため `PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True` が必要で L4 24GB では動かない。重みは ungated で `HF_TOKEN` 不要。zero-shot cloning。出力 44.1 kHz） | 中国語 / 英語が中心（広東語などの方言制御あり） |
-| DramaBox | Colab A100 動作確認済み（GPU 必須、VRAM ~24GB ピーク、**LTX-2 Community License — 非競合条項あり**） | 英語 |
-| Scenema | **Colab A100（40GB VRAM）必須**。初回起動時に約 38GB ダウンロード。音声モデルは LTX-2.3 派生のため **LTX-2 Community License**（DramaBox と同じ）。Gemma 3 12B IT 利用（HF gated、`HF_TOKEN` 必須） | 英語中心の多言語 |
-| MioTTS | Colab L4 動作確認済み（GPU 必須、**VRAM 約4.6GB** 常駐 — LLM 約3.2GB + codec 約1.4GB。T4 16GB でも十分。LLM ベース — Qwen3-1.7B-Base GGUF をプリビルド llama-cpp-python CUDA wheel で host し MioCodec トークン[25Hz]を生成 → 44.1kHz。**実時間の約4倍速、RTF ≈ 0.25**。重みは ungated で `HF_TOKEN` 不要。プリセット音声 / ゼロショットクローン。**デフォルトプリセットは商用利用不可** — 商用時は自分の音声で clone） | 日本語 / 英語 |
-| Vyvo-Multilingual | Colab T4 動作確認済み（公開URL経由で end-to-end 確認。GPU 推奨、VRAM 約2-4GB。0.9B の Qwen3-0.6B backbone LLM-TTS で kyutai/mimi トークンを生成 → 24kHz。上流リポジトリ無し、transformers で in-process 実行。重みは ungated で `HF_TOKEN` 不要）。`--vyvo-hf-model` で3つの ungated checkpoint を選択: `Vyvo-Multilingual-v0.1`（EN/JA、Apache-2.0、日本語は品質限定的）、`Vyvo-Multilingual-EN-FT-v0.1`（英語専用FT、MIT）、`Vyvo-Multilingual-JA-FT-v0.1`（日本語専用FT、MIT。⚠️ 当方では正常な品質の日本語生成を確認できず。日本語には base checkpoint を推奨）。**ゼロショットクローン専用 — 内蔵スピーカー無し**: 各リクエストで `--vyvo-prompt-wav` + `--vyvo-prompt-text` が必須（未設定は 4xx）。コードは Apache-2.0、kyutai/mimi コーデックは CC-BY-4.0（帰属表示要） | 英語 / 日本語（base）、英語（EN-FT）、日本語（JA-FT） |
+| エンジン | Colab 動作確認 | 言語 | 商用利用 |
+|---|---|---|---|
+| Kokoro | 動作OK | 日本語 / 英語 / 中国語 他 | OK |
+| Kokoro-ONNX | 動作OK | 日本語 / 英語 / 中国語 他 | OK |
+| Irodori-TTS | L4 で動作確認済み（GPU 必須、v4-Small） | 日本語 | OK |
+| Irodori-TTS-Lite | 動作OK（GPU 必須、VRAM ~1GB、int4 量子化） | 日本語 | OK |
+| Piper | 動作OK | 英語（デフォルト）/ 多言語 | 既定は不可（既定音声が研究用途のみ） |
+| Piper-Plus | 動作OK | 日本語 / 英語 / 中国語 他 6言語 | OK |
+| Qwen3-TTS | 動作OK (GPU必須) | 日本語 / 英語 / 中国語 他 10言語 | OK |
+| VoxCPM2 | 動作OK (GPU必須) | 日本語 / 英語 / 中国語 他 30言語 | OK |
+| MOSS-TTS-Nano | 動作（出力が約2秒で切れる） | 日本語 / 英語 / 中国語 他 20言語 | OK |
+| MOSS-TTS-v1.5 | A100 で動作確認（L4 22GB は VRAM 不足：モデル+activation+音声トークナイザーで超過） | 日本語 / 英語 / 中国語 / 韓国語 他 31言語 | OK |
+| MOSS-TTS-Local-v1.5 | L4 で動作確認（~4B MossTTSLocal、~12.4GB VRAM。8B 版が OOM する L4 でも動作） | 日本語 / 英語 / 中国語 / 韓国語 他 31言語 | OK |
+| NeuTTS | 動作OK (CPU可・voice cloning) | 英語 / スペイン語 / ドイツ語 / フランス語 | 条件付き（既定Airは可 / Nanoは年商$5M未満） |
+| TinyTTS | 動作OK | 英語 | OK |
+| KittenTTS | 動作OK（CPU のみ・ONNX・15M〜80M params） | 英語 | OK |
+| Sine-Wave-TTS | 動作OK（CPU のみ・モデル重みなし・Node.js 20+） | 日本語の電子音声（言葉としては聞き取れない） | OK |
+| Supertonic | 動作OK (CPU可・ONNX・~99M params) | 英語 / 日本語 / 韓国語 他 31言語 | OK |
+| Voxtral-TTS | 動作OK (GPU必須・VRAM 16GB+) | 英語 / フランス語 / スペイン語 他 9言語 | 不可 |
+| Sarashina-TTS | 動作OK (GPU必須・VRAM ~6GB) | 日本語 / 英語 | 不可 |
+| F5-TTS | 動作OK (GPU必須) | 英語 / 中国語（日本語は別モデル） | 不可 |
+| Chatterbox Multilingual V3 | 動作OK (GPU推奨・0.5B) | 日本語 / 英語 / 中国語 他 23言語 | OK |
+| Zonos | 動作OK (GPU必須・VRAM ~6GB) | 日本語 / 英語 / 中国語 / フランス語 / ドイツ語 | OK |
+| ZONOS2 | 動作OK (L4検証済・sm_80+必須) | 41言語 (tier-1: 日本語 / 英語 / 中国語) | OK |
+| OuteTTS | 動作OK (CPU可) | 日本語 / 英語 / 中国語 他 多言語 | 条件付き（既定0.6Bは可 / 1Bは不可） |
+| Dia | 動作OK (GPU推奨) | 英語（マルチスピーカー対話） | OK |
+| Kyutai-TTS | 動作OK (GPU推奨) | 英語 / フランス語 | 条件付き（要クレジット） |
+| Pocket-TTS | 動作OK (CPU可・~6x realtime) | 英語 / 仏 / 独 / 伊 / 葡 / 西 | 条件付き（要クレジット / 音声ごとに要確認） |
+| Orpheus-TTS | 動作不可（HF gated 重み・Llama 3.2 ライセンス同意 + `HF_TOKEN` 必須） | 英語（Llama-3.2-3B ベース、vLLM） | 条件付き（Llama Community License） |
+| CosyVoice2 | 動作OK (GPU推奨・Python 3.10 venv) | 日本語 / 英語 / 中 / 韓 / 独 他 9言語 | OK |
+| CosyVoice3 | 動作OK (GPU推奨・Python 3.10 venv) | 日本語 / 英語 / 中 / 韓 / 独 他 9言語 + 中国方言 | OK |
+| Spark-TTS | 動作OK (GPU推奨) | 英語 / 中国語（重みは非商用） | 不可 |
+| OpenVoice-V2 | 動作不可（Python 3.13 で `av==10` がビルドできない） | 日本語 / 英語 / 西 / 仏 / 中 / 韓 | OK |
+| VibeVoice-Realtime | 動作OK (GPU必須・0.5B・単一話者) | 英語、実験的に日本語 / 独 / 仏 / 伊 / 韓 / 蘭 / 波 / 葡 / 西 | 不可（研究/R&D用途に限定） |
+| OmniVoice | Colab L4動作確認済み（GPU推奨、CPU実行可だが低速、0.6B、VRAM約2.35GB） | 日本語 / 英語 / 中国語など600言語以上 | 不可 |
+| FireRedTTS2 | Colab L4動作確認済み（CUDA GPU必須、1.5B、bf16、VRAM約8.8GB） | 日本語 / 英語 / 中国語 / 韓国語 / フランス語 / ドイツ語 / ロシア語 | 条件付き（ゼロショットクローンは学術用途のみ） |
+| IndexTTS2 | Colab L4動作確認済み（GPU推奨、CPUは上流対応・未検証、fp16、VRAM約7.1GB） | 英語 / 中国語 | 不可 |
+| Fish-Speech | 動作不可 | 日本語 / 英語 / 中国語 他 80言語以上 | OK |
+| MeloTTS | 動作不可 | - | OK |
+| Style-Bert-VITS2 | 動作不可 | - | 条件付き（コピーレフト: AGPL-3.0 / CC-BY-SA-4.0） |
+| Bark | Colab 動作確認済み (GPU推奨・~12GB / small=8GB) | 英語 / 日本語 / 中国語 他 13言語 | OK |
+| ChatTTS | Colab 動作確認済み (GPU推奨・**商用不可**) | 英語 / 中国語 | 不可 |
+| CSM-1B | デフォルトで動作不可（`sesame/csm-1b` と `meta-llama/Llama-3.2-1B` の HF gated。両方のライセンス同意 + `HF_TOKEN` が必要） | 英語（Llama-3.2-1B ベース + Mimi codec） | OK |
+| MisoTTS | A100 で動作・`HF_TOKEN` 不要（Llama 3.2 トークナイザは ungated な `unsloth/Llama-3.2-1B` ミラーから取得。8B の Sesame-CSM フォーク、~32GB F32 ckpt → GPU 上 bf16 ~16GB。T4/L4 は OOM 想定） | 英語中心（Llama 8B ベース + Mimi codec。その他言語は upstream 未記載） | OK |
+| StyleTTS2 | Colab 動作確認済み (GPU推奨・Python 3.11 venv) | 英語 | 条件付き（要開示 / クローンは同意必須） |
+| MaskGCT | Colab 動作確認済み (GPU必須・~10-12GB・**商用不可**) | 英語 / 中国語 | 不可 |
+| GPT-SoVITS | Colab でエンジン起動確認済み（synthesis には参照音声必須・default speaker モード非対応・`--gpt-sovits-prompt-wav` と `--gpt-sovits-prompt-text` を指定） | 中 / 英 / 日 / 韓 / 粤 | OK |
+| Higgs-Audio-v2 | デフォルトで動作不可（HF 上の checkpoint が未リリースの `boson_multimodal` / transformers 5.x を要求。エンジンは起動するが audio tokenizer ロード時に上流コードと config schema が一致せず推論失敗） | 英語 | 条件付き（>100k MAUは追加ライセンス） |
+| Higgs-Audio-v3 | Colab L4 / A100 動作確認済み（GPU 必須、ロード時 ~19.9GB。T4 非対応、SGLang-Omni 経由で初回起動が遅い ~10-12 分、**非商用の重み — hosted API 不可**） | 100+ 言語（日本語含む） | 不可（重みが非商用） |
+| dots.tts | Colab L4 動作確認済み（GPU 必須、bf16 常駐 ~5.4GB、出力 48 kHz。重みは ungated で `HF_TOKEN` 不要。ゼロショット cloning モデルのため `default` は話者がランダム、安定した声色は `clone` を使用） | 24 言語（日本語含む） | OK |
+| LFM2.5-Audio-JP | Colab L4 動作確認済み（GPU 必須、VRAM 常駐 ~6.3GB。重みは ungated で `HF_TOKEN` 不要。内蔵の日本語ボイス1種のみ、cloning 非対応。出力 24 kHz） | 日本語 | 条件付き（年商上限あり） |
+| Ming-omni-TTS | Colab A100 動作確認済み（**A100 40GB 必須** — 16.8B-A3B MoE、ロード時 ~35GB VRAM。40GB に収めるため `PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True` が必要で L4 24GB では動かない。重みは ungated で `HF_TOKEN` 不要。zero-shot cloning。出力 44.1 kHz） | 中国語 / 英語が中心（広東語などの方言制御あり） | OK |
+| DramaBox | Colab A100 動作確認済み（GPU 必須、VRAM ~24GB ピーク、**LTX-2 Community License — 非競合条項あり**） | 英語 | 条件付き（年商$10M以上は要商用ライセンス） |
+| Scenema | **Colab A100（40GB VRAM）必須**。初回起動時に約 38GB ダウンロード。音声モデルは LTX-2.3 派生のため **LTX-2 Community License**（DramaBox と同じ）。Gemma 3 12B IT 利用（HF gated、`HF_TOKEN` 必須） | 英語中心の多言語 | 条件付き（年商$10M以上は要商用ライセンス / Gemma規約） |
+| MioTTS | Colab L4 動作確認済み（GPU 必須、**VRAM 約4.6GB** 常駐 — LLM 約3.2GB + codec 約1.4GB。T4 16GB でも十分。LLM ベース — Qwen3-1.7B-Base GGUF をプリビルド llama-cpp-python CUDA wheel で host し MioCodec トークン[25Hz]を生成 → 44.1kHz。**実時間の約4倍速、RTF ≈ 0.25**。重みは ungated で `HF_TOKEN` 不要。プリセット音声 / ゼロショットクローン。**デフォルトプリセットは商用利用不可** — 商用時は自分の音声で clone） | 日本語 / 英語 | 既定は不可（自分の声でcloneすれば可） |
+| Vyvo-Multilingual | Colab T4 動作確認済み（公開URL経由で end-to-end 確認。GPU 推奨、VRAM 約2-4GB。0.9B の Qwen3-0.6B backbone LLM-TTS で kyutai/mimi トークンを生成 → 24kHz。上流リポジトリ無し、transformers で in-process 実行。重みは ungated で `HF_TOKEN` 不要）。`--vyvo-hf-model` で3つの ungated checkpoint を選択: `Vyvo-Multilingual-v0.1`（EN/JA、Apache-2.0、日本語は品質限定的）、`Vyvo-Multilingual-EN-FT-v0.1`（英語専用FT、MIT）、`Vyvo-Multilingual-JA-FT-v0.1`（日本語専用FT、MIT。⚠️ 当方では正常な品質の日本語生成を確認できず。日本語には base checkpoint を推奨）。**ゼロショットクローン専用 — 内蔵スピーカー無し**: 各リクエストで `--vyvo-prompt-wav` + `--vyvo-prompt-text` が必須（未設定は 4xx）。コードは Apache-2.0、kyutai/mimi コーデックは CC-BY-4.0（帰属表示要） | 英語 / 日本語（base）、英語（EN-FT）、日本語（JA-FT） | 条件付き（codecに要クレジット） |
+
+> 上表の **商用利用** は、各エンジンの**既定モデル / 既定音声**での判定です。モデルサイズや音声を変えると判定が変わることがあります（例: `OuteTTS` の 1B、`MioTTS` のプリセット）。モデル単位の内訳は [ライセンス](#ライセンス) を参照してください。
+
 
 `MeloTTS`、`Style-Bert-VITS2` は Colab の uv + venv 環境で依存解決に問題があり、現時点では動作しません。
 
@@ -2070,6 +2073,8 @@ Colab T4 で確認済み: エンジン・`/v1` エンドポイント・trycloudf
 | FireRedTTS2 | Apache 2.0 | Apache 2.0 | 要注意 | 1.5B・日本語含む7言語、monologueまたは4話者dialogue。上流はzero-shot cloningを学術研究目的に限定 |
 | IndexTTS2 | Bilibili Model Use License | Bilibili Model Use License + CC-BY-NC-4.0 MaskGCT codec | **不可** | 英語・中国語zero-shot cloning、感情を独立制御。月間1億ユーザー超または年間売上10億元超はBilibiliの別途許諾が必要。公開releaseでは精密な尺制御は未有効 |
 | Fish-Speech | Apache 2.0 | Apache 2.0 | OK | A100/L4 GPU 必須（VRAM 24GB+） |
+| MeloTTS | MIT | MIT（言語ごとの重みリポジトリ） | OK | Colab では動作しない（`tokenizers` が Rust ツールチェーンを要求） |
+| Style-Bert-VITS2 | AGPL-3.0 | CC-BY-SA-4.0（`litagin/style_bert_vits2_jvnv`、JVNV コーパス由来） | 要確認 | コピーレフト: AGPL §13 によりネットワーク利用者へのソース開示が必要、CC-BY-SA によりクレジット表示と継承が必要。Colab では動作しない |
 | Bark | MIT | MIT | OK | 13言語（日本語含む）。生成的（笑い声 / SFX）。著者は重みを research-oriented と表記 |
 | ChatTTS | AGPL-3.0+ | CC BY-NC 4.0 | **不可** | 英 / 中 の対話 TTS。重みには乱用防止用の高周波ノイズが意図的に入っている |
 | CSM-1B | Apache 2.0 | Apache 2.0 | OK | 英のみ。対話型。Llama-3.2-1B も依存（Llama 3.2 Community License）。HF gated |
