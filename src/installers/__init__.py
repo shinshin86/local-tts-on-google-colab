@@ -15,6 +15,7 @@ from .higgs_audio import install as install_higgs_audio
 from .higgs_v3 import install as install_higgs_v3
 from .indextts2 import install as install_indextts2
 from .irodori import install as install_irodori
+from .irodori_anime import install as install_irodori_anime
 from .irodori_lite import install as install_irodori_lite
 from .kitten_tts import install as install_kitten_tts
 from .qwen3_tts import install as install_qwen3_tts
@@ -72,6 +73,7 @@ INSTALLERS = {
     "Higgs-Audio-v3": install_higgs_v3,
     "IndexTTS2": install_indextts2,
     "Irodori-TTS": install_irodori,
+    "Irodori-TTS-Anime": install_irodori_anime,
     "Irodori-TTS-Lite": install_irodori_lite,
     "KittenTTS": install_kitten_tts,
     "Kokoro": install_kokoro,

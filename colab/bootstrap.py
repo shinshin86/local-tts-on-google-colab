@@ -35,6 +35,16 @@ def parse_args():
     parser.add_argument("--irodori-model-precision", default="fp32")
     parser.add_argument("--irodori-codec-precision", default="fp32")
     parser.add_argument(
+        "--irodori-anime-hf-checkpoint",
+        default="phasefield-audio/Irodori-TTS-v4.1-Anime",
+    )
+    parser.add_argument(
+        "--irodori-anime-codec-repo",
+        default="Aratako/Semantic-DACVAE-Japanese-32dim",
+    )
+    parser.add_argument("--irodori-anime-model-precision", default="fp32")
+    parser.add_argument("--irodori-anime-codec-precision", default="fp32")
+    parser.add_argument(
         "--irodori-lite-hf-checkpoint", default="kizuna-intelligence/Irodori-TTS-Lite-int4"
     )
     parser.add_argument("--irodori-lite-checkpoint-file", default="dit_int4.safetensors")
@@ -347,6 +357,10 @@ def main():
         irodori_codec_repo=args.irodori_codec_repo,
         irodori_model_precision=args.irodori_model_precision,
         irodori_codec_precision=args.irodori_codec_precision,
+        irodori_anime_hf_checkpoint=args.irodori_anime_hf_checkpoint,
+        irodori_anime_codec_repo=args.irodori_anime_codec_repo,
+        irodori_anime_model_precision=args.irodori_anime_model_precision,
+        irodori_anime_codec_precision=args.irodori_anime_codec_precision,
         irodori_lite_hf_checkpoint=args.irodori_lite_hf_checkpoint,
         irodori_lite_checkpoint_file=args.irodori_lite_checkpoint_file,
         irodori_lite_codec_repo=args.irodori_lite_codec_repo,

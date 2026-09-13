@@ -112,6 +112,8 @@ def resolve_selected_voice(settings: Settings) -> str:
         return settings.moss_local_v1_5_default_voice
     if settings.engine == "Vyvo-Multilingual":
         return settings.vyvo_default_voice
+    if settings.engine == "Irodori-TTS-Anime":
+        return "default"
     return ""
 
 
@@ -747,6 +749,21 @@ def print_engine_voice_hints(settings: Settings):
         print("voice パラメータによる話者切り替え・Voice cloning は現在未対応です。")
         print("生成音声には上流ランタイムが SilentCipher ウォーターマークを適用します。")
         print("ライセンス: コード・v1/v2/v3/v4 重み・既定コーデックはいずれも MIT。")
+        print("乱用防止: なりすまし・ディープフェイク用途には使用しないでください。")
+    elif settings.engine == "Irodori-TTS-Anime":
+        print("Irodori-TTS-Anime は Irodori-TTS-v4.1-Small のアニメ調ファインチューニングです。")
+        print("配布元: phasefield-audio（Aratako 公式モデルではない第三者配布）")
+        print(f"モデル: {settings.irodori_anime_hf_checkpoint}")
+        print(f"コーデック: {settings.irodori_anime_codec_repo}")
+        print(
+            f"精度: model={settings.irodori_anime_model_precision} / "
+            f"codec={settings.irodori_anime_codec_precision}"
+        )
+        print("voice パラメータは 'default' のみ対応します。")
+        print("現在の OpenAI 互換ラッパーは text-only・参照音声なしで推論します。")
+        print("caption、Voice cloning、emoji による演技制御は公開していません。")
+        print("生成音声には上流ランタイムが SilentCipher ウォーターマークを適用します。")
+        print("ライセンス: 上流コード・モデル重み・既定コーデックはいずれも MIT。")
         print("乱用防止: なりすまし・ディープフェイク用途には使用しないでください。")
     elif settings.engine == "Irodori-TTS-Lite":
         print("Irodori-TTS-Lite は Irodori-TTS の int4 量子化ランタイムです（~1GB VRAM、音質ほぼ無劣化、MIT）。")

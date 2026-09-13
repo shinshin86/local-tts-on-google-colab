@@ -31,12 +31,14 @@ MODEL_PRECISION = os.environ.get("IRODORI_MODEL_PRECISION", "fp32")
 CODEC_PRECISION = os.environ.get("IRODORI_CODEC_PRECISION", "fp32")
 CODEC_REPO = os.environ.get("IRODORI_CODEC_REPO", "Aratako/Semantic-DACVAE-Japanese-32dim")
 OPENAI_MODEL_ID = os.environ.get("OPENAI_MODEL_ID", HF_CHECKPOINT)
+ENGINE_NAME = os.environ.get("IRODORI_ENGINE_NAME", "Irodori-TTS")
+DEFAULT_VOICE_ONLY = os.environ.get("IRODORI_DEFAULT_VOICE_ONLY", "0") == "1"
 
 # v3/v4 upstream ship SilentCipher; it is initialized unconditionally inside InferenceRuntime
 # and applied automatically when the watermarker reports ready=True. There is no public
 # kill-switch and that is intentional — per the model release the watermark must remain.
 
-app = FastAPI(title="Irodori OpenAI Compatible TTS")
+app = FastAPI(title=f"{ENGINE_NAME} OpenAI Compatible TTS")
 
 app.add_middleware(
     CORSMiddleware,
@@ -90,7 +92,7 @@ async def unhandled_exception_handler(request: Request, exc: Exception):
 
 @app.get("/")
 def root():
-    return {"ok": True, "engine": "Irodori-TTS", "model": OPENAI_MODEL_ID}
+    return {"ok": True, "engine": ENGINE_NAME, "model": OPENAI_MODEL_ID}
 
 
 @app.get("/v1/models")
@@ -109,13 +111,19 @@ def list_models():
 
 @app.get("/v1/voices")
 def list_voices():
-    return {"object": "list", "data": []}
+    voices = [{"id": "default", "object": "voice"}] if DEFAULT_VOICE_ONLY else []
+    return {"object": "list", "data": voices}
 
 
 @app.post("/v1/audio/speech")
 async def audio_speech(payload: AudioSpeechRequest):
     if payload.response_format.lower() != "wav":
         raise HTTPException(status_code=400, detail="This wrapper currently supports only wav.")
+    if DEFAULT_VOICE_ONLY and payload.voice not in {None, "", "default"}:
+        raise HTTPException(
+            status_code=400,
+            detail="This model supports only voice='default'.",
+        )
 
     runtime = get_runtime()
     cfg_scale_text, _cfg_scale_caption, cfg_scale_speaker, _ = resolve_cfg_scales(
