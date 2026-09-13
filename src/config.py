@@ -74,6 +74,11 @@ class Settings:
     irodori_codec_repo: str = "Aratako/Semantic-DACVAE-Japanese-32dim"
     irodori_model_precision: str = "fp32"
     irodori_codec_precision: str = "fp32"
+    # Third-party anime-style fine-tune of Irodori-TTS-v4.1-Small.
+    irodori_anime_hf_checkpoint: str = "phasefield-audio/Irodori-TTS-v4.1-Anime"
+    irodori_anime_codec_repo: str = "Aratako/Semantic-DACVAE-Japanese-32dim"
+    irodori_anime_model_precision: str = "fp32"
+    irodori_anime_codec_precision: str = "fp32"
     # Irodori-TTS-Lite: int4-quantized runtime that monkey-patches the upstream Irodori-TTS.
     # Default: voice-design int4 (no Duration Predictor; seconds derived from text).
     # Switch to "kizuna-intelligence/Irodori-TTS-500M-v3-int4" with checkpoint_file="model.safetensors"

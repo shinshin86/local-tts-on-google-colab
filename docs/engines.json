@@ -38,6 +38,7 @@
       "Higgs-Audio-v3",
       "IndexTTS2",
       "Irodori-TTS",
+      "Irodori-TTS-Anime",
       "Irodori-TTS-Lite",
       "KittenTTS",
       "Kokoro",
@@ -1179,6 +1180,59 @@
       ]
     },
     {
+      "id": "Irodori-TTS-Anime",
+      "title": "Irodori-TTS-Anime (third-party fine-tune, GPU required)",
+      "status": "Not yet verified (GPU required, v4.1 Anime)",
+      "status_ja": "未検証（GPU 必須、v4.1 Anime）",
+      "languages": "Japanese",
+      "languages_ja": "日本語",
+      "description": "A separate engine for [`phasefield-audio/Irodori-TTS-v4.1-Anime`](https://huggingface.co/phasefield-audio/Irodori-TTS-v4.1-Anime), an anime-style fine-tune of `Aratako/Irodori-TTS-v4.1-Small`. This checkpoint is distributed by the third-party `phasefield-audio` account and is not an official Aratako release, so it is kept separate from the official `Irodori-TTS` checkpoint selector. It reuses the upstream Irodori-TTS inference runtime and the `Aratako/Semantic-DACVAE-Japanese-32dim` codec.",
+      "description_ja": "[`phasefield-audio/Irodori-TTS-v4.1-Anime`](https://huggingface.co/phasefield-audio/Irodori-TTS-v4.1-Anime) を使用する独立エンジンです。`Aratako/Irodori-TTS-v4.1-Small` をアニメ調の音声データで追加学習したモデルですが、配布元は第三者の `phasefield-audio` であり、Aratako公式リリースではありません。そのため、公式 `Irodori-TTS` のチェックポイント選択肢とは分離しています。推論には上流のIrodori-TTSランタイムと `Aratako/Semantic-DACVAE-Japanese-32dim` コーデックを再利用します。",
+      "notes": [
+        "- Unofficial anime-style fine-tune of Irodori-TTS-v4.1-Small, distributed by phasefield-audio rather than the official Aratako account.",
+        "- This wrapper exposes text-only, no-reference inference with only voice=\"default\". Caption, Voice cloning, and emoji controls are not exposed.",
+        "- License: MIT for the upstream code, model weights, and codec. The base model's ethical restrictions prohibit unauthorized impersonation and misleading deepfakes."
+      ],
+      "notes_ja": [
+        "- ライセンス: コードは MIT (Aratako/Irodori-TTS)、モデル重みは MIT (`phasefield-audio/Irodori-TTS-v4.1-Anime`)。商用利用: OK。 備考: v4.1-Small の非公式な第三者ファインチューニング。元モデルの倫理制限とSilentCipherウォーターマーク処理を継承"
+      ],
+      "prefix": "IRODORI_ANIME",
+      "params": [
+        {
+          "name": "IRODORI_ANIME_HF_CHECKPOINT",
+          "default": "phasefield-audio/Irodori-TTS-v4.1-Anime",
+          "type": "string",
+          "flag": "--irodori-anime-hf-checkpoint"
+        },
+        {
+          "name": "IRODORI_ANIME_CODEC_REPO",
+          "default": "Aratako/Semantic-DACVAE-Japanese-32dim",
+          "type": "string",
+          "flag": "--irodori-anime-codec-repo"
+        },
+        {
+          "name": "IRODORI_ANIME_MODEL_PRECISION",
+          "default": "fp32",
+          "type": "select",
+          "options": [
+            "fp32",
+            "bf16"
+          ],
+          "flag": "--irodori-anime-model-precision"
+        },
+        {
+          "name": "IRODORI_ANIME_CODEC_PRECISION",
+          "default": "fp32",
+          "type": "select",
+          "options": [
+            "fp32",
+            "bf16"
+          ],
+          "flag": "--irodori-anime-codec-precision"
+        }
+      ]
+    },
+    {
       "id": "Irodori-TTS-Lite",
       "title": "Irodori-TTS-Lite (int4-quantized Irodori-TTS, ~1GB VRAM, MIT)",
       "status": "Works (GPU required, ~1GB VRAM, int4-quantized)",
@@ -1598,7 +1652,9 @@
       "notes": [
         "- License: MIT for both code ([myshell-ai/MeloTTS](https://github.com/myshell-ai/MeloTTS)) and the per-language weight repos. Commercial use OK."
       ],
-      "notes_ja": [],
+      "notes_ja": [
+        "- ライセンス: コードは MIT、モデル重みは MIT（言語ごとの重みリポジトリ）。商用利用: OK。 備考: Colab では動作しない（`tokenizers` が Rust ツールチェーンを要求）"
+      ],
       "prefix": "MELO",
       "params": [
         {
@@ -2983,7 +3039,9 @@
       "notes": [
         "- License: code is **AGPL-3.0** ([litagin02/Style-Bert-VITS2](https://github.com/litagin02/Style-Bert-VITS2)); default weights are **CC-BY-SA-4.0** (`litagin/style_bert_vits2_jvnv`, inherited from the JVNV corpus). Commercial use is permitted only under copyleft obligations: AGPL §13 requires source disclosure to network users; CC-BY-SA requires attribution + share-alike on any derivative."
       ],
-      "notes_ja": [],
+      "notes_ja": [
+        "- ライセンス: コードは AGPL-3.0、モデル重みは CC-BY-SA-4.0（`litagin/style_bert_vits2_jvnv`、JVNV コーパス由来）。商用利用: 要確認。 備考: コピーレフト: AGPL §13 によりネットワーク利用者へのソース開示が必要、CC-BY-SA によりクレジット表示と継承が必要。Colab では動作しない"
+      ],
       "prefix": "STYLE_BERT",
       "params": [
         {
