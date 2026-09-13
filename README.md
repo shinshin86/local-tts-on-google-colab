@@ -13,7 +13,7 @@ Supported engines:
 | Kokoro | Works | Japanese / English / Chinese and more | OK |
 | Kokoro-ONNX | Works | Japanese / English / Chinese and more | OK |
 | Irodori-TTS | Works on L4 (GPU required, v4-Small) | Japanese | OK |
-| Irodori-TTS-Anime | Not yet verified (GPU required, v4.1 Anime) | Japanese | OK |
+| Irodori-TTS-Anime | Works on L4 (GPU required, v4.1 Anime) | Japanese | OK |
 | Irodori-TTS-Lite | Works (GPU required, ~1GB VRAM, int4-quantized) | Japanese | OK |
 | Piper | Works | English (default) / multilingual | Not with defaults (default voice is research-only) |
 | Piper-Plus | Works | Japanese / English / Chinese and 6 languages | OK |
@@ -1394,7 +1394,7 @@ A separate engine for [`phasefield-audio/Irodori-TTS-v4.1-Anime`](https://huggin
 
 The OpenAI-compatible wrapper currently provides text-only, no-reference inference and accepts only `voice="default"`. Caption conditioning, reference-audio Voice cloning, and emoji-based delivery controls are not exposed. The model card notes that its training data was annotated independently, so caption and emoji behavior may differ from the base model even when used directly through the upstream runtime.
 
-The full-precision checkpoint is approximately 3.06 GB. GPU execution is required for this Colab wrapper; end-to-end Colab and `trycloudflare` verification is still pending. The upstream code, model weights, and codec are MIT-licensed. The model inherits the base model's ethical restrictions against unauthorized impersonation and misleading deepfakes, and generated audio retains the upstream SilentCipher watermarking path.
+The full-precision checkpoint is approximately 3.06 GB. GPU execution is required for this Colab wrapper. The default configuration was verified end to end on an NVIDIA L4 Colab runtime: installation and startup completed successfully, both local and public `trycloudflare` requests returned a valid 48 kHz mono WAV, and an unsupported voice returned HTTP 400 as expected. The upstream code, model weights, and codec are MIT-licensed. The model inherits the base model's ethical restrictions against unauthorized impersonation and misleading deepfakes, and generated audio retains the upstream SilentCipher watermarking path.
 
 ### Irodori-TTS-Lite
 

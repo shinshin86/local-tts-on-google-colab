@@ -1182,8 +1182,8 @@
     {
       "id": "Irodori-TTS-Anime",
       "title": "Irodori-TTS-Anime (third-party fine-tune, GPU required)",
-      "status": "Not yet verified (GPU required, v4.1 Anime)",
-      "status_ja": "未検証（GPU 必須、v4.1 Anime）",
+      "status": "Works on L4 (GPU required, v4.1 Anime)",
+      "status_ja": "L4 で動作確認済み（GPU 必須、v4.1 Anime）",
       "languages": "Japanese",
       "languages_ja": "日本語",
       "description": "A separate engine for [`phasefield-audio/Irodori-TTS-v4.1-Anime`](https://huggingface.co/phasefield-audio/Irodori-TTS-v4.1-Anime), an anime-style fine-tune of `Aratako/Irodori-TTS-v4.1-Small`. This checkpoint is distributed by the third-party `phasefield-audio` account and is not an official Aratako release, so it is kept separate from the official `Irodori-TTS` checkpoint selector. It reuses the upstream Irodori-TTS inference runtime and the `Aratako/Semantic-DACVAE-Japanese-32dim` codec.",

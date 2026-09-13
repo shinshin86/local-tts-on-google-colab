@@ -13,7 +13,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | Kokoro | 動作OK | 日本語 / 英語 / 中国語 他 | OK |
 | Kokoro-ONNX | 動作OK | 日本語 / 英語 / 中国語 他 | OK |
 | Irodori-TTS | L4 で動作確認済み（GPU 必須、v4-Small） | 日本語 | OK |
-| Irodori-TTS-Anime | 未検証（GPU 必須、v4.1 Anime） | 日本語 | OK |
+| Irodori-TTS-Anime | L4 で動作確認済み（GPU 必須、v4.1 Anime） | 日本語 | OK |
 | Irodori-TTS-Lite | 動作OK（GPU 必須、VRAM ~1GB、int4 量子化） | 日本語 | OK |
 | Piper | 動作OK | 英語（デフォルト）/ 多言語 | 既定は不可（既定音声が研究用途のみ） |
 | Piper-Plus | 動作OK | 日本語 / 英語 / 中国語 他 6言語 | OK |
@@ -1395,7 +1395,7 @@ v4-Small の上流ランタイムは、VoiceDesign caption、スタイル制御�
 
 OpenAI互換ラッパーが提供するのはtext-only・参照音声なしの推論で、`voice="default"` のみを受け付けます。caption条件付け、参照音声によるVoice cloning、emojiによる演技制御は公開していません。またモデルカードには、学習データのアノテーションを独自に行ったため、上流ランタイムを直接使用した場合でもcaptionやemojiの挙動がベースモデルと異なる可能性があると記載されています。
 
-フル精度チェックポイントは約3.06GBです。本ColabラッパーではGPU必須とし、Colabおよび公開`trycloudflare`経由のエンドツーエンド検証は未実施です。上流コード、モデル重み、コーデックはいずれもMITです。元モデルと同じ、無断のなりすましや誤解を招くディープフェイクを禁止する倫理制限を引き継ぎ、生成音声には上流のSilentCipherウォーターマーク処理を維持します。
+フル精度チェックポイントは約3.06GBです。本ColabラッパーではGPU必須です。デフォルト構成は NVIDIA L4 の Colab ランタイムでエンドツーエンド検証済みです。インストールと起動が完了し、ローカルおよび公開`trycloudflare`経由のリクエストが正常な48 kHzモノラルWAVを返すこと、未対応voiceが想定どおりHTTP 400を返すことを確認しました。上流コード、モデル重み、コーデックはいずれもMITです。元モデルと同じ、無断のなりすましや誤解を招くディープフェイクを禁止する倫理制限を引き継ぎ、生成音声には上流のSilentCipherウォーターマーク処理を維持します。
 
 ### Irodori-TTS-Lite
 
