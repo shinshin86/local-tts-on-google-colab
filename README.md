@@ -12,7 +12,7 @@ Supported engines:
 |---|---|---|---|
 | Kokoro | Works | Japanese / English / Chinese and more | OK |
 | Kokoro-ONNX | Works | Japanese / English / Chinese and more | OK |
-| Irodori-TTS | GPU required (v4.1-Small default; v4-Small verified on L4) | Japanese | OK |
+| Irodori-TTS | Works on L4 (GPU required; v4.1-Small default, v4-Small selectable) | Japanese | OK |
 | Irodori-TTS-Anime | Works on L4 (GPU required, v4.1 Anime) | Japanese | OK |
 | Irodori-TTS-Lite | Works (GPU required, ~1GB VRAM, int4-quantized) | Japanese | OK |
 | Piper | Works | English (default) / multilingual | Not with defaults (default voice is research-only) |
@@ -1386,7 +1386,7 @@ The wrapper handles these version differences automatically:
 - **Duration Predictor**: the wrapper reads the checkpoint metadata instead of guessing from the repository name. V4.1, V4, and V3 therefore use automatic duration prediction, while legacy fixed-duration checkpoints retain their 30-second slot.
 - **Integrated SilentCipher watermark**: V4.1, V4, and V3 use [SilentCipher](https://github.com/sony/silentcipher), initialized inside the upstream `InferenceRuntime`. Generated audio is watermarked whenever the SilentCipher weights are available. **Do not strip the watermark**; it is part of the model release.
 
-V4.1-Small retains v4-Small's VoiceDesign captions, style-controlled voice cloning, and support for up to 120 seconds of combined reference audio in the upstream runtime. Those inputs are not yet part of this wrapper's `/v1/audio/speech` contract. The FP32 checkpoint is about 3 GB, so GPU use is recommended. The original v4-Small default was verified on an NVIDIA L4 Colab runtime: installation and startup completed successfully, the OpenAI-compatible `/v1/audio/speech` endpoint returned a 48 kHz WAV through both local and public `trycloudflare` access, and caption-only VoiceDesign was exercised separately through the upstream runtime. The new v4.1-Small default still requires the same Colab end-to-end verification.
+V4.1-Small retains v4-Small's VoiceDesign captions, style-controlled voice cloning, and support for up to 120 seconds of combined reference audio in the upstream runtime. Those inputs are not yet part of this wrapper's `/v1/audio/speech` contract. The FP32 checkpoint is about 3 GB, so GPU use is recommended. The v4.1-Small default was verified end to end on an NVIDIA L4 Colab runtime: installation and startup completed successfully, and the OpenAI-compatible `/v1/audio/speech` endpoint returned a valid 48 kHz mono WAV through both local and public `trycloudflare` access. The original v4-Small remains selectable and was verified previously, including caption-only VoiceDesign exercised separately through the upstream runtime.
 
 ### Irodori-TTS-Anime
 

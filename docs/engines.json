@@ -1121,8 +1121,8 @@
     {
       "id": "Irodori-TTS",
       "title": "Irodori-TTS",
-      "status": "GPU required (v4.1-Small default; v4-Small verified on L4)",
-      "status_ja": "GPU 必須（デフォルトは v4.1-Small、v4-Small は L4 で確認済み）",
+      "status": "Works on L4 (GPU required; v4.1-Small default, v4-Small selectable)",
+      "status_ja": "L4 で動作確認済み（GPU 必須、デフォルトは v4.1-Small、v4-Small も選択可能）",
       "languages": "Japanese",
       "languages_ja": "日本語",
       "description": "A Japanese TTS using [Aratako/Irodori-TTS](https://github.com/Aratako/Irodori-TTS). The default is the approximately 766M-parameter `Aratako/Irodori-TTS-v4.1-Small`, a compatible update to v4-Small that replaces and retrains only the Duration Predictor to improve automatic duration estimates and reduce generation errors from overestimated lengths. The original v4-Small and the released v3, v2, and v1 checkpoints remain selectable. Output is high-quality 48 kHz, but this OpenAI-compatible wrapper currently exposes text-only, no-reference inference and does not switch voices.",

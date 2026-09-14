@@ -12,7 +12,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 |---|---|---|---|
 | Kokoro | 動作OK | 日本語 / 英語 / 中国語 他 | OK |
 | Kokoro-ONNX | 動作OK | 日本語 / 英語 / 中国語 他 | OK |
-| Irodori-TTS | GPU 必須（デフォルトは v4.1-Small、v4-Small は L4 で確認済み） | 日本語 | OK |
+| Irodori-TTS | L4 で動作確認済み（GPU 必須、デフォルトは v4.1-Small、v4-Small も選択可能） | 日本語 | OK |
 | Irodori-TTS-Anime | L4 で動作確認済み（GPU 必須、v4.1 Anime） | 日本語 | OK |
 | Irodori-TTS-Lite | 動作OK（GPU 必須、VRAM ~1GB、int4 量子化） | 日本語 | OK |
 | Piper | 動作OK | 英語（デフォルト）/ 多言語 | 既定は不可（既定音声が研究用途のみ） |
@@ -1387,7 +1387,7 @@ NVIDIA が Kokoro-82M を ONNX 化したモデル（[nvidia/kokoro-82M-onnx-opt]
 - **Duration Predictor**: リポジトリ名から推測せず、チェックポイントのメタデータを参照します。これにより v4.1 / v4 / v3 は出力長を自動推定し、従来の固定長チェックポイントは 30 秒枠を維持します。
 - **SilentCipher ウォーターマーク統合**: v4.1 / v4 / v3 は上流の `InferenceRuntime` 内で [SilentCipher](https://github.com/sony/silentcipher) を初期化します。SilentCipher の重みが利用できる場合、生成音声にはウォーターマークが入ります。**ウォーターマークを除去しないでください**（モデルリリースの一部です）。
 
-v4.1-Small は、v4-Small の VoiceDesign caption、スタイル制御付き Voice cloning、合計最大 120 秒の参照音声への対応を引き継いでいます。これらの入力は、現時点では本ラッパーの `/v1/audio/speech` 契約には含めていません。FP32 チェックポイントは約 3GB のため GPU 利用を推奨します。従来の v4-Small デフォルト構成は NVIDIA L4 の Colab ランタイムで検証済みです。インストールと起動が完了し、OpenAI 互換 `/v1/audio/speech` がローカルおよび公開 `trycloudflare` 経由で 48kHz WAV を返すことを確認しました。caption-only の VoiceDesign も、同じランタイム上で上流ランタイムを直接使用して別途確認しています。新しい v4.1-Small デフォルト構成については、同じ Colab でのエンドツーエンド検証が必要です。
+v4.1-Small は、v4-Small の VoiceDesign caption、スタイル制御付き Voice cloning、合計最大 120 秒の参照音声への対応を引き継いでいます。これらの入力は、現時点では本ラッパーの `/v1/audio/speech` 契約には含めていません。FP32 チェックポイントは約 3GB のため GPU 利用を推奨します。v4.1-Small のデフォルト構成は NVIDIA L4 の Colab ランタイムでエンドツーエンド検証済みです。インストールと起動が完了し、OpenAI 互換 `/v1/audio/speech` がローカルおよび公開 `trycloudflare` 経由で正常な 48kHz モノラル WAV を返すことを確認しました。従来の v4-Small も引き続き選択でき、以前の検証では上流ランタイムを直接使用した caption-only の VoiceDesign も確認しています。
 
 ### Irodori-TTS-Anime
 
