@@ -23,8 +23,8 @@ from irodori_tts.inference_runtime import (
 logger = logging.getLogger("uvicorn.error")
 
 # V1: checkpoint="Aratako/Irodori-TTS-500M", codec_repo="facebook/dacvae-watermarked"
-# V2/V3 remain supported by the current upstream runtime.
-HF_CHECKPOINT = os.environ.get("IRODORI_HF_CHECKPOINT", "Aratako/Irodori-TTS-v4-Small")
+# V2/V3/V4 remain supported by the current upstream runtime.
+HF_CHECKPOINT = os.environ.get("IRODORI_HF_CHECKPOINT", "Aratako/Irodori-TTS-v4.1-Small")
 MODEL_DEVICE = os.environ.get("IRODORI_MODEL_DEVICE", default_runtime_device())
 CODEC_DEVICE = os.environ.get("IRODORI_CODEC_DEVICE", default_runtime_device())
 MODEL_PRECISION = os.environ.get("IRODORI_MODEL_PRECISION", "fp32")
@@ -34,7 +34,7 @@ OPENAI_MODEL_ID = os.environ.get("OPENAI_MODEL_ID", HF_CHECKPOINT)
 ENGINE_NAME = os.environ.get("IRODORI_ENGINE_NAME", "Irodori-TTS")
 DEFAULT_VOICE_ONLY = os.environ.get("IRODORI_DEFAULT_VOICE_ONLY", "0") == "1"
 
-# v3/v4 upstream ship SilentCipher; it is initialized unconditionally inside InferenceRuntime
+# v3/v4/v4.1 upstream ship SilentCipher; it is initialized unconditionally inside InferenceRuntime
 # and applied automatically when the watermarker reports ready=True. There is no public
 # kill-switch and that is intentional — per the model release the watermark must remain.
 
@@ -134,7 +134,7 @@ async def audio_speech(payload: AudioSpeechRequest):
         cfg_scale=None,
     )
 
-    # Use checkpoint metadata instead of its versioned repo name. v3/v4 expose a
+    # Use checkpoint metadata instead of its versioned repo name. v3/v4/v4.1 expose a
     # Duration Predictor; legacy checkpoints fall back to their fixed 30-second slot.
     seconds = None if runtime.model_cfg.use_duration_predictor else 30.0
     result = runtime.synthesize(

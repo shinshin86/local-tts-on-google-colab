@@ -1121,27 +1121,28 @@
     {
       "id": "Irodori-TTS",
       "title": "Irodori-TTS",
-      "status": "Works on L4 (GPU required, v4-Small)",
-      "status_ja": "L4 で動作確認済み（GPU 必須、v4-Small）",
+      "status": "Works on L4 (GPU required; v4.1-Small default, v4-Small selectable)",
+      "status_ja": "L4 で動作確認済み（GPU 必須、デフォルトは v4.1-Small、v4-Small も選択可能）",
       "languages": "Japanese",
       "languages_ja": "日本語",
-      "description": "A Japanese TTS using [Aratako/Irodori-TTS](https://github.com/Aratako/Irodori-TTS). The default is the approximately 766M-parameter `Aratako/Irodori-TTS-v4-Small`, which unifies text, reference-speech, and caption conditioning in one Rectified Flow DiT checkpoint. The released v3, v2, and v1 checkpoints remain selectable. Output is high-quality 48 kHz, but this OpenAI-compatible wrapper currently exposes text-only, no-reference inference and does not switch voices.",
-      "description_ja": "[Aratako/Irodori-TTS](https://github.com/Aratako/Irodori-TTS) を使った日本語 TTS です。デフォルトは約 766M パラメータの `Aratako/Irodori-TTS-v4-Small` で、text・参照音声・caption の条件付けを1つの Rectified Flow DiT チェックポイントに統合しています。公開済みの v3 / v2 / v1 も引き続き選択できます。出力は高音質な 48kHz ですが、現在の OpenAI 互換ラッパーが公開するのは text-only・参照音声なしの推論で、voice 切り替えには未対応です。",
+      "description": "A Japanese TTS using [Aratako/Irodori-TTS](https://github.com/Aratako/Irodori-TTS). The default is the approximately 766M-parameter `Aratako/Irodori-TTS-v4.1-Small`, a compatible update to v4-Small that replaces and retrains only the Duration Predictor to improve automatic duration estimates and reduce generation errors from overestimated lengths. The original v4-Small and the released v3, v2, and v1 checkpoints remain selectable. Output is high-quality 48 kHz, but this OpenAI-compatible wrapper currently exposes text-only, no-reference inference and does not switch voices.",
+      "description_ja": "[Aratako/Irodori-TTS](https://github.com/Aratako/Irodori-TTS) を使った日本語 TTS です。デフォルトは約 766M パラメータの `Aratako/Irodori-TTS-v4.1-Small` です。v4-Small の Duration Predictor だけを置き換えて再学習した互換アップデートで、自動的な音声尺の推定を改善し、尺の過大推定による生成エラーを減らしています。従来の v4-Small と、公開済みの v3 / v2 / v1 も引き続き選択できます。出力は高音質な 48kHz ですが、現在の OpenAI 互換ラッパーが公開するのは text-only・参照音声なしの推論で、voice 切り替えには未対応です。",
       "notes": [
-        "- Default: v4-Small (unified text / reference / caption model, Duration Predictor + always-on SilentCipher watermark). This wrapper currently exposes text-only, no-reference inference.",
-        "- Older variants: v3, v2, or v1 (v1 also needs codec_repo=\"facebook/dacvae-watermarked\").",
-        "- License: MIT for code ([Aratako/Irodori-TTS](https://github.com/Aratako/Irodori-TTS)), all weight variants (v1/v2/v3/v4), and the Aratako/Semantic-DACVAE-Japanese-32dim codec. Commercial use OK. The author requests ethical use (no impersonation/deepfake)."
+        "- Default: v4.1-Small (v4-Small with an improved Duration Predictor; unified text / reference / caption model + always-on SilentCipher watermark). This wrapper currently exposes text-only, no-reference inference.",
+        "- Previous variants: v4-Small, v3, v2, or v1 (v1 also needs codec_repo=\"facebook/dacvae-watermarked\").",
+        "- License: MIT for code ([Aratako/Irodori-TTS](https://github.com/Aratako/Irodori-TTS)), all weight variants (v1/v2/v3/v4/v4.1), and the Aratako/Semantic-DACVAE-Japanese-32dim codec. Commercial use OK. The author requests ethical use (no impersonation/deepfake)."
       ],
       "notes_ja": [
-        "- ライセンス: コードは MIT、モデル重みは MIT (v1 / v2 / v3 / v4)。商用利用: OK。 備考: なりすまし・ディープフェイク生成を禁止する倫理規定あり。V3/V4 は SilentCipher ウォーターマーク同梱（除去禁止）"
+        "- ライセンス: コードは MIT、モデル重みは MIT (v1 / v2 / v3 / v4 / v4.1)。商用利用: OK。 備考: なりすまし・ディープフェイク生成を禁止する倫理規定あり。V3/V4/V4.1 は SilentCipher ウォーターマーク同梱（除去禁止）"
       ],
       "prefix": "IRODORI",
       "params": [
         {
           "name": "IRODORI_HF_CHECKPOINT",
-          "default": "Aratako/Irodori-TTS-v4-Small",
+          "default": "Aratako/Irodori-TTS-v4.1-Small",
           "type": "select",
           "options": [
+            "Aratako/Irodori-TTS-v4.1-Small",
             "Aratako/Irodori-TTS-v4-Small",
             "Aratako/Irodori-TTS-500M-v3",
             "Aratako/Irodori-TTS-500M-v2",

@@ -28,8 +28,8 @@ def parse_args():
     parser.add_argument("--fish-speech-model", default="fishaudio/s2-pro")
     parser.add_argument("--f5tts-ckpt-file", default="")
     parser.add_argument("--f5tts-vocab-file", default="")
-    # V4 is the default. V3/V2/V1 remain available through the same runtime.
-    parser.add_argument("--irodori-hf-checkpoint", default="Aratako/Irodori-TTS-v4-Small")
+    # V4.1 is the default. V4/V3/V2/V1 remain available through the same runtime.
+    parser.add_argument("--irodori-hf-checkpoint", default="Aratako/Irodori-TTS-v4.1-Small")
     # V1を利用する場合: "facebook/dacvae-watermarked"
     parser.add_argument("--irodori-codec-repo", default="Aratako/Semantic-DACVAE-Japanese-32dim")
     parser.add_argument("--irodori-model-precision", default="fp32")

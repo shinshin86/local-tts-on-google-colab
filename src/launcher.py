@@ -743,12 +743,16 @@ def print_engine_voice_hints(settings: Settings):
             f"codec={settings.irodori_codec_precision}"
         )
         if "v4" in settings.irodori_hf_checkpoint.lower():
-            print("v4-Small: text / reference / caption を統合したモデルです。")
+            if "v4.1" in settings.irodori_hf_checkpoint.lower():
+                print("v4.1-Small: v4-Small の Duration Predictor 改良版です。")
+            else:
+                print("v4-Small: 従来版チェックポイントです。")
+            print("             text / reference / caption を統合したモデルです。")
             print("           現在の OpenAI 互換ラッパーは text-only・参照音声なしで推論します。")
         print("Duration Predictor の有無はチェックポイントのメタデータから自動判定します。")
         print("voice パラメータによる話者切り替え・Voice cloning は現在未対応です。")
         print("生成音声には上流ランタイムが SilentCipher ウォーターマークを適用します。")
-        print("ライセンス: コード・v1/v2/v3/v4 重み・既定コーデックはいずれも MIT。")
+        print("ライセンス: コード・v1/v2/v3/v4/v4.1 重み・既定コーデックはいずれも MIT。")
         print("乱用防止: なりすまし・ディープフェイク用途には使用しないでください。")
     elif settings.engine == "Irodori-TTS-Anime":
         print("Irodori-TTS-Anime は Irodori-TTS-v4.1-Small のアニメ調ファインチューニングです。")
