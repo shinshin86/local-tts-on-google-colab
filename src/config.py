@@ -68,8 +68,8 @@ class Settings:
     fish_speech_model: str = "fishaudio/s2-pro"
     f5tts_ckpt_file: str = ""
     f5tts_vocab_file: str = ""
-    # V4: "Aratako/Irodori-TTS-v4-Small". V3/V2/V1 remain selectable.
-    irodori_hf_checkpoint: str = "Aratako/Irodori-TTS-v4-Small"
+    # V4.1 is the default. V4/V3/V2/V1 remain selectable.
+    irodori_hf_checkpoint: str = "Aratako/Irodori-TTS-v4.1-Small"
     # V1を利用する場合: "facebook/dacvae-watermarked"
     irodori_codec_repo: str = "Aratako/Semantic-DACVAE-Japanese-32dim"
     irodori_model_precision: str = "fp32"
