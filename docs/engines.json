@@ -40,6 +40,7 @@
       "Irodori-TTS",
       "Irodori-TTS-Anime",
       "Irodori-TTS-Lite",
+      "Irodori-TTS-MF",
       "KittenTTS",
       "Kokoro",
       "Kokoro-ONNX",
@@ -1285,6 +1286,58 @@
           "type": "boolean",
           "true_flag": "--irodori-lite-codec-int4",
           "false_flag": null
+        }
+      ]
+    },
+    {
+      "id": "Irodori-TTS-MF",
+      "title": "Irodori-TTS-MF (official MeanFlow-distilled v4.1-Small, GPU required)",
+      "status": "Not yet verified on Colab (GPU required, 4-step MeanFlow)",
+      "status_ja": "Colab 未検証（GPU 必須、4ステップ MeanFlow）",
+      "languages": "Japanese",
+      "languages_ja": "日本語",
+      "description": "An independent engine entry for the official [`Aratako/Irodori-TTS-v4.1-Small-MF`](https://huggingface.co/Aratako/Irodori-TTS-v4.1-Small-MF), a MeanFlow-distilled version of v4.1-Small. The upstream runtime automatically selects the checkpoint's recommended four-step sampler, substantially reducing the sampling-step count compared with the standard rectified-flow model. This wrapper currently exposes text-only, no-reference inference and does not switch voices.",
+      "description_ja": "公式の [`Aratako/Irodori-TTS-v4.1-Small-MF`](https://huggingface.co/Aratako/Irodori-TTS-v4.1-Small-MF) を使用する独立エンジンです。v4.1-SmallをMeanFlow蒸留したモデルで、上流ランタイムがチェックポイント推奨の4ステップサンプラーを自動選択します。標準のRectified Flowモデルよりサンプリングステップ数を大幅に減らしています。現在のラッパーはtext-only・参照音声なしの推論のみを公開し、voice切り替えには対応していません。",
+      "notes": [
+        "- Uses the upstream-recommended automatic 4-step MeanFlow sampler. This wrapper exposes text-only, no-reference inference.",
+        "- License: MIT for code, model weights, and codec. SilentCipher watermarking and the upstream ethical-use restrictions remain in effect."
+      ],
+      "notes_ja": [
+        "- ライセンス: コードは MIT (Aratako/Irodori-TTS)、モデル重みは MIT (`Aratako/Irodori-TTS-v4.1-Small-MF`)。商用利用: OK。 備考: 公式のv4.1-Small MeanFlow蒸留版。4ステップ推論。倫理制限とSilentCipherウォーターマークを維持"
+      ],
+      "prefix": "IRODORI_MF",
+      "params": [
+        {
+          "name": "IRODORI_MF_HF_CHECKPOINT",
+          "default": "Aratako/Irodori-TTS-v4.1-Small-MF",
+          "type": "string",
+          "flag": "--irodori-mf-hf-checkpoint"
+        },
+        {
+          "name": "IRODORI_MF_CODEC_REPO",
+          "default": "Aratako/Semantic-DACVAE-Japanese-32dim",
+          "type": "string",
+          "flag": "--irodori-mf-codec-repo"
+        },
+        {
+          "name": "IRODORI_MF_MODEL_PRECISION",
+          "default": "fp32",
+          "type": "select",
+          "options": [
+            "fp32",
+            "bf16"
+          ],
+          "flag": "--irodori-mf-model-precision"
+        },
+        {
+          "name": "IRODORI_MF_CODEC_PRECISION",
+          "default": "fp32",
+          "type": "select",
+          "options": [
+            "fp32",
+            "bf16"
+          ],
+          "flag": "--irodori-mf-codec-precision"
         }
       ]
     },

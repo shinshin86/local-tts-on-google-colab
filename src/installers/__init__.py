@@ -17,6 +17,7 @@ from .indextts2 import install as install_indextts2
 from .irodori import install as install_irodori
 from .irodori_anime import install as install_irodori_anime
 from .irodori_lite import install as install_irodori_lite
+from .irodori_mf import install as install_irodori_mf
 from .kitten_tts import install as install_kitten_tts
 from .qwen3_tts import install as install_qwen3_tts
 from .kokoro import install as install_kokoro
@@ -75,6 +76,7 @@ INSTALLERS = {
     "Irodori-TTS": install_irodori,
     "Irodori-TTS-Anime": install_irodori_anime,
     "Irodori-TTS-Lite": install_irodori_lite,
+    "Irodori-TTS-MF": install_irodori_mf,
     "KittenTTS": install_kitten_tts,
     "Kokoro": install_kokoro,
     "Kokoro-ONNX": install_kokoro_onnx,

@@ -15,6 +15,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | Irodori-TTS | L4 で動作確認済み（GPU 必須、デフォルトは v4.1-Small、v4-Small も選択可能） | 日本語 | OK |
 | Irodori-TTS-Anime | L4 で動作確認済み（GPU 必須、v4.1 Anime） | 日本語 | OK |
 | Irodori-TTS-Lite | 動作OK（GPU 必須、VRAM ~1GB、int4 量子化） | 日本語 | OK |
+| Irodori-TTS-MF | Colab 未検証（GPU 必須、4ステップ MeanFlow） | 日本語 | OK |
 | Piper | 動作OK | 英語（デフォルト）/ 多言語 | 既定は不可（既定音声が研究用途のみ） |
 | Piper-Plus | 動作OK | 日本語 / 英語 / 中国語 他 6言語 | OK |
 | Qwen3-TTS | 動作OK (GPU必須) | 日本語 / 英語 / 中国語 他 10言語 | OK |
@@ -131,7 +132,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "FireRedTTS2", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "IndexTTS2", "Irodori-TTS", "Irodori-TTS-Anime", "Irodori-TTS-Lite", "KittenTTS", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "Zonos", "ZONOS2"]
+ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "FireRedTTS2", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "IndexTTS2", "Irodori-TTS", "Irodori-TTS-Anime", "Irodori-TTS-Lite", "Irodori-TTS-MF", "KittenTTS", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "Zonos", "ZONOS2"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -157,6 +158,15 @@ IRODORI_HF_CHECKPOINT = "Aratako/Irodori-TTS-v4.1-Small"  #@param ["Aratako/Irod
 IRODORI_CODEC_REPO = "Aratako/Semantic-DACVAE-Japanese-32dim"  #@param {type:"string"}
 IRODORI_MODEL_PRECISION = "fp32"  #@param ["fp32", "bf16", "fp16"]
 IRODORI_CODEC_PRECISION = "fp32"  #@param ["fp32", "bf16", "fp16"]
+
+#@markdown ---
+#@markdown Irodori-TTS-MF (official MeanFlow-distilled v4.1-Small, GPU required)
+#@markdown - Uses the upstream-recommended automatic 4-step MeanFlow sampler. This wrapper exposes text-only, no-reference inference.
+#@markdown - License: MIT for code, model weights, and codec. SilentCipher watermarking and the upstream ethical-use restrictions remain in effect.
+IRODORI_MF_HF_CHECKPOINT = "Aratako/Irodori-TTS-v4.1-Small-MF"  #@param {type:"string"}
+IRODORI_MF_CODEC_REPO = "Aratako/Semantic-DACVAE-Japanese-32dim"  #@param {type:"string"}
+IRODORI_MF_MODEL_PRECISION = "fp32"  #@param ["fp32", "bf16"]
+IRODORI_MF_CODEC_PRECISION = "fp32"  #@param ["fp32", "bf16"]
 
 #@markdown ---
 #@markdown Irodori-TTS-Anime (third-party fine-tune, GPU required)
@@ -761,6 +771,14 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         IRODORI_MODEL_PRECISION,
         "--irodori-codec-precision",
         IRODORI_CODEC_PRECISION,
+        "--irodori-mf-hf-checkpoint",
+        IRODORI_MF_HF_CHECKPOINT,
+        "--irodori-mf-codec-repo",
+        IRODORI_MF_CODEC_REPO,
+        "--irodori-mf-model-precision",
+        IRODORI_MF_MODEL_PRECISION,
+        "--irodori-mf-codec-precision",
+        IRODORI_MF_CODEC_PRECISION,
         "--irodori-anime-hf-checkpoint",
         IRODORI_ANIME_HF_CHECKPOINT,
         "--irodori-anime-codec-repo",
@@ -1396,6 +1414,12 @@ v4.1-Small は、v4-Small の VoiceDesign caption、スタイル制御付き Voi
 OpenAI互換ラッパーが提供するのはtext-only・参照音声なしの推論で、`voice="default"` のみを受け付けます。caption条件付け、参照音声によるVoice cloning、emojiによる演技制御は公開していません。またモデルカードには、学習データのアノテーションを独自に行ったため、上流ランタイムを直接使用した場合でもcaptionやemojiの挙動がベースモデルと異なる可能性があると記載されています。
 
 フル精度チェックポイントは約3.06GBです。本ColabラッパーではGPU必須です。デフォルト構成は NVIDIA L4 の Colab ランタイムでエンドツーエンド検証済みです。インストールと起動が完了し、ローカルおよび公開`trycloudflare`経由のリクエストが正常な48 kHzモノラルWAVを返すこと、未対応voiceが想定どおりHTTP 400を返すことを確認しました。上流コード、モデル重み、コーデックはいずれもMITです。元モデルと同じ、無断のなりすましや誤解を招くディープフェイクを禁止する倫理制限を引き継ぎ、生成音声には上流のSilentCipherウォーターマーク処理を維持します。
+
+### Irodori-TTS-MF
+
+公式の [`Aratako/Irodori-TTS-v4.1-Small-MF`](https://huggingface.co/Aratako/Irodori-TTS-v4.1-Small-MF) を使用する独立エンジンです。v4.1-SmallをMeanFlow蒸留したモデルで、上流ランタイムがチェックポイント推奨の4ステップサンプラーを自動選択します。標準のRectified Flowモデルよりサンプリングステップ数を大幅に減らしています。現在のラッパーはtext-only・参照音声なしの推論のみを公開し、voice切り替えには対応していません。
+
+コード、モデル重み、既定のDACVAEコーデックはいずれもMITです。SilentCipherウォーターマークと、無断のなりすまし・誤解を招くディープフェイクを禁止する上流の倫理制限を維持します。Colabでの動作確認は未実施です。
 
 ### Irodori-TTS-Lite
 
@@ -2067,6 +2091,7 @@ Colab T4 で確認済み: エンジン・`/v1` エンドポイント・trycloudf
 | Irodori-TTS | MIT | MIT (v1 / v2 / v3 / v4 / v4.1) | OK | なりすまし・ディープフェイク生成を禁止する倫理規定あり。V3/V4/V4.1 は SilentCipher ウォーターマーク同梱（除去禁止） |
 | Irodori-TTS-Anime | MIT (Aratako/Irodori-TTS) | MIT (`phasefield-audio/Irodori-TTS-v4.1-Anime`) | OK | v4.1-Small の非公式な第三者ファインチューニング。元モデルの倫理制限とSilentCipherウォーターマーク処理を継承 |
 | Irodori-TTS-Lite | MIT | MIT (`kizuna-intelligence/Irodori-TTS-Lite-int4`, `kizuna-intelligence/Irodori-TTS-500M-v3-int4`) | OK | Irodori-TTS 用の int4 量子化ランタイム。Triton カーネル使用のため Linux + CUDA 必須。`fused_int4_linear.py` は OneCompression（Fujitsu Ltd., MIT）からベンダリング |
+| Irodori-TTS-MF | MIT (Aratako/Irodori-TTS) | MIT (`Aratako/Irodori-TTS-v4.1-Small-MF`) | OK | 公式のv4.1-Small MeanFlow蒸留版。4ステップ推論。倫理制限とSilentCipherウォーターマークを維持 |
 | Piper | GPL-3.0 | MIT | 要注意 | デフォルト音声 `en_US-lessac-medium` の学習データ（Blizzard 2013）は研究目的限定・商用利用不可 |
 | Piper-Plus | MIT | MIT | OK | |
 | Qwen3-TTS | Apache 2.0 | Apache 2.0 | OK | |
@@ -2160,6 +2185,8 @@ Colab T4 で確認済み: エンジン・`/v1` エンドポイント・trycloudf
   https://huggingface.co/phasefield-audio/Irodori-TTS-v4.1-Anime
 - Irodori-TTS-Lite
   https://github.com/kizuna-intelligence/Irodori-TTS-Lite
+- Irodori-TTS v4.1-Small-MF weights
+  https://huggingface.co/Aratako/Irodori-TTS-v4.1-Small-MF
 - Kokoro
   https://github.com/hexgrad/kokoro
 - Kokoro-ONNX

@@ -17,6 +17,7 @@ def install_runtime(
     codec_precision: str,
     engine_name: str,
     log_filename: str,
+    num_steps: int | None = 40,
 ) -> dict:
     repo_dir = settings.engines_dir / engine_dir_name
     ensure_git_clone("https://github.com/Aratako/Irodori-TTS", repo_dir)
@@ -47,6 +48,7 @@ def install_runtime(
         "IRODORI_MODEL_PRECISION": model_precision,
         "IRODORI_CODEC_PRECISION": codec_precision,
         "IRODORI_ENGINE_NAME": engine_name,
+        "IRODORI_NUM_STEPS": "" if num_steps is None else str(num_steps),
         "OPENAI_MODEL_ID": settings.openai_model_id or checkpoint,
     }
     log_path = settings.log_dir / log_filename
@@ -80,4 +82,5 @@ def install(settings: Settings) -> dict:
         codec_precision=settings.irodori_codec_precision,
         engine_name="Irodori-TTS",
         log_filename="irodori-uvicorn.log",
+        num_steps=40,
     )

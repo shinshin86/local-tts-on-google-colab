@@ -33,6 +33,8 @@ CODEC_REPO = os.environ.get("IRODORI_CODEC_REPO", "Aratako/Semantic-DACVAE-Japan
 OPENAI_MODEL_ID = os.environ.get("OPENAI_MODEL_ID", HF_CHECKPOINT)
 ENGINE_NAME = os.environ.get("IRODORI_ENGINE_NAME", "Irodori-TTS")
 DEFAULT_VOICE_ONLY = os.environ.get("IRODORI_DEFAULT_VOICE_ONLY", "0") == "1"
+_num_steps = os.environ.get("IRODORI_NUM_STEPS", "40").strip()
+NUM_STEPS = int(_num_steps) if _num_steps else None
 
 # v3/v4/v4.1 upstream ship SilentCipher; it is initialized unconditionally inside InferenceRuntime
 # and applied automatically when the watermarker reports ready=True. There is no public
@@ -150,7 +152,7 @@ async def audio_speech(payload: AudioSpeechRequest):
             seconds=seconds,
             max_ref_seconds=30.0,
             max_text_len=None,
-            num_steps=40,
+            num_steps=NUM_STEPS,
             cfg_scale_text=cfg_scale_text,
             cfg_scale_speaker=cfg_scale_speaker,
             cfg_guidance_mode="independent",
