@@ -37,6 +37,7 @@ Supported engines:
 | Sarashina-TTS | Works (GPU required, ~6GB VRAM) | Japanese / English | Not allowed |
 | F5-TTS | Works (GPU required) | English / Chinese (Japanese via separate model) | Not allowed |
 | Chatterbox Multilingual V3 | Works (GPU recommended, 0.5B) | Japanese / English / Chinese and 23 languages | OK |
+| ZeroTTS | Not yet verified on Colab (CPU/ONNX, ~900MB download) | Vietnamese | OK |
 | Zonos | Works (GPU required, ~6GB VRAM) | Japanese / English / Chinese / French / German | OK |
 | ZONOS2 | Works (L4 verified, sm_80+ required) | 41 languages (tier-1: Japanese / English / Chinese) | OK |
 | OuteTTS | Works (CPU OK) | Japanese / English / Chinese and many languages | Conditional (default 0.6B OK; 1B not allowed) |
@@ -132,7 +133,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Audio8-TTS", "Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "FireRedTTS2", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "IndexTTS2", "Irodori-TTS", "Irodori-TTS-Anime", "Irodori-TTS-Lite", "Irodori-TTS-MF", "KittenTTS", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "Zonos", "ZONOS2"]
+ENGINE = "Kokoro"  #@param ["Audio8-TTS", "Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "FireRedTTS2", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "IndexTTS2", "Irodori-TTS", "Irodori-TTS-Anime", "Irodori-TTS-Lite", "Irodori-TTS-MF", "KittenTTS", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "ZeroTTS", "Zonos", "ZONOS2"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -154,6 +155,19 @@ AUDIO8_MAX_NEW_TOKENS = 1024  #@param {type:"integer"}
 AUDIO8_TEMPERATURE = 0.8  #@param {type:"number"}
 AUDIO8_TOP_P = 0.95  #@param {type:"number"}
 AUDIO8_TOP_K = 50  #@param {type:"integer"}
+
+#@markdown ---
+#@markdown ZeroTTS (Vietnamese, CPU/ONNX, MIT)
+#@markdown - Uses bundled speaker-latent presets. The public package cannot create a new voice from reference audio because the voice encoder is not released.
+#@markdown - Built for Vietnamese; English words inside Vietnamese text are supported, but it is not evaluated as an English TTS system.
+#@markdown - License: MIT for code and weights; the bundled MOSS codec decoder is Apache-2.0. Do not use for impersonation or deception.
+ZEROTTS_HF_MODEL = "zeroweight-ai/ZeroTTS"  #@param {type:"string"}
+ZEROTTS_DEFAULT_VOICE = "maichi"  #@param ["maichi", "baotrang", "kimoanh", "hamy", "giahuy", "huuduc", "quangminh", "tiendat"]
+ZEROTTS_CFG_SCALE = 1.0  #@param {type:"number"}
+ZEROTTS_AUDIO_TEMPERATURE = 0.8  #@param {type:"number"}
+ZEROTTS_AUDIO_TOPK = 25  #@param {type:"integer"}
+ZEROTTS_AUDIO_TOPP = 0.95  #@param {type:"number"}
+ZEROTTS_AUDIO_REPETITION_PENALTY = 1.2  #@param {type:"number"}
 
 #@markdown ---
 #@markdown F5-TTS (GPU required)
@@ -791,6 +805,20 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         str(AUDIO8_TOP_P),
         "--audio8-top-k",
         str(AUDIO8_TOP_K),
+        "--zerotts-hf-model",
+        ZEROTTS_HF_MODEL,
+        "--zerotts-default-voice",
+        ZEROTTS_DEFAULT_VOICE,
+        "--zerotts-cfg-scale",
+        str(ZEROTTS_CFG_SCALE),
+        "--zerotts-audio-temperature",
+        str(ZEROTTS_AUDIO_TEMPERATURE),
+        "--zerotts-audio-topk",
+        str(ZEROTTS_AUDIO_TOPK),
+        "--zerotts-audio-topp",
+        str(ZEROTTS_AUDIO_TOPP),
+        "--zerotts-audio-repetition-penalty",
+        str(ZEROTTS_AUDIO_REPETITION_PENALTY),
         "--f5tts-model",
         F5TTS_MODEL,
         "--f5tts-ckpt-file",
@@ -1592,6 +1620,14 @@ The `voice` parameter exposes:
 
 For voice cloning, only use reference audio you have rights to (consent of the speaker).
 
+### ZeroTTS
+
+[ZeroTTS](https://github.com/zeroweight-ai/ZeroTTS) is a lightweight Vietnamese TTS runtime built on ONNX Runtime and designed for real-time CPU inference. It downloads approximately 900 MB of FP32 weights and produces 48 kHz audio. The wrapper exposes the bundled speaker-latent presets through the OpenAI `voice` parameter; `maichi` is the default, and the current list is available from `/v1/voices`.
+
+Despite the upstream project's zero-shot positioning, the public Python package cannot create a new voice from reference audio because its voice encoder is not released. It can only load shipped or separately obtained voice packs, so this integration intentionally provides no `clone` option. The model is built for Vietnamese and supports English words embedded in Vietnamese text, but it is not evaluated as a general English TTS system. Long paragraphs should be split into short utterances. Colab verification is pending.
+
+Code and weights are MIT-licensed; the bundled MOSS-Audio-Tokenizer-Nano decoder is Apache-2.0. Do not use the model to impersonate someone or deceive listeners, and disclose synthetic speech where a listener could reasonably assume it is real.
+
 ### Zonos
 
 A multilingual TTS using [Zyphra/Zonos](https://github.com/Zyphra/Zonos). Supports English, Japanese, Chinese, French, and German with zero-shot voice cloning. Default model: `Zyphra/Zonos-v0.1-transformer` (Apache 2.0). Phonemization is done by `espeak-ng`, which is installed automatically. The wrapper uses the bundled `assets/exampleaudio.mp3` as the default speaker reference; supplying `--zonos-prompt-wav` enables a `clone` voice with your own reference audio. A GPU runtime is required (VRAM 6GB+, T4 OK). The optional Hybrid backbone needs an Ampere or newer GPU and additional `mamba-ssm` deps; the Transformer backbone is used by default for portability. License: Apache 2.0 (code and weights).
@@ -2157,6 +2193,7 @@ The license for each engine is as follows. When using them, always check each pr
 | Sarashina-TTS | — | Sarashina Model NonCommercial License | Not allowed | Japanese / English. Zero-shot voice cloning. Output contains a SilentCipher watermark (do not remove) |
 | F5-TTS | MIT | CC-BY-NC | Not allowed (model) | Model weights are non-commercial due to Emilia dataset constraints |
 | Chatterbox Multilingual V3 | MIT | MIT | OK | 0.5B, 23 languages incl JP. Zero-shot voice cloning. Perth watermark is retained |
+| ZeroTTS | MIT | MIT (`zeroweight-ai/ZeroTTS`) | OK | Vietnamese CPU/ONNX TTS with preset voice latents. Public package cannot encode new voices. Bundled MOSS codec decoder is Apache-2.0 |
 | Zonos | Apache 2.0 | Apache 2.0 | OK | EN/JA/ZH/FR/DE. Zero-shot voice cloning. Requires `espeak-ng` |
 | ZONOS2 | MIT | Apache 2.0 | OK | 41 languages (tier-1 EN/ZH/JA). Zero-shot voice cloning. Mini-SGLang backend; GPU sm_80+ (L4/A100) |
 | OuteTTS (0.6B) | Apache 2.0 | Apache 2.0 | OK | Multilingual incl JP. CPU OK. Voice cloning |
@@ -2236,6 +2273,10 @@ This repository itself is intended for short-term operational verification and t
   https://github.com/kizuna-intelligence/Irodori-TTS-Lite
 - Irodori-TTS v4.1-Small-MF weights
   https://huggingface.co/Aratako/Irodori-TTS-v4.1-Small-MF
+- ZeroTTS
+  https://github.com/zeroweight-ai/ZeroTTS
+- ZeroTTS weights
+  https://huggingface.co/zeroweight-ai/ZeroTTS
 - Kokoro
   https://github.com/hexgrad/kokoro
 - Kokoro-ONNX

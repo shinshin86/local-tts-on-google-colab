@@ -34,6 +34,8 @@ def resolve_selected_voice(settings: Settings) -> str:
         return settings.kokoro_default_voice
     if settings.engine == "Audio8-TTS":
         return settings.audio8_default_voice
+    if settings.engine == "ZeroTTS":
+        return settings.zerotts_default_voice
     if settings.engine == "Kokoro-ONNX":
         return settings.kokoro_onnx_default_voice
     if settings.engine == "MeloTTS":
@@ -181,6 +183,16 @@ def print_engine_voice_hints(settings: Settings):
         print("対応言語: 広東語、中国語、オランダ語、英語、フランス語、ドイツ語、イタリア語、日本語、韓国語、ポーランド語、スペイン語")
         print("注意: GPU推奨。入力は150文字以内が上流推奨です。参照音声は本人の同意を得て使用してください。")
         print("ライセンス: コード・重みとも Apache-2.0（商用利用可、NOTICEの帰属表示を確認）。")
+    elif settings.engine == "ZeroTTS":
+        print("ZeroTTS はベトナム語向けの軽量ONNX TTSです（48kHz、CPU動作、MIT）。")
+        print(f"モデル: {settings.zerotts_hf_model}")
+        print(f"デフォルト voice: {settings.zerotts_default_voice}")
+        print("voice 候補は起動後の /v1/voices で確認できます（既定では8種類）。")
+        print("公開パッケージは既存voice packの読込のみ対応し、参照音声から新しいvoiceを作成できません。")
+        print("対応言語: ベトナム語。文中の英単語には対応しますが、英語TTSとしては未評価です。")
+        print("注意: 約900MBのFP32重みを取得します。長文は短い発話へ分割してください。")
+        print("ライセンス: コード・重みともMIT。音声コーデックdecoderはApache-2.0。")
+        print("乱用防止: なりすましや欺瞞目的に使用せず、必要な場面では合成音声と明示してください。")
     elif settings.engine == "VoxCPM2":
         print("VoxCPM2 は OpenBMB の高品質 TTS です（30言語対応、言語自動検出）。")
         print(f"モデル: {settings.voxcpm_hf_model}")

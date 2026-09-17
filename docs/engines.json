@@ -76,6 +76,7 @@
       "VoxCPM2",
       "Voxtral-TTS",
       "Vyvo-Multilingual",
+      "ZeroTTS",
       "Zonos",
       "ZONOS2"
     ]
@@ -3580,6 +3581,79 @@
           "default": 960,
           "type": "integer",
           "flag": "--vyvo-min-new-tokens"
+        }
+      ]
+    },
+    {
+      "id": "ZeroTTS",
+      "title": "ZeroTTS (Vietnamese, CPU/ONNX, MIT)",
+      "status": "Not yet verified on Colab (CPU/ONNX, ~900MB download)",
+      "status_ja": "Colab 未検証（CPU/ONNX、約900MB取得）",
+      "languages": "Vietnamese",
+      "languages_ja": "ベトナム語",
+      "description": "[ZeroTTS](https://github.com/zeroweight-ai/ZeroTTS) is a lightweight Vietnamese TTS runtime built on ONNX Runtime and designed for real-time CPU inference. It downloads approximately 900 MB of FP32 weights and produces 48 kHz audio. The wrapper exposes the bundled speaker-latent presets through the OpenAI `voice` parameter; `maichi` is the default, and the current list is available from `/v1/voices`.",
+      "description_ja": "[ZeroTTS](https://github.com/zeroweight-ai/ZeroTTS) はONNX Runtimeを使用し、CPUでのリアルタイム推論を想定した軽量なベトナム語TTSです。約900MBのFP32重みを取得し、48kHz音声を生成します。OpenAI互換ラッパーでは、同梱の話者latent presetを`voice`パラメータで選択できます。既定は`maichi`で、現在の一覧は`/v1/voices`から取得できます。",
+      "notes": [
+        "- Uses bundled speaker-latent presets. The public package cannot create a new voice from reference audio because the voice encoder is not released.",
+        "- Built for Vietnamese; English words inside Vietnamese text are supported, but it is not evaluated as an English TTS system.",
+        "- License: MIT for code and weights; the bundled MOSS codec decoder is Apache-2.0. Do not use for impersonation or deception."
+      ],
+      "notes_ja": [
+        "- ライセンス: コードは MIT、モデル重みは MIT (`zeroweight-ai/ZeroTTS`)。商用利用: OK。 備考: ベトナム語CPU/ONNX TTS、preset voice latent対応。公開パッケージは新規voiceを作成不可。同梱MOSS codec decoderはApache-2.0"
+      ],
+      "prefix": "ZEROTTS",
+      "params": [
+        {
+          "name": "ZEROTTS_HF_MODEL",
+          "default": "zeroweight-ai/ZeroTTS",
+          "type": "string",
+          "flag": "--zerotts-hf-model"
+        },
+        {
+          "name": "ZEROTTS_DEFAULT_VOICE",
+          "default": "maichi",
+          "type": "select",
+          "options": [
+            "maichi",
+            "baotrang",
+            "kimoanh",
+            "hamy",
+            "giahuy",
+            "huuduc",
+            "quangminh",
+            "tiendat"
+          ],
+          "flag": "--zerotts-default-voice"
+        },
+        {
+          "name": "ZEROTTS_CFG_SCALE",
+          "default": 1.0,
+          "type": "number",
+          "flag": "--zerotts-cfg-scale"
+        },
+        {
+          "name": "ZEROTTS_AUDIO_TEMPERATURE",
+          "default": 0.8,
+          "type": "number",
+          "flag": "--zerotts-audio-temperature"
+        },
+        {
+          "name": "ZEROTTS_AUDIO_TOPK",
+          "default": 25,
+          "type": "integer",
+          "flag": "--zerotts-audio-topk"
+        },
+        {
+          "name": "ZEROTTS_AUDIO_TOPP",
+          "default": 0.95,
+          "type": "number",
+          "flag": "--zerotts-audio-topp"
+        },
+        {
+          "name": "ZEROTTS_AUDIO_REPETITION_PENALTY",
+          "default": 1.2,
+          "type": "number",
+          "flag": "--zerotts-audio-repetition-penalty"
         }
       ]
     },

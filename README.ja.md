@@ -33,6 +33,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | Sarashina-TTS | 動作OK (GPU必須・VRAM ~6GB) | 日本語 / 英語 | 不可 |
 | F5-TTS | 動作OK (GPU必須) | 英語 / 中国語（日本語は別モデル） | 不可 |
 | Chatterbox Multilingual V3 | 動作OK (GPU推奨・0.5B) | 日本語 / 英語 / 中国語 他 23言語 | OK |
+| ZeroTTS | Colab 未検証（CPU/ONNX、約900MB取得） | ベトナム語 | OK |
 | Zonos | 動作OK (GPU必須・VRAM ~6GB) | 日本語 / 英語 / 中国語 / フランス語 / ドイツ語 | OK |
 | ZONOS2 | 動作OK (L4検証済・sm_80+必須) | 41言語 (tier-1: 日本語 / 英語 / 中国語) | OK |
 | OuteTTS | 動作OK (CPU可) | 日本語 / 英語 / 中国語 他 多言語 | 条件付き（既定0.6Bは可 / 1Bは不可） |
@@ -133,7 +134,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Audio8-TTS", "Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "FireRedTTS2", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "IndexTTS2", "Irodori-TTS", "Irodori-TTS-Anime", "Irodori-TTS-Lite", "Irodori-TTS-MF", "KittenTTS", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "Zonos", "ZONOS2"]
+ENGINE = "Kokoro"  #@param ["Audio8-TTS", "Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "FireRedTTS2", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "IndexTTS2", "Irodori-TTS", "Irodori-TTS-Anime", "Irodori-TTS-Lite", "Irodori-TTS-MF", "KittenTTS", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "ZeroTTS", "Zonos", "ZONOS2"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -155,6 +156,19 @@ AUDIO8_MAX_NEW_TOKENS = 1024  #@param {type:"integer"}
 AUDIO8_TEMPERATURE = 0.8  #@param {type:"number"}
 AUDIO8_TOP_P = 0.95  #@param {type:"number"}
 AUDIO8_TOP_K = 50  #@param {type:"integer"}
+
+#@markdown ---
+#@markdown ZeroTTS (Vietnamese, CPU/ONNX, MIT)
+#@markdown - Uses bundled speaker-latent presets. The public package cannot create a new voice from reference audio because the voice encoder is not released.
+#@markdown - Built for Vietnamese; English words inside Vietnamese text are supported, but it is not evaluated as an English TTS system.
+#@markdown - License: MIT for code and weights; the bundled MOSS codec decoder is Apache-2.0. Do not use for impersonation or deception.
+ZEROTTS_HF_MODEL = "zeroweight-ai/ZeroTTS"  #@param {type:"string"}
+ZEROTTS_DEFAULT_VOICE = "maichi"  #@param ["maichi", "baotrang", "kimoanh", "hamy", "giahuy", "huuduc", "quangminh", "tiendat"]
+ZEROTTS_CFG_SCALE = 1.0  #@param {type:"number"}
+ZEROTTS_AUDIO_TEMPERATURE = 0.8  #@param {type:"number"}
+ZEROTTS_AUDIO_TOPK = 25  #@param {type:"integer"}
+ZEROTTS_AUDIO_TOPP = 0.95  #@param {type:"number"}
+ZEROTTS_AUDIO_REPETITION_PENALTY = 1.2  #@param {type:"number"}
 
 #@markdown ---
 #@markdown F5-TTS (GPU required)
@@ -792,6 +806,20 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         str(AUDIO8_TOP_P),
         "--audio8-top-k",
         str(AUDIO8_TOP_K),
+        "--zerotts-hf-model",
+        ZEROTTS_HF_MODEL,
+        "--zerotts-default-voice",
+        ZEROTTS_DEFAULT_VOICE,
+        "--zerotts-cfg-scale",
+        str(ZEROTTS_CFG_SCALE),
+        "--zerotts-audio-temperature",
+        str(ZEROTTS_AUDIO_TEMPERATURE),
+        "--zerotts-audio-topk",
+        str(ZEROTTS_AUDIO_TOPK),
+        "--zerotts-audio-topp",
+        str(ZEROTTS_AUDIO_TOPP),
+        "--zerotts-audio-repetition-penalty",
+        str(ZEROTTS_AUDIO_REPETITION_PENALTY),
         "--f5tts-model",
         F5TTS_MODEL,
         "--f5tts-ckpt-file",
@@ -1593,6 +1621,14 @@ SB Intuitions の [sbintuitions/sarashina2.2-tts](https://huggingface.co/sbintui
 
 音声クローンを使う場合は、必ず権利を持っている音声（本人の同意がある音声）でのみ行ってください。
 
+### ZeroTTS
+
+[ZeroTTS](https://github.com/zeroweight-ai/ZeroTTS) はONNX Runtimeを使用し、CPUでのリアルタイム推論を想定した軽量なベトナム語TTSです。約900MBのFP32重みを取得し、48kHz音声を生成します。OpenAI互換ラッパーでは、同梱の話者latent presetを`voice`パラメータで選択できます。既定は`maichi`で、現在の一覧は`/v1/voices`から取得できます。
+
+上流プロジェクトはzero-shotを掲げていますが、公開Pythonパッケージにはvoice encoderが含まれないため、参照音声から新しいvoiceを作成できません。同梱または別途入手したvoice packの読み込みだけに対応するため、この統合には意図的に`clone`を設けていません。ベトナム語向けであり、ベトナム語文中の英単語は扱えますが、一般的な英語TTSとしては未評価です。長い文章は短い発話へ分割してください。Colabでの動作確認は未実施です。
+
+コードと重みはMITで、同梱のMOSS-Audio-Tokenizer-Nano decoderはApache-2.0です。なりすましや聞き手を欺く目的には使用せず、本物の音声と受け取られる可能性がある場面では合成音声であることを明示してください。
+
 ### Zonos
 
 [Zyphra/Zonos](https://github.com/Zyphra/Zonos) を使った多言語 TTS です。英語・日本語・中国語・フランス語・ドイツ語に対応し、ゼロショット音声クローニングを備えています。デフォルトモデルは `Zyphra/Zonos-v0.1-transformer`（Apache 2.0）。音素化に `espeak-ng` を利用するため、インストーラが自動で `apt-get install espeak-ng` を実行します。デフォルト voice では upstream に同梱の `assets/exampleaudio.mp3` を参照音声として使用し、`--zonos-prompt-wav` を指定すると独自参照の `clone` voice が有効になります。GPU 必須（VRAM 6GB+、T4 動作可）。Hybrid backbone は Ampere 世代以降の GPU と `mamba-ssm` 依存を要求するため、ポータビリティのためデフォルトでは Transformer backbone を使用します。ライセンス: Apache 2.0（コードと重み）。
@@ -2154,6 +2190,7 @@ Colab T4 で確認済み: エンジン・`/v1` エンドポイント・trycloudf
 | Sarashina-TTS | — | Sarashina Model NonCommercial License | 不可 | 日本語 / 英語。ゼロショット音声クローン対応。出力には SilentCipher のウォーターマークが付与される（除去禁止） |
 | F5-TTS | MIT | CC-BY-NC | 不可（モデル） | モデル重みは Emilia データセットの制約により非商用 |
 | Chatterbox Multilingual V3 | MIT | MIT | OK | 0.5B、23言語（日本語含む）。ゼロショット voice cloning。Perth ウォーターマークを保持 |
+| ZeroTTS | MIT | MIT (`zeroweight-ai/ZeroTTS`) | OK | ベトナム語CPU/ONNX TTS、preset voice latent対応。公開パッケージは新規voiceを作成不可。同梱MOSS codec decoderはApache-2.0 |
 | Zonos | Apache 2.0 | Apache 2.0 | OK | 英 / 日 / 中 / 仏 / 独。ゼロショット voice cloning。`espeak-ng` 必須 |
 | ZONOS2 | MIT | Apache 2.0 | OK | 41言語（tier-1 英/中/日）。ゼロショット voice cloning。Mini-SGLang バックエンド。GPU sm_80+（L4/A100） |
 | OuteTTS (0.6B) | Apache 2.0 | Apache 2.0 | OK | 日本語含む多言語、CPU 動作可、voice cloning |
@@ -2237,6 +2274,10 @@ Colab T4 で確認済み: エンジン・`/v1` エンドポイント・trycloudf
   https://github.com/kizuna-intelligence/Irodori-TTS-Lite
 - Irodori-TTS v4.1-Small-MF weights
   https://huggingface.co/Aratako/Irodori-TTS-v4.1-Small-MF
+- ZeroTTS
+  https://github.com/zeroweight-ai/ZeroTTS
+- ZeroTTS weights
+  https://huggingface.co/zeroweight-ai/ZeroTTS
 - Kokoro
   https://github.com/hexgrad/kokoro
 - Kokoro-ONNX

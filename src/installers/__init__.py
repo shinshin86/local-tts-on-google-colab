@@ -55,6 +55,7 @@ from .voxtral import install as install_voxtral
 from .vyvo_multilingual import install as install_vyvo_multilingual
 from .zonos import install as install_zonos
 from .zonos2 import install as install_zonos2
+from .zerotts import install as install_zerotts
 
 
 INSTALLERS = {
@@ -113,6 +114,7 @@ INSTALLERS = {
     "VoxCPM2": install_voxcpm,
     "Voxtral-TTS": install_voxtral,
     "Vyvo-Multilingual": install_vyvo_multilingual,
+    "ZeroTTS": install_zerotts,
     "Zonos": install_zonos,
     "ZONOS2": install_zonos2,
 }

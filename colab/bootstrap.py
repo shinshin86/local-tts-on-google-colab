@@ -100,6 +100,13 @@ def parse_args():
     parser.add_argument("--audio8-temperature", type=float, default=0.8)
     parser.add_argument("--audio8-top-p", type=float, default=0.95)
     parser.add_argument("--audio8-top-k", type=int, default=50)
+    parser.add_argument("--zerotts-hf-model", default="zeroweight-ai/ZeroTTS")
+    parser.add_argument("--zerotts-default-voice", default="maichi")
+    parser.add_argument("--zerotts-cfg-scale", type=float, default=1.0)
+    parser.add_argument("--zerotts-audio-temperature", type=float, default=0.8)
+    parser.add_argument("--zerotts-audio-topk", type=int, default=25)
+    parser.add_argument("--zerotts-audio-topp", type=float, default=0.95)
+    parser.add_argument("--zerotts-audio-repetition-penalty", type=float, default=1.2)
     parser.add_argument("--moss-tts-nano-hf-model", default="OpenMOSS-Team/MOSS-TTS-Nano-100M")
     parser.add_argument("--moss-tts-nano-mode", default="continuation")
     parser.add_argument("--moss-tts-v1-5-hf-model", default="OpenMOSS-Team/MOSS-TTS-v1.5")
@@ -425,6 +432,13 @@ def main():
         audio8_temperature=args.audio8_temperature,
         audio8_top_p=args.audio8_top_p,
         audio8_top_k=args.audio8_top_k,
+        zerotts_hf_model=args.zerotts_hf_model,
+        zerotts_default_voice=args.zerotts_default_voice,
+        zerotts_cfg_scale=args.zerotts_cfg_scale,
+        zerotts_audio_temperature=args.zerotts_audio_temperature,
+        zerotts_audio_topk=args.zerotts_audio_topk,
+        zerotts_audio_topp=args.zerotts_audio_topp,
+        zerotts_audio_repetition_penalty=args.zerotts_audio_repetition_penalty,
         moss_tts_nano_hf_model=args.moss_tts_nano_hf_model,
         moss_tts_nano_mode=args.moss_tts_nano_mode,
         moss_tts_v1_5_hf_model=args.moss_tts_v1_5_hf_model,

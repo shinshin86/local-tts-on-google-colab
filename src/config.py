@@ -133,6 +133,15 @@ class Settings:
     audio8_temperature: float = 0.8
     audio8_top_p: float = 0.95
     audio8_top_k: int = 50
+    # ZeroTTS: Vietnamese ONNX/CPU runtime with bundled speaker-latent presets.
+    # The public package can load voice packs but cannot encode a new reference voice.
+    zerotts_hf_model: str = "zeroweight-ai/ZeroTTS"
+    zerotts_default_voice: str = "maichi"
+    zerotts_cfg_scale: float = 1.0
+    zerotts_audio_temperature: float = 0.8
+    zerotts_audio_topk: int = 25
+    zerotts_audio_topp: float = 0.95
+    zerotts_audio_repetition_penalty: float = 1.2
     moss_tts_nano_hf_model: str = "OpenMOSS-Team/MOSS-TTS-Nano-100M"
     moss_tts_nano_mode: str = "continuation"
     moss_tts_v1_5_hf_model: str = "OpenMOSS-Team/MOSS-TTS-v1.5"
