@@ -90,6 +90,16 @@ def parse_args():
     parser.add_argument("--qwen3-hf-model", default="Qwen/Qwen3-TTS-12Hz-0.6B-CustomVoice")
     parser.add_argument("--qwen3-language", default="Japanese")
     parser.add_argument("--qwen3-default-speaker", default="ono_anna")
+    parser.add_argument("--audio8-hf-model", default="Audio8/Audio8-TTS-Preview-0.6b")
+    parser.add_argument("--audio8-prompt-wav", default="")
+    parser.add_argument("--audio8-prompt-text", default="")
+    parser.add_argument("--audio8-default-voice", default="default")
+    parser.add_argument("--audio8-device", default="auto")
+    parser.add_argument("--audio8-dtype", default="auto")
+    parser.add_argument("--audio8-max-new-tokens", type=int, default=1024)
+    parser.add_argument("--audio8-temperature", type=float, default=0.8)
+    parser.add_argument("--audio8-top-p", type=float, default=0.95)
+    parser.add_argument("--audio8-top-k", type=int, default=50)
     parser.add_argument("--moss-tts-nano-hf-model", default="OpenMOSS-Team/MOSS-TTS-Nano-100M")
     parser.add_argument("--moss-tts-nano-mode", default="continuation")
     parser.add_argument("--moss-tts-v1-5-hf-model", default="OpenMOSS-Team/MOSS-TTS-v1.5")
@@ -405,6 +415,16 @@ def main():
         qwen3_hf_model=args.qwen3_hf_model,
         qwen3_language=args.qwen3_language,
         qwen3_default_speaker=args.qwen3_default_speaker,
+        audio8_hf_model=args.audio8_hf_model,
+        audio8_prompt_wav=args.audio8_prompt_wav,
+        audio8_prompt_text=args.audio8_prompt_text,
+        audio8_default_voice=args.audio8_default_voice,
+        audio8_device=args.audio8_device,
+        audio8_dtype=args.audio8_dtype,
+        audio8_max_new_tokens=args.audio8_max_new_tokens,
+        audio8_temperature=args.audio8_temperature,
+        audio8_top_p=args.audio8_top_p,
+        audio8_top_k=args.audio8_top_k,
         moss_tts_nano_hf_model=args.moss_tts_nano_hf_model,
         moss_tts_nano_mode=args.moss_tts_nano_mode,
         moss_tts_v1_5_hf_model=args.moss_tts_v1_5_hf_model,

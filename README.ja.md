@@ -10,6 +10,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 
 | エンジン | Colab 動作確認 | 言語 | 商用利用 |
 |---|---|---|---|
+| Audio8-TTS | Colab 未検証（GPU 推奨、ゼロショット Voice cloning） | 日本語 / 英語 / 中国語 他 11言語 | OK |
 | Kokoro | 動作OK | 日本語 / 英語 / 中国語 他 | OK |
 | Kokoro-ONNX | 動作OK | 日本語 / 英語 / 中国語 他 | OK |
 | Irodori-TTS | L4 で動作確認済み（GPU 必須、デフォルトは v4.1-Small、v4-Small も選択可能） | 日本語 | OK |
@@ -132,12 +133,28 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "FireRedTTS2", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "IndexTTS2", "Irodori-TTS", "Irodori-TTS-Anime", "Irodori-TTS-Lite", "Irodori-TTS-MF", "KittenTTS", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "Zonos", "ZONOS2"]
+ENGINE = "Kokoro"  #@param ["Audio8-TTS", "Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "FireRedTTS2", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "IndexTTS2", "Irodori-TTS", "Irodori-TTS-Anime", "Irodori-TTS-Lite", "Irodori-TTS-MF", "KittenTTS", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "Zonos", "ZONOS2"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
 TEST_VOICE = ""  #@param {type:"string"}
 OPENAI_MODEL_ID = ""  #@param {type:"string"}
+
+#@markdown ---
+#@markdown Audio8-TTS (0.6B multilingual TTS, GPU recommended)
+#@markdown - Supports 11 languages including Japanese. `default` needs no reference; `clone` requires both a reference WAV and its exact transcript.
+#@markdown - Keep input within 150 characters for best quality. Only clone voices with consent and disclose synthetic audio where appropriate.
+#@markdown - License: Apache-2.0 for both code and weights. See the upstream NOTICE for attribution details.
+AUDIO8_HF_MODEL = "Audio8/Audio8-TTS-Preview-0.6b"  #@param {type:"string"}
+AUDIO8_PROMPT_WAV = ""  #@param {type:"string"}
+AUDIO8_PROMPT_TEXT = ""  #@param {type:"string"}
+AUDIO8_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+AUDIO8_DEVICE = "auto"  #@param ["auto", "cuda", "cpu"]
+AUDIO8_DTYPE = "auto"  #@param ["auto", "bfloat16", "float16", "float32"]
+AUDIO8_MAX_NEW_TOKENS = 1024  #@param {type:"integer"}
+AUDIO8_TEMPERATURE = 0.8  #@param {type:"number"}
+AUDIO8_TOP_P = 0.95  #@param {type:"number"}
+AUDIO8_TOP_K = 50  #@param {type:"integer"}
 
 #@markdown ---
 #@markdown F5-TTS (GPU required)
@@ -755,6 +772,26 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         TEST_VOICE,
         "--openai-model-id",
         OPENAI_MODEL_ID,
+        "--audio8-hf-model",
+        AUDIO8_HF_MODEL,
+        "--audio8-prompt-wav",
+        AUDIO8_PROMPT_WAV,
+        "--audio8-prompt-text",
+        AUDIO8_PROMPT_TEXT,
+        "--audio8-default-voice",
+        AUDIO8_DEFAULT_VOICE,
+        "--audio8-device",
+        AUDIO8_DEVICE,
+        "--audio8-dtype",
+        AUDIO8_DTYPE,
+        "--audio8-max-new-tokens",
+        str(AUDIO8_MAX_NEW_TOKENS),
+        "--audio8-temperature",
+        str(AUDIO8_TEMPERATURE),
+        "--audio8-top-p",
+        str(AUDIO8_TOP_P),
+        "--audio8-top-k",
+        str(AUDIO8_TOP_K),
         "--f5tts-model",
         F5TTS_MODEL,
         "--f5tts-ckpt-file",
@@ -1383,6 +1420,14 @@ main()
 このサンプルは `wav` 固定です。`mp3` などへの変換は行っていません。
 
 ## エンジンごとの補足
+
+### Audio8-TTS
+
+[Audio8 TTS Preview 0.6B](https://huggingface.co/Audio8/Audio8-TTS-Preview-0.6b) を使用する独立エンジンです。44.1kHzのニューラルコーデックを同梱した小型のDualARモデルで、日本語、英語、中国語、広東語、韓国語、主要な欧州言語を含む推奨11言語に対応します。品質を保つため、上流は1回の入力を150文字以内にすることを推奨しています。
+
+OpenAI互換ラッパーでは、参照音声なしの`voice="default"`と、ゼロショットVoice cloningの`voice="clone"`を提供します。cloneは`AUDIO8_PROMPT_WAV`と、その音声に一致する書き起こし`AUDIO8_PROMPT_TEXT`の両方を設定した場合だけ有効になり、未設定時は暗黙にdefaultへ切り替えずHTTP 400を返します。ColabではCUDA GPU + BF16を既定とし、CPU時はFP32を使用します。Colabでの動作確認は未実施です。
+
+コードと重みはいずれもApache-2.0です。必要に応じて上流`NOTICE`の帰属表示を維持してください。Voice cloningには本人の同意を得て、必要な場面では合成音声であることを明示してください。
 
 ### Kokoro
 
@@ -2086,6 +2131,7 @@ Colab T4 で確認済み: エンジン・`/v1` エンドポイント・trycloudf
 
 | エンジン | コード | モデル重み | 商用利用 | 備考 |
 |---|---|---|---|---|
+| Audio8-TTS | Apache-2.0 | Apache-2.0 (`Audio8/Audio8-TTS-Preview-0.6b`) | OK | 0.6B多言語Preview、ゼロショットVoice cloning対応。上流NOTICEの帰属表示を維持し、音声クローンには本人の同意が必要 |
 | Kokoro | Apache 2.0 | Apache 2.0 | OK | |
 | Kokoro-ONNX | Apache 2.0 | Apache 2.0 | OK | NVIDIA による hexgrad/Kokoro-82M の ONNX 再配布。コード・重みとも Apache 2.0 |
 | Irodori-TTS | MIT | MIT (v1 / v2 / v3 / v4 / v4.1) | OK | なりすまし・ディープフェイク生成を禁止する倫理規定あり。V3/V4/V4.1 は SilentCipher ウォーターマーク同梱（除去禁止） |
@@ -2175,6 +2221,10 @@ Colab T4 で確認済み: エンジン・`/v1` エンドポイント・trycloudf
 
 - OpenAI Audio Speech API
   https://developers.openai.com/api/reference/resources/audio/subresources/speech/methods/create
+- Audio8-TTS
+  https://github.com/Audio8-AI/Audio8_TTS
+- Audio8-TTS Preview 0.6B weights
+  https://huggingface.co/Audio8/Audio8-TTS-Preview-0.6b
 - Irodori-TTS
   https://github.com/Aratako/Irodori-TTS
 - Irodori-TTS v4.1-Small weights（デフォルト）

@@ -1,3 +1,4 @@
+from .audio8_tts import install as install_audio8_tts
 from .bark import install as install_bark
 from .chatterbox import install as install_chatterbox
 from .chattts import install as install_chattts
@@ -57,6 +58,7 @@ from .zonos2 import install as install_zonos2
 
 
 INSTALLERS = {
+    "Audio8-TTS": install_audio8_tts,
     "Bark": install_bark,
     "ChatTTS": install_chattts,
     "Chatterbox": install_chatterbox,

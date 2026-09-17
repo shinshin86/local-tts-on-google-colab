@@ -10,6 +10,7 @@ Supported engines:
 
 | Engine | Colab Status | Languages | Commercial use |
 |---|---|---|---|
+| Audio8-TTS | Not yet verified on Colab (GPU recommended, zero-shot voice cloning) | Japanese / English / Chinese and 11 languages | OK |
 | Kokoro | Works | Japanese / English / Chinese and more | OK |
 | Kokoro-ONNX | Works | Japanese / English / Chinese and more | OK |
 | Irodori-TTS | Works on L4 (GPU required; v4.1-Small default, v4-Small selectable) | Japanese | OK |
@@ -131,12 +132,28 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "FireRedTTS2", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "IndexTTS2", "Irodori-TTS", "Irodori-TTS-Anime", "Irodori-TTS-Lite", "Irodori-TTS-MF", "KittenTTS", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "Zonos", "ZONOS2"]
+ENGINE = "Kokoro"  #@param ["Audio8-TTS", "Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "FireRedTTS2", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "IndexTTS2", "Irodori-TTS", "Irodori-TTS-Anime", "Irodori-TTS-Lite", "Irodori-TTS-MF", "KittenTTS", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "Zonos", "ZONOS2"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
 TEST_VOICE = ""  #@param {type:"string"}
 OPENAI_MODEL_ID = ""  #@param {type:"string"}
+
+#@markdown ---
+#@markdown Audio8-TTS (0.6B multilingual TTS, GPU recommended)
+#@markdown - Supports 11 languages including Japanese. `default` needs no reference; `clone` requires both a reference WAV and its exact transcript.
+#@markdown - Keep input within 150 characters for best quality. Only clone voices with consent and disclose synthetic audio where appropriate.
+#@markdown - License: Apache-2.0 for both code and weights. See the upstream NOTICE for attribution details.
+AUDIO8_HF_MODEL = "Audio8/Audio8-TTS-Preview-0.6b"  #@param {type:"string"}
+AUDIO8_PROMPT_WAV = ""  #@param {type:"string"}
+AUDIO8_PROMPT_TEXT = ""  #@param {type:"string"}
+AUDIO8_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+AUDIO8_DEVICE = "auto"  #@param ["auto", "cuda", "cpu"]
+AUDIO8_DTYPE = "auto"  #@param ["auto", "bfloat16", "float16", "float32"]
+AUDIO8_MAX_NEW_TOKENS = 1024  #@param {type:"integer"}
+AUDIO8_TEMPERATURE = 0.8  #@param {type:"number"}
+AUDIO8_TOP_P = 0.95  #@param {type:"number"}
+AUDIO8_TOP_K = 50  #@param {type:"integer"}
 
 #@markdown ---
 #@markdown F5-TTS (GPU required)
@@ -754,6 +771,26 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         TEST_VOICE,
         "--openai-model-id",
         OPENAI_MODEL_ID,
+        "--audio8-hf-model",
+        AUDIO8_HF_MODEL,
+        "--audio8-prompt-wav",
+        AUDIO8_PROMPT_WAV,
+        "--audio8-prompt-text",
+        AUDIO8_PROMPT_TEXT,
+        "--audio8-default-voice",
+        AUDIO8_DEFAULT_VOICE,
+        "--audio8-device",
+        AUDIO8_DEVICE,
+        "--audio8-dtype",
+        AUDIO8_DTYPE,
+        "--audio8-max-new-tokens",
+        str(AUDIO8_MAX_NEW_TOKENS),
+        "--audio8-temperature",
+        str(AUDIO8_TEMPERATURE),
+        "--audio8-top-p",
+        str(AUDIO8_TOP_P),
+        "--audio8-top-k",
+        str(AUDIO8_TOP_K),
         "--f5tts-model",
         F5TTS_MODEL,
         "--f5tts-ckpt-file",
@@ -1382,6 +1419,14 @@ Main compatible inputs:
 This sample is fixed to `wav`. Conversion to formats like `mp3` is not performed.
 
 ## Engine-specific notes
+
+### Audio8-TTS
+
+A separate engine for [Audio8 TTS Preview 0.6B](https://huggingface.co/Audio8/Audio8-TTS-Preview-0.6b), a compact DualAR model with a bundled 44.1 kHz neural codec. It supports 11 recommended languages, including Japanese, English, Chinese, Cantonese, Korean, and major European languages. Upstream recommends keeping each input within 150 characters for best quality.
+
+The OpenAI-compatible wrapper exposes `voice="default"` for reference-free generation and `voice="clone"` for zero-shot cloning. Clone mode is enabled only when both `AUDIO8_PROMPT_WAV` and its exact transcript in `AUDIO8_PROMPT_TEXT` are configured; otherwise it returns HTTP 400 instead of silently falling back. A CUDA GPU with BF16 is the default on Colab, while CPU mode uses FP32. Colab verification is pending.
+
+Code and weights are Apache-2.0 and the upstream `NOTICE` must be retained where required. Obtain consent before cloning a voice and disclose synthetic audio where appropriate.
 
 ### Kokoro
 
@@ -2085,6 +2130,7 @@ The license for each engine is as follows. When using them, always check each pr
 
 | Engine | Code | Model Weights | Commercial Use | Notes |
 |---|---|---|---|---|
+| Audio8-TTS | Apache-2.0 | Apache-2.0 (`Audio8/Audio8-TTS-Preview-0.6b`) | OK | 0.6B multilingual preview with zero-shot voice cloning. Preserve upstream NOTICE attribution; obtain consent for cloned voices |
 | Kokoro | Apache 2.0 | Apache 2.0 | OK | |
 | Kokoro-ONNX | Apache 2.0 | Apache 2.0 | OK | NVIDIA's ONNX repackaging of hexgrad/Kokoro-82M; both are Apache 2.0 |
 | Irodori-TTS | MIT | MIT (v1 / v2 / v3 / v4 / v4.1) | OK | Ethical policy prohibits impersonation / deepfake generation. V3/V4/V4.1 ship with SilentCipher watermarking — do not strip |
@@ -2174,6 +2220,10 @@ This repository itself is intended for short-term operational verification and t
 
 - OpenAI Audio Speech API
   https://developers.openai.com/api/reference/resources/audio/subresources/speech/methods/create
+- Audio8-TTS
+  https://github.com/Audio8-AI/Audio8_TTS
+- Audio8-TTS Preview 0.6B weights
+  https://huggingface.co/Audio8/Audio8-TTS-Preview-0.6b
 - Irodori-TTS
   https://github.com/Aratako/Irodori-TTS
 - Irodori-TTS v4.1-Small weights (default)

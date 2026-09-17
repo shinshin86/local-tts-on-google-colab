@@ -21,6 +21,7 @@
     "default": "Kokoro",
     "type": "select",
     "options": [
+      "Audio8-TTS",
       "Bark",
       "ChatTTS",
       "Chatterbox",
@@ -113,6 +114,102 @@
     }
   ],
   "engines": [
+    {
+      "id": "Audio8-TTS",
+      "title": "Audio8-TTS (0.6B multilingual TTS, GPU recommended)",
+      "status": "Not yet verified on Colab (GPU recommended, zero-shot voice cloning)",
+      "status_ja": "Colab 未検証（GPU 推奨、ゼロショット Voice cloning）",
+      "languages": "Japanese / English / Chinese and 11 languages",
+      "languages_ja": "日本語 / 英語 / 中国語 他 11言語",
+      "description": "A separate engine for [Audio8 TTS Preview 0.6B](https://huggingface.co/Audio8/Audio8-TTS-Preview-0.6b), a compact DualAR model with a bundled 44.1 kHz neural codec. It supports 11 recommended languages, including Japanese, English, Chinese, Cantonese, Korean, and major European languages. Upstream recommends keeping each input within 150 characters for best quality.",
+      "description_ja": "[Audio8 TTS Preview 0.6B](https://huggingface.co/Audio8/Audio8-TTS-Preview-0.6b) を使用する独立エンジンです。44.1kHzのニューラルコーデックを同梱した小型のDualARモデルで、日本語、英語、中国語、広東語、韓国語、主要な欧州言語を含む推奨11言語に対応します。品質を保つため、上流は1回の入力を150文字以内にすることを推奨しています。",
+      "notes": [
+        "- Supports 11 languages including Japanese. `default` needs no reference; `clone` requires both a reference WAV and its exact transcript.",
+        "- Keep input within 150 characters for best quality. Only clone voices with consent and disclose synthetic audio where appropriate.",
+        "- License: Apache-2.0 for both code and weights. See the upstream NOTICE for attribution details."
+      ],
+      "notes_ja": [
+        "- ライセンス: コードは Apache-2.0、モデル重みは Apache-2.0 (`Audio8/Audio8-TTS-Preview-0.6b`)。商用利用: OK。 備考: 0.6B多言語Preview、ゼロショットVoice cloning対応。上流NOTICEの帰属表示を維持し、音声クローンには本人の同意が必要"
+      ],
+      "prefix": "AUDIO8",
+      "params": [
+        {
+          "name": "AUDIO8_HF_MODEL",
+          "default": "Audio8/Audio8-TTS-Preview-0.6b",
+          "type": "string",
+          "flag": "--audio8-hf-model"
+        },
+        {
+          "name": "AUDIO8_PROMPT_WAV",
+          "default": "",
+          "type": "string",
+          "flag": "--audio8-prompt-wav"
+        },
+        {
+          "name": "AUDIO8_PROMPT_TEXT",
+          "default": "",
+          "type": "string",
+          "flag": "--audio8-prompt-text"
+        },
+        {
+          "name": "AUDIO8_DEFAULT_VOICE",
+          "default": "default",
+          "type": "select",
+          "options": [
+            "default",
+            "clone"
+          ],
+          "flag": "--audio8-default-voice"
+        },
+        {
+          "name": "AUDIO8_DEVICE",
+          "default": "auto",
+          "type": "select",
+          "options": [
+            "auto",
+            "cuda",
+            "cpu"
+          ],
+          "flag": "--audio8-device"
+        },
+        {
+          "name": "AUDIO8_DTYPE",
+          "default": "auto",
+          "type": "select",
+          "options": [
+            "auto",
+            "bfloat16",
+            "float16",
+            "float32"
+          ],
+          "flag": "--audio8-dtype"
+        },
+        {
+          "name": "AUDIO8_MAX_NEW_TOKENS",
+          "default": 1024,
+          "type": "integer",
+          "flag": "--audio8-max-new-tokens"
+        },
+        {
+          "name": "AUDIO8_TEMPERATURE",
+          "default": 0.8,
+          "type": "number",
+          "flag": "--audio8-temperature"
+        },
+        {
+          "name": "AUDIO8_TOP_P",
+          "default": 0.95,
+          "type": "number",
+          "flag": "--audio8-top-p"
+        },
+        {
+          "name": "AUDIO8_TOP_K",
+          "default": 50,
+          "type": "integer",
+          "flag": "--audio8-top-k"
+        }
+      ]
+    },
     {
       "id": "Bark",
       "title": "Bark (GPU recommended, 13 languages, MIT)",

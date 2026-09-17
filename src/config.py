@@ -121,6 +121,18 @@ class Settings:
     qwen3_hf_model: str = "Qwen/Qwen3-TTS-12Hz-0.6B-CustomVoice"
     qwen3_language: str = "Japanese"
     qwen3_default_speaker: str = "ono_anna"
+    # Audio8 TTS Preview: compact multilingual DualAR TTS with optional
+    # zero-shot cloning from one reference audio/transcript pair.
+    audio8_hf_model: str = "Audio8/Audio8-TTS-Preview-0.6b"
+    audio8_prompt_wav: str = ""
+    audio8_prompt_text: str = ""
+    audio8_default_voice: str = "default"
+    audio8_device: str = "auto"
+    audio8_dtype: str = "auto"
+    audio8_max_new_tokens: int = 1024
+    audio8_temperature: float = 0.8
+    audio8_top_p: float = 0.95
+    audio8_top_k: int = 50
     moss_tts_nano_hf_model: str = "OpenMOSS-Team/MOSS-TTS-Nano-100M"
     moss_tts_nano_mode: str = "continuation"
     moss_tts_v1_5_hf_model: str = "OpenMOSS-Team/MOSS-TTS-v1.5"

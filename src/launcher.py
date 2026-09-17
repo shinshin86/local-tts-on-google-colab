@@ -32,6 +32,8 @@ def resolve_selected_voice(settings: Settings) -> str:
         return settings.test_voice
     if settings.engine == "Kokoro":
         return settings.kokoro_default_voice
+    if settings.engine == "Audio8-TTS":
+        return settings.audio8_default_voice
     if settings.engine == "Kokoro-ONNX":
         return settings.kokoro_onnx_default_voice
     if settings.engine == "MeloTTS":
@@ -166,6 +168,19 @@ def print_engine_voice_hints(settings: Settings):
         print(f"language: {settings.qwen3_language}")
         print(f"デフォルト speaker: {settings.qwen3_default_speaker}")
         print("候補: aiden, dylan, eric, ono_anna, ryan, serena, sohee, uncle_fu, vivian")
+    elif settings.engine == "Audio8-TTS":
+        print("Audio8-TTS は0.6Bの多言語TTSです（44.1kHz、ゼロショットVoice cloning対応）。")
+        print(f"モデル: {settings.audio8_hf_model}")
+        print(f"device: {settings.audio8_device} / dtype: {settings.audio8_dtype}")
+        print(f"デフォルト voice: {settings.audio8_default_voice}")
+        print("voice 候補: default（参照音声なし）")
+        if settings.audio8_prompt_wav and settings.audio8_prompt_text:
+            print(f"             clone（参照音声: {settings.audio8_prompt_wav}）")
+        else:
+            print("             clone は --audio8-prompt-wav / --audio8-prompt-text を指定すると有効になります")
+        print("対応言語: 広東語、中国語、オランダ語、英語、フランス語、ドイツ語、イタリア語、日本語、韓国語、ポーランド語、スペイン語")
+        print("注意: GPU推奨。入力は150文字以内が上流推奨です。参照音声は本人の同意を得て使用してください。")
+        print("ライセンス: コード・重みとも Apache-2.0（商用利用可、NOTICEの帰属表示を確認）。")
     elif settings.engine == "VoxCPM2":
         print("VoxCPM2 は OpenBMB の高品質 TTS です（30言語対応、言語自動検出）。")
         print(f"モデル: {settings.voxcpm_hf_model}")
