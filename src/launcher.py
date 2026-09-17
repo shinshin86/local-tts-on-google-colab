@@ -32,6 +32,10 @@ def resolve_selected_voice(settings: Settings) -> str:
         return settings.test_voice
     if settings.engine == "Kokoro":
         return settings.kokoro_default_voice
+    if settings.engine == "Audio8-TTS":
+        return settings.audio8_default_voice
+    if settings.engine == "ZeroTTS":
+        return settings.zerotts_default_voice
     if settings.engine == "Kokoro-ONNX":
         return settings.kokoro_onnx_default_voice
     if settings.engine == "MeloTTS":
@@ -114,6 +118,8 @@ def resolve_selected_voice(settings: Settings) -> str:
         return settings.vyvo_default_voice
     if settings.engine == "Irodori-TTS-Anime":
         return "default"
+    if settings.engine == "Irodori-TTS-MF":
+        return ""
     return ""
 
 
@@ -164,6 +170,29 @@ def print_engine_voice_hints(settings: Settings):
         print(f"language: {settings.qwen3_language}")
         print(f"デフォルト speaker: {settings.qwen3_default_speaker}")
         print("候補: aiden, dylan, eric, ono_anna, ryan, serena, sohee, uncle_fu, vivian")
+    elif settings.engine == "Audio8-TTS":
+        print("Audio8-TTS は0.6Bの多言語TTSです（44.1kHz、ゼロショットVoice cloning対応）。")
+        print(f"モデル: {settings.audio8_hf_model}")
+        print(f"device: {settings.audio8_device} / dtype: {settings.audio8_dtype}")
+        print(f"デフォルト voice: {settings.audio8_default_voice}")
+        print("voice 候補: default（参照音声なし）")
+        if settings.audio8_prompt_wav and settings.audio8_prompt_text:
+            print(f"             clone（参照音声: {settings.audio8_prompt_wav}）")
+        else:
+            print("             clone は --audio8-prompt-wav / --audio8-prompt-text を指定すると有効になります")
+        print("対応言語: 広東語、中国語、オランダ語、英語、フランス語、ドイツ語、イタリア語、日本語、韓国語、ポーランド語、スペイン語")
+        print("注意: GPU推奨。入力は150文字以内が上流推奨です。参照音声は本人の同意を得て使用してください。")
+        print("ライセンス: コード・重みとも Apache-2.0（商用利用可、NOTICEの帰属表示を確認）。")
+    elif settings.engine == "ZeroTTS":
+        print("ZeroTTS はベトナム語向けの軽量ONNX TTSです（48kHz、CPU動作、MIT）。")
+        print(f"モデル: {settings.zerotts_hf_model}")
+        print(f"デフォルト voice: {settings.zerotts_default_voice}")
+        print("voice 候補は起動後の /v1/voices で確認できます（既定では8種類）。")
+        print("公開パッケージは既存voice packの読込のみ対応し、参照音声から新しいvoiceを作成できません。")
+        print("対応言語: ベトナム語。文中の英単語には対応しますが、英語TTSとしては未評価です。")
+        print("注意: 約900MBのFP32重みを取得します。長文は短い発話へ分割してください。")
+        print("ライセンス: コード・重みともMIT。音声コーデックdecoderはApache-2.0。")
+        print("乱用防止: なりすましや欺瞞目的に使用せず、必要な場面では合成音声と明示してください。")
     elif settings.engine == "VoxCPM2":
         print("VoxCPM2 は OpenBMB の高品質 TTS です（30言語対応、言語自動検出）。")
         print(f"モデル: {settings.voxcpm_hf_model}")
@@ -766,6 +795,16 @@ def print_engine_voice_hints(settings: Settings):
         print("voice パラメータは 'default' のみ対応します。")
         print("現在の OpenAI 互換ラッパーは text-only・参照音声なしで推論します。")
         print("caption、Voice cloning、emoji による演技制御は公開していません。")
+        print("生成音声には上流ランタイムが SilentCipher ウォーターマークを適用します。")
+        print("ライセンス: 上流コード・モデル重み・既定コーデックはいずれも MIT。")
+        print("乱用防止: なりすまし・ディープフェイク用途には使用しないでください。")
+    elif settings.engine == "Irodori-TTS-MF":
+        print("Irodori-TTS-MF は公式 v4.1-Small の MeanFlow 蒸留版です（48kHz、MIT）。")
+        print(f"モデル: {settings.irodori_mf_hf_checkpoint}")
+        print(f"コーデック: {settings.irodori_mf_codec_repo}")
+        print("上流の推奨設定である4ステップ推論を自動選択します。")
+        print("現在の OpenAI 互換ラッパーは text-only・参照音声なしで推論します。")
+        print("voice パラメータによる話者切り替え・Voice cloning は現在未対応です。")
         print("生成音声には上流ランタイムが SilentCipher ウォーターマークを適用します。")
         print("ライセンス: 上流コード・モデル重み・既定コーデックはいずれも MIT。")
         print("乱用防止: なりすまし・ディープフェイク用途には使用しないでください。")

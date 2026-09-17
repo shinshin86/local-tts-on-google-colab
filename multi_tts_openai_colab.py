@@ -11,12 +11,41 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "FireRedTTS2", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "IndexTTS2", "Irodori-TTS", "Irodori-TTS-Anime", "Irodori-TTS-Lite", "KittenTTS", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "Zonos", "ZONOS2"]
+ENGINE = "Kokoro"  #@param ["Audio8-TTS", "Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "FireRedTTS2", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "IndexTTS2", "Irodori-TTS", "Irodori-TTS-Anime", "Irodori-TTS-Lite", "Irodori-TTS-MF", "KittenTTS", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "ZeroTTS", "Zonos", "ZONOS2"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
 TEST_VOICE = ""  #@param {type:"string"}
 OPENAI_MODEL_ID = ""  #@param {type:"string"}
+
+#@markdown ---
+#@markdown Audio8-TTS (0.6B multilingual TTS, GPU recommended)
+#@markdown - Supports 11 languages including Japanese. `default` needs no reference; `clone` requires both a reference WAV and its exact transcript.
+#@markdown - Keep input within 150 characters for best quality. Only clone voices with consent and disclose synthetic audio where appropriate.
+#@markdown - License: Apache-2.0 for both code and weights. See the upstream NOTICE for attribution details.
+AUDIO8_HF_MODEL = "Audio8/Audio8-TTS-Preview-0.6b"  #@param {type:"string"}
+AUDIO8_PROMPT_WAV = ""  #@param {type:"string"}
+AUDIO8_PROMPT_TEXT = ""  #@param {type:"string"}
+AUDIO8_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+AUDIO8_DEVICE = "auto"  #@param ["auto", "cuda", "cpu"]
+AUDIO8_DTYPE = "auto"  #@param ["auto", "bfloat16", "float16", "float32"]
+AUDIO8_MAX_NEW_TOKENS = 1024  #@param {type:"integer"}
+AUDIO8_TEMPERATURE = 0.8  #@param {type:"number"}
+AUDIO8_TOP_P = 0.95  #@param {type:"number"}
+AUDIO8_TOP_K = 50  #@param {type:"integer"}
+
+#@markdown ---
+#@markdown ZeroTTS (Vietnamese, CPU/ONNX, MIT)
+#@markdown - Uses bundled speaker-latent presets. The public package cannot create a new voice from reference audio because the voice encoder is not released.
+#@markdown - Built for Vietnamese; English words inside Vietnamese text are supported, but it is not evaluated as an English TTS system.
+#@markdown - License: MIT for code and weights; the bundled MOSS codec decoder is Apache-2.0. Do not use for impersonation or deception.
+ZEROTTS_HF_MODEL = "zeroweight-ai/ZeroTTS"  #@param {type:"string"}
+ZEROTTS_DEFAULT_VOICE = "maichi"  #@param ["maichi", "baotrang", "kimoanh", "hamy", "giahuy", "huuduc", "quangminh", "tiendat"]
+ZEROTTS_CFG_SCALE = 1.0  #@param {type:"number"}
+ZEROTTS_AUDIO_TEMPERATURE = 0.8  #@param {type:"number"}
+ZEROTTS_AUDIO_TOPK = 25  #@param {type:"integer"}
+ZEROTTS_AUDIO_TOPP = 0.95  #@param {type:"number"}
+ZEROTTS_AUDIO_REPETITION_PENALTY = 1.2  #@param {type:"number"}
 
 #@markdown ---
 #@markdown F5-TTS (GPU required)
@@ -37,6 +66,15 @@ IRODORI_HF_CHECKPOINT = "Aratako/Irodori-TTS-v4.1-Small"  #@param ["Aratako/Irod
 IRODORI_CODEC_REPO = "Aratako/Semantic-DACVAE-Japanese-32dim"  #@param {type:"string"}
 IRODORI_MODEL_PRECISION = "fp32"  #@param ["fp32", "bf16", "fp16"]
 IRODORI_CODEC_PRECISION = "fp32"  #@param ["fp32", "bf16", "fp16"]
+
+#@markdown ---
+#@markdown Irodori-TTS-MF (official MeanFlow-distilled v4.1-Small, GPU required)
+#@markdown - Uses the upstream-recommended automatic 4-step MeanFlow sampler. This wrapper exposes text-only, no-reference inference.
+#@markdown - License: MIT for code, model weights, and codec. SilentCipher watermarking and the upstream ethical-use restrictions remain in effect.
+IRODORI_MF_HF_CHECKPOINT = "Aratako/Irodori-TTS-v4.1-Small-MF"  #@param {type:"string"}
+IRODORI_MF_CODEC_REPO = "Aratako/Semantic-DACVAE-Japanese-32dim"  #@param {type:"string"}
+IRODORI_MF_MODEL_PRECISION = "fp32"  #@param ["fp32", "bf16"]
+IRODORI_MF_CODEC_PRECISION = "fp32"  #@param ["fp32", "bf16"]
 
 #@markdown ---
 #@markdown Irodori-TTS-Anime (third-party fine-tune, GPU required)
@@ -625,6 +663,40 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         TEST_VOICE,
         "--openai-model-id",
         OPENAI_MODEL_ID,
+        "--audio8-hf-model",
+        AUDIO8_HF_MODEL,
+        "--audio8-prompt-wav",
+        AUDIO8_PROMPT_WAV,
+        "--audio8-prompt-text",
+        AUDIO8_PROMPT_TEXT,
+        "--audio8-default-voice",
+        AUDIO8_DEFAULT_VOICE,
+        "--audio8-device",
+        AUDIO8_DEVICE,
+        "--audio8-dtype",
+        AUDIO8_DTYPE,
+        "--audio8-max-new-tokens",
+        str(AUDIO8_MAX_NEW_TOKENS),
+        "--audio8-temperature",
+        str(AUDIO8_TEMPERATURE),
+        "--audio8-top-p",
+        str(AUDIO8_TOP_P),
+        "--audio8-top-k",
+        str(AUDIO8_TOP_K),
+        "--zerotts-hf-model",
+        ZEROTTS_HF_MODEL,
+        "--zerotts-default-voice",
+        ZEROTTS_DEFAULT_VOICE,
+        "--zerotts-cfg-scale",
+        str(ZEROTTS_CFG_SCALE),
+        "--zerotts-audio-temperature",
+        str(ZEROTTS_AUDIO_TEMPERATURE),
+        "--zerotts-audio-topk",
+        str(ZEROTTS_AUDIO_TOPK),
+        "--zerotts-audio-topp",
+        str(ZEROTTS_AUDIO_TOPP),
+        "--zerotts-audio-repetition-penalty",
+        str(ZEROTTS_AUDIO_REPETITION_PENALTY),
         "--f5tts-model",
         F5TTS_MODEL,
         "--f5tts-ckpt-file",
@@ -641,6 +713,14 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         IRODORI_MODEL_PRECISION,
         "--irodori-codec-precision",
         IRODORI_CODEC_PRECISION,
+        "--irodori-mf-hf-checkpoint",
+        IRODORI_MF_HF_CHECKPOINT,
+        "--irodori-mf-codec-repo",
+        IRODORI_MF_CODEC_REPO,
+        "--irodori-mf-model-precision",
+        IRODORI_MF_MODEL_PRECISION,
+        "--irodori-mf-codec-precision",
+        IRODORI_MF_CODEC_PRECISION,
         "--irodori-anime-hf-checkpoint",
         IRODORI_ANIME_HF_CHECKPOINT,
         "--irodori-anime-codec-repo",

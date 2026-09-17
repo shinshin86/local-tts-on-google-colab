@@ -21,6 +21,7 @@
     "default": "Kokoro",
     "type": "select",
     "options": [
+      "Audio8-TTS",
       "Bark",
       "ChatTTS",
       "Chatterbox",
@@ -40,6 +41,7 @@
       "Irodori-TTS",
       "Irodori-TTS-Anime",
       "Irodori-TTS-Lite",
+      "Irodori-TTS-MF",
       "KittenTTS",
       "Kokoro",
       "Kokoro-ONNX",
@@ -74,6 +76,7 @@
       "VoxCPM2",
       "Voxtral-TTS",
       "Vyvo-Multilingual",
+      "ZeroTTS",
       "Zonos",
       "ZONOS2"
     ]
@@ -112,6 +115,102 @@
     }
   ],
   "engines": [
+    {
+      "id": "Audio8-TTS",
+      "title": "Audio8-TTS (0.6B multilingual TTS, GPU recommended)",
+      "status": "Works on L4 (GPU recommended, zero-shot voice cloning)",
+      "status_ja": "L4 で動作確認済み（GPU 推奨、ゼロショット Voice cloning）",
+      "languages": "Japanese / English / Chinese and 11 languages",
+      "languages_ja": "日本語 / 英語 / 中国語 他 11言語",
+      "description": "A separate engine for [Audio8 TTS Preview 0.6B](https://huggingface.co/Audio8/Audio8-TTS-Preview-0.6b), a compact DualAR model with a bundled 44.1 kHz neural codec. It supports 11 recommended languages, including Japanese, English, Chinese, Cantonese, Korean, and major European languages. Upstream recommends keeping each input within 150 characters for best quality.",
+      "description_ja": "[Audio8 TTS Preview 0.6B](https://huggingface.co/Audio8/Audio8-TTS-Preview-0.6b) を使用する独立エンジンです。44.1kHzのニューラルコーデックを同梱した小型のDualARモデルで、日本語、英語、中国語、広東語、韓国語、主要な欧州言語を含む推奨11言語に対応します。品質を保つため、上流は1回の入力を150文字以内にすることを推奨しています。",
+      "notes": [
+        "- Supports 11 languages including Japanese. `default` needs no reference; `clone` requires both a reference WAV and its exact transcript.",
+        "- Keep input within 150 characters for best quality. Only clone voices with consent and disclose synthetic audio where appropriate.",
+        "- License: Apache-2.0 for both code and weights. See the upstream NOTICE for attribution details."
+      ],
+      "notes_ja": [
+        "- ライセンス: コードは Apache-2.0、モデル重みは Apache-2.0 (`Audio8/Audio8-TTS-Preview-0.6b`)。商用利用: OK。 備考: 0.6B多言語Preview、ゼロショットVoice cloning対応。上流NOTICEの帰属表示を維持し、音声クローンには本人の同意が必要"
+      ],
+      "prefix": "AUDIO8",
+      "params": [
+        {
+          "name": "AUDIO8_HF_MODEL",
+          "default": "Audio8/Audio8-TTS-Preview-0.6b",
+          "type": "string",
+          "flag": "--audio8-hf-model"
+        },
+        {
+          "name": "AUDIO8_PROMPT_WAV",
+          "default": "",
+          "type": "string",
+          "flag": "--audio8-prompt-wav"
+        },
+        {
+          "name": "AUDIO8_PROMPT_TEXT",
+          "default": "",
+          "type": "string",
+          "flag": "--audio8-prompt-text"
+        },
+        {
+          "name": "AUDIO8_DEFAULT_VOICE",
+          "default": "default",
+          "type": "select",
+          "options": [
+            "default",
+            "clone"
+          ],
+          "flag": "--audio8-default-voice"
+        },
+        {
+          "name": "AUDIO8_DEVICE",
+          "default": "auto",
+          "type": "select",
+          "options": [
+            "auto",
+            "cuda",
+            "cpu"
+          ],
+          "flag": "--audio8-device"
+        },
+        {
+          "name": "AUDIO8_DTYPE",
+          "default": "auto",
+          "type": "select",
+          "options": [
+            "auto",
+            "bfloat16",
+            "float16",
+            "float32"
+          ],
+          "flag": "--audio8-dtype"
+        },
+        {
+          "name": "AUDIO8_MAX_NEW_TOKENS",
+          "default": 1024,
+          "type": "integer",
+          "flag": "--audio8-max-new-tokens"
+        },
+        {
+          "name": "AUDIO8_TEMPERATURE",
+          "default": 0.8,
+          "type": "number",
+          "flag": "--audio8-temperature"
+        },
+        {
+          "name": "AUDIO8_TOP_P",
+          "default": 0.95,
+          "type": "number",
+          "flag": "--audio8-top-p"
+        },
+        {
+          "name": "AUDIO8_TOP_K",
+          "default": 50,
+          "type": "integer",
+          "flag": "--audio8-top-k"
+        }
+      ]
+    },
     {
       "id": "Bark",
       "title": "Bark (GPU recommended, 13 languages, MIT)",
@@ -1285,6 +1384,58 @@
           "type": "boolean",
           "true_flag": "--irodori-lite-codec-int4",
           "false_flag": null
+        }
+      ]
+    },
+    {
+      "id": "Irodori-TTS-MF",
+      "title": "Irodori-TTS-MF (official MeanFlow-distilled v4.1-Small, GPU required)",
+      "status": "Works on L4 (GPU required, 4-step MeanFlow)",
+      "status_ja": "L4 で動作確認済み（GPU 必須、4ステップ MeanFlow）",
+      "languages": "Japanese",
+      "languages_ja": "日本語",
+      "description": "An independent engine entry for the official [`Aratako/Irodori-TTS-v4.1-Small-MF`](https://huggingface.co/Aratako/Irodori-TTS-v4.1-Small-MF), a MeanFlow-distilled version of v4.1-Small. The upstream runtime automatically selects the checkpoint's recommended four-step sampler, substantially reducing the sampling-step count compared with the standard rectified-flow model. This wrapper currently exposes text-only, no-reference inference and does not switch voices.",
+      "description_ja": "公式の [`Aratako/Irodori-TTS-v4.1-Small-MF`](https://huggingface.co/Aratako/Irodori-TTS-v4.1-Small-MF) を使用する独立エンジンです。v4.1-SmallをMeanFlow蒸留したモデルで、上流ランタイムがチェックポイント推奨の4ステップサンプラーを自動選択します。標準のRectified Flowモデルよりサンプリングステップ数を大幅に減らしています。現在のラッパーはtext-only・参照音声なしの推論のみを公開し、voice切り替えには対応していません。",
+      "notes": [
+        "- Uses the upstream-recommended automatic 4-step MeanFlow sampler. This wrapper exposes text-only, no-reference inference.",
+        "- License: MIT for code, model weights, and codec. SilentCipher watermarking and the upstream ethical-use restrictions remain in effect."
+      ],
+      "notes_ja": [
+        "- ライセンス: コードは MIT (Aratako/Irodori-TTS)、モデル重みは MIT (`Aratako/Irodori-TTS-v4.1-Small-MF`)。商用利用: OK。 備考: 公式のv4.1-Small MeanFlow蒸留版。4ステップ推論。倫理制限とSilentCipherウォーターマークを維持"
+      ],
+      "prefix": "IRODORI_MF",
+      "params": [
+        {
+          "name": "IRODORI_MF_HF_CHECKPOINT",
+          "default": "Aratako/Irodori-TTS-v4.1-Small-MF",
+          "type": "string",
+          "flag": "--irodori-mf-hf-checkpoint"
+        },
+        {
+          "name": "IRODORI_MF_CODEC_REPO",
+          "default": "Aratako/Semantic-DACVAE-Japanese-32dim",
+          "type": "string",
+          "flag": "--irodori-mf-codec-repo"
+        },
+        {
+          "name": "IRODORI_MF_MODEL_PRECISION",
+          "default": "fp32",
+          "type": "select",
+          "options": [
+            "fp32",
+            "bf16"
+          ],
+          "flag": "--irodori-mf-model-precision"
+        },
+        {
+          "name": "IRODORI_MF_CODEC_PRECISION",
+          "default": "fp32",
+          "type": "select",
+          "options": [
+            "fp32",
+            "bf16"
+          ],
+          "flag": "--irodori-mf-codec-precision"
         }
       ]
     },
@@ -3430,6 +3581,79 @@
           "default": 960,
           "type": "integer",
           "flag": "--vyvo-min-new-tokens"
+        }
+      ]
+    },
+    {
+      "id": "ZeroTTS",
+      "title": "ZeroTTS (Vietnamese, CPU/ONNX, MIT)",
+      "status": "Works on Colab (CPU/ONNX, ~900MB download)",
+      "status_ja": "Colab で動作確認済み（CPU/ONNX、約900MB取得）",
+      "languages": "Vietnamese",
+      "languages_ja": "ベトナム語",
+      "description": "[ZeroTTS](https://github.com/zeroweight-ai/ZeroTTS) is a lightweight Vietnamese TTS runtime built on ONNX Runtime and designed for real-time CPU inference. It downloads approximately 900 MB of FP32 weights and produces 48 kHz audio. The wrapper exposes the bundled speaker-latent presets through the OpenAI `voice` parameter; `maichi` is the default, and the current list is available from `/v1/voices`.",
+      "description_ja": "[ZeroTTS](https://github.com/zeroweight-ai/ZeroTTS) はONNX Runtimeを使用し、CPUでのリアルタイム推論を想定した軽量なベトナム語TTSです。約900MBのFP32重みを取得し、48kHz音声を生成します。OpenAI互換ラッパーでは、同梱の話者latent presetを`voice`パラメータで選択できます。既定は`maichi`で、現在の一覧は`/v1/voices`から取得できます。",
+      "notes": [
+        "- Uses bundled speaker-latent presets. The public package cannot create a new voice from reference audio because the voice encoder is not released.",
+        "- Built for Vietnamese; English words inside Vietnamese text are supported, but it is not evaluated as an English TTS system.",
+        "- License: MIT for code and weights; the bundled MOSS codec decoder is Apache-2.0. Do not use for impersonation or deception."
+      ],
+      "notes_ja": [
+        "- ライセンス: コードは MIT、モデル重みは MIT (`zeroweight-ai/ZeroTTS`)。商用利用: OK。 備考: ベトナム語CPU/ONNX TTS、preset voice latent対応。公開パッケージは新規voiceを作成不可。同梱MOSS codec decoderはApache-2.0"
+      ],
+      "prefix": "ZEROTTS",
+      "params": [
+        {
+          "name": "ZEROTTS_HF_MODEL",
+          "default": "zeroweight-ai/ZeroTTS",
+          "type": "string",
+          "flag": "--zerotts-hf-model"
+        },
+        {
+          "name": "ZEROTTS_DEFAULT_VOICE",
+          "default": "maichi",
+          "type": "select",
+          "options": [
+            "maichi",
+            "baotrang",
+            "kimoanh",
+            "hamy",
+            "giahuy",
+            "huuduc",
+            "quangminh",
+            "tiendat"
+          ],
+          "flag": "--zerotts-default-voice"
+        },
+        {
+          "name": "ZEROTTS_CFG_SCALE",
+          "default": 1.0,
+          "type": "number",
+          "flag": "--zerotts-cfg-scale"
+        },
+        {
+          "name": "ZEROTTS_AUDIO_TEMPERATURE",
+          "default": 0.8,
+          "type": "number",
+          "flag": "--zerotts-audio-temperature"
+        },
+        {
+          "name": "ZEROTTS_AUDIO_TOPK",
+          "default": 25,
+          "type": "integer",
+          "flag": "--zerotts-audio-topk"
+        },
+        {
+          "name": "ZEROTTS_AUDIO_TOPP",
+          "default": 0.95,
+          "type": "number",
+          "flag": "--zerotts-audio-topp"
+        },
+        {
+          "name": "ZEROTTS_AUDIO_REPETITION_PENALTY",
+          "default": 1.2,
+          "type": "number",
+          "flag": "--zerotts-audio-repetition-penalty"
         }
       ]
     },

@@ -1,3 +1,4 @@
+from .audio8_tts import install as install_audio8_tts
 from .bark import install as install_bark
 from .chatterbox import install as install_chatterbox
 from .chattts import install as install_chattts
@@ -17,6 +18,7 @@ from .indextts2 import install as install_indextts2
 from .irodori import install as install_irodori
 from .irodori_anime import install as install_irodori_anime
 from .irodori_lite import install as install_irodori_lite
+from .irodori_mf import install as install_irodori_mf
 from .kitten_tts import install as install_kitten_tts
 from .qwen3_tts import install as install_qwen3_tts
 from .kokoro import install as install_kokoro
@@ -53,9 +55,11 @@ from .voxtral import install as install_voxtral
 from .vyvo_multilingual import install as install_vyvo_multilingual
 from .zonos import install as install_zonos
 from .zonos2 import install as install_zonos2
+from .zerotts import install as install_zerotts
 
 
 INSTALLERS = {
+    "Audio8-TTS": install_audio8_tts,
     "Bark": install_bark,
     "ChatTTS": install_chattts,
     "Chatterbox": install_chatterbox,
@@ -75,6 +79,7 @@ INSTALLERS = {
     "Irodori-TTS": install_irodori,
     "Irodori-TTS-Anime": install_irodori_anime,
     "Irodori-TTS-Lite": install_irodori_lite,
+    "Irodori-TTS-MF": install_irodori_mf,
     "KittenTTS": install_kitten_tts,
     "Kokoro": install_kokoro,
     "Kokoro-ONNX": install_kokoro_onnx,
@@ -109,6 +114,7 @@ INSTALLERS = {
     "VoxCPM2": install_voxcpm,
     "Voxtral-TTS": install_voxtral,
     "Vyvo-Multilingual": install_vyvo_multilingual,
+    "ZeroTTS": install_zerotts,
     "Zonos": install_zonos,
     "ZONOS2": install_zonos2,
 }

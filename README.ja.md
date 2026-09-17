@@ -10,11 +10,13 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 
 | エンジン | Colab 動作確認 | 言語 | 商用利用 |
 |---|---|---|---|
+| Audio8-TTS | L4 で動作確認済み（GPU 推奨、ゼロショット Voice cloning） | 日本語 / 英語 / 中国語 他 11言語 | OK |
 | Kokoro | 動作OK | 日本語 / 英語 / 中国語 他 | OK |
 | Kokoro-ONNX | 動作OK | 日本語 / 英語 / 中国語 他 | OK |
 | Irodori-TTS | L4 で動作確認済み（GPU 必須、デフォルトは v4.1-Small、v4-Small も選択可能） | 日本語 | OK |
 | Irodori-TTS-Anime | L4 で動作確認済み（GPU 必須、v4.1 Anime） | 日本語 | OK |
 | Irodori-TTS-Lite | 動作OK（GPU 必須、VRAM ~1GB、int4 量子化） | 日本語 | OK |
+| Irodori-TTS-MF | L4 で動作確認済み（GPU 必須、4ステップ MeanFlow） | 日本語 | OK |
 | Piper | 動作OK | 英語（デフォルト）/ 多言語 | 既定は不可（既定音声が研究用途のみ） |
 | Piper-Plus | 動作OK | 日本語 / 英語 / 中国語 他 6言語 | OK |
 | Qwen3-TTS | 動作OK (GPU必須) | 日本語 / 英語 / 中国語 他 10言語 | OK |
@@ -31,6 +33,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | Sarashina-TTS | 動作OK (GPU必須・VRAM ~6GB) | 日本語 / 英語 | 不可 |
 | F5-TTS | 動作OK (GPU必須) | 英語 / 中国語（日本語は別モデル） | 不可 |
 | Chatterbox Multilingual V3 | 動作OK (GPU推奨・0.5B) | 日本語 / 英語 / 中国語 他 23言語 | OK |
+| ZeroTTS | Colab で動作確認済み（CPU/ONNX、約900MB取得） | ベトナム語 | OK |
 | Zonos | 動作OK (GPU必須・VRAM ~6GB) | 日本語 / 英語 / 中国語 / フランス語 / ドイツ語 | OK |
 | ZONOS2 | 動作OK (L4検証済・sm_80+必須) | 41言語 (tier-1: 日本語 / 英語 / 中国語) | OK |
 | OuteTTS | 動作OK (CPU可) | 日本語 / 英語 / 中国語 他 多言語 | 条件付き（既定0.6Bは可 / 1Bは不可） |
@@ -131,12 +134,41 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "FireRedTTS2", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "IndexTTS2", "Irodori-TTS", "Irodori-TTS-Anime", "Irodori-TTS-Lite", "KittenTTS", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "Zonos", "ZONOS2"]
+ENGINE = "Kokoro"  #@param ["Audio8-TTS", "Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "FireRedTTS2", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "IndexTTS2", "Irodori-TTS", "Irodori-TTS-Anime", "Irodori-TTS-Lite", "Irodori-TTS-MF", "KittenTTS", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "ZeroTTS", "Zonos", "ZONOS2"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
 TEST_VOICE = ""  #@param {type:"string"}
 OPENAI_MODEL_ID = ""  #@param {type:"string"}
+
+#@markdown ---
+#@markdown Audio8-TTS (0.6B multilingual TTS, GPU recommended)
+#@markdown - Supports 11 languages including Japanese. `default` needs no reference; `clone` requires both a reference WAV and its exact transcript.
+#@markdown - Keep input within 150 characters for best quality. Only clone voices with consent and disclose synthetic audio where appropriate.
+#@markdown - License: Apache-2.0 for both code and weights. See the upstream NOTICE for attribution details.
+AUDIO8_HF_MODEL = "Audio8/Audio8-TTS-Preview-0.6b"  #@param {type:"string"}
+AUDIO8_PROMPT_WAV = ""  #@param {type:"string"}
+AUDIO8_PROMPT_TEXT = ""  #@param {type:"string"}
+AUDIO8_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+AUDIO8_DEVICE = "auto"  #@param ["auto", "cuda", "cpu"]
+AUDIO8_DTYPE = "auto"  #@param ["auto", "bfloat16", "float16", "float32"]
+AUDIO8_MAX_NEW_TOKENS = 1024  #@param {type:"integer"}
+AUDIO8_TEMPERATURE = 0.8  #@param {type:"number"}
+AUDIO8_TOP_P = 0.95  #@param {type:"number"}
+AUDIO8_TOP_K = 50  #@param {type:"integer"}
+
+#@markdown ---
+#@markdown ZeroTTS (Vietnamese, CPU/ONNX, MIT)
+#@markdown - Uses bundled speaker-latent presets. The public package cannot create a new voice from reference audio because the voice encoder is not released.
+#@markdown - Built for Vietnamese; English words inside Vietnamese text are supported, but it is not evaluated as an English TTS system.
+#@markdown - License: MIT for code and weights; the bundled MOSS codec decoder is Apache-2.0. Do not use for impersonation or deception.
+ZEROTTS_HF_MODEL = "zeroweight-ai/ZeroTTS"  #@param {type:"string"}
+ZEROTTS_DEFAULT_VOICE = "maichi"  #@param ["maichi", "baotrang", "kimoanh", "hamy", "giahuy", "huuduc", "quangminh", "tiendat"]
+ZEROTTS_CFG_SCALE = 1.0  #@param {type:"number"}
+ZEROTTS_AUDIO_TEMPERATURE = 0.8  #@param {type:"number"}
+ZEROTTS_AUDIO_TOPK = 25  #@param {type:"integer"}
+ZEROTTS_AUDIO_TOPP = 0.95  #@param {type:"number"}
+ZEROTTS_AUDIO_REPETITION_PENALTY = 1.2  #@param {type:"number"}
 
 #@markdown ---
 #@markdown F5-TTS (GPU required)
@@ -157,6 +189,15 @@ IRODORI_HF_CHECKPOINT = "Aratako/Irodori-TTS-v4.1-Small"  #@param ["Aratako/Irod
 IRODORI_CODEC_REPO = "Aratako/Semantic-DACVAE-Japanese-32dim"  #@param {type:"string"}
 IRODORI_MODEL_PRECISION = "fp32"  #@param ["fp32", "bf16", "fp16"]
 IRODORI_CODEC_PRECISION = "fp32"  #@param ["fp32", "bf16", "fp16"]
+
+#@markdown ---
+#@markdown Irodori-TTS-MF (official MeanFlow-distilled v4.1-Small, GPU required)
+#@markdown - Uses the upstream-recommended automatic 4-step MeanFlow sampler. This wrapper exposes text-only, no-reference inference.
+#@markdown - License: MIT for code, model weights, and codec. SilentCipher watermarking and the upstream ethical-use restrictions remain in effect.
+IRODORI_MF_HF_CHECKPOINT = "Aratako/Irodori-TTS-v4.1-Small-MF"  #@param {type:"string"}
+IRODORI_MF_CODEC_REPO = "Aratako/Semantic-DACVAE-Japanese-32dim"  #@param {type:"string"}
+IRODORI_MF_MODEL_PRECISION = "fp32"  #@param ["fp32", "bf16"]
+IRODORI_MF_CODEC_PRECISION = "fp32"  #@param ["fp32", "bf16"]
 
 #@markdown ---
 #@markdown Irodori-TTS-Anime (third-party fine-tune, GPU required)
@@ -745,6 +786,40 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         TEST_VOICE,
         "--openai-model-id",
         OPENAI_MODEL_ID,
+        "--audio8-hf-model",
+        AUDIO8_HF_MODEL,
+        "--audio8-prompt-wav",
+        AUDIO8_PROMPT_WAV,
+        "--audio8-prompt-text",
+        AUDIO8_PROMPT_TEXT,
+        "--audio8-default-voice",
+        AUDIO8_DEFAULT_VOICE,
+        "--audio8-device",
+        AUDIO8_DEVICE,
+        "--audio8-dtype",
+        AUDIO8_DTYPE,
+        "--audio8-max-new-tokens",
+        str(AUDIO8_MAX_NEW_TOKENS),
+        "--audio8-temperature",
+        str(AUDIO8_TEMPERATURE),
+        "--audio8-top-p",
+        str(AUDIO8_TOP_P),
+        "--audio8-top-k",
+        str(AUDIO8_TOP_K),
+        "--zerotts-hf-model",
+        ZEROTTS_HF_MODEL,
+        "--zerotts-default-voice",
+        ZEROTTS_DEFAULT_VOICE,
+        "--zerotts-cfg-scale",
+        str(ZEROTTS_CFG_SCALE),
+        "--zerotts-audio-temperature",
+        str(ZEROTTS_AUDIO_TEMPERATURE),
+        "--zerotts-audio-topk",
+        str(ZEROTTS_AUDIO_TOPK),
+        "--zerotts-audio-topp",
+        str(ZEROTTS_AUDIO_TOPP),
+        "--zerotts-audio-repetition-penalty",
+        str(ZEROTTS_AUDIO_REPETITION_PENALTY),
         "--f5tts-model",
         F5TTS_MODEL,
         "--f5tts-ckpt-file",
@@ -761,6 +836,14 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         IRODORI_MODEL_PRECISION,
         "--irodori-codec-precision",
         IRODORI_CODEC_PRECISION,
+        "--irodori-mf-hf-checkpoint",
+        IRODORI_MF_HF_CHECKPOINT,
+        "--irodori-mf-codec-repo",
+        IRODORI_MF_CODEC_REPO,
+        "--irodori-mf-model-precision",
+        IRODORI_MF_MODEL_PRECISION,
+        "--irodori-mf-codec-precision",
+        IRODORI_MF_CODEC_PRECISION,
         "--irodori-anime-hf-checkpoint",
         IRODORI_ANIME_HF_CHECKPOINT,
         "--irodori-anime-codec-repo",
@@ -1366,6 +1449,14 @@ main()
 
 ## エンジンごとの補足
 
+### Audio8-TTS
+
+[Audio8 TTS Preview 0.6B](https://huggingface.co/Audio8/Audio8-TTS-Preview-0.6b) を使用する独立エンジンです。44.1kHzのニューラルコーデックを同梱した小型のDualARモデルで、日本語、英語、中国語、広東語、韓国語、主要な欧州言語を含む推奨11言語に対応します。品質を保つため、上流は1回の入力を150文字以内にすることを推奨しています。
+
+OpenAI互換ラッパーでは、参照音声なしの`voice="default"`と、ゼロショットVoice cloningの`voice="clone"`を提供します。cloneは`AUDIO8_PROMPT_WAV`と、その音声に一致する書き起こし`AUDIO8_PROMPT_TEXT`の両方を設定した場合だけ有効になり、未設定時は暗黙にdefaultへ切り替えずHTTP 400を返します。ColabではCUDA GPU + BF16を既定とし、CPU時はFP32を使用します。NVIDIA L4で既定構成を検証し、公開`trycloudflare`経由でHTTP 200と正常な44.1kHzモノラルWAVが返ること、`/v1/voices`に`default`が公開されることを確認しました。
+
+コードと重みはいずれもApache-2.0です。必要に応じて上流`NOTICE`の帰属表示を維持してください。Voice cloningには本人の同意を得て、必要な場面では合成音声であることを明示してください。
+
 ### Kokoro
 
 [hexgrad/kokoro](https://github.com/hexgrad/kokoro) を使った日本語・英語・中国語対応の軽量 TTS です。デフォルト voice は日本語の `jf_alpha` で、フォームから 9 種類の voice を選べます。
@@ -1396,6 +1487,12 @@ v4.1-Small は、v4-Small の VoiceDesign caption、スタイル制御付き Voi
 OpenAI互換ラッパーが提供するのはtext-only・参照音声なしの推論で、`voice="default"` のみを受け付けます。caption条件付け、参照音声によるVoice cloning、emojiによる演技制御は公開していません。またモデルカードには、学習データのアノテーションを独自に行ったため、上流ランタイムを直接使用した場合でもcaptionやemojiの挙動がベースモデルと異なる可能性があると記載されています。
 
 フル精度チェックポイントは約3.06GBです。本ColabラッパーではGPU必須です。デフォルト構成は NVIDIA L4 の Colab ランタイムでエンドツーエンド検証済みです。インストールと起動が完了し、ローカルおよび公開`trycloudflare`経由のリクエストが正常な48 kHzモノラルWAVを返すこと、未対応voiceが想定どおりHTTP 400を返すことを確認しました。上流コード、モデル重み、コーデックはいずれもMITです。元モデルと同じ、無断のなりすましや誤解を招くディープフェイクを禁止する倫理制限を引き継ぎ、生成音声には上流のSilentCipherウォーターマーク処理を維持します。
+
+### Irodori-TTS-MF
+
+公式の [`Aratako/Irodori-TTS-v4.1-Small-MF`](https://huggingface.co/Aratako/Irodori-TTS-v4.1-Small-MF) を使用する独立エンジンです。v4.1-SmallをMeanFlow蒸留したモデルで、上流ランタイムがチェックポイント推奨の4ステップサンプラーを自動選択します。標準のRectified Flowモデルよりサンプリングステップ数を大幅に減らしています。現在のラッパーはtext-only・参照音声なしの推論のみを公開し、voice切り替えには対応していません。
+
+コード、モデル重み、既定のDACVAEコーデックはいずれもMITです。SilentCipherウォーターマークと、無断のなりすまし・誤解を招くディープフェイクを禁止する上流の倫理制限を維持します。NVIDIA L4で既定構成を検証し、公開`trycloudflare`経由でHTTP 200と正常な48kHzモノラルWAVが返ることを確認しました。
 
 ### Irodori-TTS-Lite
 
@@ -1523,6 +1620,14 @@ SB Intuitions の [sbintuitions/sarashina2.2-tts](https://huggingface.co/sbintui
 | `clone` | ゼロショット音声クローン。`--chatterbox-prompt-wav` を指定したときのみ有効 |
 
 音声クローンを使う場合は、必ず権利を持っている音声（本人の同意がある音声）でのみ行ってください。
+
+### ZeroTTS
+
+[ZeroTTS](https://github.com/zeroweight-ai/ZeroTTS) はONNX Runtimeを使用し、CPUでのリアルタイム推論を想定した軽量なベトナム語TTSです。約900MBのFP32重みを取得し、48kHz音声を生成します。OpenAI互換ラッパーでは、同梱の話者latent presetを`voice`パラメータで選択できます。既定は`maichi`で、現在の一覧は`/v1/voices`から取得できます。
+
+上流プロジェクトはzero-shotを掲げていますが、公開Pythonパッケージにはvoice encoderが含まれないため、参照音声から新しいvoiceを作成できません。同梱または別途入手したvoice packの読み込みだけに対応するため、この統合には意図的に`clone`を設けていません。ベトナム語向けであり、ベトナム語文中の英単語は扱えますが、一般的な英語TTSとしては未評価です。長い文章は短い発話へ分割してください。ColabのCPU/ONNXパスを検証し、公開`trycloudflare`経由でHTTP 200と正常な48kHzモノラルWAVが返ること、`/v1/voices`に同梱8presetが返ることを確認しました。
+
+コードと重みはMITで、同梱のMOSS-Audio-Tokenizer-Nano decoderはApache-2.0です。なりすましや聞き手を欺く目的には使用せず、本物の音声と受け取られる可能性がある場面では合成音声であることを明示してください。
 
 ### Zonos
 
@@ -2062,11 +2167,13 @@ Colab T4 で確認済み: エンジン・`/v1` エンドポイント・trycloudf
 
 | エンジン | コード | モデル重み | 商用利用 | 備考 |
 |---|---|---|---|---|
+| Audio8-TTS | Apache-2.0 | Apache-2.0 (`Audio8/Audio8-TTS-Preview-0.6b`) | OK | 0.6B多言語Preview、ゼロショットVoice cloning対応。上流NOTICEの帰属表示を維持し、音声クローンには本人の同意が必要 |
 | Kokoro | Apache 2.0 | Apache 2.0 | OK | |
 | Kokoro-ONNX | Apache 2.0 | Apache 2.0 | OK | NVIDIA による hexgrad/Kokoro-82M の ONNX 再配布。コード・重みとも Apache 2.0 |
 | Irodori-TTS | MIT | MIT (v1 / v2 / v3 / v4 / v4.1) | OK | なりすまし・ディープフェイク生成を禁止する倫理規定あり。V3/V4/V4.1 は SilentCipher ウォーターマーク同梱（除去禁止） |
 | Irodori-TTS-Anime | MIT (Aratako/Irodori-TTS) | MIT (`phasefield-audio/Irodori-TTS-v4.1-Anime`) | OK | v4.1-Small の非公式な第三者ファインチューニング。元モデルの倫理制限とSilentCipherウォーターマーク処理を継承 |
 | Irodori-TTS-Lite | MIT | MIT (`kizuna-intelligence/Irodori-TTS-Lite-int4`, `kizuna-intelligence/Irodori-TTS-500M-v3-int4`) | OK | Irodori-TTS 用の int4 量子化ランタイム。Triton カーネル使用のため Linux + CUDA 必須。`fused_int4_linear.py` は OneCompression（Fujitsu Ltd., MIT）からベンダリング |
+| Irodori-TTS-MF | MIT (Aratako/Irodori-TTS) | MIT (`Aratako/Irodori-TTS-v4.1-Small-MF`) | OK | 公式のv4.1-Small MeanFlow蒸留版。4ステップ推論。倫理制限とSilentCipherウォーターマークを維持 |
 | Piper | GPL-3.0 | MIT | 要注意 | デフォルト音声 `en_US-lessac-medium` の学習データ（Blizzard 2013）は研究目的限定・商用利用不可 |
 | Piper-Plus | MIT | MIT | OK | |
 | Qwen3-TTS | Apache 2.0 | Apache 2.0 | OK | |
@@ -2083,6 +2190,7 @@ Colab T4 で確認済み: エンジン・`/v1` エンドポイント・trycloudf
 | Sarashina-TTS | — | Sarashina Model NonCommercial License | 不可 | 日本語 / 英語。ゼロショット音声クローン対応。出力には SilentCipher のウォーターマークが付与される（除去禁止） |
 | F5-TTS | MIT | CC-BY-NC | 不可（モデル） | モデル重みは Emilia データセットの制約により非商用 |
 | Chatterbox Multilingual V3 | MIT | MIT | OK | 0.5B、23言語（日本語含む）。ゼロショット voice cloning。Perth ウォーターマークを保持 |
+| ZeroTTS | MIT | MIT (`zeroweight-ai/ZeroTTS`) | OK | ベトナム語CPU/ONNX TTS、preset voice latent対応。公開パッケージは新規voiceを作成不可。同梱MOSS codec decoderはApache-2.0 |
 | Zonos | Apache 2.0 | Apache 2.0 | OK | 英 / 日 / 中 / 仏 / 独。ゼロショット voice cloning。`espeak-ng` 必須 |
 | ZONOS2 | MIT | Apache 2.0 | OK | 41言語（tier-1 英/中/日）。ゼロショット voice cloning。Mini-SGLang バックエンド。GPU sm_80+（L4/A100） |
 | OuteTTS (0.6B) | Apache 2.0 | Apache 2.0 | OK | 日本語含む多言語、CPU 動作可、voice cloning |
@@ -2150,6 +2258,10 @@ Colab T4 で確認済み: エンジン・`/v1` エンドポイント・trycloudf
 
 - OpenAI Audio Speech API
   https://developers.openai.com/api/reference/resources/audio/subresources/speech/methods/create
+- Audio8-TTS
+  https://github.com/Audio8-AI/Audio8_TTS
+- Audio8-TTS Preview 0.6B weights
+  https://huggingface.co/Audio8/Audio8-TTS-Preview-0.6b
 - Irodori-TTS
   https://github.com/Aratako/Irodori-TTS
 - Irodori-TTS v4.1-Small weights（デフォルト）
@@ -2160,6 +2272,12 @@ Colab T4 で確認済み: エンジン・`/v1` エンドポイント・trycloudf
   https://huggingface.co/phasefield-audio/Irodori-TTS-v4.1-Anime
 - Irodori-TTS-Lite
   https://github.com/kizuna-intelligence/Irodori-TTS-Lite
+- Irodori-TTS v4.1-Small-MF weights
+  https://huggingface.co/Aratako/Irodori-TTS-v4.1-Small-MF
+- ZeroTTS
+  https://github.com/zeroweight-ai/ZeroTTS
+- ZeroTTS weights
+  https://huggingface.co/zeroweight-ai/ZeroTTS
 - Kokoro
   https://github.com/hexgrad/kokoro
 - Kokoro-ONNX

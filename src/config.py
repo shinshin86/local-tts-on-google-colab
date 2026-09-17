@@ -74,6 +74,12 @@ class Settings:
     irodori_codec_repo: str = "Aratako/Semantic-DACVAE-Japanese-32dim"
     irodori_model_precision: str = "fp32"
     irodori_codec_precision: str = "fp32"
+    # Official MeanFlow-distilled v4.1-Small. Upstream auto-selects its
+    # recommended four-step sampler when num_steps is omitted.
+    irodori_mf_hf_checkpoint: str = "Aratako/Irodori-TTS-v4.1-Small-MF"
+    irodori_mf_codec_repo: str = "Aratako/Semantic-DACVAE-Japanese-32dim"
+    irodori_mf_model_precision: str = "fp32"
+    irodori_mf_codec_precision: str = "fp32"
     # Third-party anime-style fine-tune of Irodori-TTS-v4.1-Small.
     irodori_anime_hf_checkpoint: str = "phasefield-audio/Irodori-TTS-v4.1-Anime"
     irodori_anime_codec_repo: str = "Aratako/Semantic-DACVAE-Japanese-32dim"
@@ -115,6 +121,27 @@ class Settings:
     qwen3_hf_model: str = "Qwen/Qwen3-TTS-12Hz-0.6B-CustomVoice"
     qwen3_language: str = "Japanese"
     qwen3_default_speaker: str = "ono_anna"
+    # Audio8 TTS Preview: compact multilingual DualAR TTS with optional
+    # zero-shot cloning from one reference audio/transcript pair.
+    audio8_hf_model: str = "Audio8/Audio8-TTS-Preview-0.6b"
+    audio8_prompt_wav: str = ""
+    audio8_prompt_text: str = ""
+    audio8_default_voice: str = "default"
+    audio8_device: str = "auto"
+    audio8_dtype: str = "auto"
+    audio8_max_new_tokens: int = 1024
+    audio8_temperature: float = 0.8
+    audio8_top_p: float = 0.95
+    audio8_top_k: int = 50
+    # ZeroTTS: Vietnamese ONNX/CPU runtime with bundled speaker-latent presets.
+    # The public package can load voice packs but cannot encode a new reference voice.
+    zerotts_hf_model: str = "zeroweight-ai/ZeroTTS"
+    zerotts_default_voice: str = "maichi"
+    zerotts_cfg_scale: float = 1.0
+    zerotts_audio_temperature: float = 0.8
+    zerotts_audio_topk: int = 25
+    zerotts_audio_topp: float = 0.95
+    zerotts_audio_repetition_penalty: float = 1.2
     moss_tts_nano_hf_model: str = "OpenMOSS-Team/MOSS-TTS-Nano-100M"
     moss_tts_nano_mode: str = "continuation"
     moss_tts_v1_5_hf_model: str = "OpenMOSS-Team/MOSS-TTS-v1.5"
