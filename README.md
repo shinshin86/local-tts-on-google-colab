@@ -10,13 +10,13 @@ Supported engines:
 
 | Engine | Colab Status | Languages | Commercial use |
 |---|---|---|---|
-| Audio8-TTS | Not yet verified on Colab (GPU recommended, zero-shot voice cloning) | Japanese / English / Chinese and 11 languages | OK |
+| Audio8-TTS | Works on L4 (GPU recommended, zero-shot voice cloning) | Japanese / English / Chinese and 11 languages | OK |
 | Kokoro | Works | Japanese / English / Chinese and more | OK |
 | Kokoro-ONNX | Works | Japanese / English / Chinese and more | OK |
 | Irodori-TTS | Works on L4 (GPU required; v4.1-Small default, v4-Small selectable) | Japanese | OK |
 | Irodori-TTS-Anime | Works on L4 (GPU required, v4.1 Anime) | Japanese | OK |
 | Irodori-TTS-Lite | Works (GPU required, ~1GB VRAM, int4-quantized) | Japanese | OK |
-| Irodori-TTS-MF | Not yet verified on Colab (GPU required, 4-step MeanFlow) | Japanese | OK |
+| Irodori-TTS-MF | Works on L4 (GPU required, 4-step MeanFlow) | Japanese | OK |
 | Piper | Works | English (default) / multilingual | Not with defaults (default voice is research-only) |
 | Piper-Plus | Works | Japanese / English / Chinese and 6 languages | OK |
 | Qwen3-TTS | Works (GPU required) | Japanese / English / Chinese and 10 languages | OK |
@@ -37,7 +37,7 @@ Supported engines:
 | Sarashina-TTS | Works (GPU required, ~6GB VRAM) | Japanese / English | Not allowed |
 | F5-TTS | Works (GPU required) | English / Chinese (Japanese via separate model) | Not allowed |
 | Chatterbox Multilingual V3 | Works (GPU recommended, 0.5B) | Japanese / English / Chinese and 23 languages | OK |
-| ZeroTTS | Not yet verified on Colab (CPU/ONNX, ~900MB download) | Vietnamese | OK |
+| ZeroTTS | Works on Colab (CPU/ONNX, ~900MB download) | Vietnamese | OK |
 | Zonos | Works (GPU required, ~6GB VRAM) | Japanese / English / Chinese / French / German | OK |
 | ZONOS2 | Works (L4 verified, sm_80+ required) | 41 languages (tier-1: Japanese / English / Chinese) | OK |
 | OuteTTS | Works (CPU OK) | Japanese / English / Chinese and many languages | Conditional (default 0.6B OK; 1B not allowed) |
@@ -1452,7 +1452,7 @@ This sample is fixed to `wav`. Conversion to formats like `mp3` is not performed
 
 A separate engine for [Audio8 TTS Preview 0.6B](https://huggingface.co/Audio8/Audio8-TTS-Preview-0.6b), a compact DualAR model with a bundled 44.1 kHz neural codec. It supports 11 recommended languages, including Japanese, English, Chinese, Cantonese, Korean, and major European languages. Upstream recommends keeping each input within 150 characters for best quality.
 
-The OpenAI-compatible wrapper exposes `voice="default"` for reference-free generation and `voice="clone"` for zero-shot cloning. Clone mode is enabled only when both `AUDIO8_PROMPT_WAV` and its exact transcript in `AUDIO8_PROMPT_TEXT` are configured; otherwise it returns HTTP 400 instead of silently falling back. A CUDA GPU with BF16 is the default on Colab, while CPU mode uses FP32. Colab verification is pending.
+The OpenAI-compatible wrapper exposes `voice="default"` for reference-free generation and `voice="clone"` for zero-shot cloning. Clone mode is enabled only when both `AUDIO8_PROMPT_WAV` and its exact transcript in `AUDIO8_PROMPT_TEXT` are configured; otherwise it returns HTTP 400 instead of silently falling back. A CUDA GPU with BF16 is the default on Colab, while CPU mode uses FP32. The default path was verified on an NVIDIA L4 runtime: the public `trycloudflare` endpoint returned HTTP 200 with a valid 44.1 kHz mono WAV, and `/v1/voices` exposed `default` as expected.
 
 Code and weights are Apache-2.0 and the upstream `NOTICE` must be retained where required. Obtain consent before cloning a voice and disclose synthetic audio where appropriate.
 
@@ -1491,7 +1491,7 @@ The full-precision checkpoint is approximately 3.06 GB. GPU execution is require
 
 An independent engine entry for the official [`Aratako/Irodori-TTS-v4.1-Small-MF`](https://huggingface.co/Aratako/Irodori-TTS-v4.1-Small-MF), a MeanFlow-distilled version of v4.1-Small. The upstream runtime automatically selects the checkpoint's recommended four-step sampler, substantially reducing the sampling-step count compared with the standard rectified-flow model. This wrapper currently exposes text-only, no-reference inference and does not switch voices.
 
-The code, model weights, and default DACVAE codec are MIT-licensed. SilentCipher watermarking and the upstream restrictions against unauthorized impersonation and misleading deepfakes remain in effect. Colab verification is pending.
+The code, model weights, and default DACVAE codec are MIT-licensed. SilentCipher watermarking and the upstream restrictions against unauthorized impersonation and misleading deepfakes remain in effect. The default path was verified on an NVIDIA L4 runtime: the public `trycloudflare` endpoint returned HTTP 200 with a valid 48 kHz mono WAV.
 
 ### Irodori-TTS-Lite
 
@@ -1624,7 +1624,7 @@ For voice cloning, only use reference audio you have rights to (consent of the s
 
 [ZeroTTS](https://github.com/zeroweight-ai/ZeroTTS) is a lightweight Vietnamese TTS runtime built on ONNX Runtime and designed for real-time CPU inference. It downloads approximately 900 MB of FP32 weights and produces 48 kHz audio. The wrapper exposes the bundled speaker-latent presets through the OpenAI `voice` parameter; `maichi` is the default, and the current list is available from `/v1/voices`.
 
-Despite the upstream project's zero-shot positioning, the public Python package cannot create a new voice from reference audio because its voice encoder is not released. It can only load shipped or separately obtained voice packs, so this integration intentionally provides no `clone` option. The model is built for Vietnamese and supports English words embedded in Vietnamese text, but it is not evaluated as a general English TTS system. Long paragraphs should be split into short utterances. Colab verification is pending.
+Despite the upstream project's zero-shot positioning, the public Python package cannot create a new voice from reference audio because its voice encoder is not released. It can only load shipped or separately obtained voice packs, so this integration intentionally provides no `clone` option. The model is built for Vietnamese and supports English words embedded in Vietnamese text, but it is not evaluated as a general English TTS system. Long paragraphs should be split into short utterances. The CPU/ONNX path was verified on Colab: the public `trycloudflare` endpoint returned HTTP 200 with a valid 48 kHz mono WAV, and `/v1/voices` returned all eight bundled presets.
 
 Code and weights are MIT-licensed; the bundled MOSS-Audio-Tokenizer-Nano decoder is Apache-2.0. Do not use the model to impersonate someone or deceive listeners, and disclose synthetic speech where a listener could reasonably assume it is real.
 

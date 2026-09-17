@@ -10,13 +10,13 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 
 | エンジン | Colab 動作確認 | 言語 | 商用利用 |
 |---|---|---|---|
-| Audio8-TTS | Colab 未検証（GPU 推奨、ゼロショット Voice cloning） | 日本語 / 英語 / 中国語 他 11言語 | OK |
+| Audio8-TTS | L4 で動作確認済み（GPU 推奨、ゼロショット Voice cloning） | 日本語 / 英語 / 中国語 他 11言語 | OK |
 | Kokoro | 動作OK | 日本語 / 英語 / 中国語 他 | OK |
 | Kokoro-ONNX | 動作OK | 日本語 / 英語 / 中国語 他 | OK |
 | Irodori-TTS | L4 で動作確認済み（GPU 必須、デフォルトは v4.1-Small、v4-Small も選択可能） | 日本語 | OK |
 | Irodori-TTS-Anime | L4 で動作確認済み（GPU 必須、v4.1 Anime） | 日本語 | OK |
 | Irodori-TTS-Lite | 動作OK（GPU 必須、VRAM ~1GB、int4 量子化） | 日本語 | OK |
-| Irodori-TTS-MF | Colab 未検証（GPU 必須、4ステップ MeanFlow） | 日本語 | OK |
+| Irodori-TTS-MF | L4 で動作確認済み（GPU 必須、4ステップ MeanFlow） | 日本語 | OK |
 | Piper | 動作OK | 英語（デフォルト）/ 多言語 | 既定は不可（既定音声が研究用途のみ） |
 | Piper-Plus | 動作OK | 日本語 / 英語 / 中国語 他 6言語 | OK |
 | Qwen3-TTS | 動作OK (GPU必須) | 日本語 / 英語 / 中国語 他 10言語 | OK |
@@ -33,7 +33,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | Sarashina-TTS | 動作OK (GPU必須・VRAM ~6GB) | 日本語 / 英語 | 不可 |
 | F5-TTS | 動作OK (GPU必須) | 英語 / 中国語（日本語は別モデル） | 不可 |
 | Chatterbox Multilingual V3 | 動作OK (GPU推奨・0.5B) | 日本語 / 英語 / 中国語 他 23言語 | OK |
-| ZeroTTS | Colab 未検証（CPU/ONNX、約900MB取得） | ベトナム語 | OK |
+| ZeroTTS | Colab で動作確認済み（CPU/ONNX、約900MB取得） | ベトナム語 | OK |
 | Zonos | 動作OK (GPU必須・VRAM ~6GB) | 日本語 / 英語 / 中国語 / フランス語 / ドイツ語 | OK |
 | ZONOS2 | 動作OK (L4検証済・sm_80+必須) | 41言語 (tier-1: 日本語 / 英語 / 中国語) | OK |
 | OuteTTS | 動作OK (CPU可) | 日本語 / 英語 / 中国語 他 多言語 | 条件付き（既定0.6Bは可 / 1Bは不可） |
@@ -1453,7 +1453,7 @@ main()
 
 [Audio8 TTS Preview 0.6B](https://huggingface.co/Audio8/Audio8-TTS-Preview-0.6b) を使用する独立エンジンです。44.1kHzのニューラルコーデックを同梱した小型のDualARモデルで、日本語、英語、中国語、広東語、韓国語、主要な欧州言語を含む推奨11言語に対応します。品質を保つため、上流は1回の入力を150文字以内にすることを推奨しています。
 
-OpenAI互換ラッパーでは、参照音声なしの`voice="default"`と、ゼロショットVoice cloningの`voice="clone"`を提供します。cloneは`AUDIO8_PROMPT_WAV`と、その音声に一致する書き起こし`AUDIO8_PROMPT_TEXT`の両方を設定した場合だけ有効になり、未設定時は暗黙にdefaultへ切り替えずHTTP 400を返します。ColabではCUDA GPU + BF16を既定とし、CPU時はFP32を使用します。Colabでの動作確認は未実施です。
+OpenAI互換ラッパーでは、参照音声なしの`voice="default"`と、ゼロショットVoice cloningの`voice="clone"`を提供します。cloneは`AUDIO8_PROMPT_WAV`と、その音声に一致する書き起こし`AUDIO8_PROMPT_TEXT`の両方を設定した場合だけ有効になり、未設定時は暗黙にdefaultへ切り替えずHTTP 400を返します。ColabではCUDA GPU + BF16を既定とし、CPU時はFP32を使用します。NVIDIA L4で既定構成を検証し、公開`trycloudflare`経由でHTTP 200と正常な44.1kHzモノラルWAVが返ること、`/v1/voices`に`default`が公開されることを確認しました。
 
 コードと重みはいずれもApache-2.0です。必要に応じて上流`NOTICE`の帰属表示を維持してください。Voice cloningには本人の同意を得て、必要な場面では合成音声であることを明示してください。
 
@@ -1492,7 +1492,7 @@ OpenAI互換ラッパーが提供するのはtext-only・参照音声なしの�
 
 公式の [`Aratako/Irodori-TTS-v4.1-Small-MF`](https://huggingface.co/Aratako/Irodori-TTS-v4.1-Small-MF) を使用する独立エンジンです。v4.1-SmallをMeanFlow蒸留したモデルで、上流ランタイムがチェックポイント推奨の4ステップサンプラーを自動選択します。標準のRectified Flowモデルよりサンプリングステップ数を大幅に減らしています。現在のラッパーはtext-only・参照音声なしの推論のみを公開し、voice切り替えには対応していません。
 
-コード、モデル重み、既定のDACVAEコーデックはいずれもMITです。SilentCipherウォーターマークと、無断のなりすまし・誤解を招くディープフェイクを禁止する上流の倫理制限を維持します。Colabでの動作確認は未実施です。
+コード、モデル重み、既定のDACVAEコーデックはいずれもMITです。SilentCipherウォーターマークと、無断のなりすまし・誤解を招くディープフェイクを禁止する上流の倫理制限を維持します。NVIDIA L4で既定構成を検証し、公開`trycloudflare`経由でHTTP 200と正常な48kHzモノラルWAVが返ることを確認しました。
 
 ### Irodori-TTS-Lite
 
@@ -1625,7 +1625,7 @@ SB Intuitions の [sbintuitions/sarashina2.2-tts](https://huggingface.co/sbintui
 
 [ZeroTTS](https://github.com/zeroweight-ai/ZeroTTS) はONNX Runtimeを使用し、CPUでのリアルタイム推論を想定した軽量なベトナム語TTSです。約900MBのFP32重みを取得し、48kHz音声を生成します。OpenAI互換ラッパーでは、同梱の話者latent presetを`voice`パラメータで選択できます。既定は`maichi`で、現在の一覧は`/v1/voices`から取得できます。
 
-上流プロジェクトはzero-shotを掲げていますが、公開Pythonパッケージにはvoice encoderが含まれないため、参照音声から新しいvoiceを作成できません。同梱または別途入手したvoice packの読み込みだけに対応するため、この統合には意図的に`clone`を設けていません。ベトナム語向けであり、ベトナム語文中の英単語は扱えますが、一般的な英語TTSとしては未評価です。長い文章は短い発話へ分割してください。Colabでの動作確認は未実施です。
+上流プロジェクトはzero-shotを掲げていますが、公開Pythonパッケージにはvoice encoderが含まれないため、参照音声から新しいvoiceを作成できません。同梱または別途入手したvoice packの読み込みだけに対応するため、この統合には意図的に`clone`を設けていません。ベトナム語向けであり、ベトナム語文中の英単語は扱えますが、一般的な英語TTSとしては未評価です。長い文章は短い発話へ分割してください。ColabのCPU/ONNXパスを検証し、公開`trycloudflare`経由でHTTP 200と正常な48kHzモノラルWAVが返ること、`/v1/voices`に同梱8presetが返ることを確認しました。
 
 コードと重みはMITで、同梱のMOSS-Audio-Tokenizer-Nano decoderはApache-2.0です。なりすましや聞き手を欺く目的には使用せず、本物の音声と受け取られる可能性がある場面では合成音声であることを明示してください。
 

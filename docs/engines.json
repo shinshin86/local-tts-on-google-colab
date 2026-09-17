@@ -118,8 +118,8 @@
     {
       "id": "Audio8-TTS",
       "title": "Audio8-TTS (0.6B multilingual TTS, GPU recommended)",
-      "status": "Not yet verified on Colab (GPU recommended, zero-shot voice cloning)",
-      "status_ja": "Colab 未検証（GPU 推奨、ゼロショット Voice cloning）",
+      "status": "Works on L4 (GPU recommended, zero-shot voice cloning)",
+      "status_ja": "L4 で動作確認済み（GPU 推奨、ゼロショット Voice cloning）",
       "languages": "Japanese / English / Chinese and 11 languages",
       "languages_ja": "日本語 / 英語 / 中国語 他 11言語",
       "description": "A separate engine for [Audio8 TTS Preview 0.6B](https://huggingface.co/Audio8/Audio8-TTS-Preview-0.6b), a compact DualAR model with a bundled 44.1 kHz neural codec. It supports 11 recommended languages, including Japanese, English, Chinese, Cantonese, Korean, and major European languages. Upstream recommends keeping each input within 150 characters for best quality.",
@@ -1390,8 +1390,8 @@
     {
       "id": "Irodori-TTS-MF",
       "title": "Irodori-TTS-MF (official MeanFlow-distilled v4.1-Small, GPU required)",
-      "status": "Not yet verified on Colab (GPU required, 4-step MeanFlow)",
-      "status_ja": "Colab 未検証（GPU 必須、4ステップ MeanFlow）",
+      "status": "Works on L4 (GPU required, 4-step MeanFlow)",
+      "status_ja": "L4 で動作確認済み（GPU 必須、4ステップ MeanFlow）",
       "languages": "Japanese",
       "languages_ja": "日本語",
       "description": "An independent engine entry for the official [`Aratako/Irodori-TTS-v4.1-Small-MF`](https://huggingface.co/Aratako/Irodori-TTS-v4.1-Small-MF), a MeanFlow-distilled version of v4.1-Small. The upstream runtime automatically selects the checkpoint's recommended four-step sampler, substantially reducing the sampling-step count compared with the standard rectified-flow model. This wrapper currently exposes text-only, no-reference inference and does not switch voices.",
@@ -3587,8 +3587,8 @@
     {
       "id": "ZeroTTS",
       "title": "ZeroTTS (Vietnamese, CPU/ONNX, MIT)",
-      "status": "Not yet verified on Colab (CPU/ONNX, ~900MB download)",
-      "status_ja": "Colab 未検証（CPU/ONNX、約900MB取得）",
+      "status": "Works on Colab (CPU/ONNX, ~900MB download)",
+      "status_ja": "Colab で動作確認済み（CPU/ONNX、約900MB取得）",
       "languages": "Vietnamese",
       "languages_ja": "ベトナム語",
       "description": "[ZeroTTS](https://github.com/zeroweight-ai/ZeroTTS) is a lightweight Vietnamese TTS runtime built on ONNX Runtime and designed for real-time CPU inference. It downloads approximately 900 MB of FP32 weights and produces 48 kHz audio. The wrapper exposes the bundled speaker-latent presets through the OpenAI `voice` parameter; `maichi` is the default, and the current list is available from `/v1/voices`.",
