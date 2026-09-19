@@ -59,22 +59,26 @@ FISH_SPEECH_MODEL = "fishaudio/s2-pro"  #@param {type:"string"}
 
 #@markdown ---
 #@markdown Irodori-TTS
-#@markdown - Default: v4.1-Small (v4-Small with an improved Duration Predictor; unified text / reference / caption model + always-on SilentCipher watermark). This wrapper currently exposes text-only, no-reference inference.
+#@markdown - Default: v4.1-Small (v4-Small with an improved Duration Predictor; unified text / reference / caption model + always-on SilentCipher watermark). Set a reference WAV and select `clone` to copy its speaker characteristics; no transcript is required.
 #@markdown - Previous variants: v4-Small, v3, v2, or v1 (v1 also needs codec_repo="facebook/dacvae-watermarked").
 #@markdown - License: MIT for code ([Aratako/Irodori-TTS](https://github.com/Aratako/Irodori-TTS)), all weight variants (v1/v2/v3/v4/v4.1), and the Aratako/Semantic-DACVAE-Japanese-32dim codec. Commercial use OK. The author requests ethical use (no impersonation/deepfake).
 IRODORI_HF_CHECKPOINT = "Aratako/Irodori-TTS-v4.1-Small"  #@param ["Aratako/Irodori-TTS-v4.1-Small", "Aratako/Irodori-TTS-v4-Small", "Aratako/Irodori-TTS-500M-v3", "Aratako/Irodori-TTS-500M-v2", "Aratako/Irodori-TTS-500M"]
 IRODORI_CODEC_REPO = "Aratako/Semantic-DACVAE-Japanese-32dim"  #@param {type:"string"}
 IRODORI_MODEL_PRECISION = "fp32"  #@param ["fp32", "bf16", "fp16"]
 IRODORI_CODEC_PRECISION = "fp32"  #@param ["fp32", "bf16", "fp16"]
+IRODORI_PROMPT_WAV = ""  #@param {type:"string"}
+IRODORI_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
 
 #@markdown ---
-#@markdown Irodori-TTS-MF (official MeanFlow-distilled v4.1-Small, GPU required)
-#@markdown - Uses the upstream-recommended automatic 4-step MeanFlow sampler. This wrapper exposes text-only, no-reference inference.
+#@markdown Irodori-TTS-MF (official faster v4.1-Small, GPU required)
+#@markdown - Normally generates speech in four processing steps. Set a reference WAV and select `clone` to copy its speaker characteristics; no transcript is required.
 #@markdown - License: MIT for code, model weights, and codec. SilentCipher watermarking and the upstream ethical-use restrictions remain in effect.
 IRODORI_MF_HF_CHECKPOINT = "Aratako/Irodori-TTS-v4.1-Small-MF"  #@param {type:"string"}
 IRODORI_MF_CODEC_REPO = "Aratako/Semantic-DACVAE-Japanese-32dim"  #@param {type:"string"}
 IRODORI_MF_MODEL_PRECISION = "fp32"  #@param ["fp32", "bf16"]
 IRODORI_MF_CODEC_PRECISION = "fp32"  #@param ["fp32", "bf16"]
+IRODORI_MF_PROMPT_WAV = ""  #@param {type:"string"}
+IRODORI_MF_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
 
 #@markdown ---
 #@markdown Irodori-TTS-Anime (third-party fine-tune, GPU required)
@@ -713,6 +717,10 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         IRODORI_MODEL_PRECISION,
         "--irodori-codec-precision",
         IRODORI_CODEC_PRECISION,
+        "--irodori-prompt-wav",
+        IRODORI_PROMPT_WAV,
+        "--irodori-default-voice",
+        IRODORI_DEFAULT_VOICE,
         "--irodori-mf-hf-checkpoint",
         IRODORI_MF_HF_CHECKPOINT,
         "--irodori-mf-codec-repo",
@@ -721,6 +729,10 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         IRODORI_MF_MODEL_PRECISION,
         "--irodori-mf-codec-precision",
         IRODORI_MF_CODEC_PRECISION,
+        "--irodori-mf-prompt-wav",
+        IRODORI_MF_PROMPT_WAV,
+        "--irodori-mf-default-voice",
+        IRODORI_MF_DEFAULT_VOICE,
         "--irodori-anime-hf-checkpoint",
         IRODORI_ANIME_HF_CHECKPOINT,
         "--irodori-anime-codec-repo",

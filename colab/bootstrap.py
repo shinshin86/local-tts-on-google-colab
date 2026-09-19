@@ -34,6 +34,8 @@ def parse_args():
     parser.add_argument("--irodori-codec-repo", default="Aratako/Semantic-DACVAE-Japanese-32dim")
     parser.add_argument("--irodori-model-precision", default="fp32")
     parser.add_argument("--irodori-codec-precision", default="fp32")
+    parser.add_argument("--irodori-prompt-wav", default="")
+    parser.add_argument("--irodori-default-voice", default="default", choices=["default", "clone"])
     parser.add_argument(
         "--irodori-mf-hf-checkpoint", default="Aratako/Irodori-TTS-v4.1-Small-MF"
     )
@@ -42,6 +44,10 @@ def parse_args():
     )
     parser.add_argument("--irodori-mf-model-precision", default="fp32")
     parser.add_argument("--irodori-mf-codec-precision", default="fp32")
+    parser.add_argument("--irodori-mf-prompt-wav", default="")
+    parser.add_argument(
+        "--irodori-mf-default-voice", default="default", choices=["default", "clone"]
+    )
     parser.add_argument(
         "--irodori-anime-hf-checkpoint",
         default="phasefield-audio/Irodori-TTS-v4.1-Anime",
@@ -382,10 +388,14 @@ def main():
         irodori_codec_repo=args.irodori_codec_repo,
         irodori_model_precision=args.irodori_model_precision,
         irodori_codec_precision=args.irodori_codec_precision,
+        irodori_prompt_wav=args.irodori_prompt_wav,
+        irodori_default_voice=args.irodori_default_voice,
         irodori_mf_hf_checkpoint=args.irodori_mf_hf_checkpoint,
         irodori_mf_codec_repo=args.irodori_mf_codec_repo,
         irodori_mf_model_precision=args.irodori_mf_model_precision,
         irodori_mf_codec_precision=args.irodori_mf_codec_precision,
+        irodori_mf_prompt_wav=args.irodori_mf_prompt_wav,
+        irodori_mf_default_voice=args.irodori_mf_default_voice,
         irodori_anime_hf_checkpoint=args.irodori_anime_hf_checkpoint,
         irodori_anime_codec_repo=args.irodori_anime_codec_repo,
         irodori_anime_model_precision=args.irodori_anime_model_precision,

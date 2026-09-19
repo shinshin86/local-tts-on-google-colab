@@ -36,6 +36,10 @@ def resolve_selected_voice(settings: Settings) -> str:
         return settings.audio8_default_voice
     if settings.engine == "ZeroTTS":
         return settings.zerotts_default_voice
+    if settings.engine == "Irodori-TTS":
+        return settings.irodori_default_voice
+    if settings.engine == "Irodori-TTS-MF":
+        return settings.irodori_mf_default_voice
     if settings.engine == "Kokoro-ONNX":
         return settings.kokoro_onnx_default_voice
     if settings.engine == "MeloTTS":
@@ -118,8 +122,6 @@ def resolve_selected_voice(settings: Settings) -> str:
         return settings.vyvo_default_voice
     if settings.engine == "Irodori-TTS-Anime":
         return "default"
-    if settings.engine == "Irodori-TTS-MF":
-        return ""
     return ""
 
 
@@ -777,9 +779,14 @@ def print_engine_voice_hints(settings: Settings):
             else:
                 print("v4-Small: 従来版チェックポイントです。")
             print("             text / reference / caption を統合したモデルです。")
-            print("           現在の OpenAI 互換ラッパーは text-only・参照音声なしで推論します。")
+            print("           text-only または参照音声による Voice cloning を利用できます。")
         print("Duration Predictor の有無はチェックポイントのメタデータから自動判定します。")
-        print("voice パラメータによる話者切り替え・Voice cloning は現在未対応です。")
+        print(f"デフォルト voice: {settings.irodori_default_voice}")
+        print("voice 候補: default（参照音声なし）")
+        if settings.irodori_prompt_wav:
+            print(f"             clone（参照音声: {settings.irodori_prompt_wav}）")
+        else:
+            print("             clone は --irodori-prompt-wav を指定すると有効になります")
         print("生成音声には上流ランタイムが SilentCipher ウォーターマークを適用します。")
         print("ライセンス: コード・v1/v2/v3/v4/v4.1 重み・既定コーデックはいずれも MIT。")
         print("乱用防止: なりすまし・ディープフェイク用途には使用しないでください。")
@@ -799,12 +806,16 @@ def print_engine_voice_hints(settings: Settings):
         print("ライセンス: 上流コード・モデル重み・既定コーデックはいずれも MIT。")
         print("乱用防止: なりすまし・ディープフェイク用途には使用しないでください。")
     elif settings.engine == "Irodori-TTS-MF":
-        print("Irodori-TTS-MF は公式 v4.1-Small の MeanFlow 蒸留版です（48kHz、MIT）。")
+        print("Irodori-TTS-MF は公式 v4.1-Small の高速版です（48kHz、MIT）。")
         print(f"モデル: {settings.irodori_mf_hf_checkpoint}")
         print(f"コーデック: {settings.irodori_mf_codec_repo}")
-        print("上流の推奨設定である4ステップ推論を自動選択します。")
-        print("現在の OpenAI 互換ラッパーは text-only・参照音声なしで推論します。")
-        print("voice パラメータによる話者切り替え・Voice cloning は現在未対応です。")
+        print("通常4回の処理で音声を生成する推奨設定を自動選択します。")
+        print(f"デフォルト voice: {settings.irodori_mf_default_voice}")
+        print("voice 候補: default（参照音声なし）")
+        if settings.irodori_mf_prompt_wav:
+            print(f"             clone（参照音声: {settings.irodori_mf_prompt_wav}）")
+        else:
+            print("             clone は --irodori-mf-prompt-wav を指定すると有効になります")
         print("生成音声には上流ランタイムが SilentCipher ウォーターマークを適用します。")
         print("ライセンス: 上流コード・モデル重み・既定コーデックはいずれも MIT。")
         print("乱用防止: なりすまし・ディープフェイク用途には使用しないでください。")

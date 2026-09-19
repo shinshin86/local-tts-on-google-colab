@@ -18,6 +18,8 @@ def install_runtime(
     engine_name: str,
     log_filename: str,
     num_steps: int | None = 40,
+    prompt_wav: str = "",
+    default_voice: str = "default",
 ) -> dict:
     repo_dir = settings.engines_dir / engine_dir_name
     ensure_git_clone("https://github.com/Aratako/Irodori-TTS", repo_dir)
@@ -49,6 +51,8 @@ def install_runtime(
         "IRODORI_CODEC_PRECISION": codec_precision,
         "IRODORI_ENGINE_NAME": engine_name,
         "IRODORI_NUM_STEPS": "" if num_steps is None else str(num_steps),
+        "IRODORI_PROMPT_WAV": prompt_wav,
+        "IRODORI_DEFAULT_VOICE": default_voice,
         "OPENAI_MODEL_ID": settings.openai_model_id or checkpoint,
     }
     log_path = settings.log_dir / log_filename
@@ -83,4 +87,6 @@ def install(settings: Settings) -> dict:
         engine_name="Irodori-TTS",
         log_filename="irodori-uvicorn.log",
         num_steps=40,
+        prompt_wav=settings.irodori_prompt_wav,
+        default_voice=settings.irodori_default_voice,
     )

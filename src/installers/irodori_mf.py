@@ -17,4 +17,6 @@ def install(settings: Settings) -> dict:
         engine_name="Irodori-TTS-MF",
         log_filename="irodori-mf-uvicorn.log",
         num_steps=None,
+        prompt_wav=settings.irodori_mf_prompt_wav,
+        default_voice=settings.irodori_mf_default_voice,
     )
