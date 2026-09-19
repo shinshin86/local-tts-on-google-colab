@@ -1224,10 +1224,10 @@
       "status_ja": "L4 で動作確認済み（GPU 必須、デフォルトは v4.1-Small、v4-Small も選択可能）",
       "languages": "Japanese",
       "languages_ja": "日本語",
-      "description": "A Japanese TTS using [Aratako/Irodori-TTS](https://github.com/Aratako/Irodori-TTS). The default is the approximately 766M-parameter `Aratako/Irodori-TTS-v4.1-Small`, a compatible update to v4-Small that replaces and retrains only the Duration Predictor to improve automatic duration estimates and reduce generation errors from overestimated lengths. The original v4-Small and the released v3, v2, and v1 checkpoints remain selectable. Output is high-quality 48 kHz, but this OpenAI-compatible wrapper currently exposes text-only, no-reference inference and does not switch voices.",
-      "description_ja": "[Aratako/Irodori-TTS](https://github.com/Aratako/Irodori-TTS) を使った日本語 TTS です。デフォルトは約 766M パラメータの `Aratako/Irodori-TTS-v4.1-Small` です。v4-Small の Duration Predictor だけを置き換えて再学習した互換アップデートで、自動的な音声尺の推定を改善し、尺の過大推定による生成エラーを減らしています。従来の v4-Small と、公開済みの v3 / v2 / v1 も引き続き選択できます。出力は高音質な 48kHz ですが、現在の OpenAI 互換ラッパーが公開するのは text-only・参照音声なしの推論で、voice 切り替えには未対応です。",
+      "description": "A Japanese TTS using [Aratako/Irodori-TTS](https://github.com/Aratako/Irodori-TTS). The default is the approximately 766M-parameter `Aratako/Irodori-TTS-v4.1-Small`, a compatible update to v4-Small that replaces and retrains only the Duration Predictor to improve automatic duration estimates and reduce generation errors from overestimated lengths. The original v4-Small and the released v3, v2, and v1 checkpoints remain selectable. Output is high-quality 48 kHz. Set `IRODORI_PROMPT_WAV` and select `voice=\"clone\"` to use a reference voice; Irodori does not require a transcript of the reference recording. Without a reference, `voice=\"default\"` keeps the existing text-only behavior.",
+      "description_ja": "[Aratako/Irodori-TTS](https://github.com/Aratako/Irodori-TTS) を使った日本語 TTS です。デフォルトは約 766M パラメータの `Aratako/Irodori-TTS-v4.1-Small` です。v4-Small の Duration Predictor だけを置き換えて再学習した互換アップデートで、自動的な音声尺の推定を改善し、尺の過大推定による生成エラーを減らしています。従来の v4-Small と、公開済みの v3 / v2 / v1 も引き続き選択できます。出力は高音質な 48kHz です。`IRODORI_PROMPT_WAV` に参照音声を設定して `voice=\"clone\"` を選ぶと、その話者に近い声を生成できます。参照音声の書き起こしは不要です。参照音声を使わない場合は、`voice=\"default\"` で従来どおりテキストだけから生成します。",
       "notes": [
-        "- Default: v4.1-Small (v4-Small with an improved Duration Predictor; unified text / reference / caption model + always-on SilentCipher watermark). This wrapper currently exposes text-only, no-reference inference.",
+        "- Default: v4.1-Small (v4-Small with an improved Duration Predictor; unified text / reference / caption model + always-on SilentCipher watermark). Set a reference WAV and select `clone` to copy its speaker characteristics; no transcript is required.",
         "- Previous variants: v4-Small, v3, v2, or v1 (v1 also needs codec_repo=\"facebook/dacvae-watermarked\").",
         "- License: MIT for code ([Aratako/Irodori-TTS](https://github.com/Aratako/Irodori-TTS)), all weight variants (v1/v2/v3/v4/v4.1), and the Aratako/Semantic-DACVAE-Japanese-32dim codec. Commercial use OK. The author requests ethical use (no impersonation/deepfake)."
       ],
@@ -1276,6 +1276,22 @@
             "fp16"
           ],
           "flag": "--irodori-codec-precision"
+        },
+        {
+          "name": "IRODORI_PROMPT_WAV",
+          "default": "",
+          "type": "string",
+          "flag": "--irodori-prompt-wav"
+        },
+        {
+          "name": "IRODORI_DEFAULT_VOICE",
+          "default": "default",
+          "type": "select",
+          "options": [
+            "default",
+            "clone"
+          ],
+          "flag": "--irodori-default-voice"
         }
       ]
     },
@@ -1389,19 +1405,19 @@
     },
     {
       "id": "Irodori-TTS-MF",
-      "title": "Irodori-TTS-MF (official MeanFlow-distilled v4.1-Small, GPU required)",
-      "status": "Works on L4 (GPU required, 4-step MeanFlow)",
-      "status_ja": "L4 で動作確認済み（GPU 必須、4ステップ MeanFlow）",
+      "title": "Irodori-TTS-MF (official faster v4.1-Small, GPU required)",
+      "status": "Works on L4 (GPU required, 4-step generation)",
+      "status_ja": "L4 で動作確認済み（GPU 必須、通常 4 回の高速生成）",
       "languages": "Japanese",
       "languages_ja": "日本語",
-      "description": "An independent engine entry for the official [`Aratako/Irodori-TTS-v4.1-Small-MF`](https://huggingface.co/Aratako/Irodori-TTS-v4.1-Small-MF), a MeanFlow-distilled version of v4.1-Small. The upstream runtime automatically selects the checkpoint's recommended four-step sampler, substantially reducing the sampling-step count compared with the standard rectified-flow model. This wrapper currently exposes text-only, no-reference inference and does not switch voices.",
-      "description_ja": "公式の [`Aratako/Irodori-TTS-v4.1-Small-MF`](https://huggingface.co/Aratako/Irodori-TTS-v4.1-Small-MF) を使用する独立エンジンです。v4.1-SmallをMeanFlow蒸留したモデルで、上流ランタイムがチェックポイント推奨の4ステップサンプラーを自動選択します。標準のRectified Flowモデルよりサンプリングステップ数を大幅に減らしています。現在のラッパーはtext-only・参照音声なしの推論のみを公開し、voice切り替えには対応していません。",
+      "description": "An independent engine entry for the official [`Aratako/Irodori-TTS-v4.1-Small-MF`](https://huggingface.co/Aratako/Irodori-TTS-v4.1-Small-MF), a faster variant of v4.1-Small that normally generates speech in four processing steps. Set `IRODORI_MF_PROMPT_WAV` and select `voice=\"clone\"` to use a reference voice; no transcript is required. Without a reference, `voice=\"default\"` keeps text-only generation. `/v1/voices` lists `clone` only when a reference WAV is configured, while caption control remains outside this wrapper.",
+      "description_ja": "公式の [`Aratako/Irodori-TTS-v4.1-Small-MF`](https://huggingface.co/Aratako/Irodori-TTS-v4.1-Small-MF) を使用する独立エンジンです。v4.1-Small をもとに、通常 4 回の処理で音声を生成できるようにした高速版です。`IRODORI_MF_PROMPT_WAV` に参照音声を設定して `voice=\"clone\"` を選ぶと、その話者に近い声を生成できます。参照音声の書き起こしは不要です。参照音声を使わない `voice=\"default\"` も引き続き利用できます。参照音声を設定した場合だけ `/v1/voices` に `clone` を表示します。caption の指定は、引き続き対象外です。",
       "notes": [
-        "- Uses the upstream-recommended automatic 4-step MeanFlow sampler. This wrapper exposes text-only, no-reference inference.",
+        "- Normally generates speech in four processing steps. Set a reference WAV and select `clone` to copy its speaker characteristics; no transcript is required.",
         "- License: MIT for code, model weights, and codec. SilentCipher watermarking and the upstream ethical-use restrictions remain in effect."
       ],
       "notes_ja": [
-        "- ライセンス: コードは MIT (Aratako/Irodori-TTS)、モデル重みは MIT (`Aratako/Irodori-TTS-v4.1-Small-MF`)。商用利用: OK。 備考: 公式のv4.1-Small MeanFlow蒸留版。4ステップ推論。倫理制限とSilentCipherウォーターマークを維持"
+        "- ライセンス: コードは MIT (Aratako/Irodori-TTS)、モデル重みは MIT (`Aratako/Irodori-TTS-v4.1-Small-MF`)。商用利用: OK。 備考: 公式の v4.1-Small 高速版。通常 4 回の処理で生成。倫理制限と SilentCipher ウォーターマークを維持"
       ],
       "prefix": "IRODORI_MF",
       "params": [
@@ -1436,6 +1452,22 @@
             "bf16"
           ],
           "flag": "--irodori-mf-codec-precision"
+        },
+        {
+          "name": "IRODORI_MF_PROMPT_WAV",
+          "default": "",
+          "type": "string",
+          "flag": "--irodori-mf-prompt-wav"
+        },
+        {
+          "name": "IRODORI_MF_DEFAULT_VOICE",
+          "default": "default",
+          "type": "select",
+          "options": [
+            "default",
+            "clone"
+          ],
+          "flag": "--irodori-mf-default-voice"
         }
       ]
     },

@@ -33,6 +33,8 @@ CODEC_REPO = os.environ.get("IRODORI_CODEC_REPO", "Aratako/Semantic-DACVAE-Japan
 OPENAI_MODEL_ID = os.environ.get("OPENAI_MODEL_ID", HF_CHECKPOINT)
 ENGINE_NAME = os.environ.get("IRODORI_ENGINE_NAME", "Irodori-TTS")
 DEFAULT_VOICE_ONLY = os.environ.get("IRODORI_DEFAULT_VOICE_ONLY", "0") == "1"
+PROMPT_WAV = os.environ.get("IRODORI_PROMPT_WAV", "")
+DEFAULT_VOICE = os.environ.get("IRODORI_DEFAULT_VOICE", "default")
 _num_steps = os.environ.get("IRODORI_NUM_STEPS", "40").strip()
 NUM_STEPS = int(_num_steps) if _num_steps else None
 
@@ -62,6 +64,10 @@ class AudioSpeechRequest(BaseModel):
 
 
 _runtime = None
+
+
+def clone_is_configured() -> bool:
+    return bool(PROMPT_WAV)
 
 
 def get_runtime():
@@ -113,27 +119,62 @@ def list_models():
 
 @app.get("/v1/voices")
 def list_voices():
-    voices = [{"id": "default", "object": "voice"}] if DEFAULT_VOICE_ONLY else []
-    return {"object": "list", "data": voices}
+    voices = ["default"]
+    if not DEFAULT_VOICE_ONLY and clone_is_configured():
+        voices.append("clone")
+    return {
+        "object": "list",
+        "data": [{"id": voice, "object": "voice"} for voice in voices],
+    }
 
 
 @app.post("/v1/audio/speech")
 async def audio_speech(payload: AudioSpeechRequest):
     if payload.response_format.lower() != "wav":
         raise HTTPException(status_code=400, detail="This wrapper currently supports only wav.")
-    if DEFAULT_VOICE_ONLY and payload.voice not in {None, "", "default"}:
+    voice = payload.voice or DEFAULT_VOICE
+    if DEFAULT_VOICE_ONLY and voice != "default":
         raise HTTPException(
             status_code=400,
             detail="This model supports only voice='default'.",
         )
+    if not DEFAULT_VOICE_ONLY and voice not in {"default", "clone"}:
+        raise HTTPException(status_code=400, detail="voice must be 'default' or 'clone'.")
+    if voice == "clone" and not clone_is_configured():
+        prompt_flag = (
+            "--irodori-mf-prompt-wav"
+            if ENGINE_NAME == "Irodori-TTS-MF"
+            else "--irodori-prompt-wav"
+        )
+        raise HTTPException(
+            status_code=400,
+            detail=f"voice='clone' requires {prompt_flag}.",
+        )
+
+    ref_path = Path(PROMPT_WAV).expanduser() if voice == "clone" else None
+    if ref_path is not None and not ref_path.is_file():
+        raise HTTPException(
+            status_code=400,
+            detail="The configured Irodori reference audio does not exist.",
+        )
 
     runtime = get_runtime()
+    use_speaker_condition = bool(
+        ref_path is not None and runtime.model_cfg.use_speaker_condition_resolved
+    )
+    if ref_path is not None and not use_speaker_condition:
+        raise HTTPException(
+            status_code=400,
+            detail="The selected Irodori checkpoint does not support reference-audio conditioning.",
+        )
     cfg_scale_text, _cfg_scale_caption, cfg_scale_speaker, _ = resolve_cfg_scales(
         cfg_guidance_mode="independent",
         cfg_scale_text=3.0,
         cfg_scale_caption=3.0,
         cfg_scale_speaker=5.0,
         cfg_scale=None,
+        use_caption_condition=False,
+        use_speaker_condition=use_speaker_condition,
     )
 
     # Use checkpoint metadata instead of its versioned repo name. v3/v4/v4.1 expose a
@@ -142,15 +183,15 @@ async def audio_speech(payload: AudioSpeechRequest):
     result = runtime.synthesize(
         SamplingRequest(
             text=payload.input,
-            ref_wav=None,
+            ref_wav=None if ref_path is None else str(ref_path),
             ref_latent=None,
-            no_ref=True,
-            ref_normalize_db=None,
-            ref_ensure_max=False,
+            no_ref=ref_path is None,
+            ref_normalize_db=-16.0,
+            ref_ensure_max=True,
             num_candidates=1,
             decode_mode="sequential",
             seconds=seconds,
-            max_ref_seconds=30.0,
+            max_ref_seconds=None,
             max_text_len=None,
             num_steps=NUM_STEPS,
             cfg_scale_text=cfg_scale_text,
@@ -190,6 +231,6 @@ async def audio_speech(payload: AudioSpeechRequest):
         headers={
             "Content-Length": str(len(audio_bytes)),
             "x-openai-model": payload.model,
-            "x-openai-voice": payload.voice or "",
+            "x-openai-voice": voice,
         },
     )

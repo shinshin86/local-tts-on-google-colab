@@ -16,7 +16,7 @@ Supported engines:
 | Irodori-TTS | Works on L4 (GPU required; v4.1-Small default, v4-Small selectable) | Japanese | OK |
 | Irodori-TTS-Anime | Works on L4 (GPU required, v4.1 Anime) | Japanese | OK |
 | Irodori-TTS-Lite | Works (GPU required, ~1GB VRAM, int4-quantized) | Japanese | OK |
-| Irodori-TTS-MF | Works on L4 (GPU required, 4-step MeanFlow) | Japanese | OK |
+| Irodori-TTS-MF | Works on L4 (GPU required, 4-step generation) | Japanese | OK |
 | Piper | Works | English (default) / multilingual | Not with defaults (default voice is research-only) |
 | Piper-Plus | Works | Japanese / English / Chinese and 6 languages | OK |
 | Qwen3-TTS | Works (GPU required) | Japanese / English / Chinese and 10 languages | OK |
@@ -181,22 +181,26 @@ FISH_SPEECH_MODEL = "fishaudio/s2-pro"  #@param {type:"string"}
 
 #@markdown ---
 #@markdown Irodori-TTS
-#@markdown - Default: v4.1-Small (v4-Small with an improved Duration Predictor; unified text / reference / caption model + always-on SilentCipher watermark). This wrapper currently exposes text-only, no-reference inference.
+#@markdown - Default: v4.1-Small (v4-Small with an improved Duration Predictor; unified text / reference / caption model + always-on SilentCipher watermark). Set a reference WAV and select `clone` to copy its speaker characteristics; no transcript is required.
 #@markdown - Previous variants: v4-Small, v3, v2, or v1 (v1 also needs codec_repo="facebook/dacvae-watermarked").
 #@markdown - License: MIT for code ([Aratako/Irodori-TTS](https://github.com/Aratako/Irodori-TTS)), all weight variants (v1/v2/v3/v4/v4.1), and the Aratako/Semantic-DACVAE-Japanese-32dim codec. Commercial use OK. The author requests ethical use (no impersonation/deepfake).
 IRODORI_HF_CHECKPOINT = "Aratako/Irodori-TTS-v4.1-Small"  #@param ["Aratako/Irodori-TTS-v4.1-Small", "Aratako/Irodori-TTS-v4-Small", "Aratako/Irodori-TTS-500M-v3", "Aratako/Irodori-TTS-500M-v2", "Aratako/Irodori-TTS-500M"]
 IRODORI_CODEC_REPO = "Aratako/Semantic-DACVAE-Japanese-32dim"  #@param {type:"string"}
 IRODORI_MODEL_PRECISION = "fp32"  #@param ["fp32", "bf16", "fp16"]
 IRODORI_CODEC_PRECISION = "fp32"  #@param ["fp32", "bf16", "fp16"]
+IRODORI_PROMPT_WAV = ""  #@param {type:"string"}
+IRODORI_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
 
 #@markdown ---
-#@markdown Irodori-TTS-MF (official MeanFlow-distilled v4.1-Small, GPU required)
-#@markdown - Uses the upstream-recommended automatic 4-step MeanFlow sampler. This wrapper exposes text-only, no-reference inference.
+#@markdown Irodori-TTS-MF (official faster v4.1-Small, GPU required)
+#@markdown - Normally generates speech in four processing steps. Set a reference WAV and select `clone` to copy its speaker characteristics; no transcript is required.
 #@markdown - License: MIT for code, model weights, and codec. SilentCipher watermarking and the upstream ethical-use restrictions remain in effect.
 IRODORI_MF_HF_CHECKPOINT = "Aratako/Irodori-TTS-v4.1-Small-MF"  #@param {type:"string"}
 IRODORI_MF_CODEC_REPO = "Aratako/Semantic-DACVAE-Japanese-32dim"  #@param {type:"string"}
 IRODORI_MF_MODEL_PRECISION = "fp32"  #@param ["fp32", "bf16"]
 IRODORI_MF_CODEC_PRECISION = "fp32"  #@param ["fp32", "bf16"]
+IRODORI_MF_PROMPT_WAV = ""  #@param {type:"string"}
+IRODORI_MF_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
 
 #@markdown ---
 #@markdown Irodori-TTS-Anime (third-party fine-tune, GPU required)
@@ -835,6 +839,10 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         IRODORI_MODEL_PRECISION,
         "--irodori-codec-precision",
         IRODORI_CODEC_PRECISION,
+        "--irodori-prompt-wav",
+        IRODORI_PROMPT_WAV,
+        "--irodori-default-voice",
+        IRODORI_DEFAULT_VOICE,
         "--irodori-mf-hf-checkpoint",
         IRODORI_MF_HF_CHECKPOINT,
         "--irodori-mf-codec-repo",
@@ -843,6 +851,10 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         IRODORI_MF_MODEL_PRECISION,
         "--irodori-mf-codec-precision",
         IRODORI_MF_CODEC_PRECISION,
+        "--irodori-mf-prompt-wav",
+        IRODORI_MF_PROMPT_WAV,
+        "--irodori-mf-default-voice",
+        IRODORI_MF_DEFAULT_VOICE,
         "--irodori-anime-hf-checkpoint",
         IRODORI_ANIME_HF_CHECKPOINT,
         "--irodori-anime-codec-repo",
@@ -1470,14 +1482,14 @@ Phonemization uses [misaki](https://github.com/hexgrad/misaki) — the official 
 
 ### Irodori-TTS
 
-A Japanese TTS using [Aratako/Irodori-TTS](https://github.com/Aratako/Irodori-TTS). The default is the approximately 766M-parameter `Aratako/Irodori-TTS-v4.1-Small`, a compatible update to v4-Small that replaces and retrains only the Duration Predictor to improve automatic duration estimates and reduce generation errors from overestimated lengths. The original v4-Small and the released v3, v2, and v1 checkpoints remain selectable. Output is high-quality 48 kHz, but this OpenAI-compatible wrapper currently exposes text-only, no-reference inference and does not switch voices.
+A Japanese TTS using [Aratako/Irodori-TTS](https://github.com/Aratako/Irodori-TTS). The default is the approximately 766M-parameter `Aratako/Irodori-TTS-v4.1-Small`, a compatible update to v4-Small that replaces and retrains only the Duration Predictor to improve automatic duration estimates and reduce generation errors from overestimated lengths. The original v4-Small and the released v3, v2, and v1 checkpoints remain selectable. Output is high-quality 48 kHz. Set `IRODORI_PROMPT_WAV` and select `voice="clone"` to use a reference voice; Irodori does not require a transcript of the reference recording. Without a reference, `voice="default"` keeps the existing text-only behavior.
 
 The wrapper handles these version differences automatically:
 
 - **Duration Predictor**: the wrapper reads the checkpoint metadata instead of guessing from the repository name. V4.1, V4, and V3 therefore use automatic duration prediction, while legacy fixed-duration checkpoints retain their 30-second slot.
 - **Integrated SilentCipher watermark**: V4.1, V4, and V3 use [SilentCipher](https://github.com/sony/silentcipher), initialized inside the upstream `InferenceRuntime`. Generated audio is watermarked whenever the SilentCipher weights are available. **Do not strip the watermark**; it is part of the model release.
 
-V4.1-Small retains v4-Small's VoiceDesign captions, style-controlled voice cloning, and support for up to 120 seconds of combined reference audio in the upstream runtime. Those inputs are not yet part of this wrapper's `/v1/audio/speech` contract. The FP32 checkpoint is about 3 GB, so GPU use is recommended. The v4.1-Small default was verified end to end on an NVIDIA L4 Colab runtime: installation and startup completed successfully, and the OpenAI-compatible `/v1/audio/speech` endpoint returned a valid 48 kHz mono WAV through both local and public `trycloudflare` access. The original v4-Small remains selectable and was verified previously, including caption-only VoiceDesign exercised separately through the upstream runtime.
+V4.1-Small retains v4-Small's VoiceDesign captions, style-controlled voice cloning, and support for up to 120 seconds of combined reference audio in the upstream runtime. This wrapper exposes reference-audio cloning through its startup configuration and keeps caption control outside the `/v1/audio/speech` contract. `/v1/voices` lists `clone` only when a reference WAV is configured, and invalid clone requests return HTTP 400 rather than silently using the default voice. The FP32 checkpoint is about 3 GB, so GPU use is recommended. The v4.1-Small default was verified end to end on an NVIDIA L4 Colab runtime: installation and startup completed successfully, and the OpenAI-compatible `/v1/audio/speech` endpoint returned a valid 48 kHz mono WAV through both local and public `trycloudflare` access. The original v4-Small remains selectable and was verified previously, including caption-only VoiceDesign exercised separately through the upstream runtime.
 
 ### Irodori-TTS-Anime
 
@@ -1489,7 +1501,7 @@ The full-precision checkpoint is approximately 3.06 GB. GPU execution is require
 
 ### Irodori-TTS-MF
 
-An independent engine entry for the official [`Aratako/Irodori-TTS-v4.1-Small-MF`](https://huggingface.co/Aratako/Irodori-TTS-v4.1-Small-MF), a MeanFlow-distilled version of v4.1-Small. The upstream runtime automatically selects the checkpoint's recommended four-step sampler, substantially reducing the sampling-step count compared with the standard rectified-flow model. This wrapper currently exposes text-only, no-reference inference and does not switch voices.
+An independent engine entry for the official [`Aratako/Irodori-TTS-v4.1-Small-MF`](https://huggingface.co/Aratako/Irodori-TTS-v4.1-Small-MF), a faster variant of v4.1-Small that normally generates speech in four processing steps. Set `IRODORI_MF_PROMPT_WAV` and select `voice="clone"` to use a reference voice; no transcript is required. Without a reference, `voice="default"` keeps text-only generation. `/v1/voices` lists `clone` only when a reference WAV is configured, while caption control remains outside this wrapper.
 
 The code, model weights, and default DACVAE codec are MIT-licensed. SilentCipher watermarking and the upstream restrictions against unauthorized impersonation and misleading deepfakes remain in effect. The default path was verified on an NVIDIA L4 runtime: the public `trycloudflare` endpoint returned HTTP 200 with a valid 48 kHz mono WAV.
 
@@ -1502,7 +1514,7 @@ Two checkpoint repositories are available:
 - **`kizuna-intelligence/Irodori-TTS-Lite-int4`** (default): voice-design int4 (speaker baked in, no Duration Predictor). The wrapper derives `seconds` from phoneme count via `pyopenjtalk`.
 - **`kizuna-intelligence/Irodori-TTS-500M-v3-int4`** (v3 int4): includes the Duration Predictor. Switch by setting `IRODORI_LITE_HF_CHECKPOINT=kizuna-intelligence/Irodori-TTS-500M-v3-int4` **and** `IRODORI_LITE_CHECKPOINT_FILE=model.safetensors`.
 
-Voice switching is not exposed (same as Irodori-TTS — the speaker is baked into the checkpoint). The DACVAE codec defaults to `Aratako/Semantic-DACVAE-Japanese-32dim` (fp16). Set `IRODORI_LITE_CODEC_INT4=1` to additionally int4-quantize the codec, which trades ~150 ms of decode latency for ~500 MB less peak VRAM.
+Voice switching is not exposed because the speaker is baked into the Lite checkpoint. The DACVAE codec defaults to `Aratako/Semantic-DACVAE-Japanese-32dim` (fp16). Set `IRODORI_LITE_CODEC_INT4=1` to additionally int4-quantize the codec, which trades ~150 ms of decode latency for ~500 MB less peak VRAM.
 
 GPU is required: the int4 path relies on the Triton kernel, so this engine must run on Linux + CUDA (i.e. Colab GPU runtime).
 
@@ -2172,7 +2184,7 @@ The license for each engine is as follows. When using them, always check each pr
 | Irodori-TTS | MIT | MIT (v1 / v2 / v3 / v4 / v4.1) | OK | Ethical policy prohibits impersonation / deepfake generation. V3/V4/V4.1 ship with SilentCipher watermarking — do not strip |
 | Irodori-TTS-Anime | MIT (Aratako/Irodori-TTS) | MIT (`phasefield-audio/Irodori-TTS-v4.1-Anime`) | OK | Unofficial third-party fine-tune of v4.1-Small. Inherits the base model's ethical restrictions and SilentCipher watermarking path |
 | Irodori-TTS-Lite | MIT | MIT (`kizuna-intelligence/Irodori-TTS-Lite-int4`, `kizuna-intelligence/Irodori-TTS-500M-v3-int4`) | OK | int4-quantized runtime over Irodori-TTS. Triton kernel requires Linux + CUDA. `fused_int4_linear.py` vendored from OneCompression (Fujitsu Ltd., MIT) |
-| Irodori-TTS-MF | MIT (Aratako/Irodori-TTS) | MIT (`Aratako/Irodori-TTS-v4.1-Small-MF`) | OK | Official MeanFlow-distilled v4.1-Small; 4-step inference. Ethical restrictions and SilentCipher watermarking remain in effect |
+| Irodori-TTS-MF | MIT (Aratako/Irodori-TTS) | MIT (`Aratako/Irodori-TTS-v4.1-Small-MF`) | OK | Official faster v4.1-Small variant; normally uses four generation steps. Ethical restrictions and SilentCipher watermarking remain in effect |
 | Piper | GPL-3.0 | MIT | Caution | The default voice `en_US-lessac-medium` is trained on the Blizzard 2013 dataset (Lessac Technologies), which is research-only and prohibits commercial use |
 | Piper-Plus | MIT | MIT | OK | |
 | Qwen3-TTS | Apache 2.0 | Apache 2.0 | OK | |

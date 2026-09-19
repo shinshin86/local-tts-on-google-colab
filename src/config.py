@@ -74,12 +74,16 @@ class Settings:
     irodori_codec_repo: str = "Aratako/Semantic-DACVAE-Japanese-32dim"
     irodori_model_precision: str = "fp32"
     irodori_codec_precision: str = "fp32"
+    irodori_prompt_wav: str = ""
+    irodori_default_voice: str = "default"
     # Official MeanFlow-distilled v4.1-Small. Upstream auto-selects its
     # recommended four-step sampler when num_steps is omitted.
     irodori_mf_hf_checkpoint: str = "Aratako/Irodori-TTS-v4.1-Small-MF"
     irodori_mf_codec_repo: str = "Aratako/Semantic-DACVAE-Japanese-32dim"
     irodori_mf_model_precision: str = "fp32"
     irodori_mf_codec_precision: str = "fp32"
+    irodori_mf_prompt_wav: str = ""
+    irodori_mf_default_voice: str = "default"
     # Third-party anime-style fine-tune of Irodori-TTS-v4.1-Small.
     irodori_anime_hf_checkpoint: str = "phasefield-audio/Irodori-TTS-v4.1-Anime"
     irodori_anime_codec_repo: str = "Aratako/Semantic-DACVAE-Japanese-32dim"
