@@ -16,6 +16,7 @@ Supported engines:
 | Kokoro-ONNX | Works | Japanese / English / Chinese and more | OK |
 | Irodori-TTS | Works on L4 (GPU required; v4.1-Small default, v4-Small selectable) | Japanese | OK |
 | Irodori-TTS-Anime | Works on L4 (GPU required, v4.1 Anime) | Japanese | OK |
+| Irodori-TTS-Large | Works on L4 (3.29B; INT8 weight-only default; all four modes verified; ~7.3 GiB VRAM observed) | Japanese | Conditional (Gemma Terms) |
 | Irodori-TTS-Lite | Works (GPU required, ~1GB VRAM, int4-quantized) | Japanese | OK |
 | Irodori-TTS-MF | Works on L4 (GPU required, 4-step generation) | Japanese | OK |
 | Piper | Works | English (default) / multilingual | Not with defaults (default voice is research-only) |
@@ -134,7 +135,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Audio8-TTS", "Bark", "Breeze-TTS-2", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "FireRedTTS2", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "IndexTTS2", "Irodori-TTS", "Irodori-TTS-Anime", "Irodori-TTS-Lite", "Irodori-TTS-MF", "KittenTTS", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "ZeroTTS", "Zonos", "ZONOS2"]
+ENGINE = "Kokoro"  #@param ["Audio8-TTS", "Bark", "Breeze-TTS-2", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "FireRedTTS2", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "IndexTTS2", "Irodori-TTS", "Irodori-TTS-Anime", "Irodori-TTS-Large", "Irodori-TTS-Lite", "Irodori-TTS-MF", "KittenTTS", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "ZeroTTS", "Zonos", "ZONOS2"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -206,6 +207,20 @@ IRODORI_MODEL_PRECISION = "fp32"  #@param ["fp32", "bf16", "fp16"]
 IRODORI_CODEC_PRECISION = "fp32"  #@param ["fp32", "bf16", "fp16"]
 IRODORI_PROMPT_WAV = ""  #@param {type:"string"}
 IRODORI_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+
+#@markdown ---
+#@markdown Irodori-TTS-Large (3.29B Japanese TTS, L4 GPU recommended)
+#@markdown - `voice="default"`: plain TTS without `instructions`, text-based Voice Design with `instructions`.
+#@markdown - `voice="clone"`: Voice Clone without `instructions`, style-controlled cloning with `instructions`; requires a reference WAV but no transcript.
+#@markdown - The default is the official INT8 weight-only variant (~3.66 GiB) with BF16 computation. The full FP32 checkpoint is ~12.25 GiB.
+#@markdown - Code and codec: MIT. Weights: Gemma Terms of Use because the text/caption encoder derives from T5Gemma 2. Commercial use is not prohibited, but redistribution and hosted-service use must comply with the Gemma terms. The model card also prohibits unauthorized impersonation and misleading synthetic speech.
+IRODORI_LARGE_HF_CHECKPOINT = "Aratako/Irodori-TTS-v4-Large-Quantized/int8-weight-only"  #@param ["Aratako/Irodori-TTS-v4-Large-Quantized/int8-weight-only", "Aratako/Irodori-TTS-v4-Large-Quantized/int4-weight-only", "Aratako/Irodori-TTS-v4-Large-Quantized/float8-weight-only", "Aratako/Irodori-TTS-v4-Large"]
+IRODORI_LARGE_CODEC_REPO = "Aratako/Semantic-DACVAE-Japanese-32dim"  #@param {type:"string"}
+IRODORI_LARGE_MODEL_PRECISION = "bf16"  #@param ["bf16"]
+IRODORI_LARGE_CODEC_PRECISION = "bf16"  #@param ["bf16", "fp32"]
+IRODORI_LARGE_PROMPT_WAV = ""  #@param {type:"string"}
+IRODORI_LARGE_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+IRODORI_LARGE_DEFAULT_INSTRUCTIONS = ""  #@param {type:"string"}
 
 #@markdown ---
 #@markdown Irodori-TTS-MF (official faster v4.1-Small, GPU required)
@@ -875,6 +890,20 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         IRODORI_PROMPT_WAV,
         "--irodori-default-voice",
         IRODORI_DEFAULT_VOICE,
+        "--irodori-large-hf-checkpoint",
+        IRODORI_LARGE_HF_CHECKPOINT,
+        "--irodori-large-codec-repo",
+        IRODORI_LARGE_CODEC_REPO,
+        "--irodori-large-model-precision",
+        IRODORI_LARGE_MODEL_PRECISION,
+        "--irodori-large-codec-precision",
+        IRODORI_LARGE_CODEC_PRECISION,
+        "--irodori-large-prompt-wav",
+        IRODORI_LARGE_PROMPT_WAV,
+        "--irodori-large-default-voice",
+        IRODORI_LARGE_DEFAULT_VOICE,
+        "--irodori-large-default-instructions",
+        IRODORI_LARGE_DEFAULT_INSTRUCTIONS,
         "--irodori-mf-hf-checkpoint",
         IRODORI_MF_HF_CHECKPOINT,
         "--irodori-mf-codec-repo",
@@ -1541,7 +1570,7 @@ The wrapper handles these version differences automatically:
 - **Duration Predictor**: the wrapper reads the checkpoint metadata instead of guessing from the repository name. V4.1, V4, and V3 therefore use automatic duration prediction, while legacy fixed-duration checkpoints retain their 30-second slot.
 - **Integrated SilentCipher watermark**: V4.1, V4, and V3 use [SilentCipher](https://github.com/sony/silentcipher), initialized inside the upstream `InferenceRuntime`. Generated audio is watermarked whenever the SilentCipher weights are available. **Do not strip the watermark**; it is part of the model release.
 
-V4.1-Small retains v4-Small's VoiceDesign captions, style-controlled voice cloning, and support for up to 120 seconds of combined reference audio in the upstream runtime. This wrapper exposes reference-audio cloning through its startup configuration and keeps caption control outside the `/v1/audio/speech` contract. `/v1/voices` lists `clone` only when a reference WAV is configured, and invalid clone requests return HTTP 400 rather than silently using the default voice. The FP32 checkpoint is about 3 GB, so GPU use is recommended. The v4.1-Small default was verified end to end on an NVIDIA L4 Colab runtime: installation and startup completed successfully, and the OpenAI-compatible `/v1/audio/speech` endpoint returned a valid 48 kHz mono WAV through both local and public `trycloudflare` access. The original v4-Small remains selectable and was verified previously, including caption-only VoiceDesign exercised separately through the upstream runtime.
+V4.1-Small retains v4-Small's VoiceDesign captions, style-controlled voice cloning, and support for up to 120 seconds of combined reference audio in the upstream runtime. The wrapper maps the OpenAI Speech API's optional `instructions` field to Irodori's caption: `default` without instructions is plain TTS, `default` with instructions is Voice Design, `clone` without instructions is Voice Clone, and `clone` with instructions is style-controlled cloning. `/v1/voices` lists `clone` only when a reference WAV is configured, and invalid clone requests return HTTP 400 rather than silently using the default voice. The FP32 checkpoint is about 3 GB, so GPU use is recommended. The v4.1-Small default was verified end to end on an NVIDIA L4 Colab runtime: installation and startup completed successfully, and the OpenAI-compatible `/v1/audio/speech` endpoint returned a valid 48 kHz mono WAV through both local and public `trycloudflare` access. The original v4-Small remains selectable and was verified previously, including caption-only VoiceDesign exercised separately through the upstream runtime.
 
 ### Irodori-TTS-Anime
 
@@ -1551,9 +1580,19 @@ The OpenAI-compatible wrapper currently provides text-only, no-reference inferen
 
 The full-precision checkpoint is approximately 3.06 GB. GPU execution is required for this Colab wrapper. The default configuration was verified end to end on an NVIDIA L4 Colab runtime: installation and startup completed successfully, both local and public `trycloudflare` requests returned a valid 48 kHz mono WAV, and an unsupported voice returned HTTP 400 as expected. The upstream code, model weights, and codec are MIT-licensed. The model inherits the base model's ethical restrictions against unauthorized impersonation and misleading deepfakes, and generated audio retains the upstream SilentCipher watermarking path.
 
+### Irodori-TTS-Large
+
+An independent engine for the official [`Aratako/Irodori-TTS-v4-Large`](https://huggingface.co/Aratako/Irodori-TTS-v4-Large). It scales the v4 architecture from approximately 766M to 3.29B parameters and uses a T5Gemma 2 text/caption encoder. The model supports Japanese plain TTS, text-described Voice Design, zero-shot Voice Clone, style-controlled cloning, emoji delivery controls, and up to 120 seconds of combined reference audio. A reference transcript is not required.
+
+The OpenAI-compatible interface follows the same `voice` and `instructions` convention as Breeze-TTS-2: `default` without instructions selects plain TTS, `default` with instructions selects Voice Design, `clone` without instructions selects Voice Clone, and `clone` with instructions applies caption-based style control to the cloned speaker. `speed` from 0.25 to 4.0 is converted to Irodori's inverse duration scale. Generated audio remains 48 kHz and retains the upstream SilentCipher watermark.
+
+The default INT8 configuration was verified end to end on an NVIDIA L4 Colab runtime through a public `trycloudflare` endpoint. Plain TTS, Voice Design, Voice Clone, and style-controlled cloning all returned HTTP 200 with valid 48 kHz mono WAV files. The four requests took 10.52, 18.85, 11.30, and 11.52 seconds respectively, including network transit, and GPU memory usage after generation was approximately 7.3 GiB. The Voice Design sample used an original synthetic anime-style voice as the cloning reference; no real person's voice was used.
+
+The default checkpoint is the official `int8-weight-only` variant from [`Aratako/Irodori-TTS-v4-Large-Quantized`](https://huggingface.co/Aratako/Irodori-TTS-v4-Large-Quantized). Its checkpoint is about 3.66 GiB and uses BF16 computation; INT4, FP8, and the approximately 12.25 GiB full checkpoint remain selectable. The code and DACVAE codec are MIT-licensed. The model weights are governed by the Gemma Terms of Use because the shared encoder derives from T5Gemma 2. Commercial use is not prohibited, but redistribution or operation as a hosted service must follow those terms. The model card separately prohibits unauthorized impersonation and misleading synthetic speech.
+
 ### Irodori-TTS-MF
 
-An independent engine entry for the official [`Aratako/Irodori-TTS-v4.1-Small-MF`](https://huggingface.co/Aratako/Irodori-TTS-v4.1-Small-MF), a faster variant of v4.1-Small that normally generates speech in four processing steps. Set `IRODORI_MF_PROMPT_WAV` and select `voice="clone"` to use a reference voice; no transcript is required. Without a reference, `voice="default"` keeps text-only generation. `/v1/voices` lists `clone` only when a reference WAV is configured, while caption control remains outside this wrapper.
+An independent engine entry for the official [`Aratako/Irodori-TTS-v4.1-Small-MF`](https://huggingface.co/Aratako/Irodori-TTS-v4.1-Small-MF), a faster variant of v4.1-Small that normally generates speech in four processing steps. Set `IRODORI_MF_PROMPT_WAV` and select `voice="clone"` to use a reference voice; no transcript is required. Without a reference, `voice="default"` keeps text-only generation. `/v1/voices` lists `clone` only when a reference WAV is configured. The optional `instructions` field is mapped to the checkpoint's caption condition for Voice Design or style-controlled cloning.
 
 The code, model weights, and default DACVAE codec are MIT-licensed. SilentCipher watermarking and the upstream restrictions against unauthorized impersonation and misleading deepfakes remain in effect. The default path was verified on an NVIDIA L4 runtime: the public `trycloudflare` endpoint returned HTTP 200 with a valid 48 kHz mono WAV.
 
@@ -2236,6 +2275,7 @@ The license for each engine is as follows. When using them, always check each pr
 | Kokoro-ONNX | Apache 2.0 | Apache 2.0 | OK | NVIDIA's ONNX repackaging of hexgrad/Kokoro-82M; both are Apache 2.0 |
 | Irodori-TTS | MIT | MIT (v1 / v2 / v3 / v4 / v4.1) | OK | Ethical policy prohibits impersonation / deepfake generation. V3/V4/V4.1 ship with SilentCipher watermarking — do not strip |
 | Irodori-TTS-Anime | MIT (Aratako/Irodori-TTS) | MIT (`phasefield-audio/Irodori-TTS-v4.1-Anime`) | OK | Unofficial third-party fine-tune of v4.1-Small. Inherits the base model's ethical restrictions and SilentCipher watermarking path |
+| Irodori-TTS-Large | MIT (Aratako/Irodori-TTS) | Gemma Terms of Use (`Aratako/Irodori-TTS-v4-Large` and quantized variants) | Conditional | Commercial use is not prohibited. Redistribution and hosted-service operation must comply with the Gemma terms and prohibited-use policy. Model-specific restrictions also prohibit unauthorized impersonation and misleading speech. SilentCipher watermarking remains enabled |
 | Irodori-TTS-Lite | MIT | MIT (`kizuna-intelligence/Irodori-TTS-Lite-int4`, `kizuna-intelligence/Irodori-TTS-500M-v3-int4`) | OK | int4-quantized runtime over Irodori-TTS. Triton kernel requires Linux + CUDA. `fused_int4_linear.py` vendored from OneCompression (Fujitsu Ltd., MIT) |
 | Irodori-TTS-MF | MIT (Aratako/Irodori-TTS) | MIT (`Aratako/Irodori-TTS-v4.1-Small-MF`) | OK | Official faster v4.1-Small variant; normally uses four generation steps. Ethical restrictions and SilentCipher watermarking remain in effect |
 | Piper | GPL-3.0 | MIT | Caution | The default voice `en_US-lessac-medium` is trained on the Blizzard 2013 dataset (Lessac Technologies), which is research-only and prohibits commercial use |
@@ -2336,6 +2376,10 @@ This repository itself is intended for short-term operational verification and t
   https://huggingface.co/Aratako/Irodori-TTS-v4.1-Small
 - Irodori-TTS v4-Small weights (previous)
   https://huggingface.co/Aratako/Irodori-TTS-v4-Small
+- Irodori-TTS v4-Large weights
+  https://huggingface.co/Aratako/Irodori-TTS-v4-Large
+- Irodori-TTS v4-Large quantized weights
+  https://huggingface.co/Aratako/Irodori-TTS-v4-Large-Quantized
 - Irodori-TTS v4.1 Anime weights (third-party fine-tune)
   https://huggingface.co/phasefield-audio/Irodori-TTS-v4.1-Anime
 - Irodori-TTS-Lite

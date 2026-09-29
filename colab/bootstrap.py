@@ -37,6 +37,21 @@ def parse_args():
     parser.add_argument("--irodori-prompt-wav", default="")
     parser.add_argument("--irodori-default-voice", default="default", choices=["default", "clone"])
     parser.add_argument(
+        "--irodori-large-hf-checkpoint",
+        default="Aratako/Irodori-TTS-v4-Large-Quantized/int8-weight-only",
+    )
+    parser.add_argument(
+        "--irodori-large-codec-repo",
+        default="Aratako/Semantic-DACVAE-Japanese-32dim",
+    )
+    parser.add_argument("--irodori-large-model-precision", default="bf16")
+    parser.add_argument("--irodori-large-codec-precision", default="bf16")
+    parser.add_argument("--irodori-large-prompt-wav", default="")
+    parser.add_argument(
+        "--irodori-large-default-voice", default="default", choices=["default", "clone"]
+    )
+    parser.add_argument("--irodori-large-default-instructions", default="")
+    parser.add_argument(
         "--irodori-mf-hf-checkpoint", default="Aratako/Irodori-TTS-v4.1-Small-MF"
     )
     parser.add_argument(
@@ -400,6 +415,13 @@ def main():
         irodori_codec_precision=args.irodori_codec_precision,
         irodori_prompt_wav=args.irodori_prompt_wav,
         irodori_default_voice=args.irodori_default_voice,
+        irodori_large_hf_checkpoint=args.irodori_large_hf_checkpoint,
+        irodori_large_codec_repo=args.irodori_large_codec_repo,
+        irodori_large_model_precision=args.irodori_large_model_precision,
+        irodori_large_codec_precision=args.irodori_large_codec_precision,
+        irodori_large_prompt_wav=args.irodori_large_prompt_wav,
+        irodori_large_default_voice=args.irodori_large_default_voice,
+        irodori_large_default_instructions=args.irodori_large_default_instructions,
         irodori_mf_hf_checkpoint=args.irodori_mf_hf_checkpoint,
         irodori_mf_codec_repo=args.irodori_mf_codec_repo,
         irodori_mf_model_precision=args.irodori_mf_model_precision,

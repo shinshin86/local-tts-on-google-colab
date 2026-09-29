@@ -41,6 +41,7 @@
       "IndexTTS2",
       "Irodori-TTS",
       "Irodori-TTS-Anime",
+      "Irodori-TTS-Large",
       "Irodori-TTS-Lite",
       "Irodori-TTS-MF",
       "KittenTTS",
@@ -1424,6 +1425,87 @@
       ]
     },
     {
+      "id": "Irodori-TTS-Large",
+      "title": "Irodori-TTS-Large (3.29B Japanese TTS, L4 GPU recommended)",
+      "status": "Works on L4 (3.29B; INT8 weight-only default; all four modes verified; ~7.3 GiB VRAM observed)",
+      "status_ja": "L4 で動作確認済み（3.29B、デフォルトは INT8 weight-only、4モード検証済み、使用VRAM約7.3GiB）",
+      "languages": "Japanese",
+      "languages_ja": "日本語",
+      "description": "An independent engine for the official [`Aratako/Irodori-TTS-v4-Large`](https://huggingface.co/Aratako/Irodori-TTS-v4-Large). It scales the v4 architecture from approximately 766M to 3.29B parameters and uses a T5Gemma 2 text/caption encoder. The model supports Japanese plain TTS, text-described Voice Design, zero-shot Voice Clone, style-controlled cloning, emoji delivery controls, and up to 120 seconds of combined reference audio. A reference transcript is not required.",
+      "description_ja": "公式の [`Aratako/Irodori-TTS-v4-Large`](https://huggingface.co/Aratako/Irodori-TTS-v4-Large) を使う独立エンジンです。v4の構成を約7.66億から32.9億パラメータへ拡大し、テキストとcaptionのエンコーダーにT5Gemma 2を採用しています。通常の日本語TTS、文章によるVoice Design、参照音声からのVoice Clone、クローンした声へのスタイル指定、絵文字による演技制御に対応します。参照音声は合計120秒まで使用でき、書き起こしは不要です。",
+      "notes": [
+        "- `voice=\"default\"`: plain TTS without `instructions`, text-based Voice Design with `instructions`.",
+        "- `voice=\"clone\"`: Voice Clone without `instructions`, style-controlled cloning with `instructions`; requires a reference WAV but no transcript.",
+        "- The default is the official INT8 weight-only variant (~3.66 GiB) with BF16 computation. The full FP32 checkpoint is ~12.25 GiB.",
+        "- Code and codec: MIT. Weights: Gemma Terms of Use because the text/caption encoder derives from T5Gemma 2. Commercial use is not prohibited, but redistribution and hosted-service use must comply with the Gemma terms. The model card also prohibits unauthorized impersonation and misleading synthetic speech."
+      ],
+      "notes_ja": [
+        "- ライセンス: コードは MIT (Aratako/Irodori-TTS)、モデル重みは Gemma Terms of Use（`Aratako/Irodori-TTS-v4-Large`および量子化版）。商用利用: 条件付き。 備考: 商用利用は禁止されていない。再配布やHosted Serviceとしての提供ではGemma規約と禁止用途ポリシーへの対応が必要。本人の同意がない声の模倣や誤解を招く音声も禁止。SilentCipherウォーターマークを維持"
+      ],
+      "prefix": "IRODORI_LARGE",
+      "params": [
+        {
+          "name": "IRODORI_LARGE_HF_CHECKPOINT",
+          "default": "Aratako/Irodori-TTS-v4-Large-Quantized/int8-weight-only",
+          "type": "select",
+          "options": [
+            "Aratako/Irodori-TTS-v4-Large-Quantized/int8-weight-only",
+            "Aratako/Irodori-TTS-v4-Large-Quantized/int4-weight-only",
+            "Aratako/Irodori-TTS-v4-Large-Quantized/float8-weight-only",
+            "Aratako/Irodori-TTS-v4-Large"
+          ],
+          "flag": "--irodori-large-hf-checkpoint"
+        },
+        {
+          "name": "IRODORI_LARGE_CODEC_REPO",
+          "default": "Aratako/Semantic-DACVAE-Japanese-32dim",
+          "type": "string",
+          "flag": "--irodori-large-codec-repo"
+        },
+        {
+          "name": "IRODORI_LARGE_MODEL_PRECISION",
+          "default": "bf16",
+          "type": "select",
+          "options": [
+            "bf16"
+          ],
+          "flag": "--irodori-large-model-precision"
+        },
+        {
+          "name": "IRODORI_LARGE_CODEC_PRECISION",
+          "default": "bf16",
+          "type": "select",
+          "options": [
+            "bf16",
+            "fp32"
+          ],
+          "flag": "--irodori-large-codec-precision"
+        },
+        {
+          "name": "IRODORI_LARGE_PROMPT_WAV",
+          "default": "",
+          "type": "string",
+          "flag": "--irodori-large-prompt-wav"
+        },
+        {
+          "name": "IRODORI_LARGE_DEFAULT_VOICE",
+          "default": "default",
+          "type": "select",
+          "options": [
+            "default",
+            "clone"
+          ],
+          "flag": "--irodori-large-default-voice"
+        },
+        {
+          "name": "IRODORI_LARGE_DEFAULT_INSTRUCTIONS",
+          "default": "",
+          "type": "string",
+          "flag": "--irodori-large-default-instructions"
+        }
+      ]
+    },
+    {
       "id": "Irodori-TTS-Lite",
       "title": "Irodori-TTS-Lite (int4-quantized Irodori-TTS, ~1GB VRAM, MIT)",
       "status": "Works (GPU required, ~1GB VRAM, int4-quantized)",
@@ -1485,8 +1567,8 @@
       "status_ja": "L4 で動作確認済み（GPU 必須、通常 4 回の高速生成）",
       "languages": "Japanese",
       "languages_ja": "日本語",
-      "description": "An independent engine entry for the official [`Aratako/Irodori-TTS-v4.1-Small-MF`](https://huggingface.co/Aratako/Irodori-TTS-v4.1-Small-MF), a faster variant of v4.1-Small that normally generates speech in four processing steps. Set `IRODORI_MF_PROMPT_WAV` and select `voice=\"clone\"` to use a reference voice; no transcript is required. Without a reference, `voice=\"default\"` keeps text-only generation. `/v1/voices` lists `clone` only when a reference WAV is configured, while caption control remains outside this wrapper.",
-      "description_ja": "公式の [`Aratako/Irodori-TTS-v4.1-Small-MF`](https://huggingface.co/Aratako/Irodori-TTS-v4.1-Small-MF) を使用する独立エンジンです。v4.1-Small をもとに、通常 4 回の処理で音声を生成できるようにした高速版です。`IRODORI_MF_PROMPT_WAV` に参照音声を設定して `voice=\"clone\"` を選ぶと、その話者に近い声を生成できます。参照音声の書き起こしは不要です。参照音声を使わない `voice=\"default\"` も引き続き利用できます。参照音声を設定した場合だけ `/v1/voices` に `clone` を表示します。caption の指定は、引き続き対象外です。",
+      "description": "An independent engine entry for the official [`Aratako/Irodori-TTS-v4.1-Small-MF`](https://huggingface.co/Aratako/Irodori-TTS-v4.1-Small-MF), a faster variant of v4.1-Small that normally generates speech in four processing steps. Set `IRODORI_MF_PROMPT_WAV` and select `voice=\"clone\"` to use a reference voice; no transcript is required. Without a reference, `voice=\"default\"` keeps text-only generation. `/v1/voices` lists `clone` only when a reference WAV is configured. The optional `instructions` field is mapped to the checkpoint's caption condition for Voice Design or style-controlled cloning.",
+      "description_ja": "公式の [`Aratako/Irodori-TTS-v4.1-Small-MF`](https://huggingface.co/Aratako/Irodori-TTS-v4.1-Small-MF) を使用する独立エンジンです。v4.1-Small をもとに、通常 4 回の処理で音声を生成できるようにした高速版です。`IRODORI_MF_PROMPT_WAV` に参照音声を設定して `voice=\"clone\"` を選ぶと、その話者に近い声を生成できます。参照音声の書き起こしは不要です。参照音声を使わない `voice=\"default\"` も引き続き利用できます。参照音声を設定した場合だけ `/v1/voices` に `clone` を表示します。任意の `instructions` はcaptionとして渡し、Voice Designまたはクローンした声へのスタイル指定に使います。",
       "notes": [
         "- Normally generates speech in four processing steps. Set a reference WAV and select `clone` to copy its speaker characteristics; no transcript is required.",
         "- License: MIT for code, model weights, and codec. SilentCipher watermarking and the upstream ethical-use restrictions remain in effect."

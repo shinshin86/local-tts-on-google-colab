@@ -76,6 +76,17 @@ class Settings:
     irodori_codec_precision: str = "fp32"
     irodori_prompt_wav: str = ""
     irodori_default_voice: str = "default"
+    # Official v4-Large. The default uses the recommended torchao INT8
+    # weight-only checkpoint so it fits comfortably on a 24 GB Colab GPU.
+    irodori_large_hf_checkpoint: str = (
+        "Aratako/Irodori-TTS-v4-Large-Quantized/int8-weight-only"
+    )
+    irodori_large_codec_repo: str = "Aratako/Semantic-DACVAE-Japanese-32dim"
+    irodori_large_model_precision: str = "bf16"
+    irodori_large_codec_precision: str = "bf16"
+    irodori_large_prompt_wav: str = ""
+    irodori_large_default_voice: str = "default"
+    irodori_large_default_instructions: str = ""
     # Official MeanFlow-distilled v4.1-Small. Upstream auto-selects its
     # recommended four-step sampler when num_steps is omitted.
     irodori_mf_hf_checkpoint: str = "Aratako/Irodori-TTS-v4.1-Small-MF"

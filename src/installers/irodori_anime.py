@@ -16,4 +16,5 @@ def install(settings: Settings) -> dict:
         codec_precision=settings.irodori_anime_codec_precision,
         engine_name="Irodori-TTS-Anime",
         log_filename="irodori-anime-uvicorn.log",
+        instructions_enabled=False,
     )

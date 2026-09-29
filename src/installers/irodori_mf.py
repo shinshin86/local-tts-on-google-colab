@@ -19,4 +19,5 @@ def install(settings: Settings) -> dict:
         num_steps=None,
         prompt_wav=settings.irodori_mf_prompt_wav,
         default_voice=settings.irodori_mf_default_voice,
+        prompt_flag="--irodori-mf-prompt-wav",
     )

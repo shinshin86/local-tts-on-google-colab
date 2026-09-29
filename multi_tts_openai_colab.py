@@ -11,7 +11,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Audio8-TTS", "Bark", "Breeze-TTS-2", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "FireRedTTS2", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "IndexTTS2", "Irodori-TTS", "Irodori-TTS-Anime", "Irodori-TTS-Lite", "Irodori-TTS-MF", "KittenTTS", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "ZeroTTS", "Zonos", "ZONOS2"]
+ENGINE = "Kokoro"  #@param ["Audio8-TTS", "Bark", "Breeze-TTS-2", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "FireRedTTS2", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "IndexTTS2", "Irodori-TTS", "Irodori-TTS-Anime", "Irodori-TTS-Large", "Irodori-TTS-Lite", "Irodori-TTS-MF", "KittenTTS", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "ZeroTTS", "Zonos", "ZONOS2"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -83,6 +83,20 @@ IRODORI_MODEL_PRECISION = "fp32"  #@param ["fp32", "bf16", "fp16"]
 IRODORI_CODEC_PRECISION = "fp32"  #@param ["fp32", "bf16", "fp16"]
 IRODORI_PROMPT_WAV = ""  #@param {type:"string"}
 IRODORI_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+
+#@markdown ---
+#@markdown Irodori-TTS-Large (3.29B Japanese TTS, L4 GPU recommended)
+#@markdown - `voice="default"`: plain TTS without `instructions`, text-based Voice Design with `instructions`.
+#@markdown - `voice="clone"`: Voice Clone without `instructions`, style-controlled cloning with `instructions`; requires a reference WAV but no transcript.
+#@markdown - The default is the official INT8 weight-only variant (~3.66 GiB) with BF16 computation. The full FP32 checkpoint is ~12.25 GiB.
+#@markdown - Code and codec: MIT. Weights: Gemma Terms of Use because the text/caption encoder derives from T5Gemma 2. Commercial use is not prohibited, but redistribution and hosted-service use must comply with the Gemma terms. The model card also prohibits unauthorized impersonation and misleading synthetic speech.
+IRODORI_LARGE_HF_CHECKPOINT = "Aratako/Irodori-TTS-v4-Large-Quantized/int8-weight-only"  #@param ["Aratako/Irodori-TTS-v4-Large-Quantized/int8-weight-only", "Aratako/Irodori-TTS-v4-Large-Quantized/int4-weight-only", "Aratako/Irodori-TTS-v4-Large-Quantized/float8-weight-only", "Aratako/Irodori-TTS-v4-Large"]
+IRODORI_LARGE_CODEC_REPO = "Aratako/Semantic-DACVAE-Japanese-32dim"  #@param {type:"string"}
+IRODORI_LARGE_MODEL_PRECISION = "bf16"  #@param ["bf16"]
+IRODORI_LARGE_CODEC_PRECISION = "bf16"  #@param ["bf16", "fp32"]
+IRODORI_LARGE_PROMPT_WAV = ""  #@param {type:"string"}
+IRODORI_LARGE_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+IRODORI_LARGE_DEFAULT_INSTRUCTIONS = ""  #@param {type:"string"}
 
 #@markdown ---
 #@markdown Irodori-TTS-MF (official faster v4.1-Small, GPU required)
@@ -752,6 +766,20 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         IRODORI_PROMPT_WAV,
         "--irodori-default-voice",
         IRODORI_DEFAULT_VOICE,
+        "--irodori-large-hf-checkpoint",
+        IRODORI_LARGE_HF_CHECKPOINT,
+        "--irodori-large-codec-repo",
+        IRODORI_LARGE_CODEC_REPO,
+        "--irodori-large-model-precision",
+        IRODORI_LARGE_MODEL_PRECISION,
+        "--irodori-large-codec-precision",
+        IRODORI_LARGE_CODEC_PRECISION,
+        "--irodori-large-prompt-wav",
+        IRODORI_LARGE_PROMPT_WAV,
+        "--irodori-large-default-voice",
+        IRODORI_LARGE_DEFAULT_VOICE,
+        "--irodori-large-default-instructions",
+        IRODORI_LARGE_DEFAULT_INSTRUCTIONS,
         "--irodori-mf-hf-checkpoint",
         IRODORI_MF_HF_CHECKPOINT,
         "--irodori-mf-codec-repo",

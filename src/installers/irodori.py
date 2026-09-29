@@ -20,9 +20,19 @@ def install_runtime(
     num_steps: int | None = 40,
     prompt_wav: str = "",
     default_voice: str = "default",
+    default_instructions: str = "",
+    instructions_enabled: bool = True,
+    prompt_flag: str = "--irodori-prompt-wav",
+    upstream_ref: str = "",
 ) -> dict:
     repo_dir = settings.engines_dir / engine_dir_name
     ensure_git_clone("https://github.com/Aratako/Irodori-TTS", repo_dir)
+    if upstream_ref:
+        # v4-Large needs the upstream runtime revision that added T5Gemma 2
+        # and torchao checkpoint support. Pin it so reused Colab workspaces do
+        # not silently run an older, incompatible clone.
+        run(["git", "fetch", "--depth", "1", "origin", upstream_ref], cwd=str(repo_dir))
+        run(["git", "checkout", "--detach", "FETCH_HEAD"], cwd=str(repo_dir))
     if app_source != "src/apps/irodori_app.py":
         write_text(
             repo_dir / "irodori_app_shared.py",
@@ -53,6 +63,9 @@ def install_runtime(
         "IRODORI_NUM_STEPS": "" if num_steps is None else str(num_steps),
         "IRODORI_PROMPT_WAV": prompt_wav,
         "IRODORI_DEFAULT_VOICE": default_voice,
+        "IRODORI_DEFAULT_INSTRUCTIONS": default_instructions,
+        "IRODORI_INSTRUCTIONS_ENABLED": "1" if instructions_enabled else "0",
+        "IRODORI_PROMPT_FLAG": prompt_flag,
         "OPENAI_MODEL_ID": settings.openai_model_id or checkpoint,
     }
     log_path = settings.log_dir / log_filename
