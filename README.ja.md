@@ -16,6 +16,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | Kokoro-ONNX | 動作OK | 日本語 / 英語 / 中国語 他 | OK |
 | Irodori-TTS | L4 で動作確認済み（GPU 必須、デフォルトは v4.1-Small、v4-Small も選択可能） | 日本語 | OK |
 | Irodori-TTS-Anime | L4 で動作確認済み（GPU 必須、v4.1 Anime） | 日本語 | OK |
+| Irodori-TTS-Large | L4 検証予定（3.29B、デフォルトは INT8 weight-only） | 日本語 | 条件付き（Gemma規約） |
 | Irodori-TTS-Lite | 動作OK（GPU 必須、VRAM ~1GB、int4 量子化） | 日本語 | OK |
 | Irodori-TTS-MF | L4 で動作確認済み（GPU 必須、通常 4 回の高速生成） | 日本語 | OK |
 | Piper | 動作OK | 英語（デフォルト）/ 多言語 | 既定は不可（既定音声が研究用途のみ） |
@@ -135,7 +136,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Audio8-TTS", "Bark", "Breeze-TTS-2", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "FireRedTTS2", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "IndexTTS2", "Irodori-TTS", "Irodori-TTS-Anime", "Irodori-TTS-Lite", "Irodori-TTS-MF", "KittenTTS", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "ZeroTTS", "Zonos", "ZONOS2"]
+ENGINE = "Kokoro"  #@param ["Audio8-TTS", "Bark", "Breeze-TTS-2", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "FireRedTTS2", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "IndexTTS2", "Irodori-TTS", "Irodori-TTS-Anime", "Irodori-TTS-Large", "Irodori-TTS-Lite", "Irodori-TTS-MF", "KittenTTS", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "ZeroTTS", "Zonos", "ZONOS2"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -207,6 +208,20 @@ IRODORI_MODEL_PRECISION = "fp32"  #@param ["fp32", "bf16", "fp16"]
 IRODORI_CODEC_PRECISION = "fp32"  #@param ["fp32", "bf16", "fp16"]
 IRODORI_PROMPT_WAV = ""  #@param {type:"string"}
 IRODORI_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+
+#@markdown ---
+#@markdown Irodori-TTS-Large (3.29B Japanese TTS, L4 GPU recommended)
+#@markdown - `voice="default"`: plain TTS without `instructions`, text-based Voice Design with `instructions`.
+#@markdown - `voice="clone"`: Voice Clone without `instructions`, style-controlled cloning with `instructions`; requires a reference WAV but no transcript.
+#@markdown - The default is the official INT8 weight-only variant (~3.66 GiB) with BF16 computation. The full FP32 checkpoint is ~12.25 GiB.
+#@markdown - Code and codec: MIT. Weights: Gemma Terms of Use because the text/caption encoder derives from T5Gemma 2. Commercial use is not prohibited, but redistribution and hosted-service use must comply with the Gemma terms. The model card also prohibits unauthorized impersonation and misleading synthetic speech.
+IRODORI_LARGE_HF_CHECKPOINT = "Aratako/Irodori-TTS-v4-Large-Quantized/int8-weight-only"  #@param ["Aratako/Irodori-TTS-v4-Large-Quantized/int8-weight-only", "Aratako/Irodori-TTS-v4-Large-Quantized/int4-weight-only", "Aratako/Irodori-TTS-v4-Large-Quantized/float8-weight-only", "Aratako/Irodori-TTS-v4-Large"]
+IRODORI_LARGE_CODEC_REPO = "Aratako/Semantic-DACVAE-Japanese-32dim"  #@param {type:"string"}
+IRODORI_LARGE_MODEL_PRECISION = "bf16"  #@param ["bf16"]
+IRODORI_LARGE_CODEC_PRECISION = "bf16"  #@param ["bf16", "fp32"]
+IRODORI_LARGE_PROMPT_WAV = ""  #@param {type:"string"}
+IRODORI_LARGE_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+IRODORI_LARGE_DEFAULT_INSTRUCTIONS = ""  #@param {type:"string"}
 
 #@markdown ---
 #@markdown Irodori-TTS-MF (official faster v4.1-Small, GPU required)
@@ -876,6 +891,20 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         IRODORI_PROMPT_WAV,
         "--irodori-default-voice",
         IRODORI_DEFAULT_VOICE,
+        "--irodori-large-hf-checkpoint",
+        IRODORI_LARGE_HF_CHECKPOINT,
+        "--irodori-large-codec-repo",
+        IRODORI_LARGE_CODEC_REPO,
+        "--irodori-large-model-precision",
+        IRODORI_LARGE_MODEL_PRECISION,
+        "--irodori-large-codec-precision",
+        IRODORI_LARGE_CODEC_PRECISION,
+        "--irodori-large-prompt-wav",
+        IRODORI_LARGE_PROMPT_WAV,
+        "--irodori-large-default-voice",
+        IRODORI_LARGE_DEFAULT_VOICE,
+        "--irodori-large-default-instructions",
+        IRODORI_LARGE_DEFAULT_INSTRUCTIONS,
         "--irodori-mf-hf-checkpoint",
         IRODORI_MF_HF_CHECKPOINT,
         "--irodori-mf-codec-repo",
@@ -1542,7 +1571,7 @@ NVIDIA が Kokoro-82M を ONNX 化したモデル（[nvidia/kokoro-82M-onnx-opt]
 - **Duration Predictor**: リポジトリ名から推測せず、チェックポイントのメタデータを参照します。これにより v4.1 / v4 / v3 は出力長を自動推定し、従来の固定長チェックポイントは 30 秒枠を維持します。
 - **SilentCipher ウォーターマーク統合**: v4.1 / v4 / v3 は上流の `InferenceRuntime` 内で [SilentCipher](https://github.com/sony/silentcipher) を初期化します。SilentCipher の重みが利用できる場合、生成音声にはウォーターマークが入ります。**ウォーターマークを除去しないでください**（モデルリリースの一部です）。
 
-v4.1-Small は、v4-Small の VoiceDesign caption、スタイルを指定できる Voice cloning、合計最大 120 秒の参照音声への対応を引き継いでいます。このラッパーでは、起動時に参照音声を設定できます。caption の指定は、引き続き `/v1/audio/speech` の対象外です。参照 WAV を設定した場合だけ `/v1/voices` に `clone` を表示します。設定せずに `clone` を要求した場合は、標準音声へ自動で切り替えず HTTP 400 を返します。FP32 チェックポイントは約 3 GB のため GPU 利用を推奨します。v4.1-Small のデフォルト構成は NVIDIA L4 の Colab ランタイムでエンドツーエンド検証済みです。インストールと起動が完了し、OpenAI 互換 `/v1/audio/speech` がローカルおよび公開 `trycloudflare` 経由で正常な 48 kHz モノラル WAV を返すことを確認しました。従来の v4-Small も引き続き選択でき、以前の検証では上流ランタイムを直接使用した caption-only の VoiceDesign も確認しています。
+v4.1-Small は、v4-Small の VoiceDesign caption、スタイルを指定できる Voice cloning、合計最大 120 秒の参照音声への対応を引き継いでいます。このラッパーでは、OpenAI Speech API の任意フィールド `instructions` を Irodori の caption に渡します。`default` で instructions なしなら通常TTS、ありならVoice Design、`clone` で instructions なしならVoice Clone、ありなら声質を保ったスタイル指定になります。参照 WAV を設定した場合だけ `/v1/voices` に `clone` を表示します。設定せずに `clone` を要求した場合は、標準音声へ自動で切り替えず HTTP 400 を返します。FP32 チェックポイントは約 3 GB のため GPU 利用を推奨します。v4.1-Small のデフォルト構成は NVIDIA L4 の Colab ランタイムでエンドツーエンド検証済みです。インストールと起動が完了し、OpenAI 互換 `/v1/audio/speech` がローカルおよび公開 `trycloudflare` 経由で正常な 48 kHz モノラル WAV を返すことを確認しました。従来の v4-Small も引き続き選択でき、以前の検証では上流ランタイムを直接使用した caption-only の VoiceDesign も確認しています。
 
 ### Irodori-TTS-Anime
 
@@ -1552,9 +1581,17 @@ OpenAI互換ラッパーが提供するのはtext-only・参照音声なしの�
 
 フル精度チェックポイントは約3.06GBです。本ColabラッパーではGPU必須です。デフォルト構成は NVIDIA L4 の Colab ランタイムでエンドツーエンド検証済みです。インストールと起動が完了し、ローカルおよび公開`trycloudflare`経由のリクエストが正常な48 kHzモノラルWAVを返すこと、未対応voiceが想定どおりHTTP 400を返すことを確認しました。上流コード、モデル重み、コーデックはいずれもMITです。元モデルと同じ、無断のなりすましや誤解を招くディープフェイクを禁止する倫理制限を引き継ぎ、生成音声には上流のSilentCipherウォーターマーク処理を維持します。
 
+### Irodori-TTS-Large
+
+公式の [`Aratako/Irodori-TTS-v4-Large`](https://huggingface.co/Aratako/Irodori-TTS-v4-Large) を使う独立エンジンです。v4の構成を約7.66億から32.9億パラメータへ拡大し、テキストとcaptionのエンコーダーにT5Gemma 2を採用しています。通常の日本語TTS、文章によるVoice Design、参照音声からのVoice Clone、クローンした声へのスタイル指定、絵文字による演技制御に対応します。参照音声は合計120秒まで使用でき、書き起こしは不要です。
+
+OpenAI互換APIでは、Breeze-TTS-2と同じ `voice` と `instructions` の組み合わせを使います。`default` でinstructionsなしなら通常TTS、ありならVoice Design、`clone` でinstructionsなしならVoice Clone、ありなら声質を保ったスタイル指定になります。`speed` は0.25から4.0まで受け付け、Irodoriのduration scaleへ反転して渡します。出力は48kHzで、上流のSilentCipherウォーターマーク処理を維持します。
+
+デフォルトは公式量子化版 [`Aratako/Irodori-TTS-v4-Large-Quantized`](https://huggingface.co/Aratako/Irodori-TTS-v4-Large-Quantized) の `int8-weight-only` です。チェックポイントは約3.66GiBで、演算にはBF16を使います。INT4、FP8、約12.25GiBのフル版も選択できます。コードとDACVAEコーデックはMITです。モデル重みには、T5Gemma 2由来の共有エンコーダーを含むためGemma利用規約が適用されます。商用利用は禁止されていませんが、再配布やHosted Serviceとして提供する場合はGemma規約に従う必要があります。モデルカードでは、本人の同意がない声の模倣、なりすまし、誤解を招く合成音声も禁止されています。
+
 ### Irodori-TTS-MF
 
-公式の [`Aratako/Irodori-TTS-v4.1-Small-MF`](https://huggingface.co/Aratako/Irodori-TTS-v4.1-Small-MF) を使用する独立エンジンです。v4.1-Small をもとに、通常 4 回の処理で音声を生成できるようにした高速版です。`IRODORI_MF_PROMPT_WAV` に参照音声を設定して `voice="clone"` を選ぶと、その話者に近い声を生成できます。参照音声の書き起こしは不要です。参照音声を使わない `voice="default"` も引き続き利用できます。参照音声を設定した場合だけ `/v1/voices` に `clone` を表示します。caption の指定は、引き続き対象外です。
+公式の [`Aratako/Irodori-TTS-v4.1-Small-MF`](https://huggingface.co/Aratako/Irodori-TTS-v4.1-Small-MF) を使用する独立エンジンです。v4.1-Small をもとに、通常 4 回の処理で音声を生成できるようにした高速版です。`IRODORI_MF_PROMPT_WAV` に参照音声を設定して `voice="clone"` を選ぶと、その話者に近い声を生成できます。参照音声の書き起こしは不要です。参照音声を使わない `voice="default"` も引き続き利用できます。参照音声を設定した場合だけ `/v1/voices` に `clone` を表示します。任意の `instructions` はcaptionとして渡し、Voice Designまたはクローンした声へのスタイル指定に使います。
 
 コード、モデル重み、既定のDACVAEコーデックはいずれもMITです。SilentCipherウォーターマークと、無断のなりすまし・誤解を招くディープフェイクを禁止する上流の倫理制限を維持します。NVIDIA L4で既定構成を検証し、公開`trycloudflare`経由でHTTP 200と正常な48kHzモノラルWAVが返ることを確認しました。
 
@@ -2237,6 +2274,7 @@ Colab T4 で確認済み: エンジン・`/v1` エンドポイント・trycloudf
 | Kokoro-ONNX | Apache 2.0 | Apache 2.0 | OK | NVIDIA による hexgrad/Kokoro-82M の ONNX 再配布。コード・重みとも Apache 2.0 |
 | Irodori-TTS | MIT | MIT (v1 / v2 / v3 / v4 / v4.1) | OK | なりすまし・ディープフェイク生成を禁止する倫理規定あり。V3/V4/V4.1 は SilentCipher ウォーターマーク同梱（除去禁止） |
 | Irodori-TTS-Anime | MIT (Aratako/Irodori-TTS) | MIT (`phasefield-audio/Irodori-TTS-v4.1-Anime`) | OK | v4.1-Small の非公式な第三者ファインチューニング。元モデルの倫理制限とSilentCipherウォーターマーク処理を継承 |
+| Irodori-TTS-Large | MIT (Aratako/Irodori-TTS) | Gemma Terms of Use（`Aratako/Irodori-TTS-v4-Large`および量子化版） | 条件付き | 商用利用は禁止されていない。再配布やHosted Serviceとしての提供ではGemma規約と禁止用途ポリシーへの対応が必要。本人の同意がない声の模倣や誤解を招く音声も禁止。SilentCipherウォーターマークを維持 |
 | Irodori-TTS-Lite | MIT | MIT (`kizuna-intelligence/Irodori-TTS-Lite-int4`, `kizuna-intelligence/Irodori-TTS-500M-v3-int4`) | OK | Irodori-TTS 用の int4 量子化ランタイム。Triton カーネル使用のため Linux + CUDA 必須。`fused_int4_linear.py` は OneCompression（Fujitsu Ltd., MIT）からベンダリング |
 | Irodori-TTS-MF | MIT (Aratako/Irodori-TTS) | MIT (`Aratako/Irodori-TTS-v4.1-Small-MF`) | OK | 公式の v4.1-Small 高速版。通常 4 回の処理で生成。倫理制限と SilentCipher ウォーターマークを維持 |
 | Piper | GPL-3.0 | MIT | 要注意 | デフォルト音声 `en_US-lessac-medium` の学習データ（Blizzard 2013）は研究目的限定・商用利用不可 |
@@ -2337,6 +2375,10 @@ Colab T4 で確認済み: エンジン・`/v1` エンドポイント・trycloudf
   https://huggingface.co/Aratako/Irodori-TTS-v4.1-Small
 - Irodori-TTS v4-Small weights（従来版）
   https://huggingface.co/Aratako/Irodori-TTS-v4-Small
+- Irodori-TTS v4-Large weights
+  https://huggingface.co/Aratako/Irodori-TTS-v4-Large
+- Irodori-TTS v4-Large quantized weights
+  https://huggingface.co/Aratako/Irodori-TTS-v4-Large-Quantized
 - Irodori-TTS v4.1 Anime weights (third-party fine-tune)
   https://huggingface.co/phasefield-audio/Irodori-TTS-v4.1-Anime
 - Irodori-TTS-Lite

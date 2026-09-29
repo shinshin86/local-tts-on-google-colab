@@ -8,7 +8,7 @@ from pathlib import Path
 from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from irodori_tts.inference_runtime import (
     InferenceRuntime,
@@ -35,6 +35,9 @@ ENGINE_NAME = os.environ.get("IRODORI_ENGINE_NAME", "Irodori-TTS")
 DEFAULT_VOICE_ONLY = os.environ.get("IRODORI_DEFAULT_VOICE_ONLY", "0") == "1"
 PROMPT_WAV = os.environ.get("IRODORI_PROMPT_WAV", "")
 DEFAULT_VOICE = os.environ.get("IRODORI_DEFAULT_VOICE", "default")
+DEFAULT_INSTRUCTIONS = os.environ.get("IRODORI_DEFAULT_INSTRUCTIONS", "")
+INSTRUCTIONS_ENABLED = os.environ.get("IRODORI_INSTRUCTIONS_ENABLED", "1") == "1"
+PROMPT_FLAG = os.environ.get("IRODORI_PROMPT_FLAG", "--irodori-prompt-wav")
 _num_steps = os.environ.get("IRODORI_NUM_STEPS", "40").strip()
 NUM_STEPS = int(_num_steps) if _num_steps else None
 
@@ -51,7 +54,7 @@ app.add_middleware(
     allow_credentials=False,
     allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"],
-    expose_headers=["x-openai-model", "x-openai-voice"],
+    expose_headers=["x-openai-model", "x-openai-voice", "x-irodori-mode"],
 )
 
 
@@ -59,8 +62,9 @@ class AudioSpeechRequest(BaseModel):
     model: str = OPENAI_MODEL_ID
     input: str
     voice: str | None = None
+    instructions: str | None = None
     response_format: str = "wav"
-    speed: float = 1.0
+    speed: float = Field(default=1.0, ge=0.25, le=4.0)
 
 
 _runtime = None
@@ -68,6 +72,23 @@ _runtime = None
 
 def clone_is_configured() -> bool:
     return bool(PROMPT_WAV)
+
+
+def resolve_instructions(value: str | None) -> str:
+    # An explicit empty string suppresses a configured startup default.
+    instructions = DEFAULT_INSTRUCTIONS.strip() if value is None else value.strip()
+    if instructions and not INSTRUCTIONS_ENABLED:
+        raise HTTPException(
+            status_code=400,
+            detail=f"{ENGINE_NAME} does not expose caption or instructions control.",
+        )
+    return instructions
+
+
+def resolve_mode(voice: str, instructions: str) -> str:
+    if voice == "clone":
+        return "direction" if instructions else "clone"
+    return "design" if instructions else "plain"
 
 
 def get_runtime():
@@ -100,7 +121,13 @@ async def unhandled_exception_handler(request: Request, exc: Exception):
 
 @app.get("/")
 def root():
-    return {"ok": True, "engine": ENGINE_NAME, "model": OPENAI_MODEL_ID}
+    return {
+        "ok": True,
+        "engine": ENGINE_NAME,
+        "model": OPENAI_MODEL_ID,
+        "default_voice": DEFAULT_VOICE,
+        "default_instructions_configured": bool(DEFAULT_INSTRUCTIONS),
+    }
 
 
 @app.get("/v1/models")
@@ -124,7 +151,18 @@ def list_voices():
         voices.append("clone")
     return {
         "object": "list",
-        "data": [{"id": voice, "object": "voice"} for voice in voices],
+        "data": [
+            {
+                "id": voice,
+                "object": "voice",
+                "description": (
+                    "Plain TTS, or Voice Design when instructions are provided."
+                    if voice == "default"
+                    else "Voice Clone, or style-controlled cloning when instructions are provided."
+                ),
+            }
+            for voice in voices
+        ],
     }
 
 
@@ -132,7 +170,11 @@ def list_voices():
 async def audio_speech(payload: AudioSpeechRequest):
     if payload.response_format.lower() != "wav":
         raise HTTPException(status_code=400, detail="This wrapper currently supports only wav.")
+    if not payload.input.strip():
+        raise HTTPException(status_code=400, detail="input must not be empty.")
+
     voice = payload.voice or DEFAULT_VOICE
+    instructions = resolve_instructions(payload.instructions)
     if DEFAULT_VOICE_ONLY and voice != "default":
         raise HTTPException(
             status_code=400,
@@ -141,14 +183,9 @@ async def audio_speech(payload: AudioSpeechRequest):
     if not DEFAULT_VOICE_ONLY and voice not in {"default", "clone"}:
         raise HTTPException(status_code=400, detail="voice must be 'default' or 'clone'.")
     if voice == "clone" and not clone_is_configured():
-        prompt_flag = (
-            "--irodori-mf-prompt-wav"
-            if ENGINE_NAME == "Irodori-TTS-MF"
-            else "--irodori-prompt-wav"
-        )
         raise HTTPException(
             status_code=400,
-            detail=f"voice='clone' requires {prompt_flag}.",
+            detail=f"voice='clone' requires {PROMPT_FLAG}.",
         )
 
     ref_path = Path(PROMPT_WAV).expanduser() if voice == "clone" else None
@@ -167,15 +204,21 @@ async def audio_speech(payload: AudioSpeechRequest):
             status_code=400,
             detail="The selected Irodori checkpoint does not support reference-audio conditioning.",
         )
+    if instructions and not runtime.model_cfg.use_caption_condition:
+        raise HTTPException(
+            status_code=400,
+            detail="The selected Irodori checkpoint does not support Voice Design instructions.",
+        )
     cfg_scale_text, _cfg_scale_caption, cfg_scale_speaker, _ = resolve_cfg_scales(
         cfg_guidance_mode="independent",
         cfg_scale_text=3.0,
         cfg_scale_caption=3.0,
         cfg_scale_speaker=5.0,
         cfg_scale=None,
-        use_caption_condition=False,
+        use_caption_condition=bool(instructions),
         use_speaker_condition=use_speaker_condition,
     )
+    mode = resolve_mode(voice, instructions)
 
     # Use checkpoint metadata instead of its versioned repo name. v3/v4/v4.1 expose a
     # Duration Predictor; legacy checkpoints fall back to their fixed 30-second slot.
@@ -183,6 +226,7 @@ async def audio_speech(payload: AudioSpeechRequest):
     result = runtime.synthesize(
         SamplingRequest(
             text=payload.input,
+            caption=instructions or None,
             ref_wav=None if ref_path is None else str(ref_path),
             ref_latent=None,
             no_ref=ref_path is None,
@@ -191,10 +235,13 @@ async def audio_speech(payload: AudioSpeechRequest):
             num_candidates=1,
             decode_mode="sequential",
             seconds=seconds,
+            duration_scale=1.0 / payload.speed,
             max_ref_seconds=None,
             max_text_len=None,
+            max_caption_len=None,
             num_steps=NUM_STEPS,
             cfg_scale_text=cfg_scale_text,
+            cfg_scale_caption=_cfg_scale_caption,
             cfg_scale_speaker=cfg_scale_speaker,
             cfg_guidance_mode="independent",
             cfg_scale=None,
@@ -232,5 +279,6 @@ async def audio_speech(payload: AudioSpeechRequest):
             "Content-Length": str(len(audio_bytes)),
             "x-openai-model": payload.model,
             "x-openai-voice": voice,
+            "x-irodori-mode": mode,
         },
     )

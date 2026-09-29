@@ -40,6 +40,8 @@ def resolve_selected_voice(settings: Settings) -> str:
         return settings.zerotts_default_voice
     if settings.engine == "Irodori-TTS":
         return settings.irodori_default_voice
+    if settings.engine == "Irodori-TTS-Large":
+        return settings.irodori_large_default_voice
     if settings.engine == "Irodori-TTS-MF":
         return settings.irodori_mf_default_voice
     if settings.engine == "Kokoro-ONNX":
@@ -804,6 +806,26 @@ def print_engine_voice_hints(settings: Settings):
         print("生成音声には上流ランタイムが SilentCipher ウォーターマークを適用します。")
         print("ライセンス: コード・v1/v2/v3/v4/v4.1 重み・既定コーデックはいずれも MIT。")
         print("乱用防止: なりすまし・ディープフェイク用途には使用しないでください。")
+    elif settings.engine == "Irodori-TTS-Large":
+        print("Irodori-TTS-Large は公式の約32.9億パラメータ日本語TTSです（48kHz）。")
+        print(f"モデル: {settings.irodori_large_hf_checkpoint}")
+        print(f"コーデック: {settings.irodori_large_codec_repo}")
+        print(
+            f"精度: model={settings.irodori_large_model_precision} / "
+            f"codec={settings.irodori_large_codec_precision}"
+        )
+        print(f"デフォルト voice: {settings.irodori_large_default_voice}")
+        print("voice='default': instructions なし=通常TTS、あり=Voice Design")
+        if settings.irodori_large_prompt_wav:
+            print("voice='clone': instructions なし=Voice Clone、あり=スタイル指定付きClone")
+            print(f"参照音声: {settings.irodori_large_prompt_wav}")
+        else:
+            print("clone は --irodori-large-prompt-wav を指定すると有効になります")
+        print("参照音声の書き起こしは不要です。複数の短い音声を合計30秒程度使う方法を上流は推奨しています。")
+        print("既定はINT8 weight-only量子化版です。L4ではBF16演算を使用します。")
+        print("生成音声には上流ランタイムがSilentCipherウォーターマークを適用します。")
+        print("ライセンス: コードはMIT、重みはGemma Terms of Use、既定コーデックはMITです。")
+        print("乱用防止: 本人の同意がない声の模倣、なりすまし、誤情報用途には使用しないでください。")
     elif settings.engine == "Irodori-TTS-Anime":
         print("Irodori-TTS-Anime は Irodori-TTS-v4.1-Small のアニメ調ファインチューニングです。")
         print("配布元: phasefield-audio（Aratako 公式モデルではない第三者配布）")
