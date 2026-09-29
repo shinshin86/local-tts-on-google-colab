@@ -16,7 +16,7 @@ Supported engines:
 | Kokoro-ONNX | Works | Japanese / English / Chinese and more | OK |
 | Irodori-TTS | Works on L4 (GPU required; v4.1-Small default, v4-Small selectable) | Japanese | OK |
 | Irodori-TTS-Anime | Works on L4 (GPU required, v4.1 Anime) | Japanese | OK |
-| Irodori-TTS-Large | Pending L4 verification (3.29B; INT8 weight-only default) | Japanese | Conditional (Gemma Terms) |
+| Irodori-TTS-Large | Works on L4 (3.29B; INT8 weight-only default; all four modes verified; ~7.3 GiB VRAM observed) | Japanese | Conditional (Gemma Terms) |
 | Irodori-TTS-Lite | Works (GPU required, ~1GB VRAM, int4-quantized) | Japanese | OK |
 | Irodori-TTS-MF | Works on L4 (GPU required, 4-step generation) | Japanese | OK |
 | Piper | Works | English (default) / multilingual | Not with defaults (default voice is research-only) |
@@ -1585,6 +1585,8 @@ The full-precision checkpoint is approximately 3.06 GB. GPU execution is require
 An independent engine for the official [`Aratako/Irodori-TTS-v4-Large`](https://huggingface.co/Aratako/Irodori-TTS-v4-Large). It scales the v4 architecture from approximately 766M to 3.29B parameters and uses a T5Gemma 2 text/caption encoder. The model supports Japanese plain TTS, text-described Voice Design, zero-shot Voice Clone, style-controlled cloning, emoji delivery controls, and up to 120 seconds of combined reference audio. A reference transcript is not required.
 
 The OpenAI-compatible interface follows the same `voice` and `instructions` convention as Breeze-TTS-2: `default` without instructions selects plain TTS, `default` with instructions selects Voice Design, `clone` without instructions selects Voice Clone, and `clone` with instructions applies caption-based style control to the cloned speaker. `speed` from 0.25 to 4.0 is converted to Irodori's inverse duration scale. Generated audio remains 48 kHz and retains the upstream SilentCipher watermark.
+
+The default INT8 configuration was verified end to end on an NVIDIA L4 Colab runtime through a public `trycloudflare` endpoint. Plain TTS, Voice Design, Voice Clone, and style-controlled cloning all returned HTTP 200 with valid 48 kHz mono WAV files. The four requests took 10.52, 18.85, 11.30, and 11.52 seconds respectively, including network transit, and GPU memory usage after generation was approximately 7.3 GiB. The Voice Design sample used an original synthetic anime-style voice as the cloning reference; no real person's voice was used.
 
 The default checkpoint is the official `int8-weight-only` variant from [`Aratako/Irodori-TTS-v4-Large-Quantized`](https://huggingface.co/Aratako/Irodori-TTS-v4-Large-Quantized). Its checkpoint is about 3.66 GiB and uses BF16 computation; INT4, FP8, and the approximately 12.25 GiB full checkpoint remain selectable. The code and DACVAE codec are MIT-licensed. The model weights are governed by the Gemma Terms of Use because the shared encoder derives from T5Gemma 2. Commercial use is not prohibited, but redistribution or operation as a hosted service must follow those terms. The model card separately prohibits unauthorized impersonation and misleading synthetic speech.
 

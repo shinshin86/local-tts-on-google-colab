@@ -16,7 +16,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | Kokoro-ONNX | 動作OK | 日本語 / 英語 / 中国語 他 | OK |
 | Irodori-TTS | L4 で動作確認済み（GPU 必須、デフォルトは v4.1-Small、v4-Small も選択可能） | 日本語 | OK |
 | Irodori-TTS-Anime | L4 で動作確認済み（GPU 必須、v4.1 Anime） | 日本語 | OK |
-| Irodori-TTS-Large | L4 検証予定（3.29B、デフォルトは INT8 weight-only） | 日本語 | 条件付き（Gemma規約） |
+| Irodori-TTS-Large | L4 で動作確認済み（3.29B、デフォルトは INT8 weight-only、4モード検証済み、使用VRAM約7.3GiB） | 日本語 | 条件付き（Gemma規約） |
 | Irodori-TTS-Lite | 動作OK（GPU 必須、VRAM ~1GB、int4 量子化） | 日本語 | OK |
 | Irodori-TTS-MF | L4 で動作確認済み（GPU 必須、通常 4 回の高速生成） | 日本語 | OK |
 | Piper | 動作OK | 英語（デフォルト）/ 多言語 | 既定は不可（既定音声が研究用途のみ） |
@@ -1586,6 +1586,8 @@ OpenAI互換ラッパーが提供するのはtext-only・参照音声なしの�
 公式の [`Aratako/Irodori-TTS-v4-Large`](https://huggingface.co/Aratako/Irodori-TTS-v4-Large) を使う独立エンジンです。v4の構成を約7.66億から32.9億パラメータへ拡大し、テキストとcaptionのエンコーダーにT5Gemma 2を採用しています。通常の日本語TTS、文章によるVoice Design、参照音声からのVoice Clone、クローンした声へのスタイル指定、絵文字による演技制御に対応します。参照音声は合計120秒まで使用でき、書き起こしは不要です。
 
 OpenAI互換APIでは、Breeze-TTS-2と同じ `voice` と `instructions` の組み合わせを使います。`default` でinstructionsなしなら通常TTS、ありならVoice Design、`clone` でinstructionsなしならVoice Clone、ありなら声質を保ったスタイル指定になります。`speed` は0.25から4.0まで受け付け、Irodoriのduration scaleへ反転して渡します。出力は48kHzで、上流のSilentCipherウォーターマーク処理を維持します。
+
+デフォルトのINT8構成は、NVIDIA L4のColabランタイムから公開`trycloudflare`エンドポイントまで通して検証しました。通常TTS、Voice Design、Voice Clone、クローンした声へのスタイル指定は、いずれもHTTP 200で正常な48kHzモノラルWAVを返しました。通信時間を含む所要時間は順に10.52秒、18.85秒、11.30秒、11.52秒で、生成後のGPUメモリ使用量は約7.3GiBでした。Voice CloneにはVoice Designで作った架空のアニメ風音声を使い、実在する人物の声は使用していません。
 
 デフォルトは公式量子化版 [`Aratako/Irodori-TTS-v4-Large-Quantized`](https://huggingface.co/Aratako/Irodori-TTS-v4-Large-Quantized) の `int8-weight-only` です。チェックポイントは約3.66GiBで、演算にはBF16を使います。INT4、FP8、約12.25GiBのフル版も選択できます。コードとDACVAEコーデックはMITです。モデル重みには、T5Gemma 2由来の共有エンコーダーを含むためGemma利用規約が適用されます。商用利用は禁止されていませんが、再配布やHosted Serviceとして提供する場合はGemma規約に従う必要があります。モデルカードでは、本人の同意がない声の模倣、なりすまし、誤解を招く合成音声も禁止されています。
 

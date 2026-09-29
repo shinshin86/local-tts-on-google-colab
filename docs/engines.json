@@ -1427,8 +1427,8 @@
     {
       "id": "Irodori-TTS-Large",
       "title": "Irodori-TTS-Large (3.29B Japanese TTS, L4 GPU recommended)",
-      "status": "Pending L4 verification (3.29B; INT8 weight-only default)",
-      "status_ja": "L4 検証予定（3.29B、デフォルトは INT8 weight-only）",
+      "status": "Works on L4 (3.29B; INT8 weight-only default; all four modes verified; ~7.3 GiB VRAM observed)",
+      "status_ja": "L4 で動作確認済み（3.29B、デフォルトは INT8 weight-only、4モード検証済み、使用VRAM約7.3GiB）",
       "languages": "Japanese",
       "languages_ja": "日本語",
       "description": "An independent engine for the official [`Aratako/Irodori-TTS-v4-Large`](https://huggingface.co/Aratako/Irodori-TTS-v4-Large). It scales the v4 architecture from approximately 766M to 3.29B parameters and uses a T5Gemma 2 text/caption encoder. The model supports Japanese plain TTS, text-described Voice Design, zero-shot Voice Clone, style-controlled cloning, emoji delivery controls, and up to 120 seconds of combined reference audio. A reference transcript is not required.",
