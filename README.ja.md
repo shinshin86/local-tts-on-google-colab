@@ -11,6 +11,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | エンジン | Colab 動作確認 | 言語 | 商用利用 |
 |---|---|---|---|
 | Audio8-TTS | L4 で動作確認済み（GPU 推奨、ゼロショット Voice cloning） | 日本語 / 英語 / 中国語 他 11言語 | OK |
+| Breeze-TTS-2 | Colab 未検証（NVIDIA GPU 必須、eager経路、12GB以上推奨） | 英語 / 中国語 | セルフホストでは不可 |
 | Kokoro | 動作OK | 日本語 / 英語 / 中国語 他 | OK |
 | Kokoro-ONNX | 動作OK | 日本語 / 英語 / 中国語 他 | OK |
 | Irodori-TTS | L4 で動作確認済み（GPU 必須、デフォルトは v4.1-Small、v4-Small も選択可能） | 日本語 | OK |
@@ -134,7 +135,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Audio8-TTS", "Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "FireRedTTS2", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "IndexTTS2", "Irodori-TTS", "Irodori-TTS-Anime", "Irodori-TTS-Lite", "Irodori-TTS-MF", "KittenTTS", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "ZeroTTS", "Zonos", "ZONOS2"]
+ENGINE = "Kokoro"  #@param ["Audio8-TTS", "Bark", "Breeze-TTS-2", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "FireRedTTS2", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "IndexTTS2", "Irodori-TTS", "Irodori-TTS-Anime", "Irodori-TTS-Lite", "Irodori-TTS-MF", "KittenTTS", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "ZeroTTS", "Zonos", "ZONOS2"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -156,6 +157,21 @@ AUDIO8_MAX_NEW_TOKENS = 1024  #@param {type:"integer"}
 AUDIO8_TEMPERATURE = 0.8  #@param {type:"number"}
 AUDIO8_TOP_P = 0.95  #@param {type:"number"}
 AUDIO8_TOP_K = 50  #@param {type:"integer"}
+
+#@markdown ---
+#@markdown Breeze-TTS-2 (English/Chinese, NVIDIA GPU required)
+#@markdown - `voice="default"`: plain TTS without `instructions`, Voice Design with `instructions`.
+#@markdown - `voice="clone"`: Voice Clone without `instructions`, Voice Direction with `instructions`; requires both a reference WAV and its exact transcript.
+#@markdown - Uses the upstream eager path (~7.7GB VRAM; 12GB+ recommended). This wrapper currently returns WAV and accepts `speed=1.0` only; describe pace in `instructions`.
+#@markdown - Code: Apache-2.0. Weights, derivatives, and self-hosted outputs: BreezeBlue Research and Non-Commercial License v1.1. No commercial use; use reference voices only with consent.
+BREEZE_TTS2_HF_MODEL = "BreezeBlue/Breeze-TTS-2"  #@param {type:"string"}
+BREEZE_TTS2_PROMPT_WAV = ""  #@param {type:"string"}
+BREEZE_TTS2_PROMPT_TEXT = ""  #@param {type:"string"}
+BREEZE_TTS2_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+BREEZE_TTS2_DEFAULT_INSTRUCTIONS = ""  #@param {type:"string"}
+BREEZE_TTS2_SEED = 42  #@param {type:"integer"}
+BREEZE_TTS2_INSTRUCTION_CFG_SCALE = 4.0  #@param {type:"number"}
+BREEZE_TTS2_BACKEND_PORT = 5007  #@param {type:"integer"}
 
 #@markdown ---
 #@markdown ZeroTTS (Vietnamese, CPU/ONNX, MIT)
@@ -810,6 +826,22 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         str(AUDIO8_TOP_P),
         "--audio8-top-k",
         str(AUDIO8_TOP_K),
+        "--breeze-tts2-hf-model",
+        BREEZE_TTS2_HF_MODEL,
+        "--breeze-tts2-prompt-wav",
+        BREEZE_TTS2_PROMPT_WAV,
+        "--breeze-tts2-prompt-text",
+        BREEZE_TTS2_PROMPT_TEXT,
+        "--breeze-tts2-default-voice",
+        BREEZE_TTS2_DEFAULT_VOICE,
+        "--breeze-tts2-default-instructions",
+        BREEZE_TTS2_DEFAULT_INSTRUCTIONS,
+        "--breeze-tts2-seed",
+        str(BREEZE_TTS2_SEED),
+        "--breeze-tts2-instruction-cfg-scale",
+        str(BREEZE_TTS2_INSTRUCTION_CFG_SCALE),
+        "--breeze-tts2-backend-port",
+        str(BREEZE_TTS2_BACKEND_PORT),
         "--zerotts-hf-model",
         ZEROTTS_HF_MODEL,
         "--zerotts-default-voice",
@@ -1454,6 +1486,7 @@ main()
 - `model`
 - `input`
 - `voice`
+- `instructions`（Breeze-TTS-2のVoice Design / Direction）
 - `speed`
 - `response_format`
 
@@ -1468,6 +1501,23 @@ main()
 OpenAI互換ラッパーでは、参照音声なしの`voice="default"`と、ゼロショットVoice cloningの`voice="clone"`を提供します。cloneは`AUDIO8_PROMPT_WAV`と、その音声に一致する書き起こし`AUDIO8_PROMPT_TEXT`の両方を設定した場合だけ有効になり、未設定時は暗黙にdefaultへ切り替えずHTTP 400を返します。ColabではCUDA GPU + BF16を既定とし、CPU時はFP32を使用します。NVIDIA L4で既定構成を検証し、公開`trycloudflare`経由でHTTP 200と正常な44.1kHzモノラルWAVが返ること、`/v1/voices`に`default`が公開されることを確認しました。
 
 コードと重みはいずれもApache-2.0です。必要に応じて上流`NOTICE`の帰属表示を維持してください。Voice cloningには本人の同意を得て、必要な場面では合成音声であることを明示してください。
+
+### Breeze-TTS-2
+
+[Breeze TTS 2](https://github.com/breezeblue-ai/breeze-tts) は、通常TTS、自然言語で声を指定するVoice Design、参照音声によるVoice Clone、クローン音声の話し方を指示するVoice Directionを備えた英語・中国語対応モデルです。この実装では、ほかのローカルエンジンと同じ`voice`の扱いを維持しつつ、OpenAI Speech APIの任意フィールド`instructions`を追加しています。
+
+| `voice` | `instructions` | Breezeのモード |
+|---|---|---|
+| `default` | 省略または空 | 通常TTS |
+| `default` | 指定あり | Voice Design |
+| `clone` | 省略または空 | Voice Clone |
+| `clone` | 指定あり | Voice Direction |
+
+`voice="clone"`は、`BREEZE_TTS2_PROMPT_WAV`と参照音声に一致する書き起こし`BREEZE_TTS2_PROMPT_TEXT`の両方を設定した場合だけ利用できます。`BREEZE_TTS2_DEFAULT_INSTRUCTIONS`で起動時の既定指示を設定でき、リクエストで明示的に空の`instructions`を渡すと無効化できます。Breeze固有の任意JSONフィールド`seed`と`cfg_scale`にも対応します。現在はWAV出力と`speed=1.0`だけに対応し、速度は`instructions`内で指示します。笑い、咳、ため息など、上流モデルが対応するイベント表現も上流の記法に従って合成テキストへ含められます。
+
+インストーラーは上流の推論コードと既定モデル`BreezeBlue/Breeze-TTS-2`のリビジョンを固定し、上流のeager attentionサーバーを使用します。eager経路のVRAM使用量は約7.7GBで、上流は12GB以上のNVIDIA GPUを推奨しています。より高速な最適化経路はVRAM要件が大きいため、この実装では有効化していません。
+
+**ライセンス上の注意:** 上流ソースコードはApache-2.0ですが、公開モデル重み、派生物、セルフホストで生成した音声には**BreezeBlue Research and Non-Commercial License v1.1**が適用されます。公開重みやセルフホスト出力を商用利用するには別途許諾が必要です。有料のBreezeBlueホストサービスで生成した出力には、ホストサービス側の別条件が適用されます。Voice cloningには話者本人の同意を得た音声だけを使用してください。
 
 ### Kokoro
 
@@ -2180,6 +2230,7 @@ Colab T4 で確認済み: エンジン・`/v1` エンドポイント・trycloudf
 | エンジン | コード | モデル重み | 商用利用 | 備考 |
 |---|---|---|---|---|
 | Audio8-TTS | Apache-2.0 | Apache-2.0 (`Audio8/Audio8-TTS-Preview-0.6b`) | OK | 0.6B多言語Preview、ゼロショットVoice cloning対応。上流NOTICEの帰属表示を維持し、音声クローンには本人の同意が必要 |
+| Breeze-TTS-2 | Apache-2.0 | BreezeBlue Research and Non-Commercial License v1.1 | **不可** | 英語/中国語、Voice Design / Clone / Direction対応。公開重み・派生物・セルフホスト出力は非商用限定。有料ホスト出力は別のサービス規約に従う。クローン音声には本人同意が必要 |
 | Kokoro | Apache 2.0 | Apache 2.0 | OK | |
 | Kokoro-ONNX | Apache 2.0 | Apache 2.0 | OK | NVIDIA による hexgrad/Kokoro-82M の ONNX 再配布。コード・重みとも Apache 2.0 |
 | Irodori-TTS | MIT | MIT (v1 / v2 / v3 / v4 / v4.1) | OK | なりすまし・ディープフェイク生成を禁止する倫理規定あり。V3/V4/V4.1 は SilentCipher ウォーターマーク同梱（除去禁止） |
@@ -2274,6 +2325,10 @@ Colab T4 で確認済み: エンジン・`/v1` エンドポイント・trycloudf
   https://github.com/Audio8-AI/Audio8_TTS
 - Audio8-TTS Preview 0.6B weights
   https://huggingface.co/Audio8/Audio8-TTS-Preview-0.6b
+- Breeze TTS 2
+  https://github.com/breezeblue-ai/breeze-tts
+- Breeze TTS 2 weights / license
+  https://huggingface.co/BreezeBlue/Breeze-TTS-2
 - Irodori-TTS
   https://github.com/Aratako/Irodori-TTS
 - Irodori-TTS v4.1-Small weights（デフォルト）

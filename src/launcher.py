@@ -34,6 +34,8 @@ def resolve_selected_voice(settings: Settings) -> str:
         return settings.kokoro_default_voice
     if settings.engine == "Audio8-TTS":
         return settings.audio8_default_voice
+    if settings.engine == "Breeze-TTS-2":
+        return settings.breeze_tts2_default_voice
     if settings.engine == "ZeroTTS":
         return settings.zerotts_default_voice
     if settings.engine == "Irodori-TTS":
@@ -185,6 +187,18 @@ def print_engine_voice_hints(settings: Settings):
         print("対応言語: 広東語、中国語、オランダ語、英語、フランス語、ドイツ語、イタリア語、日本語、韓国語、ポーランド語、スペイン語")
         print("注意: GPU推奨。入力は150文字以内が上流推奨です。参照音声は本人の同意を得て使用してください。")
         print("ライセンス: コード・重みとも Apache-2.0（商用利用可、NOTICEの帰属表示を確認）。")
+    elif settings.engine == "Breeze-TTS-2":
+        print("Breeze-TTS-2 は英語・中国語対応の Voice Design / Voice Clone TTS です。")
+        print(f"モデル: {settings.breeze_tts2_hf_model}")
+        print(f"デフォルト voice: {settings.breeze_tts2_default_voice}")
+        print("voice='default': instructions なし=通常TTS、あり=Voice Design")
+        if settings.breeze_tts2_prompt_wav and settings.breeze_tts2_prompt_text:
+            print("voice='clone': instructions なし=Voice Clone、あり=Voice Direction")
+            print(f"参照音声: {settings.breeze_tts2_prompt_wav}")
+        else:
+            print("clone は --breeze-tts2-prompt-wav / --breeze-tts2-prompt-text で有効になります")
+        print("注意: eager 推論で約7.7GB VRAM、12GB以上のNVIDIA GPUを推奨します。")
+        print("ライセンス: コードはApache-2.0。重み・派生物・セルフホスト出力は研究・非商用限定です。")
     elif settings.engine == "ZeroTTS":
         print("ZeroTTS はベトナム語向けの軽量ONNX TTSです（48kHz、CPU動作、MIT）。")
         print(f"モデル: {settings.zerotts_hf_model}")

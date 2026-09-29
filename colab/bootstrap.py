@@ -106,6 +106,16 @@ def parse_args():
     parser.add_argument("--audio8-temperature", type=float, default=0.8)
     parser.add_argument("--audio8-top-p", type=float, default=0.95)
     parser.add_argument("--audio8-top-k", type=int, default=50)
+    parser.add_argument("--breeze-tts2-hf-model", default="BreezeBlue/Breeze-TTS-2")
+    parser.add_argument("--breeze-tts2-prompt-wav", default="")
+    parser.add_argument("--breeze-tts2-prompt-text", default="")
+    parser.add_argument(
+        "--breeze-tts2-default-voice", default="default", choices=["default", "clone"]
+    )
+    parser.add_argument("--breeze-tts2-default-instructions", default="")
+    parser.add_argument("--breeze-tts2-seed", type=int, default=42)
+    parser.add_argument("--breeze-tts2-instruction-cfg-scale", type=float, default=4.0)
+    parser.add_argument("--breeze-tts2-backend-port", type=int, default=5007)
     parser.add_argument("--zerotts-hf-model", default="zeroweight-ai/ZeroTTS")
     parser.add_argument("--zerotts-default-voice", default="maichi")
     parser.add_argument("--zerotts-cfg-scale", type=float, default=1.0)
@@ -442,6 +452,14 @@ def main():
         audio8_temperature=args.audio8_temperature,
         audio8_top_p=args.audio8_top_p,
         audio8_top_k=args.audio8_top_k,
+        breeze_tts2_hf_model=args.breeze_tts2_hf_model,
+        breeze_tts2_prompt_wav=args.breeze_tts2_prompt_wav,
+        breeze_tts2_prompt_text=args.breeze_tts2_prompt_text,
+        breeze_tts2_default_voice=args.breeze_tts2_default_voice,
+        breeze_tts2_default_instructions=args.breeze_tts2_default_instructions,
+        breeze_tts2_seed=args.breeze_tts2_seed,
+        breeze_tts2_instruction_cfg_scale=args.breeze_tts2_instruction_cfg_scale,
+        breeze_tts2_backend_port=args.breeze_tts2_backend_port,
         zerotts_hf_model=args.zerotts_hf_model,
         zerotts_default_voice=args.zerotts_default_voice,
         zerotts_cfg_scale=args.zerotts_cfg_scale,

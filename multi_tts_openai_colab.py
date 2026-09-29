@@ -11,7 +11,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Audio8-TTS", "Bark", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "FireRedTTS2", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "IndexTTS2", "Irodori-TTS", "Irodori-TTS-Anime", "Irodori-TTS-Lite", "Irodori-TTS-MF", "KittenTTS", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "ZeroTTS", "Zonos", "ZONOS2"]
+ENGINE = "Kokoro"  #@param ["Audio8-TTS", "Bark", "Breeze-TTS-2", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "FireRedTTS2", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "IndexTTS2", "Irodori-TTS", "Irodori-TTS-Anime", "Irodori-TTS-Lite", "Irodori-TTS-MF", "KittenTTS", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "ZeroTTS", "Zonos", "ZONOS2"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -33,6 +33,21 @@ AUDIO8_MAX_NEW_TOKENS = 1024  #@param {type:"integer"}
 AUDIO8_TEMPERATURE = 0.8  #@param {type:"number"}
 AUDIO8_TOP_P = 0.95  #@param {type:"number"}
 AUDIO8_TOP_K = 50  #@param {type:"integer"}
+
+#@markdown ---
+#@markdown Breeze-TTS-2 (English/Chinese, NVIDIA GPU required)
+#@markdown - `voice="default"`: plain TTS without `instructions`, Voice Design with `instructions`.
+#@markdown - `voice="clone"`: Voice Clone without `instructions`, Voice Direction with `instructions`; requires both a reference WAV and its exact transcript.
+#@markdown - Uses the upstream eager path (~7.7GB VRAM; 12GB+ recommended). This wrapper currently returns WAV and accepts `speed=1.0` only; describe pace in `instructions`.
+#@markdown - Code: Apache-2.0. Weights, derivatives, and self-hosted outputs: BreezeBlue Research and Non-Commercial License v1.1. No commercial use; use reference voices only with consent.
+BREEZE_TTS2_HF_MODEL = "BreezeBlue/Breeze-TTS-2"  #@param {type:"string"}
+BREEZE_TTS2_PROMPT_WAV = ""  #@param {type:"string"}
+BREEZE_TTS2_PROMPT_TEXT = ""  #@param {type:"string"}
+BREEZE_TTS2_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+BREEZE_TTS2_DEFAULT_INSTRUCTIONS = ""  #@param {type:"string"}
+BREEZE_TTS2_SEED = 42  #@param {type:"integer"}
+BREEZE_TTS2_INSTRUCTION_CFG_SCALE = 4.0  #@param {type:"number"}
+BREEZE_TTS2_BACKEND_PORT = 5007  #@param {type:"integer"}
 
 #@markdown ---
 #@markdown ZeroTTS (Vietnamese, CPU/ONNX, MIT)
@@ -687,6 +702,22 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         str(AUDIO8_TOP_P),
         "--audio8-top-k",
         str(AUDIO8_TOP_K),
+        "--breeze-tts2-hf-model",
+        BREEZE_TTS2_HF_MODEL,
+        "--breeze-tts2-prompt-wav",
+        BREEZE_TTS2_PROMPT_WAV,
+        "--breeze-tts2-prompt-text",
+        BREEZE_TTS2_PROMPT_TEXT,
+        "--breeze-tts2-default-voice",
+        BREEZE_TTS2_DEFAULT_VOICE,
+        "--breeze-tts2-default-instructions",
+        BREEZE_TTS2_DEFAULT_INSTRUCTIONS,
+        "--breeze-tts2-seed",
+        str(BREEZE_TTS2_SEED),
+        "--breeze-tts2-instruction-cfg-scale",
+        str(BREEZE_TTS2_INSTRUCTION_CFG_SCALE),
+        "--breeze-tts2-backend-port",
+        str(BREEZE_TTS2_BACKEND_PORT),
         "--zerotts-hf-model",
         ZEROTTS_HF_MODEL,
         "--zerotts-default-voice",
