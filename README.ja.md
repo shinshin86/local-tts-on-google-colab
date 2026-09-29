@@ -11,7 +11,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | エンジン | Colab 動作確認 | 言語 | 商用利用 |
 |---|---|---|---|
 | Audio8-TTS | L4 で動作確認済み（GPU 推奨、ゼロショット Voice cloning） | 日本語 / 英語 / 中国語 他 11言語 | OK |
-| Breeze-TTS-2 | Colab 未検証（NVIDIA GPU 必須、eager経路、12GB以上推奨） | 英語 / 中国語 | セルフホストでは不可 |
+| Breeze-TTS-2 | L4 で動作確認済み（eager経路、約8.9GB VRAM、4モード検証済み） | 英語 / 中国語 | セルフホストでは不可 |
 | Kokoro | 動作OK | 日本語 / 英語 / 中国語 他 | OK |
 | Kokoro-ONNX | 動作OK | 日本語 / 英語 / 中国語 他 | OK |
 | Irodori-TTS | L4 で動作確認済み（GPU 必須、デフォルトは v4.1-Small、v4-Small も選択可能） | 日本語 | OK |
@@ -1516,6 +1516,8 @@ OpenAI互換ラッパーでは、参照音声なしの`voice="default"`と、ゼ
 `voice="clone"`は、`BREEZE_TTS2_PROMPT_WAV`と参照音声に一致する書き起こし`BREEZE_TTS2_PROMPT_TEXT`の両方を設定した場合だけ利用できます。`BREEZE_TTS2_DEFAULT_INSTRUCTIONS`で起動時の既定指示を設定でき、リクエストで明示的に空の`instructions`を渡すと無効化できます。Breeze固有の任意JSONフィールド`seed`と`cfg_scale`にも対応します。現在はWAV出力と`speed=1.0`だけに対応し、速度は`instructions`内で指示します。笑い、咳、ため息など、上流モデルが対応するイベント表現も上流の記法に従って合成テキストへ含められます。
 
 インストーラーは上流の推論コードと既定モデル`BreezeBlue/Breeze-TTS-2`のリビジョンを固定し、上流のeager attentionサーバーを使用します。eager経路のVRAM使用量は約7.7GBで、上流は12GB以上のNVIDIA GPUを推奨しています。より高速な最適化経路はVRAM要件が大きいため、この実装では有効化していません。
+
+ColabのNVIDIA L4で、公開`trycloudflare` URLまで含めて動作を確認しました。通常TTS、Voice Design、Voice Clone、Voice Directionの4モードすべてがHTTP 200となり、24kHz mono PCM16のWAVを返しました。推論後のGPUメモリ使用量は約8.9GBでした。CloneとDirectionでは、今回生成した音声を参照音声として使い、その合成に用いた文章を正確な書き起こしとして指定しました。
 
 **ライセンス上の注意:** 上流ソースコードはApache-2.0ですが、公開モデル重み、派生物、セルフホストで生成した音声には**BreezeBlue Research and Non-Commercial License v1.1**が適用されます。公開重みやセルフホスト出力を商用利用するには別途許諾が必要です。有料のBreezeBlueホストサービスで生成した出力には、ホストサービス側の別条件が適用されます。Voice cloningには話者本人の同意を得た音声だけを使用してください。
 

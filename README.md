@@ -11,7 +11,7 @@ Supported engines:
 | Engine | Colab Status | Languages | Commercial use |
 |---|---|---|---|
 | Audio8-TTS | Works on L4 (GPU recommended, zero-shot voice cloning) | Japanese / English / Chinese and 11 languages | OK |
-| Breeze-TTS-2 | Not yet verified on Colab (NVIDIA GPU required; eager path, 12GB+ recommended) | English / Chinese | Not allowed for self-hosted use |
+| Breeze-TTS-2 | Works on L4 (eager path, ~8.9GB VRAM observed; all four modes verified) | English / Chinese | Not allowed for self-hosted use |
 | Kokoro | Works | Japanese / English / Chinese and more | OK |
 | Kokoro-ONNX | Works | Japanese / English / Chinese and more | OK |
 | Irodori-TTS | Works on L4 (GPU required; v4.1-Small default, v4-Small selectable) | Japanese | OK |
@@ -1515,6 +1515,8 @@ Code and weights are Apache-2.0 and the upstream `NOTICE` must be retained where
 `voice="clone"` is exposed only when both `BREEZE_TTS2_PROMPT_WAV` and the exact reference transcript in `BREEZE_TTS2_PROMPT_TEXT` are configured. `BREEZE_TTS2_DEFAULT_INSTRUCTIONS` can set a startup default, while an explicit empty `instructions` value disables it for a request. The optional Breeze-specific JSON fields `seed` and `cfg_scale` are also accepted. This wrapper currently returns WAV only and accepts `speed=1.0`; describe the desired pace in `instructions` instead. Inline events supported by the upstream model, such as laughter, coughing, or sighing, can be included in the synthesis text according to the upstream syntax.
 
 The installer pins both the upstream inference code and the default `BreezeBlue/Breeze-TTS-2` model revision, then uses the upstream eager-attention server. The eager path uses about 7.7GB of VRAM and upstream recommends a 12GB-or-larger NVIDIA GPU. The faster optimized path is not enabled because its VRAM requirement is substantially higher.
+
+The integration was verified end to end on a Colab NVIDIA L4 through a public `trycloudflare` URL. Plain TTS, Voice Design, Voice Clone, and Voice Direction all returned HTTP 200 with valid 24kHz mono PCM16 WAV files; observed GPU memory after inference was approximately 8.9GB. Clone and Direction were tested with a generated, consent-safe reference clip and its exact transcript.
 
 **License warning:** upstream source code is Apache-2.0, but the public model weights, derivatives, and audio generated through self-hosting are governed by the **BreezeBlue Research and Non-Commercial License v1.1**. Commercial use of the open weights or self-hosted outputs requires separate permission. Outputs generated through an active paid BreezeBlue hosted subscription are governed separately by the hosted service terms. Voice cloning must use audio for which the speaker has given consent.
 

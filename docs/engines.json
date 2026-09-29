@@ -265,8 +265,8 @@
     {
       "id": "Breeze-TTS-2",
       "title": "Breeze-TTS-2 (English/Chinese, NVIDIA GPU required)",
-      "status": "Not yet verified on Colab (NVIDIA GPU required; eager path, 12GB+ recommended)",
-      "status_ja": "Colab 未検証（NVIDIA GPU 必須、eager経路、12GB以上推奨）",
+      "status": "Works on L4 (eager path, ~8.9GB VRAM observed; all four modes verified)",
+      "status_ja": "L4 で動作確認済み（eager経路、約8.9GB VRAM、4モード検証済み）",
       "languages": "English / Chinese",
       "languages_ja": "英語 / 中国語",
       "description": "[Breeze TTS 2](https://github.com/breezeblue-ai/breeze-tts) is a bilingual English/Chinese model that combines ordinary TTS, text-described Voice Design, reference-audio Voice Clone, and instruction-controlled Voice Direction. This integration keeps the same `voice` convention used by the other local engines and adds the official OpenAI Speech API's optional `instructions` field:",
