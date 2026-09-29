@@ -1,5 +1,6 @@
 from .audio8_tts import install as install_audio8_tts
 from .bark import install as install_bark
+from .breeze_tts2 import install as install_breeze_tts2
 from .chatterbox import install as install_chatterbox
 from .chattts import install as install_chattts
 from .cosyvoice2 import install as install_cosyvoice2
@@ -61,6 +62,7 @@ from .zerotts import install as install_zerotts
 INSTALLERS = {
     "Audio8-TTS": install_audio8_tts,
     "Bark": install_bark,
+    "Breeze-TTS-2": install_breeze_tts2,
     "ChatTTS": install_chattts,
     "Chatterbox": install_chatterbox,
     "CosyVoice2": install_cosyvoice2,

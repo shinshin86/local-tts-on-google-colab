@@ -104,6 +104,7 @@ def kill_old_processes(app_port: int, piper_backend_port: int):
         "cloudflared tunnel",
         "server_fastapi.py",
         "dist/src/server/cli.js",
+        "breeze_infer.api",
     ]
     for pattern in patterns:
         run(["pkill", "-f", pattern], check=False)

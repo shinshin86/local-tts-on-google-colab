@@ -137,6 +137,16 @@ class Settings:
     audio8_temperature: float = 0.8
     audio8_top_p: float = 0.95
     audio8_top_k: int = 50
+    # Breeze TTS 2: bilingual TTS with text-directed Voice Design and
+    # reference-audio Voice Clone / Voice Direction modes.
+    breeze_tts2_hf_model: str = "BreezeBlue/Breeze-TTS-2"
+    breeze_tts2_prompt_wav: str = ""
+    breeze_tts2_prompt_text: str = ""
+    breeze_tts2_default_voice: str = "default"
+    breeze_tts2_default_instructions: str = ""
+    breeze_tts2_seed: int = 42
+    breeze_tts2_instruction_cfg_scale: float = 4.0
+    breeze_tts2_backend_port: int = 5007
     # ZeroTTS: Vietnamese ONNX/CPU runtime with bundled speaker-latent presets.
     # The public package can load voice packs but cannot encode a new reference voice.
     zerotts_hf_model: str = "zeroweight-ai/ZeroTTS"

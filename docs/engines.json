@@ -23,6 +23,7 @@
     "options": [
       "Audio8-TTS",
       "Bark",
+      "Breeze-TTS-2",
       "ChatTTS",
       "Chatterbox",
       "CosyVoice2",
@@ -258,6 +259,80 @@
           "type": "boolean",
           "true_flag": "--bark-use-small-models",
           "false_flag": null
+        }
+      ]
+    },
+    {
+      "id": "Breeze-TTS-2",
+      "title": "Breeze-TTS-2 (English/Chinese, NVIDIA GPU required)",
+      "status": "Works on L4 (eager path, ~8.9GB VRAM observed; all four modes verified)",
+      "status_ja": "L4 で動作確認済み（eager経路、約8.9GB VRAM、4モード検証済み）",
+      "languages": "English / Chinese",
+      "languages_ja": "英語 / 中国語",
+      "description": "[Breeze TTS 2](https://github.com/breezeblue-ai/breeze-tts) is a bilingual English/Chinese model that combines ordinary TTS, text-described Voice Design, reference-audio Voice Clone, and instruction-controlled Voice Direction. This integration keeps the same `voice` convention used by the other local engines and adds the official OpenAI Speech API's optional `instructions` field:",
+      "description_ja": "[Breeze TTS 2](https://github.com/breezeblue-ai/breeze-tts) は、通常TTS、自然言語で声を指定するVoice Design、参照音声によるVoice Clone、クローン音声の話し方を指示するVoice Directionを備えた英語・中国語対応モデルです。この実装では、ほかのローカルエンジンと同じ`voice`の扱いを維持しつつ、OpenAI Speech APIの任意フィールド`instructions`を追加しています。",
+      "notes": [
+        "- `voice=\"default\"`: plain TTS without `instructions`, Voice Design with `instructions`.",
+        "- `voice=\"clone\"`: Voice Clone without `instructions`, Voice Direction with `instructions`; requires both a reference WAV and its exact transcript.",
+        "- Uses the upstream eager path (~7.7GB VRAM; 12GB+ recommended). This wrapper currently returns WAV and accepts `speed=1.0` only; describe pace in `instructions`.",
+        "- Code: Apache-2.0. Weights, derivatives, and self-hosted outputs: BreezeBlue Research and Non-Commercial License v1.1. No commercial use; use reference voices only with consent."
+      ],
+      "notes_ja": [
+        "- ライセンス: コードは Apache-2.0、モデル重みは BreezeBlue Research and Non-Commercial License v1.1。商用利用: **不可**。 備考: 英語/中国語、Voice Design / Clone / Direction対応。公開重み・派生物・セルフホスト出力は非商用限定。有料ホスト出力は別のサービス規約に従う。クローン音声には本人同意が必要"
+      ],
+      "prefix": "BREEZE_TTS2",
+      "params": [
+        {
+          "name": "BREEZE_TTS2_HF_MODEL",
+          "default": "BreezeBlue/Breeze-TTS-2",
+          "type": "string",
+          "flag": "--breeze-tts2-hf-model"
+        },
+        {
+          "name": "BREEZE_TTS2_PROMPT_WAV",
+          "default": "",
+          "type": "string",
+          "flag": "--breeze-tts2-prompt-wav"
+        },
+        {
+          "name": "BREEZE_TTS2_PROMPT_TEXT",
+          "default": "",
+          "type": "string",
+          "flag": "--breeze-tts2-prompt-text"
+        },
+        {
+          "name": "BREEZE_TTS2_DEFAULT_VOICE",
+          "default": "default",
+          "type": "select",
+          "options": [
+            "default",
+            "clone"
+          ],
+          "flag": "--breeze-tts2-default-voice"
+        },
+        {
+          "name": "BREEZE_TTS2_DEFAULT_INSTRUCTIONS",
+          "default": "",
+          "type": "string",
+          "flag": "--breeze-tts2-default-instructions"
+        },
+        {
+          "name": "BREEZE_TTS2_SEED",
+          "default": 42,
+          "type": "integer",
+          "flag": "--breeze-tts2-seed"
+        },
+        {
+          "name": "BREEZE_TTS2_INSTRUCTION_CFG_SCALE",
+          "default": 4.0,
+          "type": "number",
+          "flag": "--breeze-tts2-instruction-cfg-scale"
+        },
+        {
+          "name": "BREEZE_TTS2_BACKEND_PORT",
+          "default": 5007,
+          "type": "integer",
+          "flag": "--breeze-tts2-backend-port"
         }
       ]
     },
