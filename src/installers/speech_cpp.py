@@ -17,12 +17,16 @@ ICD_DIRS = ["/etc/vulkan/icd.d", "/usr/share/vulkan/icd.d"]
 
 
 def _find_nvidia_vulkan_library() -> str:
-    """Return the path of NVIDIA's Vulkan ICD library, or "" when the driver ships none."""
+    """Return the path of NVIDIA's Vulkan ICD library, or "" when the driver ships none.
+
+    The EGL library comes first: on Colab's headless L4, libGLX_nvidia.so.0 cannot create a Vulkan
+    instance ("Could not get 'vkCreateInstance'"), while libEGL_nvidia.so.0 exposes the GPU.
+    """
     candidates = [
-        *glob.glob("/usr/lib64-nvidia/libGLX_nvidia.so.0"),
-        *glob.glob("/usr/lib/x86_64-linux-gnu/libGLX_nvidia.so.0"),
         *glob.glob("/usr/lib64-nvidia/libEGL_nvidia.so.0"),
         *glob.glob("/usr/lib/x86_64-linux-gnu/libEGL_nvidia.so.0"),
+        *glob.glob("/usr/lib64-nvidia/libGLX_nvidia.so.0"),
+        *glob.glob("/usr/lib/x86_64-linux-gnu/libGLX_nvidia.so.0"),
     ]
     return candidates[0] if candidates else ""
 

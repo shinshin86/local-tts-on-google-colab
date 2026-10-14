@@ -2300,7 +2300,7 @@ Colab T4 で確認済み: エンジン・`/v1` エンドポイント・trycloudf
 
 既存の `Qwen3-TTS` や `Irodori-TTS*` のエンジンは公式の Python / PyTorch ランタイムで動かしています。このエンジンは推論用の Python パッケージを入れず、ビルドもせず、量子化した GGUF を読むので、起動が速く、メモリも少なく済みます。そのかわり移植版です（上流は各段の出力を公式実装と照合しています）。
 
-**GPU について。** Colab には NVIDIA のドライバはありますが、Vulkan のローダーと ICD の設定ファイルがありません。GPU ランタイムでは `libvulkan1` を入れ、NVIDIA の ICD が登録されていなければ、ドライバの `libGLX_nvidia.so.0` を指す `/etc/vulkan/icd.d/nvidia_icd.json` を書きます。これでインストーラが Vulkan 版を選びます。どこかで失敗した場合は CPU で動きます（`--speech-cpp-no-vulkan` で CPU 版に固定できます）。リリース版は glibc 2.34 以上（Colab の Ubuntu 22.04 は 2.35）と、AVX2 / FMA / F16C のある CPU が必要です。
+**GPU について。** Colab には NVIDIA のドライバはありますが、Vulkan の ICD が登録されていません。GPU ランタイムでは `libvulkan1` が入っていることを確かめ、NVIDIA の ICD が登録されていなければ、ドライバの `libEGL_nvidia.so.0` を指す `/etc/vulkan/icd.d/nvidia_icd.json` を書きます（ディスプレイの無い Colab では `libGLX_nvidia.so.0` だと Vulkan のインスタンスを作れません）。これでインストーラが Vulkan 版を選びます。どこかで失敗した場合は CPU で動きます（`--speech-cpp-no-vulkan` で CPU 版に固定できます）。リリース版は glibc 2.34 以上（検証に使った Colab の L4 ランタイムは 2.39）と、AVX2 / FMA / F16C のある CPU が必要です。
 
 | `--speech-cpp-model` | サイズ（既定の型） | 言語 | voice |
 |---|---|---|---|

@@ -2299,7 +2299,7 @@ License: code is **Apache-2.0**; weights are **Apache-2.0** (`Vyvo-Multilingual-
 
 Compared with the existing `Qwen3-TTS` and `Irodori-TTS*` engines, which run the official Python / PyTorch runtimes, this engine installs no Python packages for inference, has nothing to build, and loads quantized GGUF files: it starts faster and uses less memory, at the cost of being a port (the upstream compares every stage against the official implementations).
 
-**GPU.** Colab mounts the NVIDIA driver but ships neither the Vulkan loader nor an ICD manifest. On a GPU runtime the wrapper installs `libvulkan1` and, if no NVIDIA ICD is registered, writes `/etc/vulkan/icd.d/nvidia_icd.json` pointing at the driver's `libGLX_nvidia.so.0`; the installer then picks the Vulkan build. If any of this fails the engine runs on the CPU (`--speech-cpp-no-vulkan` forces the CPU build). The release needs glibc 2.34+ (Colab's Ubuntu 22.04 has 2.35) and a CPU with AVX2 / FMA / F16C.
+**GPU.** Colab mounts the NVIDIA driver but registers no Vulkan ICD. On a GPU runtime the wrapper makes sure `libvulkan1` is installed and, if no NVIDIA ICD is registered, writes `/etc/vulkan/icd.d/nvidia_icd.json` pointing at the driver's `libEGL_nvidia.so.0` (on the headless runtime `libGLX_nvidia.so.0` cannot create a Vulkan instance); the installer then picks the Vulkan build. If any of this fails the engine runs on the CPU (`--speech-cpp-no-vulkan` forces the CPU build). The release needs glibc 2.34+ (the Colab L4 runtime used for verification had 2.39) and a CPU with AVX2 / FMA / F16C.
 
 | `--speech-cpp-model` | Size (default type) | Languages | Voices |
 |---|---|---|---|
