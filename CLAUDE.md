@@ -112,7 +112,11 @@ exercised on the developer's local machine.
   `--<engine>-prompt-wav` and possibly `--<engine>-prompt-text`). If `clone`
   is unavailable because the user did not configure a prompt wav, return a
   4xx with a clear message rather than silently falling back.
-- Watermarks and inaudible markers (e.g. SilentCipher in Sarashina-TTS) must
-  not be removed — surface the requirement in the engine's README section.
+- Watermarks and inaudible markers that a model's terms or its upstream
+  project require (e.g. SilentCipher in Sarashina-TTS, Perth in Chatterbox)
+  must not be removed or disabled by this wrapper — surface the requirement in
+  the engine's README section. If an engine's runtime does not apply a
+  watermark that the reference runtime applies (e.g. speech.cpp's Irodori-TTS
+  port), state that clearly in the engine's README section.
 - Every engine must work behind a `trycloudflare` public URL — this is the
   product's primary contract, not a nice-to-have.

@@ -126,6 +126,8 @@ def resolve_selected_voice(settings: Settings) -> str:
         return settings.vyvo_default_voice
     if settings.engine == "Irodori-TTS-Anime":
         return "default"
+    if settings.engine == "speech.cpp":
+        return settings.speech_cpp_default_voice
     return ""
 
 
@@ -894,6 +896,29 @@ def print_engine_voice_hints(settings: Settings):
         _vyvo_w_lic = "MIT" if (_vyvo_en_ft or _vyvo_ja_ft) else "Apache-2.0"
         print(f"ライセンス: コードは Apache-2.0、現在選択中の重みは {_vyvo_w_lic}（いずれも商用 OK）。ただし kyutai/mimi コーデックは CC-BY-4.0 で帰属表示が必要です。")
         print("乱用防止: 参照音声は権利のあるもの（話者の同意）のみを使用してください。")
+    elif settings.engine == "speech.cpp":
+        _sc_qwen3 = settings.speech_cpp_model.startswith("qwen3-tts")
+        print("speech.cpp は C++/ggml の単一実行ファイルで Qwen3-TTS / Irodori-TTS v4.1 の GGUF を動かすサーバです（Python・PyTorch・CUDA 不要）。")
+        print(f"speech.cpp: v{settings.speech_cpp_version} / モデル: {settings.speech_cpp_model} / device: {settings.speech_cpp_device}")
+        print(f"Vulkan: {'有効（libvulkan1 と NVIDIA ICD を用意、使えなければ CPU 版）' if settings.speech_cpp_use_vulkan else '無効（CPU 版）'}")
+        print(f"language: {settings.speech_cpp_language or 'auto'}")
+        print(f"デフォルト voice: {settings.speech_cpp_default_voice}")
+        if _sc_qwen3:
+            print(f"voice 候補: default（= {settings.speech_cpp_qwen3_speaker}）/ aiden / dylan / eric / ono_anna / ryan / serena / sohee / uncle_fu / vivian")
+            print("             clone は非対応（Qwen3-TTS CustomVoice はクローンできません。Irodori-TTS のモデルを選んでください）")
+            print("speed は 1.0 のみ。instructions（話し方の指示）は qwen3-tts-1.7b のみ対応。")
+        else:
+            print("voice 候補: default（参照なし。instructions で声を言葉で指定できる VoiceDesign）")
+            if settings.speech_cpp_prompt_wav:
+                print(f"             clone（参照音声: {settings.speech_cpp_prompt_wav}）")
+            else:
+                print("             clone は --speech-cpp-prompt-wav を指定すると有効になります")
+            if settings.speech_cpp_instructions:
+                print(f"既定の instructions: {settings.speech_cpp_instructions}")
+            print(f"steps: {settings.speech_cpp_steps or 'モデル既定（MF 4 / 通常 40）'}")
+            print("注意: speech.cpp 版の Irodori-TTS は SilentCipher の透かしを付けません（上流 speech.cpp が未対応）。")
+            print("乱用防止: 本人の同意なく声を複製しない・ディープフェイクに使わない（Irodori-TTS のモデルカードの制限）。")
+        print("ライセンス: speech.cpp のコードは MIT。Qwen3-TTS の重みは Apache-2.0、Irodori-TTS v4.1 の重みとコーデックは MIT。")
     else:
         print(f"{settings.engine} の追加情報はありません。")
 

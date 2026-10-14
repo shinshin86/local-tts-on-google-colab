@@ -11,7 +11,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Audio8-TTS", "Bark", "Breeze-TTS-2", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "FireRedTTS2", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "IndexTTS2", "Irodori-TTS", "Irodori-TTS-Anime", "Irodori-TTS-Large", "Irodori-TTS-Lite", "Irodori-TTS-MF", "KittenTTS", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "ZeroTTS", "Zonos", "ZONOS2"]
+ENGINE = "Kokoro"  #@param ["Audio8-TTS", "Bark", "Breeze-TTS-2", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "FireRedTTS2", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "IndexTTS2", "Irodori-TTS", "Irodori-TTS-Anime", "Irodori-TTS-Large", "Irodori-TTS-Lite", "Irodori-TTS-MF", "KittenTTS", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "speech.cpp", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "ZeroTTS", "Zonos", "ZONOS2"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -649,6 +649,23 @@ VYVO_TOP_P = 0.9  #@param {type:"number"}
 VYVO_REPETITION_PENALTY = 1.1  #@param {type:"number"}
 VYVO_MAX_NEW_TOKENS = 9600  #@param {type:"integer"}
 VYVO_MIN_NEW_TOKENS = 960  #@param {type:"integer"}
+
+#@markdown ---
+#@markdown speech.cpp (Qwen3-TTS / Irodori-TTS GGUF, one C++ executable, Vulkan or CPU)
+#@markdown - [nyosegawa/speech.cpp](https://github.com/nyosegawa/speech.cpp) serves GGUF ports of Qwen3-TTS and Irodori-TTS v4.1 over OpenAI's `/v1/audio/speech` from a single prebuilt binary — no Python, PyTorch or CUDA install. On a GPU runtime the wrapper installs `libvulkan1` and registers NVIDIA's Vulkan ICD so the Vulkan build runs on the GPU; otherwise it uses the CPU build.
+#@markdown - `SPEECH_CPP_MODEL`: `qwen3-tts-0.6b` (1.21 GB) / `qwen3-tts-1.7b` (2.29 GB) speak 10 languages with nine named speakers (`default` = `SPEECH_CPP_QWEN3_SPEAKER`; no cloning; only 1.7B takes `instructions`). `irodori-tts-mf` (fast, 4 steps) / `irodori-tts` (40 steps unless `SPEECH_CPP_STEPS`) speak Japanese: `default` lets the model pick a voice, steered by `instructions` (VoiceDesign) such as `SPEECH_CPP_INSTRUCTIONS`; set `SPEECH_CPP_PROMPT_WAV` and use `voice="clone"` for a reference voice.
+#@markdown - **The speech.cpp port of Irodori-TTS does not apply the SilentCipher watermark** (unlike the Irodori-TTS engines above). Only clone voices with the speaker's consent; no deepfakes or misinformation (Irodori-TTS model card).
+#@markdown - License: speech.cpp code MIT. Weights: Qwen3-TTS Apache-2.0; Irodori-TTS v4.1-Small / Small-MF and the Semantic-DACVAE codec MIT (with the model card's ethical restrictions).
+SPEECH_CPP_VERSION = "0.8.6"  #@param {type:"string"}
+SPEECH_CPP_MODEL = "qwen3-tts-0.6b"  #@param ["qwen3-tts-0.6b", "qwen3-tts-1.7b", "irodori-tts-mf", "irodori-tts"]
+SPEECH_CPP_DEFAULT_VOICE = "default"  #@param ["default", "clone", "aiden", "dylan", "eric", "ono_anna", "ryan", "serena", "sohee", "uncle_fu", "vivian"]
+SPEECH_CPP_QWEN3_SPEAKER = "ono_anna"  #@param ["aiden", "dylan", "eric", "ono_anna", "ryan", "serena", "sohee", "uncle_fu", "vivian"]
+SPEECH_CPP_PROMPT_WAV = ""  #@param {type:"string"}
+SPEECH_CPP_INSTRUCTIONS = ""  #@param {type:"string"}
+SPEECH_CPP_LANGUAGE = "ja"  #@param {type:"string"}
+SPEECH_CPP_STEPS = 0  #@param {type:"integer"}
+SPEECH_CPP_DEVICE = "auto"  #@param ["auto", "gpu", "cpu"]
+SPEECH_CPP_USE_VULKAN = True  #@param {type:"boolean"}
 
 import shlex
 import subprocess
@@ -1310,6 +1327,24 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         str(VYVO_MAX_NEW_TOKENS),
         "--vyvo-min-new-tokens",
         str(VYVO_MIN_NEW_TOKENS),
+        "--speech-cpp-version",
+        SPEECH_CPP_VERSION,
+        "--speech-cpp-model",
+        SPEECH_CPP_MODEL,
+        "--speech-cpp-default-voice",
+        SPEECH_CPP_DEFAULT_VOICE,
+        "--speech-cpp-qwen3-speaker",
+        SPEECH_CPP_QWEN3_SPEAKER,
+        "--speech-cpp-prompt-wav",
+        SPEECH_CPP_PROMPT_WAV,
+        "--speech-cpp-instructions",
+        SPEECH_CPP_INSTRUCTIONS,
+        "--speech-cpp-language",
+        SPEECH_CPP_LANGUAGE,
+        "--speech-cpp-steps",
+        str(SPEECH_CPP_STEPS),
+        "--speech-cpp-device",
+        SPEECH_CPP_DEVICE,
     ]
     if IRODORI_LITE_CODEC_INT4:
         cmd.append("--irodori-lite-codec-int4")
@@ -1335,6 +1370,8 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         cmd.append("--scenema-background-sfx")
     if not ZONOS2_ACCURATE_MODE:
         cmd.append("--zonos2-no-accurate-mode")
+    if not SPEECH_CPP_USE_VULKAN:
+        cmd.append("--speech-cpp-no-vulkan")
     cmd.append("--expose-public-url" if EXPOSE_PUBLIC_URL else "--no-expose-public-url")
     return cmd
 

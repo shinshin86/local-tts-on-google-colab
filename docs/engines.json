@@ -70,6 +70,7 @@
       "Scenema",
       "Sine-Wave-TTS",
       "Spark-TTS",
+      "speech.cpp",
       "Style-Bert-VITS2",
       "StyleTTS2",
       "Supertonic",
@@ -3365,6 +3366,121 @@
           "default": "",
           "type": "string",
           "flag": "--spark-prompt-text"
+        }
+      ]
+    },
+    {
+      "id": "speech.cpp",
+      "title": "speech.cpp (Qwen3-TTS / Irodori-TTS GGUF, one C++ executable, Vulkan or CPU)",
+      "status": "Works on Colab L4 via Vulkan (verified through the public URL; one prebuilt C++ executable — no Python / PyTorch / CUDA install; Vulkan on the GPU via NVIDIA's ICD, CPU fallback; Qwen3-TTS 0.6B / 1.7B and Irodori-TTS v4.1 MF / Small GGUF selectable; **the Irodori-TTS models here carry no SilentCipher watermark**)",
+      "status_ja": "Colab L4 の Vulkan で動作確認済み（公開URL経由で確認。ビルド済みの C++ 実行ファイル1つで動き、Python・PyTorch・CUDA の導入は不要。GPU では NVIDIA の ICD 経由で Vulkan、使えなければ CPU。Qwen3-TTS 0.6B / 1.7B と Irodori-TTS v4.1 MF / Small の GGUF を選べる。**このエンジンの Irodori-TTS には SilentCipher の透かしが付きません**）",
+      "languages": "Japanese / English / Chinese and 10 languages (Qwen3-TTS), Japanese (Irodori-TTS)",
+      "languages_ja": "日本語 / 英語 / 中国語など10言語（Qwen3-TTS）、日本語（Irodori-TTS）",
+      "description": "[nyosegawa/speech.cpp](https://github.com/nyosegawa/speech.cpp) is a C++ port, on [ggml](https://github.com/ggml-org/ggml), of Qwen3-TTS and Irodori-TTS v4.1, shipped as one prebuilt executable, `speech`. `speech serve` answers OpenAI's `POST /v1/audio/speech` itself. The wrapper installs the pinned release (`--speech-cpp-version`, default `0.8.6`) with the upstream `install.sh`, fetches the selected GGUF with `speech pull`, starts `speech serve` on `127.0.0.1`, and puts a thin FastAPI proxy in front of it on the usual port. The proxy maps this repository's `default` / `clone` voices, forwards the other speech.cpp request options (`seed`, `steps`, `language`, ...), and keeps `trycloudflare` traffic away from speech.cpp's own Host check.",
+      "description_ja": "[nyosegawa/speech.cpp](https://github.com/nyosegawa/speech.cpp) は Qwen3-TTS と Irodori-TTS v4.1 を [ggml](https://github.com/ggml-org/ggml) 上の C++ に移植したもので、ビルド済みの実行ファイル `speech` 1つで動きます。`speech serve` 自体が OpenAI の `POST /v1/audio/speech` に応答します。このラッパーは、固定したリリース（`--speech-cpp-version`、既定 `0.8.6`）を上流の `install.sh` で入れ、選んだ GGUF を `speech pull` で取得し、`speech serve` を `127.0.0.1` で起動して、その前にいつものポートで薄い FastAPI のプロキシを置きます。プロキシはこのリポジトリの `default` / `clone` の voice を変換し、そのほかの speech.cpp のリクエストオプション（`seed`・`steps`・`language` など）はそのまま渡します。speech.cpp 側の Host チェックに `trycloudflare` からのリクエストが当たらないようにする役目もあります。",
+      "notes": [
+        "- [nyosegawa/speech.cpp](https://github.com/nyosegawa/speech.cpp) serves GGUF ports of Qwen3-TTS and Irodori-TTS v4.1 over OpenAI's `/v1/audio/speech` from a single prebuilt binary — no Python, PyTorch or CUDA install. On a GPU runtime the wrapper installs `libvulkan1` and registers NVIDIA's Vulkan ICD so the Vulkan build runs on the GPU; otherwise it uses the CPU build.",
+        "- `SPEECH_CPP_MODEL`: `qwen3-tts-0.6b` (1.21 GB) / `qwen3-tts-1.7b` (2.29 GB) speak 10 languages with nine named speakers (`default` = `SPEECH_CPP_QWEN3_SPEAKER`; no cloning; only 1.7B takes `instructions`). `irodori-tts-mf` (fast, 4 steps) / `irodori-tts` (40 steps unless `SPEECH_CPP_STEPS`) speak Japanese: `default` lets the model pick a voice, steered by `instructions` (VoiceDesign) such as `SPEECH_CPP_INSTRUCTIONS`; set `SPEECH_CPP_PROMPT_WAV` and use `voice=\"clone\"` for a reference voice.",
+        "- **The speech.cpp port of Irodori-TTS does not apply the SilentCipher watermark** (unlike the Irodori-TTS engines above). Only clone voices with the speaker's consent; no deepfakes or misinformation (Irodori-TTS model card).",
+        "- License: speech.cpp code MIT. Weights: Qwen3-TTS Apache-2.0; Irodori-TTS v4.1-Small / Small-MF and the Semantic-DACVAE codec MIT (with the model card's ethical restrictions)."
+      ],
+      "notes_ja": [],
+      "prefix": "SPEECH_CPP",
+      "params": [
+        {
+          "name": "SPEECH_CPP_VERSION",
+          "default": "0.8.6",
+          "type": "string",
+          "flag": "--speech-cpp-version"
+        },
+        {
+          "name": "SPEECH_CPP_MODEL",
+          "default": "qwen3-tts-0.6b",
+          "type": "select",
+          "options": [
+            "qwen3-tts-0.6b",
+            "qwen3-tts-1.7b",
+            "irodori-tts-mf",
+            "irodori-tts"
+          ],
+          "flag": "--speech-cpp-model"
+        },
+        {
+          "name": "SPEECH_CPP_DEFAULT_VOICE",
+          "default": "default",
+          "type": "select",
+          "options": [
+            "default",
+            "clone",
+            "aiden",
+            "dylan",
+            "eric",
+            "ono_anna",
+            "ryan",
+            "serena",
+            "sohee",
+            "uncle_fu",
+            "vivian"
+          ],
+          "flag": "--speech-cpp-default-voice"
+        },
+        {
+          "name": "SPEECH_CPP_QWEN3_SPEAKER",
+          "default": "ono_anna",
+          "type": "select",
+          "options": [
+            "aiden",
+            "dylan",
+            "eric",
+            "ono_anna",
+            "ryan",
+            "serena",
+            "sohee",
+            "uncle_fu",
+            "vivian"
+          ],
+          "flag": "--speech-cpp-qwen3-speaker"
+        },
+        {
+          "name": "SPEECH_CPP_PROMPT_WAV",
+          "default": "",
+          "type": "string",
+          "flag": "--speech-cpp-prompt-wav"
+        },
+        {
+          "name": "SPEECH_CPP_INSTRUCTIONS",
+          "default": "",
+          "type": "string",
+          "flag": "--speech-cpp-instructions"
+        },
+        {
+          "name": "SPEECH_CPP_LANGUAGE",
+          "default": "ja",
+          "type": "string",
+          "flag": "--speech-cpp-language"
+        },
+        {
+          "name": "SPEECH_CPP_STEPS",
+          "default": 0,
+          "type": "integer",
+          "flag": "--speech-cpp-steps"
+        },
+        {
+          "name": "SPEECH_CPP_DEVICE",
+          "default": "auto",
+          "type": "select",
+          "options": [
+            "auto",
+            "gpu",
+            "cpu"
+          ],
+          "flag": "--speech-cpp-device"
+        },
+        {
+          "name": "SPEECH_CPP_USE_VULKAN",
+          "default": true,
+          "type": "boolean",
+          "flag": null
         }
       ]
     },
