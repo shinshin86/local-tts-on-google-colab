@@ -70,7 +70,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | Scenema | **Colab A100（40GB VRAM）必須**。初回起動時に約 38GB ダウンロード。音声モデルは LTX-2.3 派生のため **LTX-2 Community License**（DramaBox と同じ）。Gemma 3 12B IT 利用（HF gated、`HF_TOKEN` 必須） | 英語中心の多言語 | 条件付き（年商$10M以上は要商用ライセンス / Gemma規約） |
 | MioTTS | Colab L4 動作確認済み（GPU 必須、**VRAM 約4.6GB** 常駐 — LLM 約3.2GB + codec 約1.4GB。T4 16GB でも十分。LLM ベース — Qwen3-1.7B-Base GGUF をプリビルド llama-cpp-python CUDA wheel で host し MioCodec トークン[25Hz]を生成 → 44.1kHz。**実時間の約4倍速、RTF ≈ 0.25**。重みは ungated で `HF_TOKEN` 不要。プリセット音声 / ゼロショットクローン。**デフォルトプリセットは商用利用不可** — 商用時は自分の音声で clone） | 日本語 / 英語 | 既定は不可（自分の声でcloneすれば可） |
 | Vyvo-Multilingual | Colab T4 動作確認済み（公開URL経由で end-to-end 確認。GPU 推奨、VRAM 約2-4GB。0.9B の Qwen3-0.6B backbone LLM-TTS で kyutai/mimi トークンを生成 → 24kHz。上流リポジトリ無し、transformers で in-process 実行。重みは ungated で `HF_TOKEN` 不要）。`--vyvo-hf-model` で3つの ungated checkpoint を選択: `Vyvo-Multilingual-v0.1`（EN/JA、Apache-2.0、日本語は品質限定的）、`Vyvo-Multilingual-EN-FT-v0.1`（英語専用FT、MIT）、`Vyvo-Multilingual-JA-FT-v0.1`（日本語専用FT、MIT。⚠️ 当方では正常な品質の日本語生成を確認できず。日本語には base checkpoint を推奨）。**ゼロショットクローン専用 — 内蔵スピーカー無し**: 各リクエストで `--vyvo-prompt-wav` + `--vyvo-prompt-text` が必須（未設定は 4xx）。コードは Apache-2.0、kyutai/mimi コーデックは CC-BY-4.0（帰属表示要） | 英語 / 日本語（base）、英語（EN-FT）、日本語（JA-FT） | 条件付き（codecに要クレジット） |
-| speech.cpp | Colab 未検証（ビルド済みの C++ 実行ファイル1つで動き、Python・PyTorch・CUDA の導入は不要。GPU では NVIDIA の ICD 経由で Vulkan、使えなければ CPU。Qwen3-TTS 0.6B / 1.7B と Irodori-TTS v4.1 MF / Small の GGUF を選べる。**このエンジンの Irodori-TTS には SilentCipher の透かしが付きません**） | 日本語 / 英語 / 中国語など10言語（Qwen3-TTS）、日本語（Irodori-TTS） | OK |
+| speech.cpp | Colab L4 の Vulkan で動作確認済み（公開URL経由で確認。ビルド済みの C++ 実行ファイル1つで動き、Python・PyTorch・CUDA の導入は不要。GPU では NVIDIA の ICD 経由で Vulkan、使えなければ CPU。Qwen3-TTS 0.6B / 1.7B と Irodori-TTS v4.1 MF / Small の GGUF を選べる。**このエンジンの Irodori-TTS には SilentCipher の透かしが付きません**） | 日本語 / 英語 / 中国語など10言語（Qwen3-TTS）、日本語（Irodori-TTS） | OK |
 
 > 上表の **商用利用** は、各エンジンの**既定モデル / 既定音声**での判定です。モデルサイズや音声を変えると判定が変わることがあります（例: `OuteTTS` の 1B、`MioTTS` のプリセット）。モデル単位の内訳は [ライセンス](#ライセンス) を参照してください。
 
@@ -2312,6 +2312,17 @@ Colab T4 で確認済み: エンジン・`/v1` エンドポイント・trycloudf
 `--speech-cpp-instructions` は、リクエストに `instructions` が無いときの既定のキャプションです（Irodori-TTS と `qwen3-tts-1.7b` のみ）。参照 WAV を設定せずに `voice="clone"` を指定した場合と、Qwen3-TTS で `clone` を指定した場合は HTTP 400 を返します。出力は 16bit モノラルの WAV（Qwen3-TTS は 24 kHz、Irodori-TTS は 48 kHz）で、`response_format="pcm"` にすると生成しながら PCM を流します。MP3 / Opus / AAC / FLAC には変換しません。
 
 **透かしについて。** speech.cpp の Irodori-TTS は SilentCipher の透かしを付けません（上流のドキュメントに未対応と書かれています）。このリポジトリのほかの `Irodori-TTS*` エンジンと違い、**このエンジンの Irodori-TTS で作った音声には透かしが付きません。** Irodori-TTS v4.1 の重みは MIT で、モデルカードに透かしを必須とする記述はありませんが、倫理面の制限は残ります。本人の同意なく声を複製しないこと、ディープフェイクや人を欺く音声を作らないことを守ってください。Qwen3-TTS はどちらのランタイムでも透かしはありません。
+
+**Colab での確認（L4、speech.cpp 0.8.6）。** NVIDIA の EGL を ICD にすると、サーバは `Vulkan0`（NVIDIA L4）で動きます。使える ICD が無い同じランタイムでは CPU で動きます。時間はサーバ自身のログで、6〜7 秒ほどの1文の値です。
+
+| モデル | デバイス | 最初の音が出るまで | 生成時間 |
+|---|---|---|---|
+| `qwen3-tts-0.6b` | Vulkan（L4） | 0.06〜0.23 秒 | 5.8 秒の音声を約 1.2 秒 |
+| `qwen3-tts-0.6b` | CPU | 0.29〜0.34 秒 | 7.1 秒の音声を約 11 秒 |
+| `irodori-tts-mf` | Vulkan（L4） | 0.06〜0.35 秒 | 7〜13 秒の音声を 0.4〜0.8 秒 |
+| `irodori-tts-mf` | CPU | 1.84 秒 | 7.1 秒の音声を 15.8 秒 |
+
+公開した `trycloudflare` の URL 経由で、`/v1/audio/speech` は HTTP 200 で 24 kHz（Qwen3-TTS）と 48 kHz（Irodori-TTS）の WAV を返しました。`response_format="pcm"` は約 0.5 秒で最初のバイトが届き、参照 WAV なしの `clone` と Qwen3-TTS への `speed` は HTTP 400 を返しました。`seed` を固定したリクエストは、公開 URL 経由でもランタイム内でも同じバイト列の音声になりました。Irodori-TTS の VoiceDesign は、女の子の声を言葉で説明した5パターンの `instructions` で試し、`qwen3-asr-0.6b` で書き起こして確かめました。「ゆっくり」話すよう頼むキャプションでは、試したどの seed でも文のあとに余計な言葉が付きました。同じキャプションから「ゆっくり」を外すと、文どおりに読みました。キャプションには声の特徴を書き、遅い話し方は指定しないでください（`speed` パラメータは今回の確認に含めていません）。
 
 ライセンス: speech.cpp のコードは MIT。Qwen3-TTS の重み（と `sakasegawa/*-GGUF` の変換版）は Apache-2.0。Irodori-TTS v4.1-Small / Small-MF の重みと、GGUF に含まれる Semantic-DACVAE-Japanese-32dim コーデックは MIT です（コーデックは Meta の Apache-2.0 の `facebook/dacvae-watermarked` から派生）。
 
