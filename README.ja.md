@@ -70,6 +70,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | Scenema | **Colab A100（40GB VRAM）必須**。初回起動時に約 38GB ダウンロード。音声モデルは LTX-2.3 派生のため **LTX-2 Community License**（DramaBox と同じ）。Gemma 3 12B IT 利用（HF gated、`HF_TOKEN` 必須） | 英語中心の多言語 | 条件付き（年商$10M以上は要商用ライセンス / Gemma規約） |
 | MioTTS | Colab L4 動作確認済み（GPU 必須、**VRAM 約4.6GB** 常駐 — LLM 約3.2GB + codec 約1.4GB。T4 16GB でも十分。LLM ベース — Qwen3-1.7B-Base GGUF をプリビルド llama-cpp-python CUDA wheel で host し MioCodec トークン[25Hz]を生成 → 44.1kHz。**実時間の約4倍速、RTF ≈ 0.25**。重みは ungated で `HF_TOKEN` 不要。プリセット音声 / ゼロショットクローン。**デフォルトプリセットは商用利用不可** — 商用時は自分の音声で clone） | 日本語 / 英語 | 既定は不可（自分の声でcloneすれば可） |
 | Vyvo-Multilingual | Colab T4 動作確認済み（公開URL経由で end-to-end 確認。GPU 推奨、VRAM 約2-4GB。0.9B の Qwen3-0.6B backbone LLM-TTS で kyutai/mimi トークンを生成 → 24kHz。上流リポジトリ無し、transformers で in-process 実行。重みは ungated で `HF_TOKEN` 不要）。`--vyvo-hf-model` で3つの ungated checkpoint を選択: `Vyvo-Multilingual-v0.1`（EN/JA、Apache-2.0、日本語は品質限定的）、`Vyvo-Multilingual-EN-FT-v0.1`（英語専用FT、MIT）、`Vyvo-Multilingual-JA-FT-v0.1`（日本語専用FT、MIT。⚠️ 当方では正常な品質の日本語生成を確認できず。日本語には base checkpoint を推奨）。**ゼロショットクローン専用 — 内蔵スピーカー無し**: 各リクエストで `--vyvo-prompt-wav` + `--vyvo-prompt-text` が必須（未設定は 4xx）。コードは Apache-2.0、kyutai/mimi コーデックは CC-BY-4.0（帰属表示要） | 英語 / 日本語（base）、英語（EN-FT）、日本語（JA-FT） | 条件付き（codecに要クレジット） |
+| speech.cpp | Colab 未検証（ビルド済みの C++ 実行ファイル1つで動き、Python・PyTorch・CUDA の導入は不要。GPU では NVIDIA の ICD 経由で Vulkan、使えなければ CPU。Qwen3-TTS 0.6B / 1.7B と Irodori-TTS v4.1 MF / Small の GGUF を選べる。**このエンジンの Irodori-TTS には SilentCipher の透かしが付きません**） | 日本語 / 英語 / 中国語など10言語（Qwen3-TTS）、日本語（Irodori-TTS） | OK |
 
 > 上表の **商用利用** は、各エンジンの**既定モデル / 既定音声**での判定です。モデルサイズや音声を変えると判定が変わることがあります（例: `OuteTTS` の 1B、`MioTTS` のプリセット）。モデル単位の内訳は [ライセンス](#ライセンス) を参照してください。
 
@@ -136,7 +137,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Audio8-TTS", "Bark", "Breeze-TTS-2", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "FireRedTTS2", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "IndexTTS2", "Irodori-TTS", "Irodori-TTS-Anime", "Irodori-TTS-Large", "Irodori-TTS-Lite", "Irodori-TTS-MF", "KittenTTS", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "ZeroTTS", "Zonos", "ZONOS2"]
+ENGINE = "Kokoro"  #@param ["Audio8-TTS", "Bark", "Breeze-TTS-2", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "FireRedTTS2", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "IndexTTS2", "Irodori-TTS", "Irodori-TTS-Anime", "Irodori-TTS-Large", "Irodori-TTS-Lite", "Irodori-TTS-MF", "KittenTTS", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "speech.cpp", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "ZeroTTS", "Zonos", "ZONOS2"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -774,6 +775,23 @@ VYVO_TOP_P = 0.9  #@param {type:"number"}
 VYVO_REPETITION_PENALTY = 1.1  #@param {type:"number"}
 VYVO_MAX_NEW_TOKENS = 9600  #@param {type:"integer"}
 VYVO_MIN_NEW_TOKENS = 960  #@param {type:"integer"}
+
+#@markdown ---
+#@markdown speech.cpp (Qwen3-TTS / Irodori-TTS GGUF, one C++ executable, Vulkan or CPU)
+#@markdown - [nyosegawa/speech.cpp](https://github.com/nyosegawa/speech.cpp) serves GGUF ports of Qwen3-TTS and Irodori-TTS v4.1 over OpenAI's `/v1/audio/speech` from a single prebuilt binary — no Python, PyTorch or CUDA install. On a GPU runtime the wrapper installs `libvulkan1` and registers NVIDIA's Vulkan ICD so the Vulkan build runs on the GPU; otherwise it uses the CPU build.
+#@markdown - `SPEECH_CPP_MODEL`: `qwen3-tts-0.6b` (1.21 GB) / `qwen3-tts-1.7b` (2.29 GB) speak 10 languages with nine named speakers (`default` = `SPEECH_CPP_QWEN3_SPEAKER`; no cloning; only 1.7B takes `instructions`). `irodori-tts-mf` (fast, 4 steps) / `irodori-tts` (40 steps unless `SPEECH_CPP_STEPS`) speak Japanese: `default` lets the model pick a voice, steered by `instructions` (VoiceDesign) such as `SPEECH_CPP_INSTRUCTIONS`; set `SPEECH_CPP_PROMPT_WAV` and use `voice="clone"` for a reference voice.
+#@markdown - **The speech.cpp port of Irodori-TTS does not apply the SilentCipher watermark** (unlike the Irodori-TTS engines above). Only clone voices with the speaker's consent; no deepfakes or misinformation (Irodori-TTS model card).
+#@markdown - License: speech.cpp code MIT. Weights: Qwen3-TTS Apache-2.0; Irodori-TTS v4.1-Small / Small-MF and the Semantic-DACVAE codec MIT (with the model card's ethical restrictions).
+SPEECH_CPP_VERSION = "0.8.6"  #@param {type:"string"}
+SPEECH_CPP_MODEL = "qwen3-tts-0.6b"  #@param ["qwen3-tts-0.6b", "qwen3-tts-1.7b", "irodori-tts-mf", "irodori-tts"]
+SPEECH_CPP_DEFAULT_VOICE = "default"  #@param ["default", "clone", "aiden", "dylan", "eric", "ono_anna", "ryan", "serena", "sohee", "uncle_fu", "vivian"]
+SPEECH_CPP_QWEN3_SPEAKER = "ono_anna"  #@param ["aiden", "dylan", "eric", "ono_anna", "ryan", "serena", "sohee", "uncle_fu", "vivian"]
+SPEECH_CPP_PROMPT_WAV = ""  #@param {type:"string"}
+SPEECH_CPP_INSTRUCTIONS = ""  #@param {type:"string"}
+SPEECH_CPP_LANGUAGE = "ja"  #@param {type:"string"}
+SPEECH_CPP_STEPS = 0  #@param {type:"integer"}
+SPEECH_CPP_DEVICE = "auto"  #@param ["auto", "gpu", "cpu"]
+SPEECH_CPP_USE_VULKAN = True  #@param {type:"boolean"}
 
 import shlex
 import subprocess
@@ -1435,6 +1453,24 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         str(VYVO_MAX_NEW_TOKENS),
         "--vyvo-min-new-tokens",
         str(VYVO_MIN_NEW_TOKENS),
+        "--speech-cpp-version",
+        SPEECH_CPP_VERSION,
+        "--speech-cpp-model",
+        SPEECH_CPP_MODEL,
+        "--speech-cpp-default-voice",
+        SPEECH_CPP_DEFAULT_VOICE,
+        "--speech-cpp-qwen3-speaker",
+        SPEECH_CPP_QWEN3_SPEAKER,
+        "--speech-cpp-prompt-wav",
+        SPEECH_CPP_PROMPT_WAV,
+        "--speech-cpp-instructions",
+        SPEECH_CPP_INSTRUCTIONS,
+        "--speech-cpp-language",
+        SPEECH_CPP_LANGUAGE,
+        "--speech-cpp-steps",
+        str(SPEECH_CPP_STEPS),
+        "--speech-cpp-device",
+        SPEECH_CPP_DEVICE,
     ]
     if IRODORI_LITE_CODEC_INT4:
         cmd.append("--irodori-lite-codec-int4")
@@ -1460,6 +1496,8 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         cmd.append("--scenema-background-sfx")
     if not ZONOS2_ACCURATE_MODE:
         cmd.append("--zonos2-no-accurate-mode")
+    if not SPEECH_CPP_USE_VULKAN:
+        cmd.append("--speech-cpp-no-vulkan")
     cmd.append("--expose-public-url" if EXPOSE_PUBLIC_URL else "--no-expose-public-url")
     return cmd
 
@@ -2256,6 +2294,27 @@ Colab T4 で確認済み: エンジン・`/v1` エンドポイント・trycloudf
 
 ライセンス: コードは **Apache-2.0**、重みは **Apache-2.0**（`Vyvo-Multilingual-v0.1`）または **MIT**（`Vyvo-Multilingual-EN-FT-v0.1`・`Vyvo-Multilingual-JA-FT-v0.1`）で、いずれも商用利用可です。ただし推論では常に **kyutai/mimi** コーデックを読み込みます。これは **CC-BY-4.0** で、商用利用は可能ですが **Kyutai への帰属表示が必要**です。下記のライセンス表も参照してください。
 
+### speech.cpp
+
+[nyosegawa/speech.cpp](https://github.com/nyosegawa/speech.cpp) は Qwen3-TTS と Irodori-TTS v4.1 を [ggml](https://github.com/ggml-org/ggml) 上の C++ に移植したもので、ビルド済みの実行ファイル `speech` 1つで動きます。`speech serve` 自体が OpenAI の `POST /v1/audio/speech` に応答します。このラッパーは、固定したリリース（`--speech-cpp-version`、既定 `0.8.6`）を上流の `install.sh` で入れ、選んだ GGUF を `speech pull` で取得し、`speech serve` を `127.0.0.1` で起動して、その前にいつものポートで薄い FastAPI のプロキシを置きます。プロキシはこのリポジトリの `default` / `clone` の voice を変換し、そのほかの speech.cpp のリクエストオプション（`seed`・`steps`・`language` など）はそのまま渡します。speech.cpp 側の Host チェックに `trycloudflare` からのリクエストが当たらないようにする役目もあります。
+
+既存の `Qwen3-TTS` や `Irodori-TTS*` のエンジンは公式の Python / PyTorch ランタイムで動かしています。このエンジンは推論用の Python パッケージを入れず、ビルドもせず、量子化した GGUF を読むので、起動が速く、メモリも少なく済みます。そのかわり移植版です（上流は各段の出力を公式実装と照合しています）。
+
+**GPU について。** Colab には NVIDIA のドライバはありますが、Vulkan のローダーと ICD の設定ファイルがありません。GPU ランタイムでは `libvulkan1` を入れ、NVIDIA の ICD が登録されていなければ、ドライバの `libGLX_nvidia.so.0` を指す `/etc/vulkan/icd.d/nvidia_icd.json` を書きます。これでインストーラが Vulkan 版を選びます。どこかで失敗した場合は CPU で動きます（`--speech-cpp-no-vulkan` で CPU 版に固定できます）。リリース版は glibc 2.34 以上（Colab の Ubuntu 22.04 は 2.35）と、AVX2 / FMA / F16C のある CPU が必要です。
+
+| `--speech-cpp-model` | サイズ（既定の型） | 言語 | voice |
+|---|---|---|---|
+| `qwen3-tts-0.6b`（既定） | 1.21 GB、Q8_0 | 日本語を含む10言語 | `default`（= `--speech-cpp-qwen3-speaker`、既定は `ono_anna`）、または `aiden`・`dylan`・`eric`・`ono_anna`・`ryan`・`serena`・`sohee`・`uncle_fu`・`vivian`。クローン不可。`speed` は 1.0 のみで、`instructions` は受け付けない |
+| `qwen3-tts-1.7b` | 2.29 GB、Q8_0 | 同上 | 同上。`instructions`（話し方の指示）に従う |
+| `irodori-tts-mf` | 1.92 GB、F16 | 日本語 | `default`: 声はモデルが選び、`instructions`（VoiceDesign のキャプション）で声を言葉で指定できる。`clone`: `--speech-cpp-prompt-wav` の参照 WAV（120 秒まで、書き起こし不要）。4 ステップ |
+| `irodori-tts` | 1.91 GB、F16 | 日本語 | `irodori-tts-mf` と同じ。`--speech-cpp-steps` を指定しなければ 40 ステップ（上流のベンチマークは 16） |
+
+`--speech-cpp-instructions` は、リクエストに `instructions` が無いときの既定のキャプションです（Irodori-TTS と `qwen3-tts-1.7b` のみ）。参照 WAV を設定せずに `voice="clone"` を指定した場合と、Qwen3-TTS で `clone` を指定した場合は HTTP 400 を返します。出力は 16bit モノラルの WAV（Qwen3-TTS は 24 kHz、Irodori-TTS は 48 kHz）で、`response_format="pcm"` にすると生成しながら PCM を流します。MP3 / Opus / AAC / FLAC には変換しません。
+
+**透かしについて。** speech.cpp の Irodori-TTS は SilentCipher の透かしを付けません（上流のドキュメントに未対応と書かれています）。このリポジトリのほかの `Irodori-TTS*` エンジンと違い、**このエンジンの Irodori-TTS で作った音声には透かしが付きません。** Irodori-TTS v4.1 の重みは MIT で、モデルカードに透かしを必須とする記述はありませんが、倫理面の制限は残ります。本人の同意なく声を複製しないこと、ディープフェイクや人を欺く音声を作らないことを守ってください。Qwen3-TTS はどちらのランタイムでも透かしはありません。
+
+ライセンス: speech.cpp のコードは MIT。Qwen3-TTS の重み（と `sakasegawa/*-GGUF` の変換版）は Apache-2.0。Irodori-TTS v4.1-Small / Small-MF の重みと、GGUF に含まれる Semantic-DACVAE-Japanese-32dim コーデックは MIT です（コーデックは Meta の Apache-2.0 の `facebook/dacvae-watermarked` から派生）。
+
 ### MeloTTS (現在動作不可)
 
 [myshell-ai/MeloTTS](https://github.com/myshell-ai/MeloTTS) を使う構成ですが、依存パッケージ `tokenizers` のビルドに Rust コンパイラが必要なため、現在の Colab 環境ではインストールに失敗します。
@@ -2348,6 +2407,10 @@ Colab T4 で確認済み: エンジン・`/v1` エンドポイント・trycloudf
 | Vyvo-Multilingual-EN-FT-v0.1 | — | MIT | OK | base の英語専用ファインチューン（単一の表現力ある話者）。新世代ではなく派生。アーキテクチャ / トークンレイアウト / Mimi codec は同一 |
 | Vyvo-Multilingual-JA-FT-v0.1 | — | MIT | OK（ライセンス） | base の日本語専用ファインチューン（単一話者）。新世代ではなく派生。アーキテクチャ / トークンレイアウト / Mimi codec は同一。⚠️ 当方では正常な品質の生成を確認できず。日本語には base を推奨 |
 | Vyvo-Multilingual (audio codec / Mimi) | — | CC-BY 4.0 | OK（帰属表示あり） | Kyutai `kyutai/mimi` codec（24 kHz、32 codebooks）。encode/decode で常に読み込むため Kyutai への帰属表示が必要 |
+| speech.cpp（コード） | MIT | — | OK | 下のモデルを OpenAI の音声 API で返す C++/ggml の実行ファイル1つ |
+| speech.cpp: Qwen3-TTS 0.6B / 1.7B CustomVoice GGUF（既定 `qwen3-tts-0.6b`） | — | Apache 2.0（`sakasegawa/Qwen3-TTS-12Hz-*-CustomVoice-GGUF`、元は `Qwen/Qwen3-TTS-12Hz-*-CustomVoice`） | OK | 名前つきの話者9人。クローン不可 |
+| speech.cpp: Irodori-TTS v4.1-Small / Small-MF GGUF | — | MIT（`sakasegawa/Irodori-TTS-v4.1-Small{,-MF}-GGUF`、元は `Aratako/Irodori-TTS-v4.1-Small{,-MF}`） | OK | 倫理面の制限: 同意のない声の複製・ディープフェイク・誤情報の禁止。**この移植版では SilentCipher の透かしが付かない** |
+| speech.cpp: Semantic-DACVAE-Japanese-32dim コーデック（Irodori の GGUF に同梱） | — | MIT（`Aratako/Semantic-DACVAE-Japanese-32dim`） | OK | Meta の `facebook/dacvae-watermarked`（Apache 2.0）から派生 |
 
 **Piper について**: `piper-tts` パッケージは GPL-3.0 です。また、デフォルトの `en_US-lessac-medium` 音声は Lessac Technologies 提供の Blizzard 2013 データセットで学習されており、このデータセットのライセンスは商用利用を禁止しています。商用利用が必要な場合は、許容的なライセンスで学習された別の voice モデルを選択してください。
 
@@ -2531,3 +2594,15 @@ Colab T4 で確認済み: エンジン・`/v1` エンドポイント・trycloudf
   https://huggingface.co/Vyvo/Vyvo-Multilingual-JA-FT-v0.1
 - Kyutai Mimi codec (Hugging Face)
   https://huggingface.co/kyutai/mimi
+- speech.cpp
+  https://github.com/nyosegawa/speech.cpp
+- speech.cpp Qwen3-TTS 0.6B CustomVoice GGUF (Hugging Face)
+  https://huggingface.co/sakasegawa/Qwen3-TTS-12Hz-0.6B-CustomVoice-GGUF
+- speech.cpp Qwen3-TTS 1.7B CustomVoice GGUF (Hugging Face)
+  https://huggingface.co/sakasegawa/Qwen3-TTS-12Hz-1.7B-CustomVoice-GGUF
+- speech.cpp Irodori-TTS v4.1-Small-MF GGUF (Hugging Face)
+  https://huggingface.co/sakasegawa/Irodori-TTS-v4.1-Small-MF-GGUF
+- speech.cpp Irodori-TTS v4.1-Small GGUF (Hugging Face)
+  https://huggingface.co/sakasegawa/Irodori-TTS-v4.1-Small-GGUF
+- Semantic-DACVAE-Japanese-32dim codec (Hugging Face)
+  https://huggingface.co/Aratako/Semantic-DACVAE-Japanese-32dim

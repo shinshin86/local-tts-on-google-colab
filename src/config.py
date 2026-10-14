@@ -479,6 +479,23 @@ class Settings:
     vyvo_repetition_penalty: float = 1.1
     vyvo_max_new_tokens: int = 9600
     vyvo_min_new_tokens: int = 960
+    # speech.cpp (nyosegawa): a single C++/ggml executable that serves
+    # Qwen3-TTS and Irodori-TTS v4.1 GGUF models over OpenAI's
+    # /v1/audio/speech, on Vulkan or the CPU — no Python, PyTorch or CUDA.
+    # Code MIT; Qwen3-TTS weights Apache-2.0; Irodori-TTS v4.1 weights MIT with
+    # ethical restrictions. Its Irodori port does not apply the SilentCipher
+    # watermark (the upstream runtime treats it as optional).
+    speech_cpp_version: str = "0.8.6"
+    speech_cpp_model: str = "qwen3-tts-0.6b"
+    speech_cpp_default_voice: str = "default"
+    speech_cpp_qwen3_speaker: str = "ono_anna"
+    speech_cpp_prompt_wav: str = ""
+    speech_cpp_instructions: str = ""
+    speech_cpp_language: str = "ja"
+    speech_cpp_steps: int = 0
+    speech_cpp_device: str = "auto"
+    speech_cpp_use_vulkan: bool = True
+    speech_cpp_backend_port: int = 5007
     root_dir: Path = Path("/content/openai-compatible-local-tts")
     repo_dir: Path = field(default_factory=default_repo_dir)
     app_port: int = 8000

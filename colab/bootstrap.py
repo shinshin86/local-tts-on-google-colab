@@ -391,6 +391,17 @@ def parse_args():
     parser.add_argument("--vyvo-repetition-penalty", type=float, default=1.1)
     parser.add_argument("--vyvo-max-new-tokens", type=int, default=9600)
     parser.add_argument("--vyvo-min-new-tokens", type=int, default=960)
+    parser.add_argument("--speech-cpp-version", default="0.8.6")
+    parser.add_argument("--speech-cpp-model", default="qwen3-tts-0.6b")
+    parser.add_argument("--speech-cpp-default-voice", default="default")
+    parser.add_argument("--speech-cpp-qwen3-speaker", default="ono_anna")
+    parser.add_argument("--speech-cpp-prompt-wav", default="")
+    parser.add_argument("--speech-cpp-instructions", default="")
+    parser.add_argument("--speech-cpp-language", default="ja")
+    parser.add_argument("--speech-cpp-steps", type=int, default=0)
+    parser.add_argument("--speech-cpp-device", default="auto")
+    parser.add_argument("--speech-cpp-no-vulkan", action="store_true")
+    parser.add_argument("--speech-cpp-backend-port", type=int, default=5007)
     parser.add_argument("--root-dir", default="/content/openai-compatible-local-tts")
     return parser.parse_args()
 
@@ -732,6 +743,17 @@ def main():
         vyvo_repetition_penalty=args.vyvo_repetition_penalty,
         vyvo_max_new_tokens=args.vyvo_max_new_tokens,
         vyvo_min_new_tokens=args.vyvo_min_new_tokens,
+        speech_cpp_version=args.speech_cpp_version,
+        speech_cpp_model=args.speech_cpp_model,
+        speech_cpp_default_voice=args.speech_cpp_default_voice,
+        speech_cpp_qwen3_speaker=args.speech_cpp_qwen3_speaker,
+        speech_cpp_prompt_wav=args.speech_cpp_prompt_wav,
+        speech_cpp_instructions=args.speech_cpp_instructions,
+        speech_cpp_language=args.speech_cpp_language,
+        speech_cpp_steps=args.speech_cpp_steps,
+        speech_cpp_device=args.speech_cpp_device,
+        speech_cpp_use_vulkan=not args.speech_cpp_no_vulkan,
+        speech_cpp_backend_port=args.speech_cpp_backend_port,
         root_dir=Path(args.root_dir),
         repo_dir=REPO_DIR,
     )

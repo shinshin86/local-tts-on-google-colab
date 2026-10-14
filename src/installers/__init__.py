@@ -47,6 +47,7 @@ from .sarashina_tts import install as install_sarashina_tts
 from .scenema import install as install_scenema
 from .sine_wave_tts import install as install_sine_wave_tts
 from .spark_tts import install as install_spark_tts
+from .speech_cpp import install as install_speech_cpp
 from .style_bert import install as install_style_bert
 from .styletts2 import install as install_styletts2
 from .supertonic import install as install_supertonic
@@ -113,6 +114,7 @@ INSTALLERS = {
     "Scenema": install_scenema,
     "Sine-Wave-TTS": install_sine_wave_tts,
     "Spark-TTS": install_spark_tts,
+    "speech.cpp": install_speech_cpp,
     "TinyTTS": install_tiny_tts,
     "VibeVoice-Realtime": install_vibevoice,
     "VoxCPM2": install_voxcpm,
