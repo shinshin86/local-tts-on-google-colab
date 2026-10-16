@@ -128,6 +128,8 @@ def resolve_selected_voice(settings: Settings) -> str:
         return "default"
     if settings.engine == "speech.cpp":
         return settings.speech_cpp_default_voice
+    if settings.engine == "drama3-small":
+        return settings.drama3_default_voice
     return ""
 
 
@@ -919,6 +921,22 @@ def print_engine_voice_hints(settings: Settings):
             print("注意: speech.cpp 版の Irodori-TTS は SilentCipher の透かしを付けません（上流 speech.cpp が未対応）。")
             print("乱用防止: 本人の同意なく声を複製しない・ディープフェイクに使わない（Irodori-TTS のモデルカードの制限）。")
         print("ライセンス: speech.cpp のコードは MIT。Qwen3-TTS の重みは Apache-2.0、Irodori-TTS v4.1 の重みとコーデックは MIT。")
+    elif settings.engine == "drama3-small":
+        print("drama3-small は Fish Audio Drama 3 を枝刈り・3bit 量子化した GGUF を audio.cpp で動かすエンジンです（日本語 / 英語）。Built with Fish Audio.")
+        print(f"audio.cpp: {settings.drama3_audiocpp_commit[:8]} + モデル同梱パッチ（初回は CUDA ビルドに時間がかかります）")
+        print(f"モデル: {settings.drama3_hf_repo}@{settings.drama3_hf_revision[:8]}（約 10.5GB）")
+        print(f"デフォルト voice: {settings.drama3_default_voice}")
+        print("voice 候補: default（参照音声なし。文頭の [英語の指示] や instructions で話し方を指定）")
+        if settings.drama3_prompt_wav:
+            print(f"             clone（参照音声: {settings.drama3_prompt_wav}）")
+        else:
+            print("             clone は --drama3-prompt-wav（10〜30 秒推奨）と書き起こし --drama3-prompt-text を指定すると有効になります")
+        print(f"sampling: temperature={settings.drama3_temperature} / top_p={settings.drama3_top_p} / top_k={settings.drama3_top_k} / max_tokens={settings.drama3_max_tokens}")
+        print(f"pause fix: max_pause_frames={settings.drama3_max_pause_frames}（0 で無効）")
+        print("注意: GPU 必須（L4 推奨。VRAM は短文で約 11GB、30〜40 秒の出力で 13〜15GB）。")
+        print("ライセンス: audio.cpp のコードは Apache-2.0。重みは Fish Audio Community License v1.0（研究・非商用は無料、年商 50 万ドル未満なら限定的な商用可）。")
+        print("公開 URL を第三者に使わせる運用（Hosted Service）は Fish Audio との別契約が必要です。URL は自分だけで使ってください。")
+        print("禁止事項: 本人の同意なく声を模倣しない・なりすまし・透かしや来歴情報の除去など（モデルカード／ライセンス IV(b)）。")
     else:
         print(f"{settings.engine} の追加情報はありません。")
 

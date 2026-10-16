@@ -31,6 +31,7 @@
       "CSM-1B",
       "Dia",
       "dots.tts",
+      "drama3-small",
       "DramaBox",
       "F5-TTS",
       "FireRedTTS2",
@@ -746,6 +747,83 @@
           "default": 1.5,
           "type": "number",
           "flag": "--dots-tts-speaker-scale"
+        }
+      ]
+    },
+    {
+      "id": "drama3-small",
+      "title": "drama3-small (Fish Audio Drama 3 derivative GGUF on audio.cpp, Japanese / English, L4 GPU required)",
+      "status": "",
+      "status_ja": "",
+      "languages": "",
+      "languages_ja": "",
+      "description": "",
+      "description_ja": "",
+      "notes": [
+        "- [pentacoxian-dev/drama3-small-GGUF](https://huggingface.co/pentacoxian-dev/drama3-small-GGUF) is a pruned, IQ3_XXS-quantized derivative of [Fish Audio Drama 3](https://huggingface.co/fishaudio/drama-3) (about 10.5 GB). It runs on [audio.cpp](https://github.com/JarodMica/audio.cpp) at a pinned commit plus the patch from the model repo; the first launch builds audio.cpp with CUDA, which takes a while. VRAM about 11 GB for short lines, 13-15 GB for 30-40 s outputs.",
+        "- `default` uses no reference voice; steer delivery with English directions in square brackets such as `[softly, whispering]`, inline tags such as `[laughs]`, or `DRAMA3_INSTRUCTIONS` (prepended as a direction). Set `DRAMA3_PROMPT_WAV` (10-30 s) and its transcript `DRAMA3_PROMPT_TEXT` (required) for `voice=\"clone\"`.",
+        "- License: audio.cpp code Apache-2.0. Weights: **Fish Audio Community License v1.0** (free for research / non-commercial use; limited commercial use under USD 500k annual revenue; offering a Hosted Service to third parties needs a separate license from Fish Audio, so keep the public URL to yourself). Do not imitate an identifiable person's voice without consent or remove watermarks / provenance signals. Built with Fish Audio."
+      ],
+      "notes_ja": [],
+      "prefix": "DRAMA3",
+      "params": [
+        {
+          "name": "DRAMA3_DEFAULT_VOICE",
+          "default": "default",
+          "type": "select",
+          "options": [
+            "default",
+            "clone"
+          ],
+          "flag": "--drama3-default-voice"
+        },
+        {
+          "name": "DRAMA3_PROMPT_WAV",
+          "default": "",
+          "type": "string",
+          "flag": "--drama3-prompt-wav"
+        },
+        {
+          "name": "DRAMA3_PROMPT_TEXT",
+          "default": "",
+          "type": "string",
+          "flag": "--drama3-prompt-text"
+        },
+        {
+          "name": "DRAMA3_INSTRUCTIONS",
+          "default": "",
+          "type": "string",
+          "flag": "--drama3-instructions"
+        },
+        {
+          "name": "DRAMA3_TEMPERATURE",
+          "default": 0.7,
+          "type": "number",
+          "flag": "--drama3-temperature"
+        },
+        {
+          "name": "DRAMA3_TOP_P",
+          "default": 0.7,
+          "type": "number",
+          "flag": "--drama3-top-p"
+        },
+        {
+          "name": "DRAMA3_TOP_K",
+          "default": 30,
+          "type": "integer",
+          "flag": "--drama3-top-k"
+        },
+        {
+          "name": "DRAMA3_MAX_TOKENS",
+          "default": 1024,
+          "type": "integer",
+          "flag": "--drama3-max-tokens"
+        },
+        {
+          "name": "DRAMA3_MAX_PAUSE_FRAMES",
+          "default": 10,
+          "type": "integer",
+          "flag": "--drama3-max-pause-frames"
         }
       ]
     },

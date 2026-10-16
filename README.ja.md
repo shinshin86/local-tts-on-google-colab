@@ -137,7 +137,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Audio8-TTS", "Bark", "Breeze-TTS-2", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "FireRedTTS2", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "IndexTTS2", "Irodori-TTS", "Irodori-TTS-Anime", "Irodori-TTS-Large", "Irodori-TTS-Lite", "Irodori-TTS-MF", "KittenTTS", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "speech.cpp", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "ZeroTTS", "Zonos", "ZONOS2"]
+ENGINE = "Kokoro"  #@param ["Audio8-TTS", "Bark", "Breeze-TTS-2", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "drama3-small", "DramaBox", "F5-TTS", "FireRedTTS2", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "IndexTTS2", "Irodori-TTS", "Irodori-TTS-Anime", "Irodori-TTS-Large", "Irodori-TTS-Lite", "Irodori-TTS-MF", "KittenTTS", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "speech.cpp", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "ZeroTTS", "Zonos", "ZONOS2"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -792,6 +792,21 @@ SPEECH_CPP_LANGUAGE = "ja"  #@param {type:"string"}
 SPEECH_CPP_STEPS = 0  #@param {type:"integer"}
 SPEECH_CPP_DEVICE = "auto"  #@param ["auto", "gpu", "cpu"]
 SPEECH_CPP_USE_VULKAN = True  #@param {type:"boolean"}
+
+#@markdown ---
+#@markdown drama3-small (Fish Audio Drama 3 derivative GGUF on audio.cpp, Japanese / English, L4 GPU required)
+#@markdown - [pentacoxian-dev/drama3-small-GGUF](https://huggingface.co/pentacoxian-dev/drama3-small-GGUF) is a pruned, IQ3_XXS-quantized derivative of [Fish Audio Drama 3](https://huggingface.co/fishaudio/drama-3) (about 10.5 GB). It runs on [audio.cpp](https://github.com/JarodMica/audio.cpp) at a pinned commit plus the patch from the model repo; the first launch builds audio.cpp with CUDA, which takes a while. VRAM about 11 GB for short lines, 13-15 GB for 30-40 s outputs.
+#@markdown - `default` uses no reference voice; steer delivery with English directions in square brackets such as `[softly, whispering]`, inline tags such as `[laughs]`, or `DRAMA3_INSTRUCTIONS` (prepended as a direction). Set `DRAMA3_PROMPT_WAV` (10-30 s) and its transcript `DRAMA3_PROMPT_TEXT` (required) for `voice="clone"`.
+#@markdown - License: audio.cpp code Apache-2.0. Weights: **Fish Audio Community License v1.0** (free for research / non-commercial use; limited commercial use under USD 500k annual revenue; offering a Hosted Service to third parties needs a separate license from Fish Audio, so keep the public URL to yourself). Do not imitate an identifiable person's voice without consent or remove watermarks / provenance signals. Built with Fish Audio.
+DRAMA3_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+DRAMA3_PROMPT_WAV = ""  #@param {type:"string"}
+DRAMA3_PROMPT_TEXT = ""  #@param {type:"string"}
+DRAMA3_INSTRUCTIONS = ""  #@param {type:"string"}
+DRAMA3_TEMPERATURE = 0.7  #@param {type:"number"}
+DRAMA3_TOP_P = 0.7  #@param {type:"number"}
+DRAMA3_TOP_K = 30  #@param {type:"integer"}
+DRAMA3_MAX_TOKENS = 1024  #@param {type:"integer"}
+DRAMA3_MAX_PAUSE_FRAMES = 10  #@param {type:"integer"}
 
 import shlex
 import subprocess
@@ -1471,6 +1486,24 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         str(SPEECH_CPP_STEPS),
         "--speech-cpp-device",
         SPEECH_CPP_DEVICE,
+        "--drama3-default-voice",
+        DRAMA3_DEFAULT_VOICE,
+        "--drama3-prompt-wav",
+        DRAMA3_PROMPT_WAV,
+        "--drama3-prompt-text",
+        DRAMA3_PROMPT_TEXT,
+        "--drama3-instructions",
+        DRAMA3_INSTRUCTIONS,
+        "--drama3-temperature",
+        str(DRAMA3_TEMPERATURE),
+        "--drama3-top-p",
+        str(DRAMA3_TOP_P),
+        "--drama3-top-k",
+        str(DRAMA3_TOP_K),
+        "--drama3-max-tokens",
+        str(DRAMA3_MAX_TOKENS),
+        "--drama3-max-pause-frames",
+        str(DRAMA3_MAX_PAUSE_FRAMES),
     ]
     if IRODORI_LITE_CODEC_INT4:
         cmd.append("--irodori-lite-codec-int4")

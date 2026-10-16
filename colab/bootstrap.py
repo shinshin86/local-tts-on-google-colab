@@ -402,6 +402,19 @@ def parse_args():
     parser.add_argument("--speech-cpp-device", default="auto")
     parser.add_argument("--speech-cpp-no-vulkan", action="store_true")
     parser.add_argument("--speech-cpp-backend-port", type=int, default=5007)
+    parser.add_argument("--drama3-hf-revision", default="4a3078e885344bb9b24d511cec389d2726854d15")
+    parser.add_argument("--drama3-cuda-arch", default="")
+    parser.add_argument("--drama3-default-voice", default="default")
+    parser.add_argument("--drama3-prompt-wav", default="")
+    parser.add_argument("--drama3-prompt-text", default="")
+    parser.add_argument("--drama3-instructions", default="")
+    parser.add_argument("--drama3-temperature", type=float, default=0.7)
+    parser.add_argument("--drama3-top-p", type=float, default=0.7)
+    parser.add_argument("--drama3-top-k", type=int, default=30)
+    parser.add_argument("--drama3-max-tokens", type=int, default=1024)
+    parser.add_argument("--drama3-context-length", type=int, default=4096)
+    parser.add_argument("--drama3-max-pause-frames", type=int, default=10)
+    parser.add_argument("--drama3-backend-port", type=int, default=5010)
     parser.add_argument("--root-dir", default="/content/openai-compatible-local-tts")
     return parser.parse_args()
 
@@ -754,6 +767,19 @@ def main():
         speech_cpp_device=args.speech_cpp_device,
         speech_cpp_use_vulkan=not args.speech_cpp_no_vulkan,
         speech_cpp_backend_port=args.speech_cpp_backend_port,
+        drama3_hf_revision=args.drama3_hf_revision,
+        drama3_cuda_arch=args.drama3_cuda_arch,
+        drama3_default_voice=args.drama3_default_voice,
+        drama3_prompt_wav=args.drama3_prompt_wav,
+        drama3_prompt_text=args.drama3_prompt_text,
+        drama3_instructions=args.drama3_instructions,
+        drama3_temperature=args.drama3_temperature,
+        drama3_top_p=args.drama3_top_p,
+        drama3_top_k=args.drama3_top_k,
+        drama3_max_tokens=args.drama3_max_tokens,
+        drama3_context_length=args.drama3_context_length,
+        drama3_max_pause_frames=args.drama3_max_pause_frames,
+        drama3_backend_port=args.drama3_backend_port,
         root_dir=Path(args.root_dir),
         repo_dir=REPO_DIR,
     )
