@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TTS Sample Library</title>
+  <style>
+    :root {
+      --bg: #f7f7f8;
+      --surface: #ffffff;
+      --text: #1d1d20;
+      --muted: #6b6b75;
+      --border: #e2e2e6;
+      --accent: #2f6fde;
+      --accent-soft: #e6eefc;
+      --error: #c03a2b;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #16161a;
+        --surface: #1f1f24;
+        --text: #ececf0;
+        --muted: #9a9aa6;
+        --border: #34343c;
+        --accent: #7aa5f5;
+        --accent-soft: #263552;
+        --error: #f08273;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font: 14px/1.5 system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", sans-serif;
+    }
+    header, .controls, .empty { padding: 0 16px; max-width: 100%; }
+    header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 16px; }
+    h1 { font-size: 20px; margin: 0; }
+    .controls { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; margin: 16px 0; }
+    .group { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+    .group-label { color: var(--muted); margin-right: 4px; }
+    button.chip {
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 3px 12px;
+      font: inherit;
+      cursor: pointer;
+    }
+    button.chip[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+    button.link { border: none; background: none; color: var(--accent); cursor: pointer; font: inherit; padding: 0 4px; }
+    label.toggle { display: inline-flex; gap: 6px; align-items: center; cursor: pointer; }
+    .grid-wrap { overflow: auto; margin: 0 16px 24px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); max-height: calc(100vh - 170px); }
+    table { border-collapse: separate; border-spacing: 0; }
+    th, td { border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); padding: 10px 12px; vertical-align: top; background: var(--surface); }
+    thead th { position: sticky; top: 0; z-index: 2; text-align: left; min-width: 230px; }
+    th.text-col, td.text-col { position: sticky; left: 0; z-index: 1; width: 320px; min-width: 260px; max-width: 320px; }
+    thead th.text-col { z-index: 3; }
+    .engine { font-weight: 600; }
+    .sub { color: var(--muted); font-size: 12px; font-weight: normal; }
+    .note { font-size: 12px; font-weight: normal; margin-top: 2px; }
+    .tid { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; color: var(--muted); }
+    audio { width: 220px; height: 36px; display: block; }
+    .stat { color: var(--muted); font-size: 12px; margin-top: 4px; }
+    .err { color: var(--error); font-size: 12px; max-width: 220px; overflow-wrap: anywhere; }
+    .na { color: var(--muted); }
+    .empty { color: var(--muted); }
+    code { background: var(--accent-soft); padding: 1px 5px; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>TTS Sample Library</h1>
+    <div class="group" id="ui-lang"></div>
+  </header>
+  <div class="controls" id="controls"></div>
+  <div id="main"></div>
+
+  <script>
+    const I18N = {
+      en: {
+        lines: "Lines", all: "All", ja: "Japanese", en: "English", engines: "Engines",
+        selectAll: "all", selectNone: "none", latestOnly: "Latest run per engine/voice only",
+        line: "Line", gen: "gen", audio: "audio", notGenerated: "not generated",
+        empty: "No samples yet. While a Colab cell is running, fetch some with:",
+        nothing: "Nothing matches the current filters.",
+        loadError: "Could not load manifest.json:",
+      },
+      ja: {
+        lines: "セリフ", all: "すべて", ja: "日本語", en: "英語", engines: "エンジン",
+        selectAll: "全選択", selectNone: "全解除", latestOnly: "エンジン×voice ごとに最新の実行のみ",
+        line: "セリフ", gen: "生成", audio: "音声", notGenerated: "未生成",
+        empty: "まだサンプルがありません。Colab のセルを動かしている間に次のコマンドで取得してください:",
+        nothing: "現在の絞り込み条件に一致するものがありません。",
+        loadError: "manifest.json を読み込めませんでした:",
+      },
+    };
+
+    function load(key, fallback) {
+      try { const v = localStorage.getItem(key); return v === null ? fallback : JSON.parse(v); } catch { return fallback; }
+    }
+    function save(key, value) {
+      try { localStorage.setItem(key, JSON.stringify(value)); } catch { /* storage unavailable */ }
+    }
+
+    const state = {
+      ui: load("tts-samples-ui", (navigator.language || "").toLowerCase().startsWith("ja") ? "ja" : "en"),
+      lang: load("tts-samples-lang", "all"),
+      latestOnly: load("tts-samples-latest", true),
+      hiddenEngines: new Set(load("tts-samples-hidden", [])),
+    };
+    let manifest = null;
+    const t = (k) => I18N[state.ui][k];
+
+    function el(tag, attrs = {}, ...children) {
+      const node = document.createElement(tag);
+      for (const [k, v] of Object.entries(attrs)) {
+        if (k === "onclick" || k === "onchange") node[k] = v;
+        else if (v !== false && v != null) node.setAttribute(k, v === true ? "" : v);
+      }
+      for (const c of children.flat()) if (c != null) node.append(c);
+      return node;
+    }
+    function chip(label, pressed, onclick) {
+      return el("button", { type: "button", class: "chip", "aria-pressed": String(pressed), onclick }, label);
+    }
+    function persist() {
+      save("tts-samples-ui", state.ui);
+      save("tts-samples-lang", state.lang);
+      save("tts-samples-latest", state.latestOnly);
+      save("tts-samples-hidden", [...state.hiddenEngines]);
+    }
+    function update() { persist(); render(); }
+
+    function visibleRuns() {
+      let runs = manifest.runs.filter((r) => !state.hiddenEngines.has(r.engine));
+      if (state.latestOnly) {
+        const latest = new Map();
+        for (const r of runs) {
+          const key = `${r.engine}\u0000${r.voice}`;
+          if (!latest.has(key) || r.created_at > latest.get(key).created_at) latest.set(key, r);
+        }
+        runs = [...latest.values()];
+      }
+      return runs.sort((a, b) => a.engine.localeCompare(b.engine) || a.voice.localeCompare(b.voice) || b.created_at.localeCompare(a.created_at));
+    }
+
+    function renderControls() {
+      document.documentElement.lang = state.ui;
+      const ui = document.getElementById("ui-lang");
+      ui.replaceChildren(
+        chip("English", state.ui === "en", () => { state.ui = "en"; update(); }),
+        chip("日本語", state.ui === "ja", () => { state.ui = "ja"; update(); }),
+      );
+
+      const engines = [...new Set(manifest.runs.map((r) => r.engine))].sort((a, b) => a.localeCompare(b));
+      const controls = document.getElementById("controls");
+      controls.replaceChildren(
+        el("div", { class: "group" },
+          el("span", { class: "group-label" }, t("lines")),
+          ["all", "ja", "en"].map((l) => chip(t(l), state.lang === l, () => { state.lang = l; update(); })),
+        ),
+        el("label", { class: "toggle" },
+          el("input", { type: "checkbox", checked: state.latestOnly, onchange: (e) => { state.latestOnly = e.target.checked; update(); } }),
+          t("latestOnly"),
+        ),
+        engines.length ? el("div", { class: "group" },
+          el("span", { class: "group-label" }, t("engines")),
+          el("button", { type: "button", class: "link", onclick: () => { state.hiddenEngines.clear(); update(); } }, t("selectAll")),
+          el("button", { type: "button", class: "link", onclick: () => { engines.forEach((e) => state.hiddenEngines.add(e)); update(); } }, t("selectNone")),
+          engines.map((e) => chip(e, !state.hiddenEngines.has(e), () => {
+            state.hiddenEngines.has(e) ? state.hiddenEngines.delete(e) : state.hiddenEngines.add(e);
+            update();
+          })),
+        ) : null,
+      );
+    }
+
+    function renderGrid() {
+      const main = document.getElementById("main");
+      if (!manifest.runs.length) {
+        main.replaceChildren(el("div", { class: "empty" },
+          el("p", {}, t("empty")),
+          el("p", {}, el("code", {}, "python3 tools/fetch_samples.py --url https://xxxx.trycloudflare.com")),
+        ));
+        return;
+      }
+      const texts = manifest.texts.filter((x) => state.lang === "all" || x.lang === state.lang);
+      // Hide runs that have nothing for the selected lines (e.g. a --lang ja run while viewing English).
+      const runs = visibleRuns().filter((r) => texts.some((x) => r.items[x.id]));
+      if (!runs.length || !texts.length) {
+        main.replaceChildren(el("p", { class: "empty" }, t("nothing")));
+        return;
+      }
+
+      const head = el("tr", {},
+        el("th", { class: "text-col" }, t("line")),
+        runs.map((r) => el("th", {},
+          el("div", { class: "engine" }, r.engine),
+          el("div", { class: "sub" }, `voice: ${r.voice} · ${r.created_at.replace("T", " ")}`),
+          r.note ? el("div", { class: "note" }, r.note) : null,
+        )),
+      );
+      const rows = texts.map((x) => el("tr", {},
+        el("td", { class: "text-col" },
+          el("div", { class: "tid" }, `${x.id} · ${x.focus}`),
+          el("div", {}, x.text),
+        ),
+        runs.map((r) => {
+          const item = r.items[x.id];
+          if (!item) return el("td", {}, el("span", { class: "na" }, "—"));
+          if (!item.src) return el("td", {}, el("div", { class: "err" }, item.error || t("notGenerated")));
+          const src = item.src.split("/").map(encodeURIComponent).join("/");
+          const stats = [
+            item.duration_sec != null ? `${t("audio")} ${item.duration_sec}s` : null,
+            item.elapsed_sec != null ? `${t("gen")} ${item.elapsed_sec}s` : null,
+          ].filter(Boolean).join(" · ");
+          return el("td", {},
+            el("audio", { controls: true, preload: "none", src }),
+            stats ? el("div", { class: "stat" }, stats) : null,
+          );
+        }),
+      ));
+      main.replaceChildren(el("div", { class: "grid-wrap" },
+        el("table", {}, el("thead", {}, head), el("tbody", {}, rows)),
+      ));
+    }
+
+    function render() { renderControls(); renderGrid(); }
+
+    // Only one sample plays at a time so A/B listening stays clean.
+    document.addEventListener("play", (e) => {
+      for (const a of document.querySelectorAll("audio")) if (a !== e.target) a.pause();
+    }, true);
+
+    fetch("manifest.json", { cache: "no-store" })
+      .then((r) => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
+      .then((data) => { manifest = data; render(); })
+      .catch((err) => {
+        document.getElementById("main").replaceChildren(el("p", { class: "empty" }, `${t("loadError")} ${err.message}`));
+      });
+  </script>
+</body>
+</html>
