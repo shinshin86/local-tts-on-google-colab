@@ -47,11 +47,13 @@ def http_get_json(url: str, timeout: float) -> dict | None:
 
 
 def request_speech(
-    base_url: str, text: str, voice: str | None, timeout: float
+    base_url: str, text: str, voice: str | None, instructions: str | None, timeout: float
 ) -> tuple[bytes, dict[str, str]]:
     body: dict[str, object] = {"input": text, "response_format": "wav"}
     if voice:
         body["voice"] = voice
+    if instructions:
+        body["instructions"] = instructions
     req = urllib.request.Request(
         f"{base_url}/v1/audio/speech",
         data=json.dumps(body).encode("utf-8"),
@@ -92,6 +94,7 @@ def main() -> int:
     parser.add_argument("--url", required=True, help="Public base URL, e.g. https://xxxx.trycloudflare.com")
     parser.add_argument("--engine", help="Engine name. Defaults to the `engine` field reported by GET /")
     parser.add_argument("--voice", help="OpenAI `voice` value. Omitted = the engine's default voice")
+    parser.add_argument("--instructions", help="OpenAI `instructions` value (e.g. a voice-design caption) for engines that support it")
     parser.add_argument("--lang", choices=["ja", "en", "all"], default="all", help="Which lines to generate (default: all)")
     parser.add_argument("--ids", nargs="+", help="Only these text ids (e.g. ja-01 en-04)")
     parser.add_argument("--note", default="", help="Free-form note stored with this run (shown in the viewer)")
@@ -112,10 +115,14 @@ def main() -> int:
     started = dt.datetime.now()
     voice_label = args.voice or "default"
     run_id = f"{started:%Y%m%d-%H%M%S}_{safe_name(voice_label)}"
+    if args.instructions:
+        run_id += "_instructions"
     run_dir = args.out / safe_name(engine) / run_id
     run_dir.mkdir(parents=True, exist_ok=True)
 
     print(f"Engine: {engine} / voice: {voice_label} / {len(texts)} line(s)")
+    if args.instructions:
+        print(f"Instructions: {args.instructions}")
     print(f"Saving to: {run_dir}")
 
     results = []
@@ -124,7 +131,7 @@ def main() -> int:
         entry: dict[str, object] = {"id": t["id"], "lang": t["lang"], "text": t["text"]}
         t0 = time.monotonic()
         try:
-            audio, headers = request_speech(base_url, t["text"], args.voice, args.timeout)
+            audio, headers = request_speech(base_url, t["text"], args.voice, args.instructions, args.timeout)
         except Exception as exc:  # keep going so one bad line doesn't lose the rest
             entry["error"] = str(exc)
             print(f"failed: {exc}")
@@ -151,6 +158,7 @@ def main() -> int:
     meta = {
         "engine": engine,
         "voice": voice_label,
+        "instructions": args.instructions or "",
         "created_at": started.isoformat(timespec="seconds"),
         "note": args.note,
         "server_info": server_info,

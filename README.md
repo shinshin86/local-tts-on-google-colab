@@ -1550,7 +1550,7 @@ python3 tools/fetch_samples.py --url https://xxxx.trycloudflare.com
 
 - The fixed lines in `tools/sample_texts.json` (5 Japanese + 5 English) are sent to `/v1/audio/speech`, and the returned WAV files are saved under `samples/<engine>/<date>_<voice>/`. `samples/` is git-ignored.
 - `--lang ja` / `--lang en` limits the lines to one language (default: `all`). Use this for engines that only support one language.
-- `--voice clone` and other `voice` values can be passed as-is. `--engine` is read from the server's `GET /` response when omitted. `--note` stores a memo shown in the viewer.
+- `--voice clone` and other `voice` values can be passed as-is. `--instructions` sends the OpenAI `instructions` field (for example an Irodori-TTS voice-design caption) to engines that support it. `--engine` is read from the server's `GET /` response when omitted. `--note` stores a memo shown in the viewer.
 - This script only sends HTTP requests to the public URL. The engine itself keeps running on Colab.
 
 To listen, start the viewer (localhost only, works offline):

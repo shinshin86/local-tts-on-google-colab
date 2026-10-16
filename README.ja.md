@@ -1551,7 +1551,7 @@ python3 tools/fetch_samples.py --url https://xxxx.trycloudflare.com
 
 - `tools/sample_texts.json` の固定セリフ(日本語5文・英語5文)を `/v1/audio/speech` に送り、返ってきた WAV を `samples/<engine>/<日時>_<voice>/` に保存します。`samples/` は git 管理外です。
 - `--lang ja` / `--lang en` でセリフの言語を絞れます(既定は `all`)。片方の言語にしか対応していないエンジンで使ってください。
-- `--voice clone` など `voice` の値はそのまま渡せます。`--engine` を省略するとサーバーの `GET /` の応答から読み取ります。`--note` に書いたメモは試聴画面に表示されます。
+- `--voice clone` など `voice` の値はそのまま渡せます。`--instructions` を付けると、対応しているエンジンに OpenAI の `instructions` フィールドを送ります(Irodori-TTS の VoiceDesign の caption など)。`--engine` を省略するとサーバーの `GET /` の応答から読み取ります。`--note` に書いたメモは試聴画面に表示されます。
 - このスクリプトは公開 URL に HTTP リクエストを送るだけで、エンジンは Colab 上で動きます。
 
 聞くときは試聴用の画面を起動します(localhost のみで待ち受け、オフラインでも使えます)。

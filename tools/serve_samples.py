@@ -44,6 +44,7 @@ def build_manifest(library: Path) -> dict:
                 "path": rel,
                 "engine": meta.get("engine") or run_dir.parent.name,
                 "voice": meta.get("voice", "default"),
+                "instructions": meta.get("instructions", ""),
                 "created_at": meta.get("created_at", ""),
                 "note": meta.get("note", ""),
                 "items": items,
