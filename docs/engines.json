@@ -753,18 +753,20 @@
     {
       "id": "drama3-small",
       "title": "drama3-small (Fish Audio Drama 3 derivative GGUF on audio.cpp, Japanese / English, L4 GPU required)",
-      "status": "",
-      "status_ja": "",
-      "languages": "",
-      "languages_ja": "",
-      "description": "",
-      "description_ja": "",
+      "status": "Works on Colab L4 (verified through the public URL; GPU required, ~10 GB VRAM resident; audio.cpp at a pinned commit + the model repo's patch is **built with CUDA on first launch (~10 min)**, later launches reuse the build; Fish Audio Drama 3 derivative, pruned + IQ3_XXS GGUF ~10.5 GB; `default` is a random speaker and sometimes leaves multi-second silences, use `clone` for a stable voice; **Fish Audio Community License — no Hosted Service for third parties**)",
+      "status_ja": "Colab L4 動作確認済み（公開URL経由で確認。GPU 必須、VRAM 常駐 約10GB。固定コミットの audio.cpp にモデル同梱のパッチを当てて**初回起動時に CUDA でビルド（約10分）**し、2回目以降はビルドを再利用。Fish Audio Drama 3 を枝刈り・IQ3_XXS 量子化した GGUF で約10.5GB。`default` は話者がランダムで数秒の無音が入ることがあるため、声をそろえるなら `clone` を使用。**Fish Audio Community License のため、第三者向けの Hosted Service は不可**）",
+      "languages": "Japanese / English",
+      "languages_ja": "日本語 / 英語",
+      "description": "[pentacoxian-dev/drama3-small-GGUF](https://huggingface.co/pentacoxian-dev/drama3-small-GGUF) is a compressed derivative of [Fish Audio Drama 3](https://huggingface.co/fishaudio/drama-3) for Japanese and English (Japanese with English technical terms included). The 35B-A3B mixture-of-experts backbone keeps 100 of 256 experts in most layers, the experts are quantized to IQ3_XXS, and the output head is reduced to speech tokens, giving one GGUF of about 10.5 GB. Fish Audio does not sponsor or endorse it. Built with Fish Audio.",
+      "description_ja": "[pentacoxian-dev/drama3-small-GGUF](https://huggingface.co/pentacoxian-dev/drama3-small-GGUF) は、[Fish Audio Drama 3](https://huggingface.co/fishaudio/drama-3) を小さくした派生モデルで、日本語と英語を話せます(英語の技術用語が混ざる日本語にも対応)。35B-A3B の MoE バックボーンは、大半の層で 256 個のエキスパートのうち 100 個だけを残し、エキスパートを IQ3_XXS に量子化しています。出力ヘッドも音声トークンだけに絞っていて、GGUF 1ファイルで約 10.5GB です。Fish Audio の公式リリースではなく、Fish Audio が支援・推奨しているものでもありません。Built with Fish Audio.",
       "notes": [
         "- [pentacoxian-dev/drama3-small-GGUF](https://huggingface.co/pentacoxian-dev/drama3-small-GGUF) is a pruned, IQ3_XXS-quantized derivative of [Fish Audio Drama 3](https://huggingface.co/fishaudio/drama-3) (about 10.5 GB). It runs on [audio.cpp](https://github.com/JarodMica/audio.cpp) at a pinned commit plus the patch from the model repo; the first launch builds audio.cpp with CUDA, which takes a while. VRAM about 11 GB for short lines, 13-15 GB for 30-40 s outputs.",
         "- `default` uses no reference voice; steer delivery with English directions in square brackets such as `[softly, whispering]`, inline tags such as `[laughs]`, or `DRAMA3_INSTRUCTIONS` (prepended as a direction). Set `DRAMA3_PROMPT_WAV` (10-30 s) and its transcript `DRAMA3_PROMPT_TEXT` (required) for `voice=\"clone\"`.",
         "- License: audio.cpp code Apache-2.0. Weights: **Fish Audio Community License v1.0** (free for research / non-commercial use; limited commercial use under USD 500k annual revenue; offering a Hosted Service to third parties needs a separate license from Fish Audio, so keep the public URL to yourself). Do not imitate an identifiable person's voice without consent or remove watermarks / provenance signals. Built with Fish Audio."
       ],
-      "notes_ja": [],
+      "notes_ja": [
+        "- ライセンス: コードは Apache-2.0（audio.cpp、`JarodMica/audio.cpp`）、モデル重みは Fish Audio Community License v1.0（`pentacoxian-dev/drama3-small-GGUF`、`fishaudio/drama-3` の派生モデル）。商用利用: 条件付き。 備考: 研究・非商用は無料。商用は年商50万ドル未満のときだけ可。**第三者向けの Hosted Service は Fish Audio との別契約が必要**。「Built with Fish Audio」の表示が必要。同意のない声の模倣・なりすまし・出力を使った他の音声モデルの学習は禁止"
+      ],
       "prefix": "DRAMA3",
       "params": [
         {
