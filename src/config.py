@@ -496,6 +496,27 @@ class Settings:
     speech_cpp_device: str = "auto"
     speech_cpp_use_vulkan: bool = True
     speech_cpp_backend_port: int = 5007
+    # drama3-small (pentacoxian-dev): a pruned + IQ3_XXS GGUF derivative of
+    # Fish Audio Drama 3, served by audio.cpp (JarodMica) at a pinned commit plus
+    # the patch shipped in the model repo, built with CUDA on first launch.
+    # audio.cpp code Apache-2.0; weights Fish Audio Community License v1.0
+    # (non-commercial / under-USD-500k commercial; Hosted Services need a
+    # separate license; "Built with Fish Audio" attribution).
+    drama3_hf_repo: str = "pentacoxian-dev/drama3-small-GGUF"
+    drama3_hf_revision: str = "4a3078e885344bb9b24d511cec389d2726854d15"
+    drama3_audiocpp_commit: str = "9277495adfdc9b41004bd91db7b7a4e5d456c8df"
+    drama3_cuda_arch: str = ""
+    drama3_default_voice: str = "default"
+    drama3_prompt_wav: str = ""
+    drama3_prompt_text: str = ""
+    drama3_instructions: str = ""
+    drama3_temperature: float = 0.7
+    drama3_top_p: float = 0.7
+    drama3_top_k: int = 30
+    drama3_max_tokens: int = 1024
+    drama3_context_length: int = 4096
+    drama3_max_pause_frames: int = 10
+    drama3_backend_port: int = 5010
     root_dir: Path = Path("/content/openai-compatible-local-tts")
     repo_dir: Path = field(default_factory=default_repo_dir)
     app_port: int = 8000

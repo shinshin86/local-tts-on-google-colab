@@ -66,6 +66,7 @@ Supported engines:
 | dots.tts | Works on Colab L4 (GPU required, bf16 resident ~5.4GB, 48 kHz output; ungated weights, no `HF_TOKEN`; zero-shot cloning model — `default` is a random speaker, use `clone` for a stable voice) | 24 languages (incl. Japanese) | OK |
 | LFM2.5-Audio-JP | Works on Colab L4 (GPU required, ~6.3GB VRAM resident; ungated weights, no `HF_TOKEN`; single built-in Japanese voice, no cloning; 24 kHz output) | Japanese | Conditional (revenue cap) |
 | Ming-omni-TTS | Works on Colab A100 (verified; **A100 40GB required** — 16.8B-A3B MoE, ~35GB VRAM at load, needs `PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True` to fit and will not run on L4 24GB; ungated weights, no `HF_TOKEN`; zero-shot cloning; 44.1 kHz output) | Chinese / English-centric (dialect control incl. Cantonese) | OK |
+| drama3-small | Works on Colab L4 (verified through the public URL; GPU required, ~10 GB VRAM resident; audio.cpp at a pinned commit + the model repo's patch is **built with CUDA on first launch (~10 min)**, later launches reuse the build; Fish Audio Drama 3 derivative, pruned + IQ3_XXS GGUF ~10.5 GB; `default` is a random speaker and sometimes leaves multi-second silences, use `clone` for a stable voice; **Fish Audio Community License — no Hosted Service for third parties**) | Japanese / English | Conditional (non-commercial, or under USD 500k annual revenue) |
 | DramaBox | Works on Colab A100 (GPU required, VRAM ~24GB peak, **LTX-2 Community License — non-compete clause**) | English | Conditional (commercial license for $10M+ revenue) |
 | Scenema | **Not verified on Colab** — text encoder is Gemma 3 12B IT (HF-gated), so running this engine requires accepting the Gemma Terms of Use on Hugging Face and providing `HF_TOKEN` via Colab Secrets. Code paths are in place but end-to-end Colab verification was deferred because `HF_TOKEN` setup is out of scope for this repo's default workflow. **Requires Colab A100 (40GB VRAM)**. First-run downloads ~38GB. Audio model derived from LTX-2.3 → **LTX-2 Community License** (same as DramaBox) | English-centric multilingual | Conditional (commercial license for $10M+ revenue; Gemma terms) |
 | MioTTS | Works on Colab L4 (verified; GPU required, **~4.6GB VRAM** resident — LLM ~3.2GB + codec ~1.4GB, so T4 16GB has ample headroom; LLM-based — a Qwen3-1.7B-Base GGUF hosted via a prebuilt llama-cpp-python CUDA wheel generates MioCodec tokens at 25 Hz → 44.1 kHz; **~4× faster than real time, RTF ≈ 0.25**; ungated weights, no `HF_TOKEN`; preset voices or zero-shot cloning. **Default presets are non-commercial** — clone your own voice for commercial use) | Japanese / English | Not with defaults (clone your own voice instead) |
@@ -136,7 +137,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Audio8-TTS", "Bark", "Breeze-TTS-2", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "DramaBox", "F5-TTS", "FireRedTTS2", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "IndexTTS2", "Irodori-TTS", "Irodori-TTS-Anime", "Irodori-TTS-Large", "Irodori-TTS-Lite", "Irodori-TTS-MF", "KittenTTS", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "speech.cpp", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "ZeroTTS", "Zonos", "ZONOS2"]
+ENGINE = "Kokoro"  #@param ["Audio8-TTS", "Bark", "Breeze-TTS-2", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "drama3-small", "DramaBox", "F5-TTS", "FireRedTTS2", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "IndexTTS2", "Irodori-TTS", "Irodori-TTS-Anime", "Irodori-TTS-Large", "Irodori-TTS-Lite", "Irodori-TTS-MF", "KittenTTS", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "speech.cpp", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "ZeroTTS", "Zonos", "ZONOS2"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -791,6 +792,21 @@ SPEECH_CPP_LANGUAGE = "ja"  #@param {type:"string"}
 SPEECH_CPP_STEPS = 0  #@param {type:"integer"}
 SPEECH_CPP_DEVICE = "auto"  #@param ["auto", "gpu", "cpu"]
 SPEECH_CPP_USE_VULKAN = True  #@param {type:"boolean"}
+
+#@markdown ---
+#@markdown drama3-small (Fish Audio Drama 3 derivative GGUF on audio.cpp, Japanese / English, L4 GPU required)
+#@markdown - [pentacoxian-dev/drama3-small-GGUF](https://huggingface.co/pentacoxian-dev/drama3-small-GGUF) is a pruned, IQ3_XXS-quantized derivative of [Fish Audio Drama 3](https://huggingface.co/fishaudio/drama-3) (about 10.5 GB). It runs on [audio.cpp](https://github.com/JarodMica/audio.cpp) at a pinned commit plus the patch from the model repo; the first launch builds audio.cpp with CUDA, which takes a while. VRAM about 11 GB for short lines, 13-15 GB for 30-40 s outputs.
+#@markdown - `default` uses no reference voice; steer delivery with English directions in square brackets such as `[softly, whispering]`, inline tags such as `[laughs]`, or `DRAMA3_INSTRUCTIONS` (prepended as a direction). Set `DRAMA3_PROMPT_WAV` (10-30 s) and its transcript `DRAMA3_PROMPT_TEXT` (required) for `voice="clone"`.
+#@markdown - License: audio.cpp code Apache-2.0. Weights: **Fish Audio Community License v1.0** (free for research / non-commercial use; limited commercial use under USD 500k annual revenue; offering a Hosted Service to third parties needs a separate license from Fish Audio, so keep the public URL to yourself). Do not imitate an identifiable person's voice without consent or remove watermarks / provenance signals. Built with Fish Audio.
+DRAMA3_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+DRAMA3_PROMPT_WAV = ""  #@param {type:"string"}
+DRAMA3_PROMPT_TEXT = ""  #@param {type:"string"}
+DRAMA3_INSTRUCTIONS = ""  #@param {type:"string"}
+DRAMA3_TEMPERATURE = 0.7  #@param {type:"number"}
+DRAMA3_TOP_P = 0.7  #@param {type:"number"}
+DRAMA3_TOP_K = 30  #@param {type:"integer"}
+DRAMA3_MAX_TOKENS = 1024  #@param {type:"integer"}
+DRAMA3_MAX_PAUSE_FRAMES = 10  #@param {type:"integer"}
 
 import shlex
 import subprocess
@@ -1470,6 +1486,24 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         str(SPEECH_CPP_STEPS),
         "--speech-cpp-device",
         SPEECH_CPP_DEVICE,
+        "--drama3-default-voice",
+        DRAMA3_DEFAULT_VOICE,
+        "--drama3-prompt-wav",
+        DRAMA3_PROMPT_WAV,
+        "--drama3-prompt-text",
+        DRAMA3_PROMPT_TEXT,
+        "--drama3-instructions",
+        DRAMA3_INSTRUCTIONS,
+        "--drama3-temperature",
+        str(DRAMA3_TEMPERATURE),
+        "--drama3-top-p",
+        str(DRAMA3_TOP_P),
+        "--drama3-top-k",
+        str(DRAMA3_TOP_K),
+        "--drama3-max-tokens",
+        str(DRAMA3_MAX_TOKENS),
+        "--drama3-max-pause-frames",
+        str(DRAMA3_MAX_PAUSE_FRAMES),
     ]
     if IRODORI_LITE_CODEC_INT4:
         cmd.append("--irodori-lite-codec-int4")
@@ -2325,6 +2359,38 @@ Through the public `trycloudflare` URL, `/v1/audio/speech` returned HTTP 200 wit
 
 License: speech.cpp code is MIT. Qwen3-TTS weights (and the `sakasegawa/*-GGUF` conversions) are Apache-2.0. Irodori-TTS v4.1-Small / Small-MF weights and the Semantic-DACVAE-Japanese-32dim codec in the GGUF files are MIT; the codec derives from Meta's Apache-2.0 `facebook/dacvae-watermarked`.
 
+### drama3-small
+
+[pentacoxian-dev/drama3-small-GGUF](https://huggingface.co/pentacoxian-dev/drama3-small-GGUF) is a compressed derivative of [Fish Audio Drama 3](https://huggingface.co/fishaudio/drama-3) for Japanese and English (Japanese with English technical terms included). The 35B-A3B mixture-of-experts backbone keeps 100 of 256 experts in most layers, the experts are quantized to IQ3_XXS, and the output head is reduced to speech tokens, giving one GGUF of about 10.5 GB. Fish Audio does not sponsor or endorse it. Built with Fish Audio.
+
+The GGUF only runs on [audio.cpp](https://github.com/JarodMica/audio.cpp) at commit `9277495a` with `drama3-small-audiocpp.patch` from the model repo; neither upstream audio.cpp nor llama.cpp can load it. That commit is not on any branch of the audio.cpp repository, so the installer downloads it as a tarball by SHA, applies the patch, and builds only the `fish_drama3` family with CUDA for the runtime's GPU (`--model-set custom --models fish_drama3`; without `--model-set custom` the build script compiles every model family). On a Colab L4 the build takes about 10 minutes. A stamp file records the commit and model revision, so a later launch in the same runtime reuses the build and is ready in about a minute. The weights are pinned to revision `4a3078e8` (`--drama3-hf-revision`). `audiocpp_server` then serves the model on `127.0.0.1` behind a thin FastAPI proxy on the usual port.
+
+| voice | Description |
+|---|---|
+| `default` | No reference. The speaker is random on every request. |
+| `clone` | Clones `--drama3-prompt-wav` (10-30 s recommended). audio.cpp requires its transcript, so `--drama3-prompt-text` must be set too. Without a prompt WAV, `voice="clone"` returns HTTP 400. |
+
+Delivery is controlled from the text: an English direction in square brackets at the start of a line (`[softly, whispering as if someone might overhear]`), inline tags such as `[laughs]` / `[sighs]`, and spans such as `<whisper>...</whisper>`. The proxy prepends OpenAI's `instructions` (or `--drama3-instructions`) as such a bracketed direction. Requests can also send a reference inline as `"voice_ref": {"type": "base64", "data": "<WAV base64>"}` together with `"reference_text"`; this clones that voice for the one request (audio.cpp limits it to 5 MiB). Because the public URL is reachable by anyone who has it, the proxy forwards only sampling options (`seed`, `temperature`, `top_p`, `top_k`, `max_tokens`) and pause options. Server-side paths (a string `voice_ref`, `previous_takes_file`, multi-reference options) are rejected or dropped. Output is 44.1 kHz mono WAV. `speed` other than 1.0 and `response_format` other than `wav` return HTTP 400.
+
+Defaults follow the model card: temperature 0.7, top-p 0.7, top-k 30 (`--drama3-temperature` / `--drama3-top-p` / `--drama3-top-k`), and the patch's pause fix with `max_pause_frames` 10 and the repo's `silence_codes.json` (`--drama3-max-pause-frames 0` turns it off). `--drama3-max-tokens` (default 1024, about 47 s) caps each take; the model card notes that offline VRAM grows with output length, to 13-15 GB for 30-40 s outputs.
+
+**Colab verification (L4).**
+- The `bootstrap.py` launch built audio.cpp, loaded the model (about 10 GB VRAM resident) and served `/v1/audio/speech` through the public `trycloudflare` URL.
+- Seven Japanese lines (the five listening-library lines plus two with `[laughs]` / `[sighs]` tags and a whisper direction) were generated twice: once cloning a 13 s reference sent inline as base64, and once with `default`.
+  - With the reference, every line came back, and the pitch stayed in the reference's range (median F0 270-384 Hz against 286-414 Hz). The longest pause in any line was 1.1 s. Each request took about 1.4-1.7 × the audio length end to end through the tunnel, reference upload included.
+  - With `default`, the speaker changed from line to line (median F0 185-326 Hz), and two of the seven lines had 8.7 s and 9.3 s of silence in the middle. The pause fix did not catch them, because it was calibrated on cloned speech. **Use `clone` (or an inline reference) for anything longer than a short line.**
+- `voice="clone"` with `--drama3-prompt-wav` / `--drama3-prompt-text` worked through the public URL, and the second launch reused the build.
+- These requests returned HTTP 400: `clone` without a prompt WAV, an unknown voice, a path-type `voice_ref`, a base64 `voice_ref` without `reference_text`, `speed`, and `response_format="pcm"`.
+- Intelligibility was not checked with ASR in this verification.
+
+**License.** audio.cpp code is Apache-2.0. The weights are under the **Fish Audio Community License v1.0**:
+- Free for research and non-commercial use (personal / hobby use, evaluation and testing).
+- Commercial use is licensed only while your annual revenue is below USD 500,000.
+- **Offering a Hosted Service, that is letting third parties generate speech from text or voice samples they supply, needs a separate written license from Fish Audio regardless of purpose or revenue.** Keep the `trycloudflare` URL to yourself; do not share it as a service.
+- Products or services using the model must display "Built with Fish Audio".
+- The license forbids imitating an identifiable person's voice without consent, impersonation to deceive, defraud or harass, and using the model or its outputs to train other speech models.
+- The model card also asks users not to remove watermarks or provenance signals. This wrapper adds and removes none.
+
 ### MeloTTS (currently not working)
 
 Intended to use [myshell-ai/MeloTTS](https://github.com/myshell-ai/MeloTTS), but the dependency `tokenizers` requires a Rust compiler to build, so installation fails in the current Colab environment.
@@ -2402,6 +2468,7 @@ The license for each engine is as follows. When using them, always check each pr
 | LFM2.5-Audio-JP (audio encoder) | Apache 2.0 | — | OK | FastConformer encoder derived from NVIDIA NeMo |
 | LFM2.5-Audio-JP (audio codec / Mimi) | — | CC-BY 4.0 | OK | Kyutai Mimi codec (24 kHz, 8 codebooks); attribution required |
 | Ming-omni-TTS | MIT | Apache 2.0 | OK | 16.8B-A3B MoE audio LM (~3B active), **A100 40GB required** (~34GB bf16 weights). Chinese/English-centric, dialect control. Zero-shot cloning. Code MIT (GitHub), weights Apache-2.0 (HF card). Ungated download (no HF_TOKEN) |
+| drama3-small | Apache-2.0 (audio.cpp, `JarodMica/audio.cpp`) | Fish Audio Community License v1.0 (`pentacoxian-dev/drama3-small-GGUF`, derivative of `fishaudio/drama-3`) | Conditional | Free for research / non-commercial use; commercial use only below USD 500k annual revenue; **Hosted Service for third parties needs a separate Fish Audio license**; display "Built with Fish Audio". No voice imitation without consent, no impersonation, no training other speech models on outputs |
 | DramaBox | LTX-2 Community License (Lightricks) | LTX-2 Community License | **Not allowed without commercial license** for orgs with annual revenue $10M+ | English. Non-compete clause; redistributions must propagate the same license. Perth watermark always applied |
 | Scenema (code) | MIT | — | — | Repo: `ScenemaAI/scenema-audio` |
 | Scenema (audio weights) | — | LTX-2 Community License (Lightricks) | **Not allowed without commercial license** for orgs with annual revenue $10M+ | Audio transformer is derived from LTX-2.3; the LTX-2 Community License flows through. Same caveats as DramaBox (non-compete, acceptable-use restrictions, propagation requirement) |
@@ -2578,6 +2645,12 @@ This repository itself is intended for short-term operational verification and t
   https://github.com/inclusionAI/Ming-omni-tts
 - Ming-omni-tts-16.8B-A3B (Hugging Face)
   https://huggingface.co/inclusionAI/Ming-omni-tts-16.8B-A3B
+- drama3-small (Hugging Face)
+  https://huggingface.co/pentacoxian-dev/drama3-small-GGUF
+- Fish Audio Drama 3 (Hugging Face)
+  https://huggingface.co/fishaudio/drama-3
+- audio.cpp
+  https://github.com/JarodMica/audio.cpp
 - DramaBox
   https://github.com/resemble-ai/DramaBox
 - DramaBox (Hugging Face)
