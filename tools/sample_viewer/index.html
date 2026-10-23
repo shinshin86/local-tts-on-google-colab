@@ -55,11 +55,12 @@
       backdrop-filter: blur(10px);
       border-bottom: 1px solid var(--border);
     }
-    .topbar-inner { padding: 14px 24px 12px; display: grid; gap: 12px; }
-    .title-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-    .brand { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
-    h1 { font-size: 18px; margin: 0; letter-spacing: -0.01em; }
-    .summary { color: var(--muted); font-size: 13px; }
+    .topbar-inner { padding: 10px 24px; display: flex; align-items: flex-start; gap: 10px 24px; }
+    .topbar-inner > h1, .topbar-inner > #ui-lang { flex: none; min-height: 32px; display: flex; align-items: center; }
+    .topbar-inner > #ui-lang { display: inline-flex; min-height: 0; margin-left: auto; }
+    .topbar-inner > .toolbar { flex: 1 1 auto; min-width: 0; min-height: 32px; }
+    h1 { font-size: 17px; margin: 0; letter-spacing: -0.01em; white-space: nowrap; }
+    .summary { color: var(--muted); font-size: 12px; margin-top: 4px; font-weight: normal; }
     .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 20px; }
     .field { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
     .field-label { color: var(--muted); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
@@ -75,6 +76,8 @@
     .switch input:checked + .track { background: var(--accent); }
     .switch input:checked + .track::after { transform: translateX(14px); }
     .switch input:focus-visible + .track { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .switch .count { font-size: 11.5px; padding: 0 7px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--border); font-variant-numeric: tabular-nums; }
+    .switch.disabled { opacity: 0.45; cursor: default; }
 
     .chip {
       display: inline-flex; align-items: center; gap: 6px;
@@ -87,27 +90,28 @@
     .link { border: 0; background: none; color: var(--accent); cursor: pointer; padding: 2px 4px; font-size: 13px; }
 
     /* ── Grid ── */
-    main { padding: 20px 24px 40px; }
-    .grid-wrap { width: fit-content; max-width: 100%; overflow: auto; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow); max-height: calc(100vh - 150px); }
+    main { padding: 20px 24px; }
+    .grid-wrap { width: fit-content; max-width: 100%; overflow: auto; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow); max-height: calc(100vh - var(--topbar-h, 60px) - 40px); }
     table { border-collapse: separate; border-spacing: 0; width: max-content; }
     th, td { background: var(--surface); border-bottom: 1px solid var(--border); vertical-align: top; text-align: left; }
     td + td, th + th { border-left: 1px solid var(--border); }
     tbody tr:last-child td { border-bottom: 0; }
     thead th { position: sticky; top: 0; z-index: 3; padding: 0; font-weight: normal; }
     .line-col { position: sticky; left: 0; z-index: 2; width: 340px; min-width: 300px; max-width: 340px; }
-    thead .line-col { z-index: 4; padding: 14px 18px; vertical-align: bottom; }
+    thead .line-col { z-index: 4; padding: 13px 18px; }
     td.line-col { padding: 16px 18px; background: var(--surface-2); }
     tbody tr:hover td { background: color-mix(in srgb, var(--accent) 3%, var(--surface)); }
     tbody tr:hover td.line-col { background: color-mix(in srgb, var(--accent) 4%, var(--surface-2)); }
 
-    .col-head { width: 260px; padding: 14px 16px 12px; border-top: 3px solid var(--c); display: grid; gap: 6px; }
+    .col-head { width: 260px; padding: 10px 16px; border-top: 3px solid var(--c); display: grid; gap: 5px; }
     .col-head .engine { font-weight: 650; font-size: 15px; display: flex; align-items: center; gap: 7px; }
     .col-head .engine .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--c); flex: none; }
-    .tags { display: flex; flex-wrap: wrap; gap: 5px; }
-    .tag { font-size: 11.5px; padding: 1px 8px; border-radius: 6px; background: var(--surface-2); border: 1px solid var(--border); color: var(--muted); }
-    .instr { font-size: 12.5px; color: var(--text); background: var(--accent-soft); border-radius: 8px; padding: 6px 9px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-    .note { font-size: 12.5px; color: var(--muted); }
-    .date { font-size: 11.5px; color: var(--faint); font-variant-numeric: tabular-nums; }
+    .voice { justify-self: start; max-width: 100%; font-size: 13px; font-weight: 600; padding: 1px 8px; border-radius: 6px; background: color-mix(in srgb, var(--c) 13%, var(--surface)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .voice .k { font-weight: 500; font-size: 11.5px; color: var(--muted); margin-right: 5px; }
+    .instr { font-size: 12.5px; color: var(--text); background: var(--accent-soft); border-radius: 8px; padding: 5px 9px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .meta { display: flex; gap: 8px; font-size: 11.5px; color: var(--faint); white-space: nowrap; min-width: 0; }
+    .meta .note { color: var(--muted); overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+    .meta .date { flex: none; margin-left: auto; font-variant-numeric: tabular-nums; }
 
     .line-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 4px; }
     .lid { font: 600 11px/1 ui-monospace, SFMono-Regular, Menlo, monospace; padding: 3px 6px; border-radius: 5px; background: var(--accent-soft); color: var(--accent); flex: none; }
@@ -130,6 +134,8 @@
     .wave { width: 100%; height: 36px; display: block; cursor: pointer; }
     .stats { margin-top: 6px; display: flex; gap: 10px; font-size: 11.5px; color: var(--faint); font-variant-numeric: tabular-nums; padding-left: 46px; }
     .stats .now { color: var(--muted); }
+    .stats .k { color: var(--muted); margin-right: 3px; }
+    .stats .sep { color: var(--border); }
     .err { font-size: 12px; color: var(--error); background: var(--error-soft); border-radius: 8px; padding: 8px 10px; overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
     .na { color: var(--faint); font-size: 12px; }
 
@@ -139,6 +145,8 @@
 
     @media (max-width: 720px) {
       .topbar-inner, main { padding-left: 16px; padding-right: 16px; }
+      .topbar-inner { flex-wrap: wrap; }
+      .topbar-inner > .toolbar { order: 3; flex-basis: 100%; }
       .line-col { width: 220px; min-width: 220px; max-width: 220px; }
       .grid-wrap { max-height: none; }
     }
@@ -147,14 +155,9 @@
 <body>
   <header class="topbar">
     <div class="topbar-inner">
-      <div class="title-row">
-        <div class="brand">
-          <h1>TTS Sample Library</h1>
-          <span class="summary" id="summary"></span>
-        </div>
-        <div class="segmented" id="ui-lang"></div>
-      </div>
+      <h1>TTS Sample Library</h1>
       <div class="toolbar" id="toolbar"></div>
+      <div class="segmented" id="ui-lang"></div>
     </div>
   </header>
   <main id="main"></main>
@@ -163,9 +166,12 @@
     const I18N = {
       en: {
         lines: "Lines", all: "All", ja: "Japanese", en: "English", engines: "Engines",
-        selectAll: "All", selectNone: "None", latestOnly: "Latest run only",
-        latestHint: "Show only the newest run per engine / voice / instructions",
-        line: "Line", gen: "gen", playRow: "▶ Play row", stopRow: "■ Stop",
+        selectAll: "All", selectNone: "None", latestOnly: "Hide older repeats",
+        latestHint: "When the same engine / voice / instructions was run more than once, show only the newest run",
+        latestNone: "Every engine / voice / instructions combination has a single run, so there is nothing to hide",
+        hiddenCount: (n) => `${n} hidden`,
+        line: "Line", dur: "length", gen: "gen", genHint: "Time until the server returned the audio",
+        playRow: "▶ Play all engines", stopRow: "■ Stop",
         notGenerated: "Not generated", noLine: "—",
         summary: (e, r, c) => `${e} engine${e === 1 ? "" : "s"} · ${r} run${r === 1 ? "" : "s"} · ${c} clips`,
         emptyTitle: "No samples yet",
@@ -176,9 +182,12 @@
       },
       ja: {
         lines: "セリフ", all: "すべて", ja: "日本語", en: "英語", engines: "エンジン",
-        selectAll: "全選択", selectNone: "全解除", latestOnly: "最新の実行のみ",
-        latestHint: "エンジン・voice・instructions の組み合わせごとに最新の実行だけを表示",
-        line: "セリフ", gen: "生成", playRow: "▶ 連続再生", stopRow: "■ 停止",
+        selectAll: "全選択", selectNone: "全解除", latestOnly: "同条件の古い実行を隠す",
+        latestHint: "エンジン・voice・instructions が同じ実行が複数あるとき、最新の1回だけを表示",
+        latestNone: "どの組み合わせも実行は1回ずつなので、隠すものはありません",
+        hiddenCount: (n) => `${n} 件を非表示`,
+        line: "セリフ", dur: "長さ", gen: "生成", genHint: "サーバーが音声を返すまでにかかった時間",
+        playRow: "▶ 全エンジンで再生", stopRow: "■ 停止",
         notGenerated: "未生成", noLine: "—",
         summary: (e, r, c) => `${e} エンジン · ${r} 実行 · ${c} 音声`,
         emptyTitle: "まだサンプルがありません",
@@ -280,7 +289,7 @@
     function tick() {
       if (current && !audio.paused && isFinite(audio.duration)) {
         drawWave(current, audio.currentTime / audio.duration);
-        nowLabel(current).textContent = `${audio.currentTime.toFixed(1)}s /`;
+        nowLabel(current).textContent = `${audio.currentTime.toFixed(1)}s / `;
       }
       requestAnimationFrame(tick);
     }
@@ -289,10 +298,12 @@
     /* ── Waveforms: decoded lazily when a cell scrolls into view ── */
     const peaksCache = new Map();
     const BARS = 64;
-    async function loadPeaks(src) {
+    async function loadPeaks(src, attempt = 0) {
       if (!peaksCache.has(src)) {
         peaksCache.set(src, (async () => {
-          const buf = await (await fetch(src)).arrayBuffer();
+          const res = await fetch(src);
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const buf = await res.arrayBuffer();
           const data = (await new OfflineAudioContext(1, 1, 44100).decodeAudioData(buf)).getChannelData(0);
           const step = Math.max(1, Math.floor(data.length / BARS));
           const peaks = [];
@@ -303,7 +314,13 @@
           }
           const max = Math.max(...peaks, 1e-4);
           return peaks.map((p) => Math.max(0.06, p / max));
-        })().catch(() => null));
+        })().catch(async (err) => {
+          // Don't cache a transient failure (e.g. a dropped local connection): retry a couple of times.
+          peaksCache.delete(src);
+          if (attempt >= 2) { console.warn("waveform decode failed:", src, err); return null; }
+          await new Promise((r) => setTimeout(r, 400 * (attempt + 1)));
+          return loadPeaks(src, attempt + 1);
+        }));
       }
       return peaksCache.get(src);
     }
@@ -346,16 +363,18 @@
     }, { rootMargin: "200px" });
 
     /* ── Rendering ── */
-    function visibleRuns(texts) {
-      let runs = manifest.runs.filter((r) => !state.hiddenEngines.has(r.engine));
-      if (state.latestOnly) {
-        const latest = new Map();
-        for (const r of runs) {
-          const key = `${r.engine}\u0000${r.voice}\u0000${r.instructions || ""}`;
-          if (!latest.has(key) || r.created_at > latest.get(key).created_at) latest.set(key, r);
-        }
-        runs = [...latest.values()];
+    const engineRuns = () => manifest.runs.filter((r) => !state.hiddenEngines.has(r.engine));
+    function latestRuns(runs) {
+      const latest = new Map();
+      for (const r of runs) {
+        const key = `${r.engine}\u0000${r.voice}\u0000${r.instructions || ""}`;
+        if (!latest.has(key) || r.created_at > latest.get(key).created_at) latest.set(key, r);
       }
+      return [...latest.values()];
+    }
+    function visibleRuns(texts) {
+      let runs = engineRuns();
+      if (state.latestOnly) runs = latestRuns(runs);
       // Hide runs that have nothing for the selected lines (e.g. a --lang ja run while viewing English).
       runs = runs.filter((r) => texts.some((x) => r.items[x.id]));
       return runs.sort((a, b) => a.engine.localeCompare(b.engine) || a.voice.localeCompare(b.voice) || b.created_at.localeCompare(a.created_at));
@@ -372,20 +391,20 @@
         segmented([["en", "EN"], ["ja", "日本語"]], state.ui, (v) => { state.ui = v; update(); }), { id: "ui-lang" }));
 
       const engines = [...engineColors.keys()];
-      const clips = manifest.runs.reduce((n, r) => n + Object.values(r.items).filter((i) => i.src).length, 0);
-      document.getElementById("summary").textContent = manifest.runs.length ? t("summary")(engines.length, manifest.runs.length, clips) : "";
-
       const toolbar = document.getElementById("toolbar");
       if (!manifest.runs.length) { toolbar.replaceChildren(); return; }
+      const runs = engineRuns();
+      const repeats = runs.length - latestRuns(runs).length;
       toolbar.replaceChildren(
         el("div", { class: "field" },
           el("span", { class: "field-label" }, t("lines")),
           segmented([["all", t("all")], ["ja", t("ja")], ["en", t("en")]], state.lang, (v) => { state.lang = v; update(); }),
         ),
-        el("label", { class: "switch", title: t("latestHint") },
-          el("input", { type: "checkbox", checked: state.latestOnly, onchange: (e) => { state.latestOnly = e.target.checked; update(); } }),
+        el("label", { class: repeats ? "switch" : "switch disabled", title: repeats ? t("latestHint") : t("latestNone") },
+          el("input", { type: "checkbox", checked: state.latestOnly, disabled: !repeats, onchange: (e) => { state.latestOnly = e.target.checked; update(); } }),
           el("span", { class: "track" }),
           t("latestOnly"),
+          repeats && state.latestOnly ? el("span", { class: "count" }, t("hiddenCount")(repeats)) : null,
         ),
         el("div", { class: "field" },
           el("span", { class: "field-label" }, t("engines")),
@@ -405,10 +424,12 @@
       return el("th", { style: `--c:${engineColors.get(r.engine)}` },
         el("div", { class: "col-head" },
           el("div", { class: "engine" }, el("span", { class: "dot" }), r.engine),
-          el("div", { class: "tags" }, el("span", { class: "tag" }, `voice: ${r.voice}`)),
+          el("div", { class: "voice", title: `voice: ${r.voice}` }, el("span", { class: "k" }, "voice"), r.voice),
           r.instructions ? el("div", { class: "instr", title: r.instructions }, r.instructions) : null,
-          r.note ? el("div", { class: "note" }, r.note) : null,
-          el("div", { class: "date" }, r.created_at.replace("T", " ")),
+          el("div", { class: "meta" },
+            r.note ? el("span", { class: "note", title: r.note }, r.note) : null,
+            el("span", { class: "date", title: r.created_at.replace("T", " ") }, r.created_at.replace("T", " ").slice(0, 16)),
+          ),
         ));
     }
 
@@ -428,8 +449,11 @@
       observer.observe(player);
       return el("td", { class: "cell" }, player,
         el("div", { class: "stats" },
-          el("span", {}, el("span", { class: "now" }), ` ${fmt(item.duration_sec)}`),
-          item.elapsed_sec != null ? el("span", {}, `${t("gen")} ${fmt(item.elapsed_sec)}`) : null,
+          el("span", {}, el("span", { class: "k" }, t("dur")), el("span", { class: "now" }), fmt(item.duration_sec)),
+          item.elapsed_sec != null ? [
+            el("span", { class: "sep" }, "·"),
+            el("span", { title: t("genHint") }, el("span", { class: "k" }, t("gen")), fmt(item.elapsed_sec)),
+          ] : null,
         ));
     }
 
@@ -473,17 +497,28 @@
       });
       main.replaceChildren(el("div", { class: "grid-wrap" },
         el("table", {},
-          el("thead", {}, el("tr", {}, el("th", { class: "line-col" }, el("span", { class: "field-label" }, t("line"))), runs.map(columnHead))),
+          el("thead", {}, el("tr", {},
+            el("th", { class: "line-col" },
+              el("div", { class: "field-label" }, t("line")),
+              el("div", { class: "summary" }, t("summary")(new Set(runs.map((r) => r.engine)).size, runs.length,
+                runs.reduce((n, r) => n + texts.filter((x) => r.items[x.id]?.src).length, 0))),
+            ),
+            runs.map(columnHead))),
           el("tbody", {}, rows)),
       ));
     }
 
-    function render() { renderTop(); renderGrid(); }
+    // The top bar wraps to more rows on narrow windows; keep the grid's height in step with it.
+    function syncTopbar() {
+      document.documentElement.style.setProperty("--topbar-h", `${document.querySelector(".topbar").offsetHeight}px`);
+    }
+    function render() { renderTop(); syncTopbar(); renderGrid(); }
 
     matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
       document.querySelectorAll(".player").forEach((p) => drawWave(p, 0));
     });
     window.addEventListener("resize", () => {
+      syncTopbar();
       document.querySelectorAll(".player").forEach((p) => drawWave(p, p === current && isFinite(audio.duration) ? audio.currentTime / audio.duration : 0));
     });
     document.addEventListener("keydown", (e) => {
