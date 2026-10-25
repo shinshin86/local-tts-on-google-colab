@@ -20,3 +20,6 @@ COLAB_TEST_RESULTS.md
 MCP_SETUP.md
 MCP_TEST_PLAN.md
 REFACTOR_PLAN.md
+
+# Local listening-sample library (tools/fetch_samples.py)
+samples/

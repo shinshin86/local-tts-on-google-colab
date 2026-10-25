@@ -1,0 +1,65 @@
+{
+  "_comment": "Fixed listening-test lines used by tools/fetch_samples.py. Do not edit the text of an existing ID; add a new ID instead so older samples stay comparable.",
+  "texts": [
+    {
+      "id": "ja-01",
+      "lang": "ja",
+      "focus": "短文・基本の自然さ",
+      "text": "こんにちは。今日はいい天気ですね。"
+    },
+    {
+      "id": "ja-02",
+      "lang": "ja",
+      "focus": "数字・日付・時刻・小数の読み",
+      "text": "2026年10月16日、午後3時45分の気温は18.5度でした。"
+    },
+    {
+      "id": "ja-03",
+      "lang": "ja",
+      "focus": "英字・外来語が混ざった文",
+      "text": "GitHubのリポジトリをクローンして、PythonでAPIサーバーを起動します。"
+    },
+    {
+      "id": "ja-04",
+      "lang": "ja",
+      "focus": "長文の息継ぎと抑揚",
+      "text": "駅前の小さな喫茶店は朝七時に開き、通勤途中の人たちで少しずつ席が埋まっていきますが、九時を過ぎるころにはまた静かな時間が戻ってきます。"
+    },
+    {
+      "id": "ja-05",
+      "lang": "ja",
+      "focus": "疑問・感情の表現",
+      "text": "えっ、本当に？　それなら、もっと早く教えてくれればよかったのに！"
+    },
+    {
+      "id": "en-01",
+      "lang": "en",
+      "focus": "Short sentence / baseline naturalness",
+      "text": "Hello. It's a lovely day today, isn't it?"
+    },
+    {
+      "id": "en-02",
+      "lang": "en",
+      "focus": "Numbers, dates, times and decimals",
+      "text": "On October 16th, 2026, at 3:45 p.m., the temperature was 18.5 degrees."
+    },
+    {
+      "id": "en-03",
+      "lang": "en",
+      "focus": "Proper nouns and abbreviations",
+      "text": "Clone the GitHub repository, then start the API server with Python."
+    },
+    {
+      "id": "en-04",
+      "lang": "en",
+      "focus": "Long sentence: breathing and intonation",
+      "text": "The small café by the station opens at seven in the morning, slowly fills with commuters on their way to work, and grows quiet again by the time nine o'clock comes around."
+    },
+    {
+      "id": "en-05",
+      "lang": "en",
+      "focus": "Questions and emotion",
+      "text": "Wait, really? You should have told me sooner!"
+    }
+  ]
+}

@@ -1572,6 +1572,31 @@ If you just want to check the configuration without installing dependencies or s
 !python colab/bootstrap.py --engine Kokoro --dry-run
 ```
 
+### Keep samples locally for listening later
+
+To re-listen to engines you have already tried without opening Colab again, you can save samples to your own machine. Nothing is saved unless you run the command yourself.
+
+While the Colab cell is running and the `trycloudflare` URL is shown, run this on your local machine:
+
+```bash
+python3 tools/fetch_samples.py --url https://xxxx.trycloudflare.com
+```
+
+- The fixed lines in `tools/sample_texts.json` (5 Japanese + 5 English) are sent to `/v1/audio/speech`, and the returned WAV files are saved under `samples/<engine>/<date>_<voice>/`. `samples/` is git-ignored.
+- `--lang ja` / `--lang en` limits the lines to one language (default: `all`). Use this for engines that only support one language.
+- `--voice clone` and other `voice` values can be passed as-is. `--instructions` sends the OpenAI `instructions` field (for example an Irodori-TTS voice-design caption) to engines that support it. `--engine` is read from the server's `GET /` response when omitted. `--note` stores a memo shown in the viewer.
+- This script only sends HTTP requests to the public URL. The engine itself keeps running on Colab.
+
+To listen, start the viewer (localhost only, works offline):
+
+```bash
+python3 tools/serve_samples.py --open   # http://127.0.0.1:8000
+```
+
+The viewer shows a grid with lines as rows and engine runs as columns. You can filter by language and engine, and by default only the latest run per engine/voice is shown.
+
+Samples generated with a `clone` voice contain the voice of your reference audio, and some model weights are non-commercial. Keep the library for local listening and do not redistribute it.
+
 ## OpenAI Compatibility Scope
 
 Supported endpoints:

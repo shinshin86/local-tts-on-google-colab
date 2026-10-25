@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TTS Sample Library</title>
+  <style>
+    :root {
+      --bg: #f4f5f7;
+      --surface: #ffffff;
+      --surface-2: #f8f9fb;
+      --text: #1b1d22;
+      --muted: #687080;
+      --faint: #9aa1ad;
+      --border: #e3e6eb;
+      --accent: #4f5bd5;
+      --accent-soft: #eceefc;
+      --wave: #c9cdd6;
+      --error: #c2412d;
+      --error-soft: #fdf0ed;
+      --shadow: 0 1px 2px rgba(20, 24, 33, 0.06), 0 2px 8px rgba(20, 24, 33, 0.04);
+      --radius: 12px;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #111318;
+        --surface: #1a1d24;
+        --surface-2: #20242c;
+        --text: #e9ebf0;
+        --muted: #9aa2b1;
+        --faint: #6c7381;
+        --border: #2c313b;
+        --accent: #8d96f5;
+        --accent-soft: #272c4a;
+        --wave: #3a404c;
+        --error: #f0897a;
+        --error-soft: #3a2320;
+        --shadow: none;
+      }
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font: 14px/1.55 system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    button { font: inherit; color: inherit; }
+
+    /* ── Top bar ── */
+    .topbar {
+      position: sticky; top: 0; z-index: 20;
+      background: color-mix(in srgb, var(--bg) 88%, transparent);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+    }
+    .topbar-inner { padding: 10px 24px; display: flex; align-items: flex-start; gap: 10px 24px; }
+    .topbar-inner > h1, .topbar-inner > #ui-lang { flex: none; min-height: 32px; display: flex; align-items: center; }
+    .topbar-inner > #ui-lang { display: inline-flex; min-height: 0; margin-left: auto; }
+    .topbar-inner > .toolbar { flex: 1 1 auto; min-width: 0; min-height: 32px; }
+    h1 { font-size: 17px; margin: 0; letter-spacing: -0.01em; white-space: nowrap; }
+    .summary { color: var(--muted); font-size: 12px; margin-top: 4px; font-weight: normal; }
+    .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 20px; }
+    .field { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .field-label { color: var(--muted); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+
+    .segmented { display: inline-flex; background: var(--surface-2); border: 1px solid var(--border); border-radius: 9px; padding: 2px; }
+    .segmented button { border: 0; background: none; padding: 4px 12px; border-radius: 7px; cursor: pointer; color: var(--muted); }
+    .segmented button[aria-pressed="true"] { background: var(--surface); color: var(--text); box-shadow: var(--shadow); font-weight: 600; }
+
+    .switch { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; color: var(--muted); user-select: none; }
+    .switch input { position: absolute; opacity: 0; pointer-events: none; }
+    .switch .track { width: 32px; height: 18px; border-radius: 9px; background: var(--wave); position: relative; transition: background .15s; flex: none; }
+    .switch .track::after { content: ""; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: #fff; transition: transform .15s; }
+    .switch input:checked + .track { background: var(--accent); }
+    .switch input:checked + .track::after { transform: translateX(14px); }
+    .switch input:focus-visible + .track { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .switch .count { font-size: 11.5px; padding: 0 7px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--border); font-variant-numeric: tabular-nums; }
+    .switch.disabled { opacity: 0.45; cursor: default; }
+
+    .chip {
+      display: inline-flex; align-items: center; gap: 6px;
+      border: 1px solid var(--border); background: var(--surface);
+      border-radius: 999px; padding: 3px 11px 3px 9px; cursor: pointer; color: var(--muted);
+    }
+    .chip .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--faint); }
+    .chip[aria-pressed="true"] { color: var(--text); border-color: color-mix(in srgb, var(--c) 55%, var(--border)); background: color-mix(in srgb, var(--c) 10%, var(--surface)); }
+    .chip[aria-pressed="true"] .dot { background: var(--c); }
+    .link { border: 0; background: none; color: var(--accent); cursor: pointer; padding: 2px 4px; font-size: 13px; }
+
+    /* ── Grid ── */
+    main { padding: 20px 24px; }
+    .grid-wrap { width: fit-content; max-width: 100%; overflow: auto; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow); max-height: calc(100vh - var(--topbar-h, 60px) - 40px); }
+    table { border-collapse: separate; border-spacing: 0; width: max-content; }
+    th, td { background: var(--surface); border-bottom: 1px solid var(--border); vertical-align: top; text-align: left; }
+    td + td, th + th { border-left: 1px solid var(--border); }
+    tbody tr:last-child td { border-bottom: 0; }
+    thead th { position: sticky; top: 0; z-index: 3; padding: 0; font-weight: normal; }
+    .line-col { position: sticky; left: 0; z-index: 2; width: 340px; min-width: 300px; max-width: 340px; }
+    thead .line-col { z-index: 4; padding: 13px 18px; }
+    td.line-col { padding: 16px 18px; background: var(--surface-2); }
+    tbody tr:hover td { background: color-mix(in srgb, var(--accent) 3%, var(--surface)); }
+    tbody tr:hover td.line-col { background: color-mix(in srgb, var(--accent) 4%, var(--surface-2)); }
+
+    .col-head { width: 260px; padding: 10px 16px; border-top: 3px solid var(--c); display: grid; gap: 5px; }
+    .col-head .engine { font-weight: 650; font-size: 15px; display: flex; align-items: center; gap: 7px; }
+    .col-head .engine .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--c); flex: none; }
+    .voice { justify-self: start; max-width: 100%; font-size: 13px; font-weight: 600; padding: 1px 8px; border-radius: 6px; background: color-mix(in srgb, var(--c) 13%, var(--surface)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .voice .k { font-weight: 500; font-size: 11.5px; color: var(--muted); margin-right: 5px; }
+    .instr { font-size: 12.5px; color: var(--text); background: var(--accent-soft); border-radius: 8px; padding: 5px 9px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .meta { display: flex; gap: 8px; font-size: 11.5px; color: var(--faint); white-space: nowrap; min-width: 0; }
+    .meta .note { color: var(--muted); overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+    .meta .date { flex: none; margin-left: auto; font-variant-numeric: tabular-nums; }
+
+    .line-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 4px; }
+    .lid { font: 600 11px/1 ui-monospace, SFMono-Regular, Menlo, monospace; padding: 3px 6px; border-radius: 5px; background: var(--accent-soft); color: var(--accent); flex: none; }
+    .focus { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+    .line-text { font-size: 15px; line-height: 1.65; }
+    .row-play { border: 1px solid var(--border); background: var(--surface); border-radius: 999px; padding: 2px 10px; font-size: 12px; color: var(--muted); cursor: pointer; white-space: nowrap; flex: none; }
+    .row-play:hover { color: var(--accent); border-color: var(--accent); }
+
+    td.cell { padding: 14px 16px; width: 260px; }
+    .player { display: grid; grid-template-columns: 36px 1fr; gap: 10px; align-items: center; }
+    .play {
+      width: 36px; height: 36px; border-radius: 50%; border: 0; cursor: pointer;
+      background: var(--accent-soft); color: var(--accent); display: grid; place-items: center;
+      transition: transform .08s, background .15s;
+    }
+    .play:hover { transform: scale(1.06); }
+    .play:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .player.playing .play { background: var(--accent); color: #fff; }
+    .play svg { width: 14px; height: 14px; fill: currentColor; }
+    .wave { width: 100%; height: 36px; display: block; cursor: pointer; }
+    .stats { margin-top: 6px; display: flex; gap: 10px; font-size: 11.5px; color: var(--faint); font-variant-numeric: tabular-nums; padding-left: 46px; }
+    .stats .now { color: var(--muted); }
+    .stats .k { color: var(--muted); margin-right: 3px; }
+    .stats .sep { color: var(--border); }
+    .err { font-size: 12px; color: var(--error); background: var(--error-soft); border-radius: 8px; padding: 8px 10px; overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+    .na { color: var(--faint); font-size: 12px; }
+
+    .empty { max-width: 640px; margin: 48px auto; text-align: center; color: var(--muted); }
+    .empty h2 { color: var(--text); font-size: 17px; margin: 0 0 8px; }
+    code { font: 12.5px ui-monospace, SFMono-Regular, Menlo, monospace; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; display: inline-block; margin-top: 12px; color: var(--text); text-align: left; overflow-wrap: anywhere; }
+
+    @media (max-width: 720px) {
+      .topbar-inner, main { padding-left: 16px; padding-right: 16px; }
+      .topbar-inner { flex-wrap: wrap; }
+      .topbar-inner > .toolbar { order: 3; flex-basis: 100%; }
+      .line-col { width: 220px; min-width: 220px; max-width: 220px; }
+      .grid-wrap { max-height: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <h1>TTS Sample Library</h1>
+      <div class="toolbar" id="toolbar"></div>
+      <div class="segmented" id="ui-lang"></div>
+    </div>
+  </header>
+  <main id="main"></main>
+
+  <script>
+    const I18N = {
+      en: {
+        lines: "Lines", all: "All", ja: "Japanese", en: "English", engines: "Engines",
+        selectAll: "All", selectNone: "None", latestOnly: "Hide older repeats",
+        latestHint: "When the same engine / voice / instructions was run more than once, show only the newest run",
+        latestNone: "Every engine / voice / instructions combination has a single run, so there is nothing to hide",
+        hiddenCount: (n) => `${n} hidden`,
+        line: "Line", dur: "length", gen: "gen", genHint: "Time until the server returned the audio",
+        playRow: "▶ Play all engines", stopRow: "■ Stop",
+        notGenerated: "Not generated", noLine: "—",
+        summary: (e, r, c) => `${e} engine${e === 1 ? "" : "s"} · ${r} run${r === 1 ? "" : "s"} · ${c} clips`,
+        emptyTitle: "No samples yet",
+        empty: "While a Colab cell is running, fetch samples from its public URL:",
+        nothing: "Nothing matches the current filters.",
+        loadError: "Could not load manifest.json:",
+        play: "Play", pause: "Pause",
+      },
+      ja: {
+        lines: "セリフ", all: "すべて", ja: "日本語", en: "英語", engines: "エンジン",
+        selectAll: "全選択", selectNone: "全解除", latestOnly: "同条件の古い実行を隠す",
+        latestHint: "エンジン・voice・instructions が同じ実行が複数あるとき、最新の1回だけを表示",
+        latestNone: "どの組み合わせも実行は1回ずつなので、隠すものはありません",
+        hiddenCount: (n) => `${n} 件を非表示`,
+        line: "セリフ", dur: "長さ", gen: "生成", genHint: "サーバーが音声を返すまでにかかった時間",
+        playRow: "▶ 全エンジンで再生", stopRow: "■ 停止",
+        notGenerated: "未生成", noLine: "—",
+        summary: (e, r, c) => `${e} エンジン · ${r} 実行 · ${c} 音声`,
+        emptyTitle: "まだサンプルがありません",
+        empty: "Colab のセルを動かしている間に、公開 URL から取得してください:",
+        nothing: "現在の絞り込み条件に一致するものがありません。",
+        loadError: "manifest.json を読み込めませんでした:",
+        play: "再生", pause: "一時停止",
+      },
+    };
+    const PALETTE = ["#4f5bd5", "#e0663c", "#1f9d8b", "#c8457f", "#8a5cd1", "#d39b1c", "#2f86c9", "#5c9a3a"];
+    const ICON_PLAY = '<svg viewBox="0 0 16 16"><path d="M4 2.5v11l9.5-5.5z"/></svg>';
+    const ICON_PAUSE = '<svg viewBox="0 0 16 16"><path d="M3.5 2.5h3v11h-3zM9.5 2.5h3v11h-3z"/></svg>';
+
+    function load(key, fallback) {
+      try { const v = localStorage.getItem(key); return v === null ? fallback : JSON.parse(v); } catch { return fallback; }
+    }
+    function save(key, value) {
+      try { localStorage.setItem(key, JSON.stringify(value)); } catch { /* storage unavailable */ }
+    }
+
+    const state = {
+      ui: load("tts-samples-ui", (navigator.language || "").toLowerCase().startsWith("ja") ? "ja" : "en"),
+      lang: load("tts-samples-lang", "all"),
+      latestOnly: load("tts-samples-latest", true),
+      hiddenEngines: new Set(load("tts-samples-hidden", [])),
+    };
+    let manifest = null;
+    let engineColors = new Map();
+    const t = (k) => I18N[state.ui][k];
+
+    function el(tag, attrs = {}, ...children) {
+      const node = document.createElement(tag);
+      for (const [k, v] of Object.entries(attrs)) {
+        if (k.startsWith("on")) node[k] = v;
+        else if (k === "style") node.style.cssText = v;
+        else if (k === "html") node.innerHTML = v;
+        else if (v !== false && v != null) node.setAttribute(k, v === true ? "" : v);
+      }
+      for (const c of children.flat()) if (c != null && c !== false) node.append(c);
+      return node;
+    }
+    function update() {
+      save("tts-samples-ui", state.ui);
+      save("tts-samples-lang", state.lang);
+      save("tts-samples-latest", state.latestOnly);
+      save("tts-samples-hidden", [...state.hiddenEngines]);
+      render();
+    }
+    const fmt = (s) => (s == null || !isFinite(s) ? "–" : `${s.toFixed(1)}s`);
+
+    /* ── Playback: one shared <audio>, so only one clip ever plays ── */
+    const audio = new Audio();
+    let current = null;        // the .player element that owns `audio`
+    let queue = [];            // players left in a "play row" sequence
+    let queueRow = null;
+
+    const nowLabel = (player) => player.closest("td").querySelector(".now");
+    function setPlaying(player, playing) {
+      player.classList.toggle("playing", playing);
+      const btn = player.querySelector(".play");
+      btn.innerHTML = playing ? ICON_PAUSE : ICON_PLAY;
+      btn.setAttribute("aria-label", playing ? t("pause") : t("play"));
+    }
+    function stopQueue() {
+      queue = [];
+      if (queueRow) queueRow.querySelector(".row-play").textContent = t("playRow");
+      queueRow = null;
+    }
+    function playPlayer(player, seekRatio) {
+      if (current && current !== player) {
+        setPlaying(current, false);
+        drawWave(current, 0);
+        nowLabel(current).textContent = "";
+      }
+      if (current !== player) {
+        current = player;
+        audio.src = player.dataset.src;
+      }
+      if (seekRatio != null && isFinite(audio.duration)) audio.currentTime = seekRatio * audio.duration;
+      else if (seekRatio != null) audio.addEventListener("loadedmetadata", () => { audio.currentTime = seekRatio * audio.duration; }, { once: true });
+      audio.play().catch(() => {});
+    }
+    function togglePlayer(player) {
+      stopQueue();
+      if (current === player && !audio.paused) audio.pause();
+      else playPlayer(player);
+    }
+    audio.addEventListener("play", () => current && setPlaying(current, true));
+    audio.addEventListener("pause", () => current && setPlaying(current, false));
+    audio.addEventListener("ended", () => {
+      if (!current) return;
+      setPlaying(current, false);
+      drawWave(current, 0);
+      nowLabel(current).textContent = "";
+      const next = queue.shift();
+      if (next) playPlayer(next);
+      else stopQueue();
+    });
+    function tick() {
+      if (current && !audio.paused && isFinite(audio.duration)) {
+        drawWave(current, audio.currentTime / audio.duration);
+        nowLabel(current).textContent = `${audio.currentTime.toFixed(1)}s / `;
+      }
+      requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+
+    /* ── Waveforms: decoded lazily when a cell scrolls into view ── */
+    const peaksCache = new Map();
+    const BARS = 64;
+    async function loadPeaks(src, attempt = 0) {
+      if (!peaksCache.has(src)) {
+        peaksCache.set(src, (async () => {
+          const res = await fetch(src);
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const buf = await res.arrayBuffer();
+          const data = (await new OfflineAudioContext(1, 1, 44100).decodeAudioData(buf)).getChannelData(0);
+          const step = Math.max(1, Math.floor(data.length / BARS));
+          const peaks = [];
+          for (let i = 0; i < BARS; i++) {
+            let m = 0;
+            for (let j = i * step, end = Math.min(data.length, j + step); j < end; j++) m = Math.max(m, Math.abs(data[j]));
+            peaks.push(m);
+          }
+          const max = Math.max(...peaks, 1e-4);
+          return peaks.map((p) => Math.max(0.06, p / max));
+        })().catch(async (err) => {
+          // Don't cache a transient failure (e.g. a dropped local connection): retry a couple of times.
+          peaksCache.delete(src);
+          if (attempt >= 2) { console.warn("waveform decode failed:", src, err); return null; }
+          await new Promise((r) => setTimeout(r, 400 * (attempt + 1)));
+          return loadPeaks(src, attempt + 1);
+        }));
+      }
+      return peaksCache.get(src);
+    }
+    function drawWave(player, progress) {
+      const canvas = player.querySelector(".wave");
+      const peaks = player._peaks;
+      const dpr = window.devicePixelRatio || 1;
+      const w = canvas.clientWidth, h = canvas.clientHeight;
+      if (!w) return;
+      if (canvas.width !== Math.round(w * dpr)) { canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr); }
+      const ctx = canvas.getContext("2d");
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, w, h);
+      const css = getComputedStyle(document.documentElement);
+      const base = css.getPropertyValue("--wave").trim();
+      const accent = css.getPropertyValue("--accent").trim();
+      const n = peaks ? peaks.length : BARS;
+      const gap = 2, bw = Math.max(1.5, (w - gap * (n - 1)) / n);
+      for (let i = 0; i < n; i++) {
+        const v = peaks ? peaks[i] : 0.12;
+        const bh = Math.max(2, v * (h - 4));
+        ctx.fillStyle = (i + 0.5) / n <= progress ? accent : base;
+        const x = i * (bw + gap);
+        ctx.beginPath();
+        ctx.roundRect ? ctx.roundRect(x, (h - bh) / 2, bw, bh, bw / 2) : ctx.rect(x, (h - bh) / 2, bw, bh);
+        ctx.fill();
+      }
+    }
+    const observer = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (!e.isIntersecting) continue;
+        observer.unobserve(e.target);
+        const player = e.target;
+        drawWave(player, 0);  // flat placeholder until the clip is decoded
+        loadPeaks(player.dataset.src).then((peaks) => {
+          player._peaks = peaks;
+          drawWave(player, player === current && isFinite(audio.duration) ? audio.currentTime / audio.duration : 0);
+        });
+      }
+    }, { rootMargin: "200px" });
+
+    /* ── Rendering ── */
+    const engineRuns = () => manifest.runs.filter((r) => !state.hiddenEngines.has(r.engine));
+    function latestRuns(runs) {
+      const latest = new Map();
+      for (const r of runs) {
+        const key = `${r.engine}\u0000${r.voice}\u0000${r.instructions || ""}`;
+        if (!latest.has(key) || r.created_at > latest.get(key).created_at) latest.set(key, r);
+      }
+      return [...latest.values()];
+    }
+    function visibleRuns(texts) {
+      let runs = engineRuns();
+      if (state.latestOnly) runs = latestRuns(runs);
+      // Hide runs that have nothing for the selected lines (e.g. a --lang ja run while viewing English).
+      runs = runs.filter((r) => texts.some((x) => r.items[x.id]));
+      return runs.sort((a, b) => a.engine.localeCompare(b.engine) || a.voice.localeCompare(b.voice) || b.created_at.localeCompare(a.created_at));
+    }
+
+    function segmented(options, value, onPick) {
+      return el("div", { class: "segmented", role: "group" },
+        options.map(([v, label]) => el("button", { type: "button", "aria-pressed": String(v === value), onclick: () => onPick(v) }, label)));
+    }
+
+    function renderTop() {
+      document.documentElement.lang = state.ui;
+      document.getElementById("ui-lang").replaceWith(Object.assign(
+        segmented([["en", "EN"], ["ja", "日本語"]], state.ui, (v) => { state.ui = v; update(); }), { id: "ui-lang" }));
+
+      const engines = [...engineColors.keys()];
+      const toolbar = document.getElementById("toolbar");
+      if (!manifest.runs.length) { toolbar.replaceChildren(); return; }
+      const runs = engineRuns();
+      const repeats = runs.length - latestRuns(runs).length;
+      toolbar.replaceChildren(
+        el("div", { class: "field" },
+          el("span", { class: "field-label" }, t("lines")),
+          segmented([["all", t("all")], ["ja", t("ja")], ["en", t("en")]], state.lang, (v) => { state.lang = v; update(); }),
+        ),
+        el("label", { class: repeats ? "switch" : "switch disabled", title: repeats ? t("latestHint") : t("latestNone") },
+          el("input", { type: "checkbox", checked: state.latestOnly, disabled: !repeats, onchange: (e) => { state.latestOnly = e.target.checked; update(); } }),
+          el("span", { class: "track" }),
+          t("latestOnly"),
+          repeats && state.latestOnly ? el("span", { class: "count" }, t("hiddenCount")(repeats)) : null,
+        ),
+        el("div", { class: "field" },
+          el("span", { class: "field-label" }, t("engines")),
+          engines.map((e) => el("button", {
+            type: "button", class: "chip", "aria-pressed": String(!state.hiddenEngines.has(e)), style: `--c:${engineColors.get(e)}`,
+            onclick: () => { state.hiddenEngines.has(e) ? state.hiddenEngines.delete(e) : state.hiddenEngines.add(e); update(); },
+          }, el("span", { class: "dot" }), e)),
+          engines.length > 1 ? [
+            el("button", { type: "button", class: "link", onclick: () => { state.hiddenEngines.clear(); update(); } }, t("selectAll")),
+            el("button", { type: "button", class: "link", onclick: () => { engines.forEach((e) => state.hiddenEngines.add(e)); update(); } }, t("selectNone")),
+          ] : null,
+        ),
+      );
+    }
+
+    function columnHead(r) {
+      return el("th", { style: `--c:${engineColors.get(r.engine)}` },
+        el("div", { class: "col-head" },
+          el("div", { class: "engine" }, el("span", { class: "dot" }), r.engine),
+          el("div", { class: "voice", title: `voice: ${r.voice}` }, el("span", { class: "k" }, "voice"), r.voice),
+          r.instructions ? el("div", { class: "instr", title: r.instructions }, r.instructions) : null,
+          el("div", { class: "meta" },
+            r.note ? el("span", { class: "note", title: r.note }, r.note) : null,
+            el("span", { class: "date", title: r.created_at.replace("T", " ") }, r.created_at.replace("T", " ").slice(0, 16)),
+          ),
+        ));
+    }
+
+    function cell(r, x) {
+      const item = r.items[x.id];
+      if (!item) return el("td", { class: "cell" }, el("span", { class: "na" }, t("noLine")));
+      if (!item.src) return el("td", { class: "cell" }, el("div", { class: "err", title: item.error || "" }, item.error || t("notGenerated")));
+      const src = item.src.split("/").map(encodeURIComponent).join("/");
+      const player = el("div", { class: "player", "data-src": src },
+        el("button", { type: "button", class: "play", "aria-label": t("play"), html: ICON_PLAY, onclick: () => togglePlayer(player) }),
+        el("canvas", { class: "wave", onclick: (e) => {
+          stopQueue();
+          const rect = e.currentTarget.getBoundingClientRect();
+          playPlayer(player, Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width)));
+        } }),
+      );
+      observer.observe(player);
+      return el("td", { class: "cell" }, player,
+        el("div", { class: "stats" },
+          el("span", {}, el("span", { class: "k" }, t("dur")), el("span", { class: "now" }), fmt(item.duration_sec)),
+          item.elapsed_sec != null ? [
+            el("span", { class: "sep" }, "·"),
+            el("span", { title: t("genHint") }, el("span", { class: "k" }, t("gen")), fmt(item.elapsed_sec)),
+          ] : null,
+        ));
+    }
+
+    function renderGrid() {
+      const main = document.getElementById("main");
+      audio.pause(); current = null; stopQueue();
+      if (!manifest.runs.length) {
+        main.replaceChildren(el("div", { class: "empty" },
+          el("h2", {}, t("emptyTitle")),
+          el("p", {}, t("empty")),
+          el("code", {}, "python3 tools/fetch_samples.py --url https://xxxx.trycloudflare.com"),
+        ));
+        return;
+      }
+      const texts = manifest.texts.filter((x) => state.lang === "all" || x.lang === state.lang);
+      const runs = visibleRuns(texts);
+      if (!runs.length || !texts.length) {
+        main.replaceChildren(el("div", { class: "empty" }, el("p", {}, t("nothing"))));
+        return;
+      }
+      const rows = texts.map((x) => {
+        const tr = el("tr", {});
+        const rowBtn = el("button", { type: "button", class: "row-play", onclick: () => {
+          if (queueRow === tr) { audio.pause(); stopQueue(); return; }
+          const players = [...tr.querySelectorAll(".player")];
+          if (!players.length) return;
+          stopQueue();
+          queueRow = tr; rowBtn.textContent = t("stopRow");
+          queue = players.slice(1);
+          playPlayer(players[0], 0);
+        } }, t("playRow"));
+        tr.append(
+          el("td", { class: "line-col" },
+            el("div", { class: "line-head" }, el("span", { class: "lid" }, x.id), rowBtn),
+            el("div", { class: "focus" }, x.focus),
+            el("div", { class: "line-text" }, x.text),
+          ),
+          ...runs.map((r) => cell(r, x)),
+        );
+        return tr;
+      });
+      main.replaceChildren(el("div", { class: "grid-wrap" },
+        el("table", {},
+          el("thead", {}, el("tr", {},
+            el("th", { class: "line-col" },
+              el("div", { class: "field-label" }, t("line")),
+              el("div", { class: "summary" }, t("summary")(new Set(runs.map((r) => r.engine)).size, runs.length,
+                runs.reduce((n, r) => n + texts.filter((x) => r.items[x.id]?.src).length, 0))),
+            ),
+            runs.map(columnHead))),
+          el("tbody", {}, rows)),
+      ));
+    }
+
+    // The top bar wraps to more rows on narrow windows; keep the grid's height in step with it.
+    function syncTopbar() {
+      document.documentElement.style.setProperty("--topbar-h", `${document.querySelector(".topbar").offsetHeight}px`);
+    }
+    function render() { renderTop(); syncTopbar(); renderGrid(); }
+
+    matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+      document.querySelectorAll(".player").forEach((p) => drawWave(p, 0));
+    });
+    window.addEventListener("resize", () => {
+      syncTopbar();
+      document.querySelectorAll(".player").forEach((p) => drawWave(p, p === current && isFinite(audio.duration) ? audio.currentTime / audio.duration : 0));
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.code !== "Space" || !current || e.target.closest("button, input")) return;
+      e.preventDefault();
+      audio.paused ? audio.play().catch(() => {}) : audio.pause();
+    });
+
+    fetch("manifest.json", { cache: "no-store" })
+      .then((r) => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
+      .then((data) => {
+        manifest = data;
+        const engines = [...new Set(data.runs.map((r) => r.engine))].sort((a, b) => a.localeCompare(b));
+        engineColors = new Map(engines.map((e, i) => [e, PALETTE[i % PALETTE.length]]));
+        render();
+      })
+      .catch((err) => {
+        document.getElementById("main").replaceChildren(el("div", { class: "empty" }, el("p", {}, `${t("loadError")} ${err.message}`)));
+      });
+  </script>
+</body>
+</html>
