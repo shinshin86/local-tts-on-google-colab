@@ -353,6 +353,20 @@ def parse_args():
     parser.add_argument("--supertonic-total-steps", type=int, default=5)
     parser.add_argument("--kitten-tts-hf-model", default="KittenML/kitten-tts-mini-0.8")
     parser.add_argument("--kitten-tts-default-voice", default="Jasper")
+    parser.add_argument("--kitten-tts2-hf-model", default="KittenML/kitten-tts-2")
+    parser.add_argument(
+        "--kitten-tts2-weights", default="packed", choices=["packed", "emb4", "full"]
+    )
+    parser.add_argument(
+        "--kitten-tts2-decoder", default="default", choices=["default", "student_w4"]
+    )
+    parser.add_argument("--kitten-tts2-default-voice", default="JapaneseAnimeHeroine")
+    parser.add_argument("--kitten-tts2-prompt-wav", default="")
+    parser.add_argument("--kitten-tts2-prompt-text", default="")
+    parser.add_argument(
+        "--kitten-tts2-preset", default="stable", choices=["stable", "expressive"]
+    )
+    parser.add_argument("--kitten-tts2-seed", type=int, default=-1)
     parser.add_argument("--sine-wave-tts-ref", default="v0.1.0")
     parser.add_argument("--sine-wave-tts-default-speaker", default="default")
     parser.add_argument("--sine-wave-tts-default-emotion", default="neutral")
@@ -718,6 +732,14 @@ def main():
         supertonic_total_steps=args.supertonic_total_steps,
         kitten_tts_hf_model=args.kitten_tts_hf_model,
         kitten_tts_default_voice=args.kitten_tts_default_voice,
+        kitten_tts2_hf_model=args.kitten_tts2_hf_model,
+        kitten_tts2_weights=args.kitten_tts2_weights,
+        kitten_tts2_decoder=args.kitten_tts2_decoder,
+        kitten_tts2_default_voice=args.kitten_tts2_default_voice,
+        kitten_tts2_prompt_wav=args.kitten_tts2_prompt_wav,
+        kitten_tts2_prompt_text=args.kitten_tts2_prompt_text,
+        kitten_tts2_preset=args.kitten_tts2_preset,
+        kitten_tts2_seed=args.kitten_tts2_seed,
         sine_wave_tts_ref=args.sine_wave_tts_ref,
         sine_wave_tts_default_speaker=args.sine_wave_tts_default_speaker,
         sine_wave_tts_default_emotion=args.sine_wave_tts_default_emotion,

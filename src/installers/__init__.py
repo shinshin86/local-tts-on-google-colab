@@ -23,6 +23,7 @@ from .irodori_lite import install as install_irodori_lite
 from .irodori_large import install as install_irodori_large
 from .irodori_mf import install as install_irodori_mf
 from .kitten_tts import install as install_kitten_tts
+from .kitten_tts2 import install as install_kitten_tts2
 from .qwen3_tts import install as install_qwen3_tts
 from .kokoro import install as install_kokoro
 from .kokoro_onnx import install as install_kokoro_onnx
@@ -88,6 +89,7 @@ INSTALLERS = {
     "Irodori-TTS-Large": install_irodori_large,
     "Irodori-TTS-MF": install_irodori_mf,
     "KittenTTS": install_kitten_tts,
+    "KittenTTS-2": install_kitten_tts2,
     "Kokoro": install_kokoro,
     "Kokoro-ONNX": install_kokoro_onnx,
     "Kyutai-TTS": install_kyutai_tts,

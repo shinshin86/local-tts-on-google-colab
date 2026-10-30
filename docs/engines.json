@@ -46,6 +46,7 @@
       "Irodori-TTS-Lite",
       "Irodori-TTS-MF",
       "KittenTTS",
+      "KittenTTS-2",
       "Kokoro",
       "Kokoro-ONNX",
       "Kyutai-TTS",
@@ -1755,6 +1756,101 @@
             "Leo"
           ],
           "flag": "--kitten-tts-default-voice"
+        }
+      ]
+    },
+    {
+      "id": "KittenTTS-2",
+      "title": "KittenTTS-2 (GPU recommended, 16 languages incl JP, 1.7B speech LM, voice clone)",
+      "status": "Not yet verified on Colab (GPU recommended; 1.7B speech LM, 115 built-in voices, voice cloning)",
+      "status_ja": "Colab 未検証（GPU 推奨。1.7B の音声言語モデル、組み込み voice 115種、ボイスクローン対応）",
+      "languages": "16 languages incl. Japanese / English",
+      "languages_ja": "日本語・英語を含む16言語",
+      "description": "[KittenML/kitten-tts-2](https://huggingface.co/KittenML/kitten-tts-2) is a 1.7B speech language model. It writes S3 codec tokens, and the Chatterbox-Turbo s3gen decoder (`ResembleAI/chatterbox-turbo`, MIT) turns them into 24 kHz audio. It ships 115 built-in voices in 16 languages, four of them Japanese, and can clone a voice from a 5–30 s reference clip. The wrapper installs `kittenml==0.9.7` (Apache 2.0) and pins the model repo to a fixed revision. It downloads only the files the selected weight packing and decoder need, not the repo's llama.cpp bundle. This engine is separate from `KittenTTS`, which runs the English-only v0.8 ONNX models.",
+      "description_ja": "[KittenML/kitten-tts-2](https://huggingface.co/KittenML/kitten-tts-2) は 1.7B の音声言語モデルです。S3 コーデックのトークンを出力し、Chatterbox-Turbo の s3gen デコーダ（`ResembleAI/chatterbox-turbo`、MIT）が 24kHz の音声に変換します。組み込み voice は16言語で115種あり、そのうち4種が日本語です。5〜30秒の参照音声から声をクローンすることもできます。本ラッパーは `kittenml==0.9.7`（Apache 2.0）をインストールし、モデルのリポジトリを固定リビジョンで取得します。ダウンロードするのは選んだ重みとデコーダに必要なファイルだけで、同じリポジトリにある llama.cpp 用のファイルは取得しません。英語専用の v0.8 ONNX モデルを動かす `KittenTTS` とは別のエンジンです。",
+      "notes": [
+        "- 115 built-in voices; any name from `/v1/voices` can be sent as `voice`. `clone` uses the prompt wav below.",
+        "- Leave the prompt text empty only if you accept a Whisper large-v3 download to transcribe the reference.",
+        "- Code: Apache-2.0. Weights: Stellon Labs Community License (commercial use needs registration and ends above USD 1M revenue or funding; show \"Powered by KittenML\")."
+      ],
+      "notes_ja": [
+        "- ライセンス: コードは Apache 2.0（`kittenml`）、モデル重みは Stellon Labs Community License（`KittenML/kitten-tts-2`）。`speaker/` は MIT、s3gen デコーダは MIT（`ResembleAI/chatterbox-turbo`）。商用利用: 条件付き。 備考: 研究・非商用は無料。商用は Stellon Labs への登録が必要で、年商または累計調達額が100万ドルを超えると失効。ライセンス本文と通知文を添え、「Powered by KittenML」を表示する。出力を他モデルの学習に使うのは禁止"
+      ],
+      "prefix": "KITTEN_TTS2",
+      "params": [
+        {
+          "name": "KITTEN_TTS2_HF_MODEL",
+          "default": "KittenML/kitten-tts-2",
+          "type": "string",
+          "flag": "--kitten-tts2-hf-model"
+        },
+        {
+          "name": "KITTEN_TTS2_WEIGHTS",
+          "default": "packed",
+          "type": "select",
+          "options": [
+            "packed",
+            "emb4",
+            "full"
+          ],
+          "flag": "--kitten-tts2-weights"
+        },
+        {
+          "name": "KITTEN_TTS2_DECODER",
+          "default": "default",
+          "type": "select",
+          "options": [
+            "default",
+            "student_w4"
+          ],
+          "flag": "--kitten-tts2-decoder"
+        },
+        {
+          "name": "KITTEN_TTS2_DEFAULT_VOICE",
+          "default": "JapaneseAnimeHeroine",
+          "type": "select",
+          "options": [
+            "JapaneseAnimeHeroine",
+            "JapaneseGrandma",
+            "JapaneseSalarymanApology",
+            "JapaneseTrainConductor",
+            "Bruno",
+            "Bella",
+            "Jasper",
+            "Luna",
+            "Claire",
+            "Victoria",
+            "clone"
+          ],
+          "flag": "--kitten-tts2-default-voice"
+        },
+        {
+          "name": "KITTEN_TTS2_PROMPT_WAV",
+          "default": "",
+          "type": "string",
+          "flag": "--kitten-tts2-prompt-wav"
+        },
+        {
+          "name": "KITTEN_TTS2_PROMPT_TEXT",
+          "default": "",
+          "type": "string",
+          "flag": "--kitten-tts2-prompt-text"
+        },
+        {
+          "name": "KITTEN_TTS2_PRESET",
+          "default": "stable",
+          "type": "select",
+          "options": [
+            "stable",
+            "expressive"
+          ],
+          "flag": "--kitten-tts2-preset"
+        },
+        {
+          "name": "KITTEN_TTS2_SEED",
+          "default": -1,
+          "type": "integer",
+          "flag": "--kitten-tts2-seed"
         }
       ]
     },

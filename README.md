@@ -29,6 +29,7 @@ Supported engines:
 | NeuTTS | Works (CPU OK, voice cloning) | English / Spanish / German / French | Conditional (default Air OK; Nano below $5M revenue) |
 | TinyTTS | Works | English | OK |
 | KittenTTS | Works (CPU only, ONNX, 15M–80M params) | English | OK |
+| KittenTTS-2 | Not yet verified on Colab (GPU recommended; 1.7B speech LM, 115 built-in voices, voice cloning) | 16 languages incl. Japanese / English | Conditional (register for commercial use; ends above USD 1M revenue or funding) |
 | Sine-Wave-TTS | Works on Colab (CPU only, no model weights, Node.js 20+) | Japanese electronic vocalization (not intelligible speech) | OK |
 | Supertonic | Works (CPU OK, ONNX, ~99M params) | English / Japanese / Korean and 31 languages | OK |
 | Voxtral-TTS | Works (GPU required, VRAM 16GB+) | English / French / Spanish and 9 languages | Not allowed |
@@ -137,7 +138,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Audio8-TTS", "Bark", "Breeze-TTS-2", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "drama3-small", "DramaBox", "F5-TTS", "FireRedTTS2", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "IndexTTS2", "Irodori-TTS", "Irodori-TTS-Anime", "Irodori-TTS-Large", "Irodori-TTS-Lite", "Irodori-TTS-MF", "KittenTTS", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "speech.cpp", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "ZeroTTS", "Zonos", "ZONOS2"]
+ENGINE = "Kokoro"  #@param ["Audio8-TTS", "Bark", "Breeze-TTS-2", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "drama3-small", "DramaBox", "F5-TTS", "FireRedTTS2", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "IndexTTS2", "Irodori-TTS", "Irodori-TTS-Anime", "Irodori-TTS-Large", "Irodori-TTS-Lite", "Irodori-TTS-MF", "KittenTTS", "KittenTTS-2", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "speech.cpp", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "ZeroTTS", "Zonos", "ZONOS2"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -735,6 +736,20 @@ SCENEMA_BACKGROUND_SFX = False  #@param {type:"boolean"}
 #@markdown - Developer preview: pinning the v0.8.1 wheel because upstream APIs may change.
 KITTEN_TTS_HF_MODEL = "KittenML/kitten-tts-mini-0.8"  #@param ["KittenML/kitten-tts-mini-0.8", "KittenML/kitten-tts-micro-0.8", "KittenML/kitten-tts-nano-0.8-fp32", "KittenML/kitten-tts-nano-0.8-int8"]
 KITTEN_TTS_DEFAULT_VOICE = "Jasper"  #@param ["Bella", "Jasper", "Luna", "Bruno", "Rosie", "Hugo", "Kiki", "Leo"]
+
+#@markdown ---
+#@markdown KittenTTS-2 (GPU recommended, 16 languages incl JP, 1.7B speech LM, voice clone)
+#@markdown - 115 built-in voices; any name from `/v1/voices` can be sent as `voice`. `clone` uses the prompt wav below.
+#@markdown - Leave the prompt text empty only if you accept a Whisper large-v3 download to transcribe the reference.
+#@markdown - Code: Apache-2.0. Weights: Stellon Labs Community License (commercial use needs registration and ends above USD 1M revenue or funding; show "Powered by KittenML").
+KITTEN_TTS2_HF_MODEL = "KittenML/kitten-tts-2"  #@param {type:"string"}
+KITTEN_TTS2_WEIGHTS = "packed"  #@param ["packed", "emb4", "full"]
+KITTEN_TTS2_DECODER = "default"  #@param ["default", "student_w4"]
+KITTEN_TTS2_DEFAULT_VOICE = "JapaneseAnimeHeroine"  #@param ["JapaneseAnimeHeroine", "JapaneseGrandma", "JapaneseSalarymanApology", "JapaneseTrainConductor", "Bruno", "Bella", "Jasper", "Luna", "Claire", "Victoria", "clone"]
+KITTEN_TTS2_PROMPT_WAV = ""  #@param {type:"string"}
+KITTEN_TTS2_PROMPT_TEXT = ""  #@param {type:"string"}
+KITTEN_TTS2_PRESET = "stable"  #@param ["stable", "expressive"]
+KITTEN_TTS2_SEED = -1  #@param {type:"integer"}
 
 #@markdown ---
 #@markdown Supertonic (CPU OK, 31 languages incl JP/KO/EN, ONNX)
@@ -1402,6 +1417,22 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         KITTEN_TTS_HF_MODEL,
         "--kitten-tts-default-voice",
         KITTEN_TTS_DEFAULT_VOICE,
+        "--kitten-tts2-hf-model",
+        KITTEN_TTS2_HF_MODEL,
+        "--kitten-tts2-weights",
+        KITTEN_TTS2_WEIGHTS,
+        "--kitten-tts2-decoder",
+        KITTEN_TTS2_DECODER,
+        "--kitten-tts2-default-voice",
+        KITTEN_TTS2_DEFAULT_VOICE,
+        "--kitten-tts2-prompt-wav",
+        KITTEN_TTS2_PROMPT_WAV,
+        "--kitten-tts2-prompt-text",
+        KITTEN_TTS2_PROMPT_TEXT,
+        "--kitten-tts2-preset",
+        KITTEN_TTS2_PRESET,
+        "--kitten-tts2-seed",
+        str(KITTEN_TTS2_SEED),
         "--sine-wave-tts-ref",
         SINE_WAVE_TTS_REF,
         "--sine-wave-tts-default-speaker",
@@ -1757,6 +1788,18 @@ An ultra-lightweight English TTS using [ecyht2/tiny-tts](https://github.com/ecyh
 [KittenML/KittenTTS](https://github.com/KittenML/KittenTTS) v0.8 is a lightweight English TTS that runs entirely on CPU through ONNX Runtime. The selectable official checkpoints range from 15M to 80M parameters (about 25–80 MB), require no `HF_TOKEN`, and produce 24 kHz WAV audio. The wrapper pins the upstream v0.8.1 wheel because KittenTTS is currently a developer preview whose APIs may change.
 
 The OpenAI-compatible `voice` parameter exposes eight built-in presets: `Bella`, `Jasper`, `Luna`, `Bruno`, `Rosie`, `Hugo`, `Kiki`, and `Leo`; `default` maps to `--kitten-tts-default-voice` (`Jasper` by default). `speed` is passed through to the upstream synthesizer. The default checkpoint is `KittenML/kitten-tts-mini-0.8`; Micro, Nano FP32, and Nano INT8 are also selectable. Upstream notes that some users have reported issues with the INT8 checkpoint. English is the only supported language. Code and every selectable official v0.8 checkpoint are Apache 2.0.
+
+### KittenTTS-2
+
+[KittenML/kitten-tts-2](https://huggingface.co/KittenML/kitten-tts-2) is a 1.7B speech language model. It writes S3 codec tokens, and the Chatterbox-Turbo s3gen decoder (`ResembleAI/chatterbox-turbo`, MIT) turns them into 24 kHz audio. It ships 115 built-in voices in 16 languages, four of them Japanese, and can clone a voice from a 5–30 s reference clip. The wrapper installs `kittenml==0.9.7` (Apache 2.0) and pins the model repo to a fixed revision. It downloads only the files the selected weight packing and decoder need, not the repo's llama.cpp bundle. This engine is separate from `KittenTTS`, which runs the English-only v0.8 ONNX models.
+
+- **`voice`**: `default` maps to `--kitten-tts2-default-voice`. The wrapper default is `JapaneseAnimeHeroine`; upstream's own default is `Bruno`. Any name listed by `/v1/voices` is accepted, for example `JapaneseGrandma`, `JapaneseSalarymanApology`, `JapaneseTrainConductor`, `Bruno`, or `Claire`. `clone` uses `--kitten-tts2-prompt-wav` and returns 400 when no reference clip is configured.
+- **Reference transcript**: pass it with `--kitten-tts2-prompt-text`. When it is empty, upstream transcribes the clip with Whisper large-v3 on the first `clone` request, which adds a large download.
+- **Text normalization**: the upstream normalizer is tuned for English, and the model card recommends turning it off for other languages. The wrapper applies it only when the input is plain ASCII. Send `"normalize": true` or `false` to override.
+- **Request fields**: besides the OpenAI fields, `preset` (`stable` / `expressive`), `seed`, and `normalize` are accepted. `speed` other than 1.0 returns 400, and the output is WAV only.
+- **Weights and decoder**: `--kitten-tts2-weights` selects the LM packing: `packed` (954 MB, lossless, default), `emb4` (469 MB, lossy embedding), or `full` (3.5 GB, bf16). `--kitten-tts2-decoder student_w4` uses a 39 MB quantized decoder that trades some fidelity for size.
+- **Watermark**: the upstream `kittenml` runtime does not apply an audio watermark. It lists `resemble-perth` as a dependency but never calls it, and it uses only Chatterbox's s3gen decoder, not the Chatterbox generation path that applies Perth. This wrapper neither adds nor removes a watermark.
+- **License**: the code is Apache 2.0 and the weights use the Stellon Labs Community License. Research and non-commercial use are free. Commercial use requires registering with Stellon Labs, and the license ends once you or your affiliates exceed USD 1M in annual revenue or in total funding. Distribution must include the license, the notice text, and a "Powered by KittenML" display. Outputs may not be used to train or distill other models. The `speaker/` embedding model is MIT.
 
 ### Sine-Wave-TTS
 
@@ -2449,6 +2492,7 @@ The license for each engine is as follows. When using them, always check each pr
 | NeuTTS | Apache 2.0 | Apache 2.0 (Air) / NeuTTS Open License 1.0 (Nano) | OK (Air) / Check terms (Nano) | Voice cloning. EN / ES / DE / FR |
 | TinyTTS | Apache 2.0 | Apache 2.0 | OK | |
 | KittenTTS | Apache 2.0 | Apache 2.0 | OK | English-only CPU ONNX TTS. Eight preset voices. Developer preview; wrapper pins v0.8.1 |
+| KittenTTS-2 | Apache 2.0 (`kittenml`) | Stellon Labs Community License (`KittenML/kitten-tts-2`); `speaker/` MIT; s3gen decoder MIT (`ResembleAI/chatterbox-turbo`) | Conditional | Free for research and non-commercial use. Commercial use requires registering with Stellon Labs and ends above USD 1M annual revenue or total funding. Ship the license and notice and display "Powered by KittenML". No training other models on outputs |
 | Sine-Wave-TTS | MIT | N/A (no model weights) | OK | Japanese electronic vocalization, not intelligible speech. CPU only. Kuromoji-based analysis |
 | Supertonic | MIT | OpenRAIL-M | OK | 31 languages incl JP/KO/EN. CPU OK (ONNX). Use-based ethical restrictions (no impersonation/deepfakes) |
 | Voxtral-TTS | — | CC BY-NC 4.0 | Not allowed | Via vLLM + vllm-omni. Non-commercial due to voice dataset license constraints |
@@ -2576,6 +2620,8 @@ This repository itself is intended for short-term operational verification and t
   https://github.com/ecyht2/tiny-tts
 - KittenTTS
   https://github.com/KittenML/KittenTTS
+- KittenTTS 2
+  https://huggingface.co/KittenML/kitten-tts-2
 - Sine-Wave-TTS
   https://github.com/shinshin86/sine-wave-tts
 - Supertonic
