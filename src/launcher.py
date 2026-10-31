@@ -306,6 +306,7 @@ def print_engine_voice_hints(settings: Settings):
         print("voice 候補: Bella, Jasper, Luna, Bruno, Rosie, Hugo, Kiki, Leo")
         print("出力: 24kHz WAV。GPU は使用しません。速度は OpenAI 互換 speed で調整できます。")
         print("注意: 英語のみ対応。Developer preview のため API は将来変更される可能性があります。")
+        print("ライセンス: コード・公式 v0.8 重みとも Apache-2.0（商用 OK）。")
     elif settings.engine == "KittenTTS-2":
         print("KittenTTS 2 は 1.7B の音声言語モデルです（16言語、組み込み voice 115種、ボイスクローン対応）。")
         print(f"モデル: {settings.kitten_tts2_hf_model}（weights={settings.kitten_tts2_weights}, decoder={settings.kitten_tts2_decoder}）")
@@ -320,7 +321,6 @@ def print_engine_voice_hints(settings: Settings):
             print("clone は --kitten-tts2-prompt-wav（推奨: --kitten-tts2-prompt-text も）で有効になります")
         print("出力: 24kHz WAV。speed は 1.0 のみ対応。")
         print("ライセンス: コード Apache-2.0、重み Stellon Labs Community License（商用は登録が必要、年商または累計調達 100万ドル超で失効。\"Powered by KittenML\" の表示が必要）")
-        print("ライセンス: コード・公式 v0.8 重みとも Apache-2.0（商用 OK）。")
     elif settings.engine == "Chatterbox":
         print("Chatterbox Multilingual V3 は Resemble AI の 0.5B 多言語 TTS です（23言語、voice cloning）。")
         print(f"T3 model: {settings.chatterbox_t3_model}")
