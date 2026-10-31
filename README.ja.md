@@ -29,7 +29,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | NeuTTS | 動作OK (CPU可・voice cloning) | 英語 / スペイン語 / ドイツ語 / フランス語 | 条件付き（既定Airは可 / Nanoは年商$5M未満） |
 | TinyTTS | 動作OK | 英語 | OK |
 | KittenTTS | 動作OK（CPU のみ・ONNX・15M〜80M params） | 英語 | OK |
-| KittenTTS-2 | Colab 未検証（GPU 推奨。1.7B の音声言語モデル、組み込み voice 115種、ボイスクローン対応） | 日本語・英語を含む16言語 | 条件付き（商用は登録が必要。年商または累計調達額が100万ドルを超えると失効） |
+| KittenTTS-2 | L4 で動作確認（1.7B の音声言語モデル、約5.1GB VRAM、組み込み voice 115種、ボイスクローン対応） | 日本語・英語を含む16言語 | 条件付き（商用は登録が必要。年商または累計調達額が100万ドルを超えると失効） |
 | Sine-Wave-TTS | 動作OK（CPU のみ・モデル重みなし・Node.js 20+） | 日本語の電子音声（言葉としては聞き取れない） | OK |
 | Supertonic | 動作OK (CPU可・ONNX・~99M params) | 英語 / 日本語 / 韓国語 他 31言語 | OK |
 | Voxtral-TTS | 動作OK (GPU必須・VRAM 16GB+) | 英語 / フランス語 / スペイン語 他 9言語 | 不可 |
@@ -1793,6 +1793,8 @@ OpenAI 互換の `voice` パラメータでは、内蔵 8 プリセット（`Bel
 ### KittenTTS-2
 
 [KittenML/kitten-tts-2](https://huggingface.co/KittenML/kitten-tts-2) は 1.7B の音声言語モデルです。S3 コーデックのトークンを出力し、Chatterbox-Turbo の s3gen デコーダ（`ResembleAI/chatterbox-turbo`、MIT）が 24kHz の音声に変換します。組み込み voice は16言語で115種あり、そのうち4種が日本語です。5〜30秒の参照音声から声をクローンすることもできます。本ラッパーは `kittenml==0.9.7`（Apache 2.0）をインストールし、モデルのリポジトリを固定リビジョンで取得します。ダウンロードするのは選んだ重みとデコーダに必要なファイルだけで、同じリポジトリにある llama.cpp 用のファイルは取得しません。英語専用の v0.8 ONNX モデルを動かす `KittenTTS` とは別のエンジンです。
+
+Colab の L4 で、trycloudflare の URL 経由で動作を確認しました。サーバーの VRAM 使用量は約5.1GBです。43文字の日本語（音声で約8秒）の生成に11〜13秒かかりました。日本語 voice 4種の出力を Whisper large-v3-turbo で書き起こすと、どれも入力どおりの文になりました。`clone` は `--kitten-tts2-prompt-text` の有無どちらでも動きます。書き起こしを渡さない場合、最初の `clone` リクエストは Whisper large-v3 のダウンロードを含めて約37秒かかり、VRAM は約9.4GBまで増えます。
 
 - **`voice`**: `default` は `--kitten-tts2-default-voice` に対応します。本ラッパーの既定は `JapaneseAnimeHeroine` で、上流の既定は `Bruno` です。`/v1/voices` に出てくる名前はすべて指定でき、たとえば `JapaneseGrandma`、`JapaneseSalarymanApology`、`JapaneseTrainConductor`、`Bruno`、`Claire` が使えます。`clone` は `--kitten-tts2-prompt-wav` の音声を使い、参照音声が設定されていなければ 400 を返します。
 - **参照音声の書き起こし**: `--kitten-tts2-prompt-text` で渡してください。空のままだと、最初の `clone` リクエストのときに上流が Whisper large-v3 で書き起こすため、大きな追加ダウンロードが発生します。

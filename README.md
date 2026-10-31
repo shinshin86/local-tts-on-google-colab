@@ -29,7 +29,7 @@ Supported engines:
 | NeuTTS | Works (CPU OK, voice cloning) | English / Spanish / German / French | Conditional (default Air OK; Nano below $5M revenue) |
 | TinyTTS | Works | English | OK |
 | KittenTTS | Works (CPU only, ONNX, 15M–80M params) | English | OK |
-| KittenTTS-2 | Not yet verified on Colab (GPU recommended; 1.7B speech LM, 115 built-in voices, voice cloning) | 16 languages incl. Japanese / English | Conditional (register for commercial use; ends above USD 1M revenue or funding) |
+| KittenTTS-2 | Works on L4 (1.7B speech LM, ~5.1GB VRAM, 115 built-in voices, voice cloning) | 16 languages incl. Japanese / English | Conditional (register for commercial use; ends above USD 1M revenue or funding) |
 | Sine-Wave-TTS | Works on Colab (CPU only, no model weights, Node.js 20+) | Japanese electronic vocalization (not intelligible speech) | OK |
 | Supertonic | Works (CPU OK, ONNX, ~99M params) | English / Japanese / Korean and 31 languages | OK |
 | Voxtral-TTS | Works (GPU required, VRAM 16GB+) | English / French / Spanish and 9 languages | Not allowed |
@@ -1792,6 +1792,8 @@ The OpenAI-compatible `voice` parameter exposes eight built-in presets: `Bella`,
 ### KittenTTS-2
 
 [KittenML/kitten-tts-2](https://huggingface.co/KittenML/kitten-tts-2) is a 1.7B speech language model. It writes S3 codec tokens, and the Chatterbox-Turbo s3gen decoder (`ResembleAI/chatterbox-turbo`, MIT) turns them into 24 kHz audio. It ships 115 built-in voices in 16 languages, four of them Japanese, and can clone a voice from a 5–30 s reference clip. The wrapper installs `kittenml==0.9.7` (Apache 2.0) and pins the model repo to a fixed revision. It downloads only the files the selected weight packing and decoder need, not the repo's llama.cpp bundle. This engine is separate from `KittenTTS`, which runs the English-only v0.8 ONNX models.
+
+Verified on Colab L4 through the trycloudflare URL. The server used about 5.1 GB of VRAM. A 43-character Japanese sentence (about 8 s of audio) took 11–13 s to generate, and a Whisper large-v3-turbo transcript of each of the four Japanese voices matched the input text. `clone` worked with and without `--kitten-tts2-prompt-text`. Without it, the first `clone` request took about 37 s because of the Whisper large-v3 download, and VRAM rose to about 9.4 GB.
 
 - **`voice`**: `default` maps to `--kitten-tts2-default-voice`. The wrapper default is `JapaneseAnimeHeroine`; upstream's own default is `Bruno`. Any name listed by `/v1/voices` is accepted, for example `JapaneseGrandma`, `JapaneseSalarymanApology`, `JapaneseTrainConductor`, `Bruno`, or `Claire`. `clone` uses `--kitten-tts2-prompt-wav` and returns 400 when no reference clip is configured.
 - **Reference transcript**: pass it with `--kitten-tts2-prompt-text`. When it is empty, upstream transcribes the clip with Whisper large-v3 on the first `clone` request, which adds a large download.

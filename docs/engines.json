@@ -1762,8 +1762,8 @@
     {
       "id": "KittenTTS-2",
       "title": "KittenTTS-2 (GPU recommended, 16 languages incl JP, 1.7B speech LM, voice clone)",
-      "status": "Not yet verified on Colab (GPU recommended; 1.7B speech LM, 115 built-in voices, voice cloning)",
-      "status_ja": "Colab 未検証（GPU 推奨。1.7B の音声言語モデル、組み込み voice 115種、ボイスクローン対応）",
+      "status": "Works on L4 (1.7B speech LM, ~5.1GB VRAM, 115 built-in voices, voice cloning)",
+      "status_ja": "L4 で動作確認（1.7B の音声言語モデル、約5.1GB VRAM、組み込み voice 115種、ボイスクローン対応）",
       "languages": "16 languages incl. Japanese / English",
       "languages_ja": "日本語・英語を含む16言語",
       "description": "[KittenML/kitten-tts-2](https://huggingface.co/KittenML/kitten-tts-2) is a 1.7B speech language model. It writes S3 codec tokens, and the Chatterbox-Turbo s3gen decoder (`ResembleAI/chatterbox-turbo`, MIT) turns them into 24 kHz audio. It ships 115 built-in voices in 16 languages, four of them Japanese, and can clone a voice from a 5–30 s reference clip. The wrapper installs `kittenml==0.9.7` (Apache 2.0) and pins the model repo to a fixed revision. It downloads only the files the selected weight packing and decoder need, not the repo's llama.cpp bundle. This engine is separate from `KittenTTS`, which runs the English-only v0.8 ONNX models.",
