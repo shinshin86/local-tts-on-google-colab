@@ -11,7 +11,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Audio8-TTS", "Bark", "Breeze-TTS-2", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "drama3-small", "DramaBox", "F5-TTS", "FireRedTTS2", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "IndexTTS2", "Irodori-TTS", "Irodori-TTS-Anime", "Irodori-TTS-Large", "Irodori-TTS-Lite", "Irodori-TTS-MF", "KittenTTS", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "speech.cpp", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "ZeroTTS", "Zonos", "ZONOS2"]
+ENGINE = "Kokoro"  #@param ["Audio8-TTS", "Bark", "Breeze-TTS-2", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "drama3-small", "DramaBox", "F5-TTS", "FireRedTTS2", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "IndexTTS2", "Irodori-TTS", "Irodori-TTS-Anime", "Irodori-TTS-Large", "Irodori-TTS-Lite", "Irodori-TTS-MF", "KittenTTS", "KittenTTS-2", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "speech.cpp", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "ZeroTTS", "Zonos", "ZONOS2"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -609,6 +609,20 @@ SCENEMA_BACKGROUND_SFX = False  #@param {type:"boolean"}
 #@markdown - Developer preview: pinning the v0.8.1 wheel because upstream APIs may change.
 KITTEN_TTS_HF_MODEL = "KittenML/kitten-tts-mini-0.8"  #@param ["KittenML/kitten-tts-mini-0.8", "KittenML/kitten-tts-micro-0.8", "KittenML/kitten-tts-nano-0.8-fp32", "KittenML/kitten-tts-nano-0.8-int8"]
 KITTEN_TTS_DEFAULT_VOICE = "Jasper"  #@param ["Bella", "Jasper", "Luna", "Bruno", "Rosie", "Hugo", "Kiki", "Leo"]
+
+#@markdown ---
+#@markdown KittenTTS-2 (GPU recommended, 16 languages incl JP, 1.7B speech LM, voice clone)
+#@markdown - 115 built-in voices; any name from `/v1/voices` can be sent as `voice`. `clone` uses the prompt wav below.
+#@markdown - Leave the prompt text empty only if you accept a Whisper large-v3 download to transcribe the reference.
+#@markdown - Code: Apache-2.0. Weights: Stellon Labs Community License (commercial use needs registration and ends above USD 1M revenue or funding; show "Powered by KittenML").
+KITTEN_TTS2_HF_MODEL = "KittenML/kitten-tts-2"  #@param {type:"string"}
+KITTEN_TTS2_WEIGHTS = "packed"  #@param ["packed", "emb4", "full"]
+KITTEN_TTS2_DECODER = "default"  #@param ["default", "student_w4"]
+KITTEN_TTS2_DEFAULT_VOICE = "JapaneseAnimeHeroine"  #@param ["JapaneseAnimeHeroine", "JapaneseGrandma", "JapaneseSalarymanApology", "JapaneseTrainConductor", "Bruno", "Bella", "Jasper", "Luna", "Claire", "Victoria", "clone"]
+KITTEN_TTS2_PROMPT_WAV = ""  #@param {type:"string"}
+KITTEN_TTS2_PROMPT_TEXT = ""  #@param {type:"string"}
+KITTEN_TTS2_PRESET = "stable"  #@param ["stable", "expressive"]
+KITTEN_TTS2_SEED = -1  #@param {type:"integer"}
 
 #@markdown ---
 #@markdown Supertonic (CPU OK, 31 languages incl JP/KO/EN, ONNX)
@@ -1276,6 +1290,22 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         KITTEN_TTS_HF_MODEL,
         "--kitten-tts-default-voice",
         KITTEN_TTS_DEFAULT_VOICE,
+        "--kitten-tts2-hf-model",
+        KITTEN_TTS2_HF_MODEL,
+        "--kitten-tts2-weights",
+        KITTEN_TTS2_WEIGHTS,
+        "--kitten-tts2-decoder",
+        KITTEN_TTS2_DECODER,
+        "--kitten-tts2-default-voice",
+        KITTEN_TTS2_DEFAULT_VOICE,
+        "--kitten-tts2-prompt-wav",
+        KITTEN_TTS2_PROMPT_WAV,
+        "--kitten-tts2-prompt-text",
+        KITTEN_TTS2_PROMPT_TEXT,
+        "--kitten-tts2-preset",
+        KITTEN_TTS2_PRESET,
+        "--kitten-tts2-seed",
+        str(KITTEN_TTS2_SEED),
         "--sine-wave-tts-ref",
         SINE_WAVE_TTS_REF,
         "--sine-wave-tts-default-speaker",

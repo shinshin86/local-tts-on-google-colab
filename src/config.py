@@ -379,6 +379,17 @@ class Settings:
     # Code and all selectable official weights are Apache-2.0.
     kitten_tts_hf_model: str = "KittenML/kitten-tts-mini-0.8"
     kitten_tts_default_voice: str = "Jasper"
+    # KittenTTS 2: 1.7B speech LM (S3 codec + Chatterbox-Turbo s3gen decoder)
+    # with 115 built-in voices in 16 languages and in-context voice cloning.
+    # Code Apache-2.0; weights Stellon Labs Community License.
+    kitten_tts2_hf_model: str = "KittenML/kitten-tts-2"
+    kitten_tts2_weights: str = "packed"
+    kitten_tts2_decoder: str = "default"
+    kitten_tts2_default_voice: str = "JapaneseAnimeHeroine"
+    kitten_tts2_prompt_wav: str = ""
+    kitten_tts2_prompt_text: str = ""
+    kitten_tts2_preset: str = "stable"
+    kitten_tts2_seed: int = -1
     supertonic_model: str = "supertonic-3"
     supertonic_default_voice: str = "M1"
     supertonic_default_lang: str = "en"
