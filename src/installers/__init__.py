@@ -30,6 +30,7 @@ from .kokoro import install as install_kokoro
 from .kokoro_onnx import install as install_kokoro_onnx
 from .kyutai_tts import install as install_kyutai_tts
 from .lfm2_audio_jp import install as install_lfm2_audio_jp
+from .magpie_tts import install as install_magpie_tts
 from .maskgct import install as install_maskgct
 from .melo import install as install_melo
 from .ming_omni_tts import install as install_ming_omni_tts
@@ -97,6 +98,7 @@ INSTALLERS = {
     "Kokoro-ONNX": install_kokoro_onnx,
     "Kyutai-TTS": install_kyutai_tts,
     "LFM2.5-Audio-JP": install_lfm2_audio_jp,
+    "Magpie-TTS": install_magpie_tts,
     "MaskGCT": install_maskgct,
     "MeloTTS": install_melo,
     "Ming-omni-TTS": install_ming_omni_tts,

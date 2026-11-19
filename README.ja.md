@@ -68,6 +68,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | Higgs-Audio-v3 | Colab L4 / A100 動作確認済み（GPU 必須、ロード時 ~19.9GB。T4 非対応、SGLang-Omni 経由で初回起動が遅い ~10-12 分、**非商用の重み — hosted API 不可**） | 100+ 言語（日本語含む） | 不可（重みが非商用） |
 | dots.tts | Colab L4 動作確認済み（GPU 必須、bf16 常駐 ~5.4GB、出力 48 kHz。重みは ungated で `HF_TOKEN` 不要。ゼロショット cloning モデルのため `default` は話者がランダム、安定した声色は `clone` を使用） | 24 言語（日本語含む） | OK |
 | LFM2.5-Audio-JP | Colab L4 動作確認済み（GPU 必須、VRAM 常駐 ~6.3GB。重みは ungated で `HF_TOKEN` 不要。内蔵の日本語ボイス1種のみ、cloning 非対応。出力 24 kHz） | 日本語 | 条件付き（年商上限あり） |
+| Magpie-TTS | Colab 未検証（NVIDIA GPU 必須、L4 推奨） | 日本語を含む12言語 | ライセンス条件の範囲で可 |
 | Ming-omni-TTS | Colab A100 動作確認済み（**A100 40GB 必須** — 16.8B-A3B MoE、ロード時 ~35GB VRAM。40GB に収めるため `PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True` が必要で L4 24GB では動かない。重みは ungated で `HF_TOKEN` 不要。zero-shot cloning。出力 44.1 kHz） | 中国語 / 英語が中心（広東語などの方言制御あり） | OK |
 | drama3-small | Colab L4 動作確認済み（公開URL経由で確認。GPU 必須、VRAM 常駐 約10GB。固定コミットの audio.cpp にモデル同梱のパッチを当てて**初回起動時に CUDA でビルド（約10分）**し、2回目以降はビルドを再利用。Fish Audio Drama 3 を枝刈り・IQ3_XXS 量子化した GGUF で約10.5GB。`default` は話者がランダムで数秒の無音が入ることがあるため、声をそろえるなら `clone` を使用。**Fish Audio Community License のため、第三者向けの Hosted Service は不可**） | 日本語 / 英語 | 条件付き（非商用、または年商50万ドル未満） |
 | DramaBox | Colab A100 動作確認済み（GPU 必須、VRAM ~24GB ピーク、**LTX-2 Community License — 非競合条項あり**） | 英語 | 条件付き（年商$10M以上は要商用ライセンス） |
@@ -141,7 +142,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Audio8-TTS", "Bark", "Breeze-TTS-2", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "drama3-small", "DramaBox", "F5-TTS", "FireRedTTS2", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "IndexTTS2", "IndexTTS-2.5", "Irodori-TTS", "Irodori-TTS-Anime", "Irodori-TTS-Large", "Irodori-TTS-Lite", "Irodori-TTS-MF", "KittenTTS", "KittenTTS-2", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "speech.cpp", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "ZeroTTS", "Zonos", "ZONOS2", "ZONOS3-Mini"]
+ENGINE = "Kokoro"  #@param ["Audio8-TTS", "Bark", "Breeze-TTS-2", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "drama3-small", "DramaBox", "F5-TTS", "FireRedTTS2", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "IndexTTS2", "IndexTTS-2.5", "Irodori-TTS", "Irodori-TTS-Anime", "Irodori-TTS-Large", "Irodori-TTS-Lite", "Irodori-TTS-MF", "KittenTTS", "KittenTTS-2", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "Magpie-TTS", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "speech.cpp", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "ZeroTTS", "Zonos", "ZONOS2", "ZONOS3-Mini"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -691,6 +692,14 @@ LFM2_AUDIO_JP_SYSTEM_PROMPT = "Perform TTS in japanese."  #@param {type:"string"
 LFM2_AUDIO_JP_MAX_NEW_TOKENS = 1024  #@param {type:"integer"}
 LFM2_AUDIO_JP_AUDIO_TEMPERATURE = 0.8  #@param {type:"number"}
 LFM2_AUDIO_JP_AUDIO_TOP_K = 64  #@param {type:"integer"}
+
+#@markdown ---
+#@markdown Magpie-TTS (NVIDIA GPU required, 12 languages including Japanese)
+#@markdown - Select a built-in speaker with `voice`: `aria`, `jason`, `john`, `leo`, or `sofia`. The public checkpoint has no voice cloning.
+#@markdown - Magpie v2607 and NanoCodec weights use the NVIDIA Open Model License. Commercial use is permitted under its terms.
+MAGPIE_TTS_LANGUAGE = "ja"  #@param ["ar", "de", "en", "es", "fr", "hi", "it", "ja", "ko", "pt", "vi", "zh"]
+MAGPIE_TTS_DEFAULT_VOICE = "sofia"  #@param ["aria", "jason", "john", "leo", "sofia"]
+MAGPIE_TTS_TEXT_NORMALIZATION = True  #@param {type:"boolean"}
 
 #@markdown ---
 #@markdown Ming-omni-TTS (A100 required, ~34GB weights, Chinese/English-centric, voice cloning)
@@ -1421,6 +1430,10 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         str(LFM2_AUDIO_JP_AUDIO_TEMPERATURE),
         "--lfm2-audio-jp-audio-top-k",
         str(LFM2_AUDIO_JP_AUDIO_TOP_K),
+        "--magpie-tts-language",
+        MAGPIE_TTS_LANGUAGE,
+        "--magpie-tts-default-voice",
+        MAGPIE_TTS_DEFAULT_VOICE,
         "--ming-omni-tts-hf-model",
         MING_OMNI_TTS_HF_MODEL,
         "--ming-omni-tts-default-voice",
@@ -1602,6 +1615,7 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         cmd.append("--zonos2-no-accurate-mode")
     if not SPEECH_CPP_USE_VULKAN:
         cmd.append("--speech-cpp-no-vulkan")
+    cmd.append("--magpie-tts-text-normalization" if MAGPIE_TTS_TEXT_NORMALIZATION else "--no-magpie-tts-text-normalization")
     cmd.append("--expose-public-url" if EXPOSE_PUBLIC_URL else "--no-expose-public-url")
     return cmd
 
@@ -2328,6 +2342,16 @@ TTS は **sequential generation** を使います。system prompt（`Perform TTS
 
 **ライセンス**: コード・重みは **LFM Open License v1.0** です。年商 **USD 10M 未満**の組織は商用利用可、超過する場合は Liquid AI の別途商用ライセンスが必要です（適格な非営利団体は研究目的で免除）。同梱の **audio encoder は Apache-2.0**（NVIDIA NeMo 由来）、**audio codec（Mimi）は CC-BY-4.0**（Kyutai）です。ライセンスは規約違反時に終了し、特許訴訟による終了条項も含みます。
 
+### Magpie-TTS
+
+NVIDIA の [Magpie-TTS v2607](https://huggingface.co/nvidia/magpie_tts_multilingual_357m) は、5種類の話者で12言語を読み上げます。CUDA GPU 上で NeMo Speech の TTS 推論を実行し、[NanoCodec](https://huggingface.co/nvidia/nemo-nano-codec-22khz-1.89kbps-21.5fps) で 22.05 kHz のモノラル PCM WAV に変換します。Colab L4 での動作は未検証です。
+
+言語は `MAGPIE_TTS_LANGUAGE` または `--magpie-tts-language` で指定します。選べる値は `ar`、`de`、`en`、`es`、`fr`、`hi`、`it`、`ja`、`ko`、`pt`、`vi`、`zh` で、初期値は `ja` です。`ar` は現代標準アラビア語、`pt` はブラジルポルトガル語です。テキスト正規化を無効にする場合は `--no-magpie-tts-text-normalization` を指定します。
+
+リクエストの `voice` には `aria`、`jason`、`john`、`leo`、`sofia` を指定できます。省略時または `default` の場合は、起動時に設定した話者（初期値は Sofia）を使います。5種類とも英語を母語とする話者のため、他の言語でも英語の発音の特徴が残る場合があります。公開モデルはゼロショット音声クローンに対応していません。`speed` は 1.0 を指定してください。
+
+NeMo Speech のコードは Apache 2.0 です。Magpie-TTS と NanoCodec の重みは、各ライセンスの条件に従って商用利用できます。重みを再配布する場合は、該当するライセンスと NVIDIA の帰属表示が必要です。 [Magpie-TTS のライセンス](https://www.nvidia.com/en-us/agreements/enterprise-software/nvidia-open-model-license/) [NanoCodec のライセンス](https://developer.download.nvidia.com/licenses/nvidia-open-model-license-agreement-june-2024.pdf)
+
 ### Ming-omni-TTS
 
 inclusionAI の [Ming-omni-tts](https://github.com/inclusionAI/Ming-omni-tts) の **16.8B-A3B** チェックポイントです。Mixture-of-Experts の音声言語モデル（active ~3B パラメータ）で、独自の 12.5 Hz 連続トークナイザ + DiT（diffusion-transformer）音響ヘッド（44.1 kHz codec）で構成されます。zero-shot voice cloning、自然言語による voice design、感情・方言・話速の制御、さらに BGM 付き音声生成や TTA まで対応し、中国語（広東語含む）と英語に強みがあります。デフォルトモデル: `inclusionAI/Ming-omni-tts-16.8B-A3B`。
@@ -2601,6 +2625,7 @@ Colab T4 で確認済み: エンジン・`/v1` エンドポイント・trycloudf
 | LFM2.5-Audio-JP | LFM Open License v1.0 | LFM Open License v1.0 | 要注意 | 日本語特化の音声・テキストモデル、TTS パス利用。**年商 $10M 未満は商用 OK**、超過は別途商用ライセンス必須。ungated（HF_TOKEN 不要） |
 | LFM2.5-Audio-JP (audio encoder) | Apache 2.0 | — | OK | FastConformer encoder は NVIDIA NeMo 由来 |
 | LFM2.5-Audio-JP (audio codec / Mimi) | — | CC-BY 4.0 | OK | Kyutai Mimi codec（24 kHz、8 codebooks）。帰属表示が必要 |
+| Magpie-TTS | [Apache 2.0](https://github.com/NVIDIA-NeMo/Speech/blob/24c4f58a764350a62248094c70e487892e9d1a00/LICENSE)（NeMo Speech） | [NVIDIA Open Model License](https://www.nvidia.com/en-us/agreements/enterprise-software/nvidia-open-model-license/)（v2607）、[NVIDIA Open Model License (June 2024)](https://developer.download.nvidia.com/licenses/nvidia-open-model-license-agreement-june-2024.pdf)（NanoCodec） | ライセンス条件の範囲で可 | 商用利用可。重みの再配布時は該当ライセンスと NVIDIA の帰属表示が必要。 |
 | Ming-omni-TTS | MIT | Apache 2.0 | OK | 16.8B-A3B MoE 音声 LM（active ~3B）。**A100 40GB 必須**（bf16 で ~34GB の重み）。中国語/英語が中心、方言制御あり。zero-shot cloning。コード MIT（GitHub）、重み Apache-2.0（HF カード）。ungated（HF_TOKEN 不要） |
 | drama3-small | Apache-2.0（audio.cpp、`JarodMica/audio.cpp`） | Fish Audio Community License v1.0（`pentacoxian-dev/drama3-small-GGUF`、`fishaudio/drama-3` の派生モデル） | 条件付き | 研究・非商用は無料。商用は年商50万ドル未満のときだけ可。**第三者向けの Hosted Service は Fish Audio との別契約が必要**。「Built with Fish Audio」の表示が必要。同意のない声の模倣・なりすまし・出力を使った他の音声モデルの学習は禁止 |
 | DramaBox | LTX-2 Community License (Lightricks) | LTX-2 Community License | **年商 $10M+ の組織は商用ライセンス必須** | 英語。非競合条項あり、再配布時は同ライセンス継承必須、Perth ウォーターマーク常時付与 |
@@ -2781,6 +2806,10 @@ Colab T4 で確認済み: エンジン・`/v1` エンドポイント・trycloudf
   https://huggingface.co/rednote-hilab/dots.tts-base
 - LFM2.5-Audio-JP (Hugging Face)
   https://huggingface.co/LiquidAI/LFM2.5-Audio-1.5B-JP
+- Magpie-TTS
+  https://huggingface.co/nvidia/magpie_tts_multilingual_357m
+- Magpie-TTS NanoCodec
+  https://huggingface.co/nvidia/nemo-nano-codec-22khz-1.89kbps-21.5fps
 - liquid-audio (LFM2-Audio library)
   https://github.com/Liquid4All/liquid-audio
 - Ming-omni-tts

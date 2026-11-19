@@ -459,6 +459,10 @@ class Settings:
     lfm2_audio_jp_max_new_tokens: int = 1024
     lfm2_audio_jp_audio_temperature: float = 0.8
     lfm2_audio_jp_audio_top_k: int = 64
+    # Magpie-TTS v2607 supports twelve languages with five built-in voices.
+    magpie_tts_language: str = "ja"
+    magpie_tts_default_voice: str = "sofia"
+    magpie_tts_text_normalization: bool = True
     # Ming-omni-TTS (inclusionAI): 16.8B-A3B MoE audio LM (~3B active) with a
     # 12.5 Hz continuous tokenizer + DiT head. Runs in-process. `default` = the
     # built-in voice (zero speaker-embedding, no reference); `clone` = zero-shot

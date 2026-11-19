@@ -68,6 +68,7 @@ Supported engines:
 | Higgs-Audio-v3 | Works on Colab L4 / A100 (GPU required, ~19.9GB at load; T4 unsupported, slow first launch ~10-12 min via SGLang-Omni, **non-commercial weights — no hosted API**) | 100+ languages (incl. Japanese) | Not allowed (non-commercial weights) |
 | dots.tts | Works on Colab L4 (GPU required, bf16 resident ~5.4GB, 48 kHz output; ungated weights, no `HF_TOKEN`; zero-shot cloning model — `default` is a random speaker, use `clone` for a stable voice) | 24 languages (incl. Japanese) | OK |
 | LFM2.5-Audio-JP | Works on Colab L4 (GPU required, ~6.3GB VRAM resident; ungated weights, no `HF_TOKEN`; single built-in Japanese voice, no cloning; 24 kHz output) | Japanese | Conditional (revenue cap) |
+| Magpie-TTS | Colab verification pending (NVIDIA GPU required, L4 recommended) | 12 languages, including Japanese | OK under license terms |
 | Ming-omni-TTS | Works on Colab A100 (verified; **A100 40GB required** — 16.8B-A3B MoE, ~35GB VRAM at load, needs `PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True` to fit and will not run on L4 24GB; ungated weights, no `HF_TOKEN`; zero-shot cloning; 44.1 kHz output) | Chinese / English-centric (dialect control incl. Cantonese) | OK |
 | drama3-small | Works on Colab L4 (verified through the public URL; GPU required, ~10 GB VRAM resident; audio.cpp at a pinned commit + the model repo's patch is **built with CUDA on first launch (~10 min)**, later launches reuse the build; Fish Audio Drama 3 derivative, pruned + IQ3_XXS GGUF ~10.5 GB; `default` is a random speaker and sometimes leaves multi-second silences, use `clone` for a stable voice; **Fish Audio Community License — no Hosted Service for third parties**) | Japanese / English | Conditional (non-commercial, or under USD 500k annual revenue) |
 | DramaBox | Works on Colab A100 (GPU required, VRAM ~24GB peak, **LTX-2 Community License — non-compete clause**) | English | Conditional (commercial license for $10M+ revenue) |
@@ -140,7 +141,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Audio8-TTS", "Bark", "Breeze-TTS-2", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "drama3-small", "DramaBox", "F5-TTS", "FireRedTTS2", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "IndexTTS2", "IndexTTS-2.5", "Irodori-TTS", "Irodori-TTS-Anime", "Irodori-TTS-Large", "Irodori-TTS-Lite", "Irodori-TTS-MF", "KittenTTS", "KittenTTS-2", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "speech.cpp", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "ZeroTTS", "Zonos", "ZONOS2", "ZONOS3-Mini"]
+ENGINE = "Kokoro"  #@param ["Audio8-TTS", "Bark", "Breeze-TTS-2", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "drama3-small", "DramaBox", "F5-TTS", "FireRedTTS2", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "IndexTTS2", "IndexTTS-2.5", "Irodori-TTS", "Irodori-TTS-Anime", "Irodori-TTS-Large", "Irodori-TTS-Lite", "Irodori-TTS-MF", "KittenTTS", "KittenTTS-2", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "Magpie-TTS", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "speech.cpp", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "ZeroTTS", "Zonos", "ZONOS2", "ZONOS3-Mini"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -690,6 +691,14 @@ LFM2_AUDIO_JP_SYSTEM_PROMPT = "Perform TTS in japanese."  #@param {type:"string"
 LFM2_AUDIO_JP_MAX_NEW_TOKENS = 1024  #@param {type:"integer"}
 LFM2_AUDIO_JP_AUDIO_TEMPERATURE = 0.8  #@param {type:"number"}
 LFM2_AUDIO_JP_AUDIO_TOP_K = 64  #@param {type:"integer"}
+
+#@markdown ---
+#@markdown Magpie-TTS (NVIDIA GPU required, 12 languages including Japanese)
+#@markdown - Select a built-in speaker with `voice`: `aria`, `jason`, `john`, `leo`, or `sofia`. The public checkpoint has no voice cloning.
+#@markdown - Magpie v2607 and NanoCodec weights use the NVIDIA Open Model License. Commercial use is permitted under its terms.
+MAGPIE_TTS_LANGUAGE = "ja"  #@param ["ar", "de", "en", "es", "fr", "hi", "it", "ja", "ko", "pt", "vi", "zh"]
+MAGPIE_TTS_DEFAULT_VOICE = "sofia"  #@param ["aria", "jason", "john", "leo", "sofia"]
+MAGPIE_TTS_TEXT_NORMALIZATION = True  #@param {type:"boolean"}
 
 #@markdown ---
 #@markdown Ming-omni-TTS (A100 required, ~34GB weights, Chinese/English-centric, voice cloning)
@@ -1420,6 +1429,10 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         str(LFM2_AUDIO_JP_AUDIO_TEMPERATURE),
         "--lfm2-audio-jp-audio-top-k",
         str(LFM2_AUDIO_JP_AUDIO_TOP_K),
+        "--magpie-tts-language",
+        MAGPIE_TTS_LANGUAGE,
+        "--magpie-tts-default-voice",
+        MAGPIE_TTS_DEFAULT_VOICE,
         "--ming-omni-tts-hf-model",
         MING_OMNI_TTS_HF_MODEL,
         "--ming-omni-tts-default-voice",
@@ -1601,6 +1614,7 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         cmd.append("--zonos2-no-accurate-mode")
     if not SPEECH_CPP_USE_VULKAN:
         cmd.append("--speech-cpp-no-vulkan")
+    cmd.append("--magpie-tts-text-normalization" if MAGPIE_TTS_TEXT_NORMALIZATION else "--no-magpie-tts-text-normalization")
     cmd.append("--expose-public-url" if EXPOSE_PUBLIC_URL else "--no-expose-public-url")
     return cmd
 
@@ -2327,6 +2341,16 @@ The `voice` parameter exposes only `default` — the single built-in Japanese vo
 
 **License**: code and weights are under the **LFM Open License v1.0** — commercial use is permitted for organizations under **USD 10M annual revenue**; above that threshold a separate commercial license from Liquid AI is required (qualified non-profits are exempt for research). The bundled **audio encoder is Apache-2.0** (derived from NVIDIA NeMo) and the **audio codec (Mimi) is CC-BY-4.0** (Kyutai). The license terminates on non-compliance and includes a patent-litigation termination clause.
 
+### Magpie-TTS
+
+NVIDIA's [Magpie-TTS v2607](https://huggingface.co/nvidia/magpie_tts_multilingual_357m) synthesizes 12 languages using five built-in speakers. The wrapper runs the NeMo Speech TTS runtime on a CUDA GPU and decodes with [NanoCodec](https://huggingface.co/nvidia/nemo-nano-codec-22khz-1.89kbps-21.5fps) to 22.05 kHz mono PCM WAV. Colab L4 verification is pending.
+
+Set `MAGPIE_TTS_LANGUAGE` or `--magpie-tts-language` to one of `ar`, `de`, `en`, `es`, `fr`, `hi`, `it`, `ja`, `ko`, `pt`, `vi`, or `zh`. The default is `ja`. The `ar` and `pt` settings use Modern Standard Arabic and Brazilian Portuguese. Text normalization is enabled by default and can be disabled with `--no-magpie-tts-text-normalization`.
+
+Set the request's `voice` to `aria`, `jason`, `john`, `leo`, or `sofia`. Omitting the voice or using `default` selects the configured speaker (Sofia by default). All five speakers are native English speakers, so other languages may sound accented. The public checkpoint has no zero-shot voice cloning. Keep the request's `speed` at 1.0.
+
+NeMo Speech code is Apache 2.0. Both weight licenses permit commercial use under their terms and require the applicable license and an NVIDIA attribution notice when redistributing weights. [Magpie-TTS license](https://www.nvidia.com/en-us/agreements/enterprise-software/nvidia-open-model-license/) [NanoCodec license](https://developer.download.nvidia.com/licenses/nvidia-open-model-license-agreement-june-2024.pdf)
+
 ### Ming-omni-TTS
 
 inclusionAI's [Ming-omni-tts](https://github.com/inclusionAI/Ming-omni-tts), the **16.8B-A3B** checkpoint — a Mixture-of-Experts audio language model (~3B active parameters) built on a custom 12.5 Hz continuous tokenizer with a DiT (diffusion-transformer) acoustic head over a 44.1 kHz codec. It supports zero-shot voice cloning, natural-language voice design, emotion/dialect/rate control, and even speech-with-BGM and TTA, with strong Chinese (incl. Cantonese) and English coverage. Default model: `inclusionAI/Ming-omni-tts-16.8B-A3B`.
@@ -2600,6 +2624,7 @@ The license for each engine is as follows. When using them, always check each pr
 | LFM2.5-Audio-JP | LFM Open License v1.0 | LFM Open License v1.0 | Caution | Japanese-only speech-text model, TTS path. Commercial OK **under $10M annual revenue**; above that needs a separate commercial license. Ungated (no HF_TOKEN) |
 | LFM2.5-Audio-JP (audio encoder) | Apache 2.0 | — | OK | FastConformer encoder derived from NVIDIA NeMo |
 | LFM2.5-Audio-JP (audio codec / Mimi) | — | CC-BY 4.0 | OK | Kyutai Mimi codec (24 kHz, 8 codebooks); attribution required |
+| Magpie-TTS | [Apache 2.0](https://github.com/NVIDIA-NeMo/Speech/blob/24c4f58a764350a62248094c70e487892e9d1a00/LICENSE) (NeMo Speech) | [NVIDIA Open Model License](https://www.nvidia.com/en-us/agreements/enterprise-software/nvidia-open-model-license/) (v2607), [NVIDIA Open Model License (June 2024)](https://developer.download.nvidia.com/licenses/nvidia-open-model-license-agreement-june-2024.pdf) (NanoCodec) | OK under license terms | Commercial use permitted. Redistributing weights requires the applicable license and NVIDIA attribution notice. |
 | Ming-omni-TTS | MIT | Apache 2.0 | OK | 16.8B-A3B MoE audio LM (~3B active), **A100 40GB required** (~34GB bf16 weights). Chinese/English-centric, dialect control. Zero-shot cloning. Code MIT (GitHub), weights Apache-2.0 (HF card). Ungated download (no HF_TOKEN) |
 | drama3-small | Apache-2.0 (audio.cpp, `JarodMica/audio.cpp`) | Fish Audio Community License v1.0 (`pentacoxian-dev/drama3-small-GGUF`, derivative of `fishaudio/drama-3`) | Conditional | Free for research / non-commercial use; commercial use only below USD 500k annual revenue; **Hosted Service for third parties needs a separate Fish Audio license**; display "Built with Fish Audio". No voice imitation without consent, no impersonation, no training other speech models on outputs |
 | DramaBox | LTX-2 Community License (Lightricks) | LTX-2 Community License | **Not allowed without commercial license** for orgs with annual revenue $10M+ | English. Non-compete clause; redistributions must propagate the same license. Perth watermark always applied |
@@ -2780,6 +2805,10 @@ This repository itself is intended for short-term operational verification and t
   https://huggingface.co/rednote-hilab/dots.tts-base
 - LFM2.5-Audio-JP (Hugging Face)
   https://huggingface.co/LiquidAI/LFM2.5-Audio-1.5B-JP
+- Magpie-TTS
+  https://huggingface.co/nvidia/magpie_tts_multilingual_357m
+- Magpie-TTS NanoCodec
+  https://huggingface.co/nvidia/nemo-nano-codec-22khz-1.89kbps-21.5fps
 - liquid-audio (LFM2-Audio library)
   https://github.com/Liquid4All/liquid-audio
 - Ming-omni-tts

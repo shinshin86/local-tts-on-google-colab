@@ -110,6 +110,8 @@ def resolve_selected_voice(settings: Settings) -> str:
         return settings.higgs_v3_default_voice
     if settings.engine == "dots.tts":
         return settings.dots_tts_default_voice
+    if settings.engine == "Magpie-TTS":
+        return settings.magpie_tts_default_voice
     if settings.engine == "Ming-omni-TTS":
         return settings.ming_omni_tts_default_voice
     if settings.engine == "KittenTTS":
@@ -593,6 +595,10 @@ def print_engine_voice_hints(settings: Settings):
         print("flash-attn は任意（未導入時は torch SDPA に自動フォールバック）。GPU 推奨（L4 で動作想定）。")
         print("ライセンス: コード / 重みは **LFM Open License v1.0**（年商 $10M 未満は商用 OK、超過は別途商用ライセンスが必要）。")
         print("           audio encoder は Apache-2.0（NVIDIA NeMo 由来）、audio codec(Mimi) は CC-BY-4.0（Kyutai）。")
+    elif settings.engine == "Magpie-TTS":
+        print("Magpie-TTS は日本語を含む12言語に対応します。Colab では L4 を選択してください。")
+        print(f"language: {settings.magpie_tts_language} / デフォルト voice: {settings.magpie_tts_default_voice}")
+        print("voice 候補: aria / jason / john / leo / sofia（公開チェックポイントは音声クローン非対応）")
     elif settings.engine == "Ming-omni-TTS":
         print("Ming-omni-TTS は inclusionAI の 16.8B-A3B MoE 音声 LM です（~3B active、12.5Hz 連続トークナイザ + DiT head、in-process）。")
         print(f"モデル: {settings.ming_omni_tts_hf_model}")

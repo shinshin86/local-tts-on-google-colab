@@ -52,6 +52,7 @@
       "Kokoro-ONNX",
       "Kyutai-TTS",
       "LFM2.5-Audio-JP",
+      "Magpie-TTS",
       "MaskGCT",
       "MeloTTS",
       "Ming-omni-TTS",
@@ -2140,6 +2141,66 @@
           "default": 64,
           "type": "integer",
           "flag": "--lfm2-audio-jp-audio-top-k"
+        }
+      ]
+    },
+    {
+      "id": "Magpie-TTS",
+      "title": "Magpie-TTS (NVIDIA GPU required, 12 languages including Japanese)",
+      "status": "Colab verification pending (NVIDIA GPU required, L4 recommended)",
+      "status_ja": "Colab 未検証（NVIDIA GPU 必須、L4 推奨）",
+      "languages": "12 languages, including Japanese",
+      "languages_ja": "日本語を含む12言語",
+      "description": "NVIDIA's [Magpie-TTS v2607](https://huggingface.co/nvidia/magpie_tts_multilingual_357m) synthesizes 12 languages using five built-in speakers. The wrapper runs the NeMo Speech TTS runtime on a CUDA GPU and decodes with [NanoCodec](https://huggingface.co/nvidia/nemo-nano-codec-22khz-1.89kbps-21.5fps) to 22.05 kHz mono PCM WAV. Colab L4 verification is pending.",
+      "description_ja": "NVIDIA の [Magpie-TTS v2607](https://huggingface.co/nvidia/magpie_tts_multilingual_357m) は、5種類の話者で12言語を読み上げます。CUDA GPU 上で NeMo Speech の TTS 推論を実行し、[NanoCodec](https://huggingface.co/nvidia/nemo-nano-codec-22khz-1.89kbps-21.5fps) で 22.05 kHz のモノラル PCM WAV に変換します。Colab L4 での動作は未検証です。",
+      "notes": [
+        "- Select a built-in speaker with `voice`: `aria`, `jason`, `john`, `leo`, or `sofia`. The public checkpoint has no voice cloning.",
+        "- Magpie v2607 and NanoCodec weights use the NVIDIA Open Model License. Commercial use is permitted under its terms."
+      ],
+      "notes_ja": [
+        "- ライセンス: コードは [Apache 2.0](https://github.com/NVIDIA-NeMo/Speech/blob/24c4f58a764350a62248094c70e487892e9d1a00/LICENSE)（NeMo Speech）、モデル重みは [NVIDIA Open Model License](https://www.nvidia.com/en-us/agreements/enterprise-software/nvidia-open-model-license/)（v2607）、[NVIDIA Open Model License (June 2024)](https://developer.download.nvidia.com/licenses/nvidia-open-model-license-agreement-june-2024.pdf)（NanoCodec）。商用利用: ライセンス条件の範囲で可。 備考: 商用利用可。重みの再配布時は該当ライセンスと NVIDIA の帰属表示が必要。"
+      ],
+      "prefix": "MAGPIE_TTS",
+      "params": [
+        {
+          "name": "MAGPIE_TTS_LANGUAGE",
+          "default": "ja",
+          "type": "select",
+          "options": [
+            "ar",
+            "de",
+            "en",
+            "es",
+            "fr",
+            "hi",
+            "it",
+            "ja",
+            "ko",
+            "pt",
+            "vi",
+            "zh"
+          ],
+          "flag": "--magpie-tts-language"
+        },
+        {
+          "name": "MAGPIE_TTS_DEFAULT_VOICE",
+          "default": "sofia",
+          "type": "select",
+          "options": [
+            "aria",
+            "jason",
+            "john",
+            "leo",
+            "sofia"
+          ],
+          "flag": "--magpie-tts-default-voice"
+        },
+        {
+          "name": "MAGPIE_TTS_TEXT_NORMALIZATION",
+          "default": true,
+          "type": "boolean",
+          "true_flag": "--magpie-tts-text-normalization",
+          "false_flag": "--no-magpie-tts-text-normalization"
         }
       ]
     },

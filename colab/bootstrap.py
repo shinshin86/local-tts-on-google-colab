@@ -343,6 +343,12 @@ def parse_args():
     parser.add_argument("--lfm2-audio-jp-max-new-tokens", type=int, default=1024)
     parser.add_argument("--lfm2-audio-jp-audio-temperature", type=float, default=0.8)
     parser.add_argument("--lfm2-audio-jp-audio-top-k", type=int, default=64)
+    parser.add_argument(
+        "--magpie-tts-language", choices=["ar", "de", "en", "es", "fr", "hi", "it", "ja", "ko", "pt", "vi", "zh"],
+        default="ja",
+    )
+    parser.add_argument("--magpie-tts-default-voice", choices=["aria", "jason", "john", "leo", "sofia"], default="sofia")
+    parser.add_argument("--magpie-tts-text-normalization", action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument("--ming-omni-tts-hf-model", default="inclusionAI/Ming-omni-tts-16.8B-A3B")
     parser.add_argument("--ming-omni-tts-default-voice", default="default")
     parser.add_argument("--ming-omni-tts-prompt-wav", default="")
@@ -733,6 +739,9 @@ def main():
         lfm2_audio_jp_max_new_tokens=args.lfm2_audio_jp_max_new_tokens,
         lfm2_audio_jp_audio_temperature=args.lfm2_audio_jp_audio_temperature,
         lfm2_audio_jp_audio_top_k=args.lfm2_audio_jp_audio_top_k,
+        magpie_tts_language=args.magpie_tts_language,
+        magpie_tts_default_voice=args.magpie_tts_default_voice,
+        magpie_tts_text_normalization=args.magpie_tts_text_normalization,
         ming_omni_tts_hf_model=args.ming_omni_tts_hf_model,
         ming_omni_tts_default_voice=args.ming_omni_tts_default_voice,
         ming_omni_tts_prompt_wav=args.ming_omni_tts_prompt_wav,
