@@ -10,7 +10,7 @@ Supported engines:
 
 | Engine | Colab Status | Languages | Commercial use |
 |---|---|---|---|
-| Audio8-TTS | Works on L4 (GPU recommended, zero-shot voice cloning) | Japanese / English / Chinese and 11 languages | OK |
+| Audio8-TTS | Preview verified on L4. Realistic Air pending Colab verification (GPU recommended) | Preview: 11 languages. Realistic Air: 23 languages. Both include Japanese | OK |
 | Breeze-TTS-2 | Works on L4 (eager path, ~8.9GB VRAM observed; all four modes verified) | English / Chinese | Not allowed for self-hosted use |
 | Kokoro | Works | Japanese / English / Chinese and more | OK |
 | Kokoro-ONNX | Works | Japanese / English / Chinese and more | OK |
@@ -148,8 +148,9 @@ OPENAI_MODEL_ID = ""  #@param {type:"string"}
 
 #@markdown ---
 #@markdown Audio8-TTS (0.6B multilingual TTS, GPU recommended)
-#@markdown - Supports 11 languages including Japanese. `default` needs no reference; `clone` requires both a reference WAV and its exact transcript.
-#@markdown - Keep input within 150 characters for best quality. Only clone voices with consent and disclose synthetic audio where appropriate.
+#@markdown - Preview (default) supports 11 languages. For 23 languages, set `AUDIO8_HF_MODEL` to `Edge0/Audio8-TTS-Realistic-Air`. Both support Japanese.
+#@markdown - `default` needs no reference. `clone` requires both a reference WAV and its exact transcript.
+#@markdown - For Preview, upstream recommends up to 150 characters per input. Only clone voices with consent and disclose synthetic audio where appropriate.
 #@markdown - License: Apache-2.0 for both code and weights. See the upstream NOTICE for attribution details.
 AUDIO8_HF_MODEL = "Audio8/Audio8-TTS-Preview-0.6b"  #@param {type:"string"}
 AUDIO8_PROMPT_WAV = ""  #@param {type:"string"}
@@ -1674,7 +1675,9 @@ This sample is fixed to `wav`. Conversion to formats like `mp3` is not performed
 
 ### Audio8-TTS
 
-A separate engine for [Audio8 TTS Preview 0.6B](https://huggingface.co/Audio8/Audio8-TTS-Preview-0.6b), a compact DualAR model with a bundled 44.1 kHz neural codec. It supports 11 recommended languages, including Japanese, English, Chinese, Cantonese, Korean, and major European languages. Upstream recommends keeping each input within 150 characters for best quality.
+Audio8-TTS runs two 0.6B DualAR checkpoints through the same Transformers interface. Each bundles a 44.1 kHz neural codec. The default, [Audio8 TTS Preview 0.6B](https://huggingface.co/Audio8/Audio8-TTS-Preview-0.6b), supports 11 languages, including Japanese, English, Chinese, Cantonese, and Korean. [Audio8-TTS-Realistic-Air](https://huggingface.co/Edge0/Audio8-TTS-Realistic-Air) supports 23 languages, including all 11 from Preview.
+
+To use Realistic Air, select `Audio8-TTS` and enter `Edge0/Audio8-TTS-Realistic-Air` in the Colab or WebUI model field (`AUDIO8_HF_MODEL`). For the CLI, pass `--audio8-hf-model Edge0/Audio8-TTS-Realistic-Air`. Colab verification for Realistic Air is pending. For Preview, upstream recommends keeping each input within 150 characters for best quality.
 
 The OpenAI-compatible wrapper exposes `voice="default"` for reference-free generation and `voice="clone"` for zero-shot cloning. Clone mode is enabled only when both `AUDIO8_PROMPT_WAV` and its exact transcript in `AUDIO8_PROMPT_TEXT` are configured; otherwise it returns HTTP 400 instead of silently falling back. A CUDA GPU with BF16 is the default on Colab, while CPU mode uses FP32. The default path was verified on an NVIDIA L4 runtime: the public `trycloudflare` endpoint returned HTTP 200 with a valid 44.1 kHz mono WAV, and `/v1/voices` exposed `default` as expected.
 
@@ -2506,6 +2509,7 @@ The license for each engine is as follows. When using them, always check each pr
 | Engine | Code | Model Weights | Commercial Use | Notes |
 |---|---|---|---|---|
 | Audio8-TTS | Apache-2.0 | Apache-2.0 (`Audio8/Audio8-TTS-Preview-0.6b`) | OK | 0.6B multilingual preview with zero-shot voice cloning. Preserve upstream NOTICE attribution; obtain consent for cloned voices |
+| Audio8-TTS | [Apache-2.0](https://github.com/Edge0-AI/Audio8_TTS/blob/master/LICENSE) | [Apache-2.0](https://huggingface.co/Edge0/Audio8-TTS-Realistic-Air/blob/main/LICENSE) (`Edge0/Audio8-TTS-Realistic-Air`) | OK | Optional 0.6B checkpoint, 23 languages including Japanese. Preserve upstream NOTICE attribution. |
 | Breeze-TTS-2 | Apache-2.0 | BreezeBlue Research and Non-Commercial License v1.1 | **Not allowed** | EN/ZH; Voice Design / Clone / Direction. Open weights, derivatives, and self-hosted outputs are non-commercial. Paid hosted outputs follow separate service terms. Obtain consent for cloned voices |
 | Kokoro | Apache 2.0 | Apache 2.0 | OK | |
 | Kokoro-ONNX | Apache 2.0 | Apache 2.0 | OK | NVIDIA's ONNX repackaging of hexgrad/Kokoro-82M; both are Apache 2.0 |
@@ -2609,6 +2613,8 @@ This repository itself is intended for short-term operational verification and t
   https://github.com/Audio8-AI/Audio8_TTS
 - Audio8-TTS Preview 0.6B weights
   https://huggingface.co/Audio8/Audio8-TTS-Preview-0.6b
+- Audio8-TTS-Realistic-Air
+  https://huggingface.co/Edge0/Audio8-TTS-Realistic-Air
 - Breeze TTS 2
   https://github.com/breezeblue-ai/breeze-tts
 - Breeze TTS 2 weights and license

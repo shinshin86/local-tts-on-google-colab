@@ -111,7 +111,11 @@ def parse_args():
     parser.add_argument("--qwen3-hf-model", default="Qwen/Qwen3-TTS-12Hz-0.6B-CustomVoice")
     parser.add_argument("--qwen3-language", default="Japanese")
     parser.add_argument("--qwen3-default-speaker", default="ono_anna")
-    parser.add_argument("--audio8-hf-model", default="Audio8/Audio8-TTS-Preview-0.6b")
+    parser.add_argument(
+        "--audio8-hf-model",
+        default="Audio8/Audio8-TTS-Preview-0.6b",
+        help="Audio8 Transformers model ID. Use Edge0/Audio8-TTS-Realistic-Air for the 23-language checkpoint.",
+    )
     parser.add_argument("--audio8-prompt-wav", default="")
     parser.add_argument("--audio8-prompt-text", default="")
     parser.add_argument("--audio8-default-voice", default="default")

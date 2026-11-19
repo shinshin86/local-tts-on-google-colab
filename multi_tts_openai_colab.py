@@ -20,8 +20,9 @@ OPENAI_MODEL_ID = ""  #@param {type:"string"}
 
 #@markdown ---
 #@markdown Audio8-TTS (0.6B multilingual TTS, GPU recommended)
-#@markdown - Supports 11 languages including Japanese. `default` needs no reference; `clone` requires both a reference WAV and its exact transcript.
-#@markdown - Keep input within 150 characters for best quality. Only clone voices with consent and disclose synthetic audio where appropriate.
+#@markdown - Preview (default) supports 11 languages. For 23 languages, set `AUDIO8_HF_MODEL` to `Edge0/Audio8-TTS-Realistic-Air`. Both support Japanese.
+#@markdown - `default` needs no reference. `clone` requires both a reference WAV and its exact transcript.
+#@markdown - For Preview, upstream recommends up to 150 characters per input. Only clone voices with consent and disclose synthetic audio where appropriate.
 #@markdown - License: Apache-2.0 for both code and weights. See the upstream NOTICE for attribution details.
 AUDIO8_HF_MODEL = "Audio8/Audio8-TTS-Preview-0.6b"  #@param {type:"string"}
 AUDIO8_PROMPT_WAV = ""  #@param {type:"string"}

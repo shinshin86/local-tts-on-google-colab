@@ -10,7 +10,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 
 | エンジン | Colab 動作確認 | 言語 | 商用利用 |
 |---|---|---|---|
-| Audio8-TTS | L4 で動作確認済み（GPU 推奨、ゼロショット Voice cloning） | 日本語 / 英語 / 中国語 他 11言語 | OK |
+| Audio8-TTS | Preview は L4 で動作確認済み。Realistic Air は Colab 未検証（GPU 推奨） | Preview は11言語、Realistic Air は23言語。いずれも日本語対応 | OK |
 | Breeze-TTS-2 | L4 で動作確認済み（eager経路、約8.9GB VRAM、4モード検証済み） | 英語 / 中国語 | セルフホストでは不可 |
 | Kokoro | 動作OK | 日本語 / 英語 / 中国語 他 | OK |
 | Kokoro-ONNX | 動作OK | 日本語 / 英語 / 中国語 他 | OK |
@@ -149,8 +149,9 @@ OPENAI_MODEL_ID = ""  #@param {type:"string"}
 
 #@markdown ---
 #@markdown Audio8-TTS (0.6B multilingual TTS, GPU recommended)
-#@markdown - Supports 11 languages including Japanese. `default` needs no reference; `clone` requires both a reference WAV and its exact transcript.
-#@markdown - Keep input within 150 characters for best quality. Only clone voices with consent and disclose synthetic audio where appropriate.
+#@markdown - Preview (default) supports 11 languages. For 23 languages, set `AUDIO8_HF_MODEL` to `Edge0/Audio8-TTS-Realistic-Air`. Both support Japanese.
+#@markdown - `default` needs no reference. `clone` requires both a reference WAV and its exact transcript.
+#@markdown - For Preview, upstream recommends up to 150 characters per input. Only clone voices with consent and disclose synthetic audio where appropriate.
 #@markdown - License: Apache-2.0 for both code and weights. See the upstream NOTICE for attribution details.
 AUDIO8_HF_MODEL = "Audio8/Audio8-TTS-Preview-0.6b"  #@param {type:"string"}
 AUDIO8_PROMPT_WAV = ""  #@param {type:"string"}
@@ -1675,7 +1676,9 @@ python3 tools/serve_samples.py --open   # http://127.0.0.1:8000
 
 ### Audio8-TTS
 
-[Audio8 TTS Preview 0.6B](https://huggingface.co/Audio8/Audio8-TTS-Preview-0.6b) を使用する独立エンジンです。44.1kHzのニューラルコーデックを同梱した小型のDualARモデルで、日本語、英語、中国語、広東語、韓国語、主要な欧州言語を含む推奨11言語に対応します。品質を保つため、上流は1回の入力を150文字以内にすることを推奨しています。
+Audio8-TTS は、2種類の 0.6B DualAR モデルを共通の Transformers API で動かします。どちらにも 44.1 kHz のニューラルコーデックが含まれます。初期設定の [Audio8 TTS Preview 0.6B](https://huggingface.co/Audio8/Audio8-TTS-Preview-0.6b) は、日本語、英語、中国語、広東語、韓国語など11言語に対応します。[Audio8-TTS-Realistic-Air](https://huggingface.co/Edge0/Audio8-TTS-Realistic-Air) は、Preview の11言語を含む23言語に対応します。
+
+Realistic Air を使うには、エンジンに `Audio8-TTS` を選び、Colab フォームまたは WebUI のモデル欄（`AUDIO8_HF_MODEL`）に `Edge0/Audio8-TTS-Realistic-Air` を入力します。CLI では `--audio8-hf-model Edge0/Audio8-TTS-Realistic-Air` を指定します。Realistic Air の Colab 動作は未検証です。Preview では、開発元が1回の入力を150文字以内に収めることを推奨しています。
 
 OpenAI互換ラッパーでは、参照音声なしの`voice="default"`と、ゼロショットVoice cloningの`voice="clone"`を提供します。cloneは`AUDIO8_PROMPT_WAV`と、その音声に一致する書き起こし`AUDIO8_PROMPT_TEXT`の両方を設定した場合だけ有効になり、未設定時は暗黙にdefaultへ切り替えずHTTP 400を返します。ColabではCUDA GPU + BF16を既定とし、CPU時はFP32を使用します。NVIDIA L4で既定構成を検証し、公開`trycloudflare`経由でHTTP 200と正常な44.1kHzモノラルWAVが返ること、`/v1/voices`に`default`が公開されることを確認しました。
 
@@ -2507,6 +2510,7 @@ Colab T4 で確認済み: エンジン・`/v1` エンドポイント・trycloudf
 | エンジン | コード | モデル重み | 商用利用 | 備考 |
 |---|---|---|---|---|
 | Audio8-TTS | Apache-2.0 | Apache-2.0 (`Audio8/Audio8-TTS-Preview-0.6b`) | OK | 0.6B多言語Preview、ゼロショットVoice cloning対応。上流NOTICEの帰属表示を維持し、音声クローンには本人の同意が必要 |
+| Audio8-TTS | [Apache-2.0](https://github.com/Edge0-AI/Audio8_TTS/blob/master/LICENSE) | [Apache-2.0](https://huggingface.co/Edge0/Audio8-TTS-Realistic-Air/blob/main/LICENSE) (`Edge0/Audio8-TTS-Realistic-Air`) | OK | 追加で選べる 0.6B モデル。日本語を含む23言語に対応。上流の NOTICE にある帰属表示を維持します。 |
 | Breeze-TTS-2 | Apache-2.0 | BreezeBlue Research and Non-Commercial License v1.1 | **不可** | 英語/中国語、Voice Design / Clone / Direction対応。公開重み・派生物・セルフホスト出力は非商用限定。有料ホスト出力は別のサービス規約に従う。クローン音声には本人同意が必要 |
 | Kokoro | Apache 2.0 | Apache 2.0 | OK | |
 | Kokoro-ONNX | Apache 2.0 | Apache 2.0 | OK | NVIDIA による hexgrad/Kokoro-82M の ONNX 再配布。コード・重みとも Apache 2.0 |
@@ -2610,6 +2614,8 @@ Colab T4 で確認済み: エンジン・`/v1` エンドポイント・trycloudf
   https://github.com/Audio8-AI/Audio8_TTS
 - Audio8-TTS Preview 0.6B weights
   https://huggingface.co/Audio8/Audio8-TTS-Preview-0.6b
+- Audio8-TTS-Realistic-Air
+  https://huggingface.co/Edge0/Audio8-TTS-Realistic-Air
 - Breeze TTS 2
   https://github.com/breezeblue-ai/breeze-tts
 - Breeze TTS 2 weights / license

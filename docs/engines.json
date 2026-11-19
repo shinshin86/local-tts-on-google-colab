@@ -124,19 +124,21 @@
     {
       "id": "Audio8-TTS",
       "title": "Audio8-TTS (0.6B multilingual TTS, GPU recommended)",
-      "status": "Works on L4 (GPU recommended, zero-shot voice cloning)",
-      "status_ja": "L4 で動作確認済み（GPU 推奨、ゼロショット Voice cloning）",
-      "languages": "Japanese / English / Chinese and 11 languages",
-      "languages_ja": "日本語 / 英語 / 中国語 他 11言語",
-      "description": "A separate engine for [Audio8 TTS Preview 0.6B](https://huggingface.co/Audio8/Audio8-TTS-Preview-0.6b), a compact DualAR model with a bundled 44.1 kHz neural codec. It supports 11 recommended languages, including Japanese, English, Chinese, Cantonese, Korean, and major European languages. Upstream recommends keeping each input within 150 characters for best quality.",
-      "description_ja": "[Audio8 TTS Preview 0.6B](https://huggingface.co/Audio8/Audio8-TTS-Preview-0.6b) を使用する独立エンジンです。44.1kHzのニューラルコーデックを同梱した小型のDualARモデルで、日本語、英語、中国語、広東語、韓国語、主要な欧州言語を含む推奨11言語に対応します。品質を保つため、上流は1回の入力を150文字以内にすることを推奨しています。",
+      "status": "Preview verified on L4. Realistic Air pending Colab verification (GPU recommended)",
+      "status_ja": "Preview は L4 で動作確認済み。Realistic Air は Colab 未検証（GPU 推奨）",
+      "languages": "Preview: 11 languages. Realistic Air: 23 languages. Both include Japanese",
+      "languages_ja": "Preview は11言語、Realistic Air は23言語。いずれも日本語対応",
+      "description": "Audio8-TTS runs two 0.6B DualAR checkpoints through the same Transformers interface. Each bundles a 44.1 kHz neural codec. The default, [Audio8 TTS Preview 0.6B](https://huggingface.co/Audio8/Audio8-TTS-Preview-0.6b), supports 11 languages, including Japanese, English, Chinese, Cantonese, and Korean. [Audio8-TTS-Realistic-Air](https://huggingface.co/Edge0/Audio8-TTS-Realistic-Air) supports 23 languages, including all 11 from Preview.",
+      "description_ja": "Audio8-TTS は、2種類の 0.6B DualAR モデルを共通の Transformers API で動かします。どちらにも 44.1 kHz のニューラルコーデックが含まれます。初期設定の [Audio8 TTS Preview 0.6B](https://huggingface.co/Audio8/Audio8-TTS-Preview-0.6b) は、日本語、英語、中国語、広東語、韓国語など11言語に対応します。[Audio8-TTS-Realistic-Air](https://huggingface.co/Edge0/Audio8-TTS-Realistic-Air) は、Preview の11言語を含む23言語に対応します。",
       "notes": [
-        "- Supports 11 languages including Japanese. `default` needs no reference; `clone` requires both a reference WAV and its exact transcript.",
-        "- Keep input within 150 characters for best quality. Only clone voices with consent and disclose synthetic audio where appropriate.",
+        "- Preview (default) supports 11 languages. For 23 languages, set `AUDIO8_HF_MODEL` to `Edge0/Audio8-TTS-Realistic-Air`. Both support Japanese.",
+        "- `default` needs no reference. `clone` requires both a reference WAV and its exact transcript.",
+        "- For Preview, upstream recommends up to 150 characters per input. Only clone voices with consent and disclose synthetic audio where appropriate.",
         "- License: Apache-2.0 for both code and weights. See the upstream NOTICE for attribution details."
       ],
       "notes_ja": [
-        "- ライセンス: コードは Apache-2.0、モデル重みは Apache-2.0 (`Audio8/Audio8-TTS-Preview-0.6b`)。商用利用: OK。 備考: 0.6B多言語Preview、ゼロショットVoice cloning対応。上流NOTICEの帰属表示を維持し、音声クローンには本人の同意が必要"
+        "- ライセンス: コードは Apache-2.0、モデル重みは Apache-2.0 (`Audio8/Audio8-TTS-Preview-0.6b`)。商用利用: OK。 備考: 0.6B多言語Preview、ゼロショットVoice cloning対応。上流NOTICEの帰属表示を維持し、音声クローンには本人の同意が必要",
+        "- ライセンス: コードは [Apache-2.0](https://github.com/Edge0-AI/Audio8_TTS/blob/master/LICENSE)、モデル重みは [Apache-2.0](https://huggingface.co/Edge0/Audio8-TTS-Realistic-Air/blob/main/LICENSE) (`Edge0/Audio8-TTS-Realistic-Air`)。商用利用: OK。 備考: 追加で選べる 0.6B モデル。日本語を含む23言語に対応。上流の NOTICE にある帰属表示を維持します。"
       ],
       "prefix": "AUDIO8",
       "params": [
