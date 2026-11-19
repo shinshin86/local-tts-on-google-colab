@@ -58,6 +58,8 @@ def resolve_selected_voice(settings: Settings) -> str:
         return settings.zonos_default_voice
     if settings.engine == "ZONOS2":
         return settings.zonos2_default_voice
+    if settings.engine == "ZONOS3-Mini":
+        return settings.zonos3_mini_default_voice
     if settings.engine == "MioTTS":
         return settings.miotts_default_voice
     if settings.engine == "OuteTTS":
@@ -365,6 +367,12 @@ def print_engine_voice_hints(settings: Settings):
         print("注意: GPU は sm_80+ 必須（L4 / A100。flashinfer / sgl_kernel / cutlass カーネルのため T4 不可）。")
         print("      初回は `uv sync`（GPU カーネルの取得）と重みダウンロードで起動に時間がかかります。")
         print("ライセンス: コードは MIT（pyproject）、重みは Apache-2.0（HF モデルカード）。いずれも商用 OK。")
+    elif settings.engine == "ZONOS3-Mini":
+        print("ZONOS3-Mini は日本語を含む43言語に対応する TTS です。Colab では L4 を選択してください。")
+        print(f"language: {settings.zonos3_mini_language} / デフォルト voice: {settings.zonos3_mini_default_voice}")
+        print("voice 候補: default（同梱の Savannah）、clone（--zonos3-mini-prompt-wav が必要）")
+        print(f"発話速度: {settings.zonos3_mini_speaking_rate} bytes/s（0 は指定なし）")
+        print(f"話者 CFG: {settings.zonos3_mini_speaker_cfg_scale}（1 は追加の推論なし）")
     elif settings.engine == "MioTTS":
         print("MioTTS は Aratako の LLM ベース TTS です（Qwen3-1.7B-Base で MioCodec トークン[25Hz]を生成 → 44.1kHz）。")
         print(f"GGUF: {settings.miotts_gguf_repo} / {settings.miotts_gguf_file}")

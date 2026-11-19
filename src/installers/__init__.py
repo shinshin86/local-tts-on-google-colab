@@ -60,6 +60,7 @@ from .voxtral import install as install_voxtral
 from .vyvo_multilingual import install as install_vyvo_multilingual
 from .zonos import install as install_zonos
 from .zonos2 import install as install_zonos2
+from .zonos3_mini import install as install_zonos3_mini
 from .zerotts import install as install_zerotts
 
 
@@ -127,4 +128,5 @@ INSTALLERS = {
     "ZeroTTS": install_zerotts,
     "Zonos": install_zonos,
     "ZONOS2": install_zonos2,
+    "ZONOS3-Mini": install_zonos3_mini,
 }

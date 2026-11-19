@@ -189,6 +189,11 @@ def parse_args():
     parser.add_argument("--zonos2-no-accurate-mode", action="store_true")
     parser.add_argument("--zonos2-seed", type=int, default=-1)
     parser.add_argument("--zonos2-backend-port", type=int, default=5003)
+    parser.add_argument("--zonos3-mini-language", default="ja")
+    parser.add_argument("--zonos3-mini-prompt-wav", default="")
+    parser.add_argument("--zonos3-mini-default-voice", choices=["default", "clone"], default="default")
+    parser.add_argument("--zonos3-mini-speaking-rate", type=float, default=0.0)
+    parser.add_argument("--zonos3-mini-speaker-cfg-scale", type=float, default=1.0)
     parser.add_argument("--outetts-model-size", default="0.6B")
     parser.add_argument("--outetts-backend", default="HF")
     parser.add_argument("--outetts-default-speaker", default="EN-FEMALE-1-NEUTRAL")
@@ -571,6 +576,11 @@ def main():
         zonos2_accurate_mode=not args.zonos2_no_accurate_mode,
         zonos2_seed=args.zonos2_seed,
         zonos2_backend_port=args.zonos2_backend_port,
+        zonos3_mini_language=args.zonos3_mini_language,
+        zonos3_mini_prompt_wav=args.zonos3_mini_prompt_wav,
+        zonos3_mini_default_voice=args.zonos3_mini_default_voice,
+        zonos3_mini_speaking_rate=args.zonos3_mini_speaking_rate,
+        zonos3_mini_speaker_cfg_scale=args.zonos3_mini_speaker_cfg_scale,
         outetts_model_size=args.outetts_model_size,
         outetts_backend=args.outetts_backend,
         outetts_default_speaker=args.outetts_default_speaker,

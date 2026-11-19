@@ -83,7 +83,8 @@
       "Vyvo-Multilingual",
       "ZeroTTS",
       "Zonos",
-      "ZONOS2"
+      "ZONOS2",
+      "ZONOS3-Mini"
     ]
   },
   "expose_setting": {
@@ -4267,6 +4268,61 @@
           "default": -1,
           "type": "integer",
           "flag": "--zonos2-seed"
+        }
+      ]
+    },
+    {
+      "id": "ZONOS3-Mini",
+      "title": "ZONOS3-Mini (L4 recommended, 43 languages including Japanese)",
+      "status": "Colab verification pending (L4 recommended)",
+      "status_ja": "Colab 未検証（L4 推奨）",
+      "languages": "43 languages, including Japanese",
+      "languages_ja": "日本語を含む43言語",
+      "description": "Zyphra's ZONOS3-Mini supports 43 languages, including Japanese. This wrapper loads the official Transformers checkpoint with its bundled ZAC-1 decoder and MECT-B2 speaker encoder. Use a Colab L4 with native CUDA bfloat16 support. The first launch downloads about 2.4 GB of model weights. [Model card and language codes](https://huggingface.co/Zyphra/ZONOS3-Mini-hf)",
+      "description_ja": "Zyphra の ZONOS3-Mini は、日本語を含む43言語に対応します。公式の Transformers 版に、ZAC-1 デコーダと MECT-B2 話者エンコーダが含まれます。Colab では bfloat16 に対応する L4 を選んでください。初回起動時に約 2.4 GB のモデル重みをダウンロードします。 [モデルカードと対応言語コード](https://huggingface.co/Zyphra/ZONOS3-Mini-hf)",
+      "notes": [
+        "- The official Transformers checkpoint includes the ZAC-1 decoder and speaker encoder.",
+        "- Use `default` for Savannah or set `ZONOS3_MINI_PROMPT_WAV` (up to 60 seconds used) for `clone`.",
+        "- Speaking rate is in UTF-8 bytes/second (0 leaves it unset). Speaker CFG above 1 strengthens voice conditioning and costs an extra model pass per step."
+      ],
+      "notes_ja": [
+        "- ライセンス: コードは [MIT](https://github.com/Zyphra/ZONOS3-Mini/blob/main/LICENSE)、モデル重みは [Apache 2.0](https://huggingface.co/Zyphra/ZONOS3-Mini-hf#license)。商用利用: OK。 備考: 公式 Transformers 版に ZAC-1 デコーダを同梱。第三者コードには MIT、Apache 2.0、BSD-2-Clause が適用されます。"
+      ],
+      "prefix": "ZONOS3_MINI",
+      "params": [
+        {
+          "name": "ZONOS3_MINI_LANGUAGE",
+          "default": "ja",
+          "type": "string",
+          "flag": "--zonos3-mini-language"
+        },
+        {
+          "name": "ZONOS3_MINI_PROMPT_WAV",
+          "default": "",
+          "type": "string",
+          "flag": "--zonos3-mini-prompt-wav"
+        },
+        {
+          "name": "ZONOS3_MINI_DEFAULT_VOICE",
+          "default": "default",
+          "type": "select",
+          "options": [
+            "default",
+            "clone"
+          ],
+          "flag": "--zonos3-mini-default-voice"
+        },
+        {
+          "name": "ZONOS3_MINI_SPEAKING_RATE",
+          "default": 0.0,
+          "type": "number",
+          "flag": "--zonos3-mini-speaking-rate"
+        },
+        {
+          "name": "ZONOS3_MINI_SPEAKER_CFG_SCALE",
+          "default": 1.0,
+          "type": "number",
+          "flag": "--zonos3-mini-speaker-cfg-scale"
         }
       ]
     }

@@ -219,6 +219,12 @@ class Settings:
     # >= 0 forces a fixed seed for reproducible output; -1 leaves it random.
     zonos2_seed: int = -1
     zonos2_backend_port: int = 5003
+    # ZONOS3-Mini uses the official Transformers checkpoint.
+    zonos3_mini_language: str = "ja"
+    zonos3_mini_prompt_wav: str = ""
+    zonos3_mini_default_voice: str = "default"
+    zonos3_mini_speaking_rate: float = 0.0  # 0 leaves the pace unconditioned
+    zonos3_mini_speaker_cfg_scale: float = 1.0
     outetts_model_size: str = "0.6B"
     outetts_backend: str = "HF"
     outetts_default_speaker: str = "EN-FEMALE-1-NEUTRAL"

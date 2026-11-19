@@ -39,6 +39,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | ZeroTTS | Colab で動作確認済み（CPU/ONNX、約900MB取得） | ベトナム語 | OK |
 | Zonos | 動作OK (GPU必須・VRAM ~6GB) | 日本語 / 英語 / 中国語 / フランス語 / ドイツ語 | OK |
 | ZONOS2 | 動作OK (L4検証済・sm_80+必須) | 41言語 (tier-1: 日本語 / 英語 / 中国語) | OK |
+| ZONOS3-Mini | Colab 未検証（L4 推奨） | 日本語を含む43言語 | OK |
 | OuteTTS | 動作OK (CPU可) | 日本語 / 英語 / 中国語 他 多言語 | 条件付き（既定0.6Bは可 / 1Bは不可） |
 | Dia | 動作OK (GPU推奨) | 英語（マルチスピーカー対話） | OK |
 | Kyutai-TTS | 動作OK (GPU推奨) | 英語 / フランス語 | 条件付き（要クレジット） |
@@ -139,7 +140,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Audio8-TTS", "Bark", "Breeze-TTS-2", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "drama3-small", "DramaBox", "F5-TTS", "FireRedTTS2", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "IndexTTS2", "Irodori-TTS", "Irodori-TTS-Anime", "Irodori-TTS-Large", "Irodori-TTS-Lite", "Irodori-TTS-MF", "KittenTTS", "KittenTTS-2", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "speech.cpp", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "ZeroTTS", "Zonos", "ZONOS2"]
+ENGINE = "Kokoro"  #@param ["Audio8-TTS", "Bark", "Breeze-TTS-2", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "drama3-small", "DramaBox", "F5-TTS", "FireRedTTS2", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "IndexTTS2", "Irodori-TTS", "Irodori-TTS-Anime", "Irodori-TTS-Large", "Irodori-TTS-Lite", "Irodori-TTS-MF", "KittenTTS", "KittenTTS-2", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "speech.cpp", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "ZeroTTS", "Zonos", "ZONOS2", "ZONOS3-Mini"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -406,6 +407,17 @@ ZONOS2_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
 ZONOS2_DEFAULT_REF = "AmericanFemale.mp3"  #@param {type:"string"}
 ZONOS2_ACCURATE_MODE = True  #@param {type:"boolean"}
 ZONOS2_SEED = -1  #@param {type:"integer"}
+
+#@markdown ---
+#@markdown ZONOS3-Mini (L4 recommended, 43 languages including Japanese)
+#@markdown - The official Transformers checkpoint includes the ZAC-1 decoder and speaker encoder.
+#@markdown - Use `default` for Savannah or set `ZONOS3_MINI_PROMPT_WAV` (up to 60 seconds used) for `clone`.
+#@markdown - Speaking rate is in UTF-8 bytes/second (0 leaves it unset). Speaker CFG above 1 strengthens voice conditioning and costs an extra model pass per step.
+ZONOS3_MINI_LANGUAGE = "ja"  #@param {type:"string"}
+ZONOS3_MINI_PROMPT_WAV = ""  #@param {type:"string"}
+ZONOS3_MINI_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+ZONOS3_MINI_SPEAKING_RATE = 0.0  #@param {type:"number"}
+ZONOS3_MINI_SPEAKER_CFG_SCALE = 1.0  #@param {type:"number"}
 
 #@markdown ---
 #@markdown OuteTTS (CPU OK, multilingual incl JP, voice cloning)
@@ -1112,6 +1124,16 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         ZONOS2_DEFAULT_REF,
         "--zonos2-seed",
         str(ZONOS2_SEED),
+        "--zonos3-mini-language",
+        ZONOS3_MINI_LANGUAGE,
+        "--zonos3-mini-prompt-wav",
+        ZONOS3_MINI_PROMPT_WAV,
+        "--zonos3-mini-default-voice",
+        ZONOS3_MINI_DEFAULT_VOICE,
+        "--zonos3-mini-speaking-rate",
+        str(ZONOS3_MINI_SPEAKING_RATE),
+        "--zonos3-mini-speaker-cfg-scale",
+        str(ZONOS3_MINI_SPEAKER_CFG_SCALE),
         "--outetts-model-size",
         OUTETTS_MODEL_SIZE,
         "--outetts-backend",
@@ -1904,6 +1926,14 @@ Zyphra の最新 TTS、[Zyphra/ZONOS2](https://github.com/Zyphra/Zonos2) です�
 
 `--zonos2-accurate-mode`（既定 ON）は声質再現を重視し、`--zonos2-no-accurate-mode` で表現力重視になります。`--zonos2-seed` に 0 以上を指定すると出力が再現可能になります。音声クローンを使う場合は、必ず権利を持っている音声（本人の同意がある音声）でのみ行ってください。ライセンス: コードは MIT（pyproject）、重みは Apache 2.0（HF モデルカード）。いずれも商用利用可。
 
+### ZONOS3-Mini
+
+Zyphra の ZONOS3-Mini は、日本語を含む43言語に対応します。公式の Transformers 版に、ZAC-1 デコーダと MECT-B2 話者エンコーダが含まれます。Colab では bfloat16 に対応する L4 を選んでください。初回起動時に約 2.4 GB のモデル重みをダウンロードします。 [モデルカードと対応言語コード](https://huggingface.co/Zyphra/ZONOS3-Mini-hf)
+
+`/v1/audio/speech` は 44.1 kHz のモノラル PCM WAV を返します。`voice="default"` では同梱の Savannah を使います。声をクローンするには、使用許可のある参照音声を `--zonos3-mini-prompt-wav` で指定し、`voice="clone"` を送ります。話者エンコーダが使うのは音声の先頭60秒までです。参照音声の指定がなければ、`clone` のリクエストは HTTP 400 を返します。
+
+`--zonos3-mini-language` はテキスト正規化に使う言語を指定します（初期値は `ja`）。発話速度は `--zonos3-mini-speaking-rate` に UTF-8 のバイト数/秒で指定します（0 は指定なし）。リクエストの `speed` は 1.0 のまま使います。`--zonos3-mini-speaker-cfg-scale` を 1 より大きくすると、話者の特徴が強く反映され、生成ステップごとに推論が1回増えます。
+
 ### OuteTTS
 
 [edwko/OuteTTS](https://github.com/edwko/OuteTTS) を使った軽量多言語 TTS です。日本語を含む多言語に対応し、モデルサイズ（`0.6B` / `1B`）と backend（`HF` = transformers / `LLAMACPP` = GGUF）を選択できます。`--outetts-prompt-wav`（必要なら `--outetts-prompt-text` も）で voice cloning を有効にできます。デフォルト voice は `--outetts-default-speaker`（例: `EN-FEMALE-1-NEUTRAL`）で内蔵 speaker プロファイルを切り替えられます。日本語を発話させる場合は、日本語の参照音声から `clone` で speaker プロファイルを作るのが推奨です。CPU / GPU の両方で動作します。
@@ -2505,6 +2535,7 @@ Colab T4 で確認済み: エンジン・`/v1` エンドポイント・trycloudf
 | ZeroTTS | MIT | MIT (`zeroweight-ai/ZeroTTS`) | OK | ベトナム語CPU/ONNX TTS、preset voice latent対応。公開パッケージは新規voiceを作成不可。同梱MOSS codec decoderはApache-2.0 |
 | Zonos | Apache 2.0 | Apache 2.0 | OK | 英 / 日 / 中 / 仏 / 独。ゼロショット voice cloning。`espeak-ng` 必須 |
 | ZONOS2 | MIT | Apache 2.0 | OK | 41言語（tier-1 英/中/日）。ゼロショット voice cloning。Mini-SGLang バックエンド。GPU sm_80+（L4/A100） |
+| ZONOS3-Mini | [MIT](https://github.com/Zyphra/ZONOS3-Mini/blob/main/LICENSE) | [Apache 2.0](https://huggingface.co/Zyphra/ZONOS3-Mini-hf#license) | OK | 公式 Transformers 版に ZAC-1 デコーダを同梱。第三者コードには MIT、Apache 2.0、BSD-2-Clause が適用されます。 |
 | OuteTTS (0.6B) | Apache 2.0 | Apache 2.0 | OK | 日本語含む多言語、CPU 動作可、voice cloning |
 | OuteTTS (1B)   | Apache 2.0 | CC-BY-NC-SA-4.0 + Llama 3.2 Community License | 不可 | Llama-3.2 ベース。重みは非商用 |
 | Dia | Apache 2.0 | Apache 2.0 | OK | 英語のみ。`[S1]`/`[S2]` でマルチスピーカー対話 TTS |
@@ -2649,6 +2680,8 @@ Colab T4 で確認済み: エンジン・`/v1` エンドポイント・trycloudf
   https://github.com/Zyphra/Zonos
 - ZONOS2
   https://github.com/Zyphra/Zonos2
+- ZONOS3-Mini
+  https://github.com/Zyphra/ZONOS3-Mini
 - OuteTTS
   https://github.com/edwko/OuteTTS
 - Dia

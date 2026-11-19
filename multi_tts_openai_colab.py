@@ -11,7 +11,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Audio8-TTS", "Bark", "Breeze-TTS-2", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "drama3-small", "DramaBox", "F5-TTS", "FireRedTTS2", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "IndexTTS2", "Irodori-TTS", "Irodori-TTS-Anime", "Irodori-TTS-Large", "Irodori-TTS-Lite", "Irodori-TTS-MF", "KittenTTS", "KittenTTS-2", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "speech.cpp", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "ZeroTTS", "Zonos", "ZONOS2"]
+ENGINE = "Kokoro"  #@param ["Audio8-TTS", "Bark", "Breeze-TTS-2", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "drama3-small", "DramaBox", "F5-TTS", "FireRedTTS2", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "IndexTTS2", "Irodori-TTS", "Irodori-TTS-Anime", "Irodori-TTS-Large", "Irodori-TTS-Lite", "Irodori-TTS-MF", "KittenTTS", "KittenTTS-2", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "speech.cpp", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "ZeroTTS", "Zonos", "ZONOS2", "ZONOS3-Mini"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -278,6 +278,17 @@ ZONOS2_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
 ZONOS2_DEFAULT_REF = "AmericanFemale.mp3"  #@param {type:"string"}
 ZONOS2_ACCURATE_MODE = True  #@param {type:"boolean"}
 ZONOS2_SEED = -1  #@param {type:"integer"}
+
+#@markdown ---
+#@markdown ZONOS3-Mini (L4 recommended, 43 languages including Japanese)
+#@markdown - The official Transformers checkpoint includes the ZAC-1 decoder and speaker encoder.
+#@markdown - Use `default` for Savannah or set `ZONOS3_MINI_PROMPT_WAV` (up to 60 seconds used) for `clone`.
+#@markdown - Speaking rate is in UTF-8 bytes/second (0 leaves it unset). Speaker CFG above 1 strengthens voice conditioning and costs an extra model pass per step.
+ZONOS3_MINI_LANGUAGE = "ja"  #@param {type:"string"}
+ZONOS3_MINI_PROMPT_WAV = ""  #@param {type:"string"}
+ZONOS3_MINI_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+ZONOS3_MINI_SPEAKING_RATE = 0.0  #@param {type:"number"}
+ZONOS3_MINI_SPEAKER_CFG_SCALE = 1.0  #@param {type:"number"}
 
 #@markdown ---
 #@markdown OuteTTS (CPU OK, multilingual incl JP, voice cloning)
@@ -984,6 +995,16 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         ZONOS2_DEFAULT_REF,
         "--zonos2-seed",
         str(ZONOS2_SEED),
+        "--zonos3-mini-language",
+        ZONOS3_MINI_LANGUAGE,
+        "--zonos3-mini-prompt-wav",
+        ZONOS3_MINI_PROMPT_WAV,
+        "--zonos3-mini-default-voice",
+        ZONOS3_MINI_DEFAULT_VOICE,
+        "--zonos3-mini-speaking-rate",
+        str(ZONOS3_MINI_SPEAKING_RATE),
+        "--zonos3-mini-speaker-cfg-scale",
+        str(ZONOS3_MINI_SPEAKER_CFG_SCALE),
         "--outetts-model-size",
         OUTETTS_MODEL_SIZE,
         "--outetts-backend",
