@@ -11,7 +11,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Audio8-TTS", "Bark", "Breeze-TTS-2", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "drama3-small", "DramaBox", "F5-TTS", "FireRedTTS2", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "IndexTTS2", "Irodori-TTS", "Irodori-TTS-Anime", "Irodori-TTS-Large", "Irodori-TTS-Lite", "Irodori-TTS-MF", "KittenTTS", "KittenTTS-2", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "speech.cpp", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "ZeroTTS", "Zonos", "ZONOS2"]
+ENGINE = "Kokoro"  #@param ["Audio8-TTS", "Bark", "Breeze-TTS-2", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "drama3-small", "DramaBox", "F5-TTS", "FireRedTTS2", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "IndexTTS2", "IndexTTS-2.5", "Irodori-TTS", "Irodori-TTS-Anime", "Irodori-TTS-Large", "Irodori-TTS-Lite", "Irodori-TTS-MF", "KittenTTS", "KittenTTS-2", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "Magpie-TTS", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Phonon", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "speech.cpp", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "tiny-voca", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "ZeroTTS", "Zonos", "ZONOS2", "ZONOS3-Mini"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -20,8 +20,9 @@ OPENAI_MODEL_ID = ""  #@param {type:"string"}
 
 #@markdown ---
 #@markdown Audio8-TTS (0.6B multilingual TTS, GPU recommended)
-#@markdown - Supports 11 languages including Japanese. `default` needs no reference; `clone` requires both a reference WAV and its exact transcript.
-#@markdown - Keep input within 150 characters for best quality. Only clone voices with consent and disclose synthetic audio where appropriate.
+#@markdown - Preview (default) supports 11 languages. For 23 languages, set `AUDIO8_HF_MODEL` to `Edge0/Audio8-TTS-Realistic-Air`. Both support Japanese.
+#@markdown - `default` needs no reference. `clone` requires both a reference WAV and its exact transcript.
+#@markdown - For Preview, upstream recommends up to 150 characters per input. Only clone voices with consent and disclose synthetic audio where appropriate.
 #@markdown - License: Apache-2.0 for both code and weights. See the upstream NOTICE for attribution details.
 AUDIO8_HF_MODEL = "Audio8/Audio8-TTS-Preview-0.6b"  #@param {type:"string"}
 AUDIO8_PROMPT_WAV = ""  #@param {type:"string"}
@@ -162,6 +163,18 @@ POCKET_PROMPT_WAV = ""  #@param {type:"string"}
 POCKET_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
 
 #@markdown ---
+#@markdown Phonon (CPU, English)
+#@markdown - Gradium's 31M English checkpoint (Q8) uses the bundled `default` voice. Set `TEST_TEXT` to English before running the smoke test.
+#@markdown - Runtime: MIT OR Apache-2.0. Weights, tokenizer and bundled voice: Apache-2.0.
+PHONON_TEMPERATURE = 0.3  #@param {type:"number"}
+
+#@markdown ---
+#@markdown tiny-voca (CPU, English)
+#@markdown - Built-in voices: `F2` and `M2`. Set `TEST_TEXT` to English for the smoke test. Speech output is 24 kHz mono WAV.
+#@markdown - Code and weights: Apache-2.0. The bundled phonemizer data retains its upstream license notices.
+TINY_VOCA_DEFAULT_VOICE = "F2"  #@param ["F2", "M2"]
+
+#@markdown ---
 #@markdown MeloTTS
 #@markdown - License: MIT for both code ([myshell-ai/MeloTTS](https://github.com/myshell-ai/MeloTTS)) and the per-language weight repos. Commercial use OK.
 MELO_LANGUAGE = "JP"  #@param ["JP", "EN", "ZH", "ES", "FR", "KR"]
@@ -278,6 +291,17 @@ ZONOS2_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
 ZONOS2_DEFAULT_REF = "AmericanFemale.mp3"  #@param {type:"string"}
 ZONOS2_ACCURATE_MODE = True  #@param {type:"boolean"}
 ZONOS2_SEED = -1  #@param {type:"integer"}
+
+#@markdown ---
+#@markdown ZONOS3-Mini (L4 recommended, 43 languages including Japanese)
+#@markdown - The official Transformers checkpoint includes the ZAC-1 decoder and speaker encoder.
+#@markdown - Use `default` for Savannah or set `ZONOS3_MINI_PROMPT_WAV` (up to 60 seconds used) for `clone`.
+#@markdown - Speaking rate is in UTF-8 bytes/second (0 leaves it unset). Speaker CFG above 1 strengthens voice conditioning and costs an extra model pass per step.
+ZONOS3_MINI_LANGUAGE = "ja"  #@param {type:"string"}
+ZONOS3_MINI_PROMPT_WAV = ""  #@param {type:"string"}
+ZONOS3_MINI_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+ZONOS3_MINI_SPEAKING_RATE = 0.0  #@param {type:"number"}
+ZONOS3_MINI_SPEAKER_CFG_SCALE = 1.0  #@param {type:"number"}
 
 #@markdown ---
 #@markdown OuteTTS (CPU OK, multilingual incl JP, voice cloning)
@@ -398,6 +422,15 @@ INDEXTTS2_EMOTION_VECTOR = ""  #@param {type:"string"}
 INDEXTTS2_EMOTION_ALPHA = 0.6  #@param {type:"number"}
 INDEXTTS2_USE_RANDOM = False  #@param {type:"boolean"}
 INDEXTTS2_USE_FP16 = True  #@param {type:"boolean"}
+
+#@markdown ---
+#@markdown IndexTTS-2.5 (L4 recommended, Japanese / English / Chinese / Spanish / Arabic)
+#@markdown - `default` uses the official demo reference. For `clone`, set `INDEXTTS25_PROMPT_WAV` to a recording you have permission to use.
+#@markdown - Write out numbers and dates as they should be spoken in Japanese. The API accepts `speed` from 0.5 to 2.0.
+#@markdown - Code and weights use the bilibili Model Use License Agreement. Commercial use is subject to its terms.
+INDEXTTS25_LANGUAGE = "ja"  #@param ["ja", "en", "zh", "es", "ar"]
+INDEXTTS25_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+INDEXTTS25_PROMPT_WAV = ""  #@param {type:"string"}
 
 #@markdown ---
 #@markdown Bark (GPU recommended, 13 languages, MIT)
@@ -540,6 +573,14 @@ LFM2_AUDIO_JP_SYSTEM_PROMPT = "Perform TTS in japanese."  #@param {type:"string"
 LFM2_AUDIO_JP_MAX_NEW_TOKENS = 1024  #@param {type:"integer"}
 LFM2_AUDIO_JP_AUDIO_TEMPERATURE = 0.8  #@param {type:"number"}
 LFM2_AUDIO_JP_AUDIO_TOP_K = 64  #@param {type:"integer"}
+
+#@markdown ---
+#@markdown Magpie-TTS (NVIDIA GPU required, 12 languages including Japanese)
+#@markdown - Select a built-in speaker with `voice`: `aria`, `jason`, `john`, `leo`, or `sofia`. The public checkpoint has no voice cloning.
+#@markdown - Magpie v2607 and NanoCodec weights use the NVIDIA Open Model License. Commercial use is permitted under its terms.
+MAGPIE_TTS_LANGUAGE = "ja"  #@param ["ar", "de", "en", "es", "fr", "hi", "it", "ja", "ko", "pt", "vi", "zh"]
+MAGPIE_TTS_DEFAULT_VOICE = "sofia"  #@param ["aria", "jason", "john", "leo", "sofia"]
+MAGPIE_TTS_TEXT_NORMALIZATION = True  #@param {type:"boolean"}
 
 #@markdown ---
 #@markdown Ming-omni-TTS (A100 required, ~34GB weights, Chinese/English-centric, voice cloning)
@@ -882,6 +923,10 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         POCKET_PROMPT_WAV,
         "--pocket-default-voice",
         POCKET_DEFAULT_VOICE,
+        "--phonon-temperature",
+        str(PHONON_TEMPERATURE),
+        "--tiny-voca-default-voice",
+        TINY_VOCA_DEFAULT_VOICE,
         "--melo-language",
         MELO_LANGUAGE,
         "--melo-default-voice",
@@ -984,6 +1029,16 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         ZONOS2_DEFAULT_REF,
         "--zonos2-seed",
         str(ZONOS2_SEED),
+        "--zonos3-mini-language",
+        ZONOS3_MINI_LANGUAGE,
+        "--zonos3-mini-prompt-wav",
+        ZONOS3_MINI_PROMPT_WAV,
+        "--zonos3-mini-default-voice",
+        ZONOS3_MINI_DEFAULT_VOICE,
+        "--zonos3-mini-speaking-rate",
+        str(ZONOS3_MINI_SPEAKING_RATE),
+        "--zonos3-mini-speaker-cfg-scale",
+        str(ZONOS3_MINI_SPEAKER_CFG_SCALE),
         "--outetts-model-size",
         OUTETTS_MODEL_SIZE,
         "--outetts-backend",
@@ -1102,6 +1157,12 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         INDEXTTS2_EMOTION_VECTOR,
         "--indextts2-emotion-alpha",
         str(INDEXTTS2_EMOTION_ALPHA),
+        "--indextts25-language",
+        INDEXTTS25_LANGUAGE,
+        "--indextts25-default-voice",
+        INDEXTTS25_DEFAULT_VOICE,
+        "--indextts25-prompt-wav",
+        INDEXTTS25_PROMPT_WAV,
         "--bark-default-voice",
         BARK_DEFAULT_VOICE,
         "--chattts-default-voice",
@@ -1254,6 +1315,10 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         str(LFM2_AUDIO_JP_AUDIO_TEMPERATURE),
         "--lfm2-audio-jp-audio-top-k",
         str(LFM2_AUDIO_JP_AUDIO_TOP_K),
+        "--magpie-tts-language",
+        MAGPIE_TTS_LANGUAGE,
+        "--magpie-tts-default-voice",
+        MAGPIE_TTS_DEFAULT_VOICE,
         "--ming-omni-tts-hf-model",
         MING_OMNI_TTS_HF_MODEL,
         "--ming-omni-tts-default-voice",
@@ -1435,6 +1500,7 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         cmd.append("--zonos2-no-accurate-mode")
     if not SPEECH_CPP_USE_VULKAN:
         cmd.append("--speech-cpp-no-vulkan")
+    cmd.append("--magpie-tts-text-normalization" if MAGPIE_TTS_TEXT_NORMALIZATION else "--no-magpie-tts-text-normalization")
     cmd.append("--expose-public-url" if EXPOSE_PUBLIC_URL else "--no-expose-public-url")
     return cmd
 

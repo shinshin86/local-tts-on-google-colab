@@ -123,6 +123,8 @@ class Settings:
     pocket_default_speaker: str = "alba"
     pocket_prompt_wav: str = ""
     pocket_default_voice: str = "default"
+    phonon_temperature: float = 0.3
+    tiny_voca_default_voice: str = "F2"
     melo_language: str = "JP"
     melo_default_voice: str = "JP"
     style_bert_model_repo: str = "litagin/style_bert_vits2_jvnv"
@@ -219,6 +221,12 @@ class Settings:
     # >= 0 forces a fixed seed for reproducible output; -1 leaves it random.
     zonos2_seed: int = -1
     zonos2_backend_port: int = 5003
+    # ZONOS3-Mini uses the official Transformers checkpoint.
+    zonos3_mini_language: str = "ja"
+    zonos3_mini_prompt_wav: str = ""
+    zonos3_mini_default_voice: str = "default"
+    zonos3_mini_speaking_rate: float = 0.0  # 0 leaves the pace unconditioned
+    zonos3_mini_speaker_cfg_scale: float = 1.0
     outetts_model_size: str = "0.6B"
     outetts_backend: str = "HF"
     outetts_default_speaker: str = "EN-FEMALE-1-NEUTRAL"
@@ -292,6 +300,10 @@ class Settings:
     indextts2_emotion_alpha: float = 0.6
     indextts2_use_random: bool = False
     indextts2_use_fp16: bool = True
+    # IndexTTS-2.5 has its own multilingual inference API and checkpoint.
+    indextts25_language: str = "ja"
+    indextts25_default_voice: str = "default"
+    indextts25_prompt_wav: str = ""
     bark_default_voice: str = "v2/en_speaker_6"
     bark_use_small_models: bool = False
     chattts_default_voice: str = "default"
@@ -449,6 +461,10 @@ class Settings:
     lfm2_audio_jp_max_new_tokens: int = 1024
     lfm2_audio_jp_audio_temperature: float = 0.8
     lfm2_audio_jp_audio_top_k: int = 64
+    # Magpie-TTS v2607 supports twelve languages with five built-in voices.
+    magpie_tts_language: str = "ja"
+    magpie_tts_default_voice: str = "sofia"
+    magpie_tts_text_normalization: bool = True
     # Ming-omni-TTS (inclusionAI): 16.8B-A3B MoE audio LM (~3B active) with a
     # 12.5 Hz continuous tokenizer + DiT head. Runs in-process. `default` = the
     # built-in voice (zero speaker-embedding, no reference); `clone` = zero-shot

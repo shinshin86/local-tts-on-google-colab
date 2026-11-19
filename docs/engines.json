@@ -40,6 +40,7 @@
       "Higgs-Audio-v2",
       "Higgs-Audio-v3",
       "IndexTTS2",
+      "IndexTTS-2.5",
       "Irodori-TTS",
       "Irodori-TTS-Anime",
       "Irodori-TTS-Large",
@@ -51,6 +52,7 @@
       "Kokoro-ONNX",
       "Kyutai-TTS",
       "LFM2.5-Audio-JP",
+      "Magpie-TTS",
       "MaskGCT",
       "MeloTTS",
       "Ming-omni-TTS",
@@ -64,6 +66,7 @@
       "OpenVoice-V2",
       "Orpheus-TTS",
       "OuteTTS",
+      "Phonon",
       "Piper",
       "Piper-Plus",
       "Pocket-TTS",
@@ -77,13 +80,15 @@
       "StyleTTS2",
       "Supertonic",
       "TinyTTS",
+      "tiny-voca",
       "VibeVoice-Realtime",
       "VoxCPM2",
       "Voxtral-TTS",
       "Vyvo-Multilingual",
       "ZeroTTS",
       "Zonos",
-      "ZONOS2"
+      "ZONOS2",
+      "ZONOS3-Mini"
     ]
   },
   "expose_setting": {
@@ -123,19 +128,21 @@
     {
       "id": "Audio8-TTS",
       "title": "Audio8-TTS (0.6B multilingual TTS, GPU recommended)",
-      "status": "Works on L4 (GPU recommended, zero-shot voice cloning)",
-      "status_ja": "L4 で動作確認済み（GPU 推奨、ゼロショット Voice cloning）",
-      "languages": "Japanese / English / Chinese and 11 languages",
-      "languages_ja": "日本語 / 英語 / 中国語 他 11言語",
-      "description": "A separate engine for [Audio8 TTS Preview 0.6B](https://huggingface.co/Audio8/Audio8-TTS-Preview-0.6b), a compact DualAR model with a bundled 44.1 kHz neural codec. It supports 11 recommended languages, including Japanese, English, Chinese, Cantonese, Korean, and major European languages. Upstream recommends keeping each input within 150 characters for best quality.",
-      "description_ja": "[Audio8 TTS Preview 0.6B](https://huggingface.co/Audio8/Audio8-TTS-Preview-0.6b) を使用する独立エンジンです。44.1kHzのニューラルコーデックを同梱した小型のDualARモデルで、日本語、英語、中国語、広東語、韓国語、主要な欧州言語を含む推奨11言語に対応します。品質を保つため、上流は1回の入力を150文字以内にすることを推奨しています。",
+      "status": "Preview verified on L4. Realistic Air pending Colab verification (GPU recommended)",
+      "status_ja": "Preview は L4 で動作確認済み。Realistic Air は Colab 未検証（GPU 推奨）",
+      "languages": "Preview: 11 languages. Realistic Air: 23 languages. Both include Japanese",
+      "languages_ja": "Preview は11言語、Realistic Air は23言語。いずれも日本語対応",
+      "description": "Audio8-TTS runs two 0.6B DualAR checkpoints through the same Transformers interface. Each bundles a 44.1 kHz neural codec. The default, [Audio8 TTS Preview 0.6B](https://huggingface.co/Audio8/Audio8-TTS-Preview-0.6b), supports 11 languages, including Japanese, English, Chinese, Cantonese, and Korean. [Audio8-TTS-Realistic-Air](https://huggingface.co/Edge0/Audio8-TTS-Realistic-Air) supports 23 languages, including all 11 from Preview.",
+      "description_ja": "Audio8-TTS は、2種類の 0.6B DualAR モデルを共通の Transformers API で動かします。どちらにも 44.1 kHz のニューラルコーデックが含まれます。初期設定の [Audio8 TTS Preview 0.6B](https://huggingface.co/Audio8/Audio8-TTS-Preview-0.6b) は、日本語、英語、中国語、広東語、韓国語など11言語に対応します。[Audio8-TTS-Realistic-Air](https://huggingface.co/Edge0/Audio8-TTS-Realistic-Air) は、Preview の11言語を含む23言語に対応します。",
       "notes": [
-        "- Supports 11 languages including Japanese. `default` needs no reference; `clone` requires both a reference WAV and its exact transcript.",
-        "- Keep input within 150 characters for best quality. Only clone voices with consent and disclose synthetic audio where appropriate.",
+        "- Preview (default) supports 11 languages. For 23 languages, set `AUDIO8_HF_MODEL` to `Edge0/Audio8-TTS-Realistic-Air`. Both support Japanese.",
+        "- `default` needs no reference. `clone` requires both a reference WAV and its exact transcript.",
+        "- For Preview, upstream recommends up to 150 characters per input. Only clone voices with consent and disclose synthetic audio where appropriate.",
         "- License: Apache-2.0 for both code and weights. See the upstream NOTICE for attribution details."
       ],
       "notes_ja": [
-        "- ライセンス: コードは Apache-2.0、モデル重みは Apache-2.0 (`Audio8/Audio8-TTS-Preview-0.6b`)。商用利用: OK。 備考: 0.6B多言語Preview、ゼロショットVoice cloning対応。上流NOTICEの帰属表示を維持し、音声クローンには本人の同意が必要"
+        "- ライセンス: コードは Apache-2.0、モデル重みは Apache-2.0 (`Audio8/Audio8-TTS-Preview-0.6b`)。商用利用: OK。 備考: 0.6B多言語Preview、ゼロショットVoice cloning対応。上流NOTICEの帰属表示を維持し、音声クローンには本人の同意が必要",
+        "- ライセンス: コードは [Apache-2.0](https://github.com/Edge0-AI/Audio8_TTS/blob/master/LICENSE)、モデル重みは [Apache-2.0](https://huggingface.co/Edge0/Audio8-TTS-Realistic-Air/blob/main/LICENSE) (`Edge0/Audio8-TTS-Realistic-Air`)。商用利用: OK。 備考: 追加で選べる 0.6B モデル。日本語を含む23言語に対応。上流の NOTICE にある帰属表示を維持します。"
       ],
       "prefix": "AUDIO8",
       "params": [
@@ -1376,6 +1383,56 @@
       ]
     },
     {
+      "id": "IndexTTS-2.5",
+      "title": "IndexTTS-2.5 (L4 recommended, Japanese / English / Chinese / Spanish / Arabic)",
+      "status": "Colab verification pending (L4 recommended)",
+      "status_ja": "Colab 未検証（L4 推奨）",
+      "languages": "Japanese / English / Chinese / Spanish / Arabic",
+      "languages_ja": "日本語 / 英語 / 中国語 / スペイン語 / アラビア語",
+      "description": "[IndexTTS-2.5](https://huggingface.co/IndexTeam/IndexTTS-2.5) supports Japanese, English, Chinese, Spanish, and Arabic. It uses the upstream multilingual runtime and its bundled semantic codec. The model card estimates about 6 GB of VRAM for inference. Colab L4 usage is pending verification.",
+      "description_ja": "[IndexTTS-2.5](https://huggingface.co/IndexTeam/IndexTTS-2.5) は、日本語、英語、中国語、スペイン語、アラビア語に対応します。上流の多言語推論コードと同梱の音声コーデックを使います。モデルカードによると、推論時の VRAM の目安は約 6 GB です。Colab L4 での動作は未検証です。",
+      "notes": [
+        "- `default` uses the official demo reference. For `clone`, set `INDEXTTS25_PROMPT_WAV` to a recording you have permission to use.",
+        "- Write out numbers and dates as they should be spoken in Japanese. The API accepts `speed` from 0.5 to 2.0.",
+        "- Code and weights use the bilibili Model Use License Agreement. Commercial use is subject to its terms."
+      ],
+      "notes_ja": [
+        "- ライセンス: コードは [bilibili Model Use License](https://github.com/index-tts/index-tts/blob/d9e41aac89fd00b3d71497fddb287b7f24613712/LICENSE)、モデル重みは [bilibili Model Use License](https://huggingface.co/IndexTeam/IndexTTS-2.5/blob/c39ce5ba981572cb187443877ff559dfb246ce63/LICENSE)（同梱コーデックを含む）。商用利用: 条件付き。 備考: 月間アクティブユーザー1億人超、または年間売上10億元超は書面での別途許諾が必要。ライセンスと著作権表示を保持。"
+      ],
+      "prefix": "INDEXTTS25",
+      "params": [
+        {
+          "name": "INDEXTTS25_LANGUAGE",
+          "default": "ja",
+          "type": "select",
+          "options": [
+            "ja",
+            "en",
+            "zh",
+            "es",
+            "ar"
+          ],
+          "flag": "--indextts25-language"
+        },
+        {
+          "name": "INDEXTTS25_DEFAULT_VOICE",
+          "default": "default",
+          "type": "select",
+          "options": [
+            "default",
+            "clone"
+          ],
+          "flag": "--indextts25-default-voice"
+        },
+        {
+          "name": "INDEXTTS25_PROMPT_WAV",
+          "default": "",
+          "type": "string",
+          "flag": "--indextts25-prompt-wav"
+        }
+      ]
+    },
+    {
       "id": "Irodori-TTS",
       "title": "Irodori-TTS",
       "status": "Works on L4 (GPU required; v4.1-Small default, v4-Small selectable)",
@@ -2086,6 +2143,66 @@
           "default": 64,
           "type": "integer",
           "flag": "--lfm2-audio-jp-audio-top-k"
+        }
+      ]
+    },
+    {
+      "id": "Magpie-TTS",
+      "title": "Magpie-TTS (NVIDIA GPU required, 12 languages including Japanese)",
+      "status": "Colab verification pending (NVIDIA GPU required, L4 recommended)",
+      "status_ja": "Colab 未検証（NVIDIA GPU 必須、L4 推奨）",
+      "languages": "12 languages, including Japanese",
+      "languages_ja": "日本語を含む12言語",
+      "description": "NVIDIA's [Magpie-TTS v2607](https://huggingface.co/nvidia/magpie_tts_multilingual_357m) synthesizes 12 languages using five built-in speakers. The wrapper runs the NeMo Speech TTS runtime on a CUDA GPU and decodes with [NanoCodec](https://huggingface.co/nvidia/nemo-nano-codec-22khz-1.89kbps-21.5fps) to 22.05 kHz mono PCM WAV. Colab L4 verification is pending.",
+      "description_ja": "NVIDIA の [Magpie-TTS v2607](https://huggingface.co/nvidia/magpie_tts_multilingual_357m) は、5種類の話者で12言語を読み上げます。CUDA GPU 上で NeMo Speech の TTS 推論を実行し、[NanoCodec](https://huggingface.co/nvidia/nemo-nano-codec-22khz-1.89kbps-21.5fps) で 22.05 kHz のモノラル PCM WAV に変換します。Colab L4 での動作は未検証です。",
+      "notes": [
+        "- Select a built-in speaker with `voice`: `aria`, `jason`, `john`, `leo`, or `sofia`. The public checkpoint has no voice cloning.",
+        "- Magpie v2607 and NanoCodec weights use the NVIDIA Open Model License. Commercial use is permitted under its terms."
+      ],
+      "notes_ja": [
+        "- ライセンス: コードは [Apache 2.0](https://github.com/NVIDIA-NeMo/Speech/blob/24c4f58a764350a62248094c70e487892e9d1a00/LICENSE)（NeMo Speech）、モデル重みは [NVIDIA Open Model License](https://www.nvidia.com/en-us/agreements/enterprise-software/nvidia-open-model-license/)（v2607）、[NVIDIA Open Model License (June 2024)](https://developer.download.nvidia.com/licenses/nvidia-open-model-license-agreement-june-2024.pdf)（NanoCodec）。商用利用: ライセンス条件の範囲で可。 備考: 商用利用可。重みの再配布時は該当ライセンスと NVIDIA の帰属表示が必要。"
+      ],
+      "prefix": "MAGPIE_TTS",
+      "params": [
+        {
+          "name": "MAGPIE_TTS_LANGUAGE",
+          "default": "ja",
+          "type": "select",
+          "options": [
+            "ar",
+            "de",
+            "en",
+            "es",
+            "fr",
+            "hi",
+            "it",
+            "ja",
+            "ko",
+            "pt",
+            "vi",
+            "zh"
+          ],
+          "flag": "--magpie-tts-language"
+        },
+        {
+          "name": "MAGPIE_TTS_DEFAULT_VOICE",
+          "default": "sofia",
+          "type": "select",
+          "options": [
+            "aria",
+            "jason",
+            "john",
+            "leo",
+            "sofia"
+          ],
+          "flag": "--magpie-tts-default-voice"
+        },
+        {
+          "name": "MAGPIE_TTS_TEXT_NORMALIZATION",
+          "default": true,
+          "type": "boolean",
+          "true_flag": "--magpie-tts-text-normalization",
+          "false_flag": "--no-magpie-tts-text-normalization"
         }
       ]
     },
@@ -3043,6 +3160,32 @@
       ]
     },
     {
+      "id": "Phonon",
+      "title": "Phonon (CPU, English)",
+      "status": "Colab verification pending (CPU runtime)",
+      "status_ja": "Colab 未検証（CPU で実行）",
+      "languages": "English",
+      "languages_ja": "英語",
+      "description": "Gradium's [Phonon 31M English](https://huggingface.co/gradium/phonon-31m-en) runs on CPU with the official `ptts` runtime. The pinned Q8 weights are about 64.5 MB and download on first use without a Hugging Face token. The engine returns 24 kHz mono PCM WAV. Colab verification is pending.",
+      "description_ja": "Gradium の [Phonon 31M 英語版](https://huggingface.co/gradium/phonon-31m-en) を公式の `ptts` ランタイムで CPU 上で実行します。約 64.5 MB の Q8 重みを初回にダウンロードします。Hugging Face のトークンは不要です。出力は 24 kHz のモノラル PCM WAV です。Colab での動作は未検証です。",
+      "notes": [
+        "- Gradium's 31M English checkpoint (Q8) uses the bundled `default` voice. Set `TEST_TEXT` to English before running the smoke test.",
+        "- Runtime: MIT OR Apache-2.0. Weights, tokenizer and bundled voice: Apache-2.0."
+      ],
+      "notes_ja": [
+        "- ライセンス: コードは [MIT](https://github.com/gradium-ai/xn-ptts/blob/v0.7.1/LICENSE-MIT) OR [Apache 2.0](https://github.com/gradium-ai/xn-ptts/blob/v0.7.1/LICENSE-APACHE)、モデル重みは [Apache 2.0](https://huggingface.co/gradium/phonon-31m-en/blob/8f7a37c94a4c58b04c8287300c53f11d2e208eae/LICENSE)。商用利用: OK。 備考: Gradium 31M 英語版の Q8 重み、トークナイザー、同梱話者。"
+      ],
+      "prefix": "PHONON",
+      "params": [
+        {
+          "name": "PHONON_TEMPERATURE",
+          "default": 0.3,
+          "type": "number",
+          "flag": "--phonon-temperature"
+        }
+      ]
+    },
+    {
       "id": "Piper",
       "title": "Piper",
       "status": "Works",
@@ -3879,6 +4022,36 @@
       "params": []
     },
     {
+      "id": "tiny-voca",
+      "title": "tiny-voca (CPU, English)",
+      "status": "Colab verification pending (CPU runtime)",
+      "status_ja": "Colab 未検証（CPU で実行）",
+      "languages": "English",
+      "languages_ja": "英語",
+      "description": "[tiny-voca](https://huggingface.co/n4ze3m/tiny-voca) is a 4.5M-parameter American English model. This integration uses the upstream PyTorch CPU inference path and the dizione phonemizer. It returns 24 kHz mono PCM WAV and splits long text into sentences before synthesis. Colab verification is pending.",
+      "description_ja": "[tiny-voca](https://huggingface.co/n4ze3m/tiny-voca) は、450万パラメータの米国英語向けモデルです。公式の PyTorch CPU 推論と、テキストを音素に変換する dizione を使います。長い入力は文ごとに分けて合成し、24 kHz のモノラル PCM WAV を返します。Colab での動作は未検証です。",
+      "notes": [
+        "- Built-in voices: `F2` and `M2`. Set `TEST_TEXT` to English for the smoke test. Speech output is 24 kHz mono WAV.",
+        "- Code and weights: Apache-2.0. The bundled phonemizer data retains its upstream license notices."
+      ],
+      "notes_ja": [
+        "- ライセンス: コードは [Apache 2.0](https://github.com/n4ze3m/tiny-voca/blob/0eea2be213b53ec0b1949c169b80e611544718e1/LICENSE)、モデル重みは [Apache 2.0](https://huggingface.co/n4ze3m/tiny-voca/blob/1e73262226dbf4ef02e9df277e81aaa1db5ce16c/LICENSE)。商用利用: OK。 備考: 音素化データを再配布する場合は、[CMUdict](https://huggingface.co/n4ze3m/tiny-voca/blob/1e73262226dbf4ef02e9df277e81aaa1db5ce16c/phonemizer/LICENSE.cmudict) と [homograph data](https://huggingface.co/n4ze3m/tiny-voca/blob/1e73262226dbf4ef02e9df277e81aaa1db5ce16c/phonemizer/LICENSE.homograph-data) のライセンス表記を保持。"
+      ],
+      "prefix": "TINY_VOCA_DEFAULT",
+      "params": [
+        {
+          "name": "TINY_VOCA_DEFAULT_VOICE",
+          "default": "F2",
+          "type": "select",
+          "options": [
+            "F2",
+            "M2"
+          ],
+          "flag": "--tiny-voca-default-voice"
+        }
+      ]
+    },
+    {
       "id": "VibeVoice-Realtime",
       "title": "VibeVoice-Realtime (GPU required, 0.5B, single speaker, ~10 min)",
       "status": "Works (GPU required, 0.5B, single speaker)",
@@ -4267,6 +4440,61 @@
           "default": -1,
           "type": "integer",
           "flag": "--zonos2-seed"
+        }
+      ]
+    },
+    {
+      "id": "ZONOS3-Mini",
+      "title": "ZONOS3-Mini (L4 recommended, 43 languages including Japanese)",
+      "status": "Colab verification pending (L4 recommended)",
+      "status_ja": "Colab 未検証（L4 推奨）",
+      "languages": "43 languages, including Japanese",
+      "languages_ja": "日本語を含む43言語",
+      "description": "Zyphra's ZONOS3-Mini supports 43 languages, including Japanese. This wrapper loads the official Transformers checkpoint with its bundled ZAC-1 decoder and MECT-B2 speaker encoder. Use a Colab L4 with native CUDA bfloat16 support. The first launch downloads about 2.4 GB of model weights. [Model card and language codes](https://huggingface.co/Zyphra/ZONOS3-Mini-hf)",
+      "description_ja": "Zyphra の ZONOS3-Mini は、日本語を含む43言語に対応します。公式の Transformers 版に、ZAC-1 デコーダと MECT-B2 話者エンコーダが含まれます。Colab では bfloat16 に対応する L4 を選んでください。初回起動時に約 2.4 GB のモデル重みをダウンロードします。 [モデルカードと対応言語コード](https://huggingface.co/Zyphra/ZONOS3-Mini-hf)",
+      "notes": [
+        "- The official Transformers checkpoint includes the ZAC-1 decoder and speaker encoder.",
+        "- Use `default` for Savannah or set `ZONOS3_MINI_PROMPT_WAV` (up to 60 seconds used) for `clone`.",
+        "- Speaking rate is in UTF-8 bytes/second (0 leaves it unset). Speaker CFG above 1 strengthens voice conditioning and costs an extra model pass per step."
+      ],
+      "notes_ja": [
+        "- ライセンス: コードは [MIT](https://github.com/Zyphra/ZONOS3-Mini/blob/main/LICENSE)、モデル重みは [Apache 2.0](https://huggingface.co/Zyphra/ZONOS3-Mini-hf#license)。商用利用: OK。 備考: 公式 Transformers 版に ZAC-1 デコーダを同梱。第三者コードには MIT、Apache 2.0、BSD-2-Clause が適用されます。"
+      ],
+      "prefix": "ZONOS3_MINI",
+      "params": [
+        {
+          "name": "ZONOS3_MINI_LANGUAGE",
+          "default": "ja",
+          "type": "string",
+          "flag": "--zonos3-mini-language"
+        },
+        {
+          "name": "ZONOS3_MINI_PROMPT_WAV",
+          "default": "",
+          "type": "string",
+          "flag": "--zonos3-mini-prompt-wav"
+        },
+        {
+          "name": "ZONOS3_MINI_DEFAULT_VOICE",
+          "default": "default",
+          "type": "select",
+          "options": [
+            "default",
+            "clone"
+          ],
+          "flag": "--zonos3-mini-default-voice"
+        },
+        {
+          "name": "ZONOS3_MINI_SPEAKING_RATE",
+          "default": 0.0,
+          "type": "number",
+          "flag": "--zonos3-mini-speaking-rate"
+        },
+        {
+          "name": "ZONOS3_MINI_SPEAKER_CFG_SCALE",
+          "default": 1.0,
+          "type": "number",
+          "flag": "--zonos3-mini-speaker-cfg-scale"
         }
       ]
     }

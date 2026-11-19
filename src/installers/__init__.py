@@ -17,6 +17,7 @@ from .gpt_sovits import install as install_gpt_sovits
 from .higgs_audio import install as install_higgs_audio
 from .higgs_v3 import install as install_higgs_v3
 from .indextts2 import install as install_indextts2
+from .indextts25 import install as install_indextts25
 from .irodori import install as install_irodori
 from .irodori_anime import install as install_irodori_anime
 from .irodori_lite import install as install_irodori_lite
@@ -29,6 +30,7 @@ from .kokoro import install as install_kokoro
 from .kokoro_onnx import install as install_kokoro_onnx
 from .kyutai_tts import install as install_kyutai_tts
 from .lfm2_audio_jp import install as install_lfm2_audio_jp
+from .magpie_tts import install as install_magpie_tts
 from .maskgct import install as install_maskgct
 from .melo import install as install_melo
 from .ming_omni_tts import install as install_ming_omni_tts
@@ -45,6 +47,7 @@ from .outetts import install as install_outetts
 from .piper import install as install_piper
 from .piper_plus import install as install_piper_plus
 from .pocket_tts import install as install_pocket_tts
+from .phonon import install as install_phonon
 from .sarashina_tts import install as install_sarashina_tts
 from .scenema import install as install_scenema
 from .sine_wave_tts import install as install_sine_wave_tts
@@ -56,10 +59,12 @@ from .supertonic import install as install_supertonic
 from .vibevoice import install as install_vibevoice
 from .voxcpm import install as install_voxcpm
 from .tiny_tts import install as install_tiny_tts
+from .tiny_voca import install as install_tiny_voca
 from .voxtral import install as install_voxtral
 from .vyvo_multilingual import install as install_vyvo_multilingual
 from .zonos import install as install_zonos
 from .zonos2 import install as install_zonos2
+from .zonos3_mini import install as install_zonos3_mini
 from .zerotts import install as install_zerotts
 
 
@@ -83,6 +88,7 @@ INSTALLERS = {
     "Higgs-Audio-v2": install_higgs_audio,
     "Higgs-Audio-v3": install_higgs_v3,
     "IndexTTS2": install_indextts2,
+    "IndexTTS-2.5": install_indextts25,
     "Irodori-TTS": install_irodori,
     "Irodori-TTS-Anime": install_irodori_anime,
     "Irodori-TTS-Lite": install_irodori_lite,
@@ -94,6 +100,7 @@ INSTALLERS = {
     "Kokoro-ONNX": install_kokoro_onnx,
     "Kyutai-TTS": install_kyutai_tts,
     "LFM2.5-Audio-JP": install_lfm2_audio_jp,
+    "Magpie-TTS": install_magpie_tts,
     "MaskGCT": install_maskgct,
     "MeloTTS": install_melo,
     "Ming-omni-TTS": install_ming_omni_tts,
@@ -113,6 +120,7 @@ INSTALLERS = {
     "Piper": install_piper,
     "Piper-Plus": install_piper_plus,
     "Pocket-TTS": install_pocket_tts,
+    "Phonon": install_phonon,
     "Qwen3-TTS": install_qwen3_tts,
     "Sarashina-TTS": install_sarashina_tts,
     "Scenema": install_scenema,
@@ -120,6 +128,7 @@ INSTALLERS = {
     "Spark-TTS": install_spark_tts,
     "speech.cpp": install_speech_cpp,
     "TinyTTS": install_tiny_tts,
+    "tiny-voca": install_tiny_voca,
     "VibeVoice-Realtime": install_vibevoice,
     "VoxCPM2": install_voxcpm,
     "Voxtral-TTS": install_voxtral,
@@ -127,4 +136,5 @@ INSTALLERS = {
     "ZeroTTS": install_zerotts,
     "Zonos": install_zonos,
     "ZONOS2": install_zonos2,
+    "ZONOS3-Mini": install_zonos3_mini,
 }

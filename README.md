@@ -10,7 +10,7 @@ Supported engines:
 
 | Engine | Colab Status | Languages | Commercial use |
 |---|---|---|---|
-| Audio8-TTS | Works on L4 (GPU recommended, zero-shot voice cloning) | Japanese / English / Chinese and 11 languages | OK |
+| Audio8-TTS | Preview and Realistic Air verified on Colab L4 (GPU, Realistic Air ~2.6 GB VRAM) | Preview: 11 languages. Realistic Air: 23 languages. Both include Japanese | OK |
 | Breeze-TTS-2 | Works on L4 (eager path, ~8.9GB VRAM observed; all four modes verified) | English / Chinese | Not allowed for self-hosted use |
 | Kokoro | Works | Japanese / English / Chinese and more | OK |
 | Kokoro-ONNX | Works | Japanese / English / Chinese and more | OK |
@@ -28,6 +28,7 @@ Supported engines:
 | MOSS-TTS-Local-v1.5 | Works on L4 (~4B MossTTSLocal, ~12.4GB VRAM — fits where the 8B v1.5 OOMs) | Japanese / English / Chinese / Korean and 31 languages | OK |
 | NeuTTS | Works (CPU OK, voice cloning) | English / Spanish / German / French | Conditional (default Air OK; Nano below $5M revenue) |
 | TinyTTS | Works | English | OK |
+| tiny-voca | Verified in a Colab L4 runtime (CPU only, 0 GB VRAM) | English | OK |
 | KittenTTS | Works (CPU only, ONNX, 15M–80M params) | English | OK |
 | KittenTTS-2 | Works on L4 (1.7B speech LM, ~5.1GB VRAM, 115 built-in voices, voice cloning) | 16 languages incl. Japanese / English | Conditional (register for commercial use; ends above USD 1M revenue or funding) |
 | Sine-Wave-TTS | Works on Colab (CPU only, no model weights, Node.js 20+) | Japanese electronic vocalization (not intelligible speech) | OK |
@@ -43,15 +44,18 @@ Supported engines:
 | ZeroTTS | Works on Colab (CPU/ONNX, ~900MB download) | Vietnamese | OK |
 | Zonos | Works (GPU required, ~6GB VRAM) | Japanese / English / Chinese / French / German | OK |
 | ZONOS2 | Works (L4 verified, sm_80+ required) | 41 languages (tier-1: Japanese / English / Chinese) | OK |
+| ZONOS3-Mini | Verified on Colab L4 (GPU, ~2.9 GB VRAM) | 43 languages, including Japanese | OK |
 | OuteTTS | Works (CPU OK) | Japanese / English / Chinese and many languages | Conditional (default 0.6B OK; 1B not allowed) |
 | Dia | Works (GPU recommended) | English (multi-speaker dialogue) | OK |
 | Kyutai-TTS | Works (GPU recommended) | English / French | Conditional (attribution required) |
 | Pocket-TTS | Works (CPU OK, ~6x real-time) | English / French / German / Italian / Portuguese / Spanish | Conditional (attribution; voice licenses vary) |
+| Phonon | Verified in a Colab L4 runtime (CPU only, 0 GB VRAM) | English | OK |
 | OpenVoice-V2 | Not working (Python 3.13 / `av==10` build failure) | Japanese / English / Spanish / French / Chinese / Korean | OK |
 | VibeVoice-Realtime | Works (GPU required, 0.5B, single speaker) | English; experimental Japanese / German / French / Italian / Korean / Dutch / Polish / Portuguese / Spanish | Not allowed (research/R&D only) |
 | OmniVoice | Works on Colab L4 (GPU recommended, CPU possible but slow, 0.6B, ~2.35GB VRAM) | Japanese / English / Chinese and 600+ languages | Not allowed |
 | FireRedTTS2 | Works on Colab L4 (CUDA GPU required, 1.5B, bf16, ~8.8GB VRAM) | Japanese / English / Chinese / Korean / French / German / Russian | Conditional (zero-shot cloning is academic-only) |
 | IndexTTS2 | Works on Colab L4 (GPU recommended, CPU supported upstream but unverified, fp16, ~7.1GB VRAM) | English / Chinese | Not allowed |
+| IndexTTS-2.5 | Verified on Colab L4 (GPU, ~5.9 GB VRAM) | Japanese / English / Chinese / Spanish / Arabic | Conditional |
 | Fish-Speech | Not working | Japanese / English / Chinese and 80+ languages | OK |
 | MeloTTS | Not working | - | OK |
 | Style-Bert-VITS2 | Not working | - | Conditional (copyleft: AGPL-3.0 / CC-BY-SA-4.0) |
@@ -66,6 +70,7 @@ Supported engines:
 | Higgs-Audio-v3 | Works on Colab L4 / A100 (GPU required, ~19.9GB at load; T4 unsupported, slow first launch ~10-12 min via SGLang-Omni, **non-commercial weights — no hosted API**) | 100+ languages (incl. Japanese) | Not allowed (non-commercial weights) |
 | dots.tts | Works on Colab L4 (GPU required, bf16 resident ~5.4GB, 48 kHz output; ungated weights, no `HF_TOKEN`; zero-shot cloning model — `default` is a random speaker, use `clone` for a stable voice) | 24 languages (incl. Japanese) | OK |
 | LFM2.5-Audio-JP | Works on Colab L4 (GPU required, ~6.3GB VRAM resident; ungated weights, no `HF_TOKEN`; single built-in Japanese voice, no cloning; 24 kHz output) | Japanese | Conditional (revenue cap) |
+| Magpie-TTS | Verified on Colab L4 (NVIDIA GPU required, ~3.9 GB VRAM) | 12 languages, including Japanese | OK under license terms |
 | Ming-omni-TTS | Works on Colab A100 (verified; **A100 40GB required** — 16.8B-A3B MoE, ~35GB VRAM at load, needs `PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True` to fit and will not run on L4 24GB; ungated weights, no `HF_TOKEN`; zero-shot cloning; 44.1 kHz output) | Chinese / English-centric (dialect control incl. Cantonese) | OK |
 | drama3-small | Works on Colab L4 (verified through the public URL; GPU required, ~10 GB VRAM resident; audio.cpp at a pinned commit + the model repo's patch is **built with CUDA on first launch (~10 min)**, later launches reuse the build; Fish Audio Drama 3 derivative, pruned + IQ3_XXS GGUF ~10.5 GB; `default` is a random speaker and sometimes leaves multi-second silences, use `clone` for a stable voice; **Fish Audio Community License — no Hosted Service for third parties**) | Japanese / English | Conditional (non-commercial, or under USD 500k annual revenue) |
 | DramaBox | Works on Colab A100 (GPU required, VRAM ~24GB peak, **LTX-2 Community License — non-compete clause**) | English | Conditional (commercial license for $10M+ revenue) |
@@ -138,7 +143,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Audio8-TTS", "Bark", "Breeze-TTS-2", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "drama3-small", "DramaBox", "F5-TTS", "FireRedTTS2", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "IndexTTS2", "Irodori-TTS", "Irodori-TTS-Anime", "Irodori-TTS-Large", "Irodori-TTS-Lite", "Irodori-TTS-MF", "KittenTTS", "KittenTTS-2", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "speech.cpp", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "ZeroTTS", "Zonos", "ZONOS2"]
+ENGINE = "Kokoro"  #@param ["Audio8-TTS", "Bark", "Breeze-TTS-2", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "drama3-small", "DramaBox", "F5-TTS", "FireRedTTS2", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "IndexTTS2", "IndexTTS-2.5", "Irodori-TTS", "Irodori-TTS-Anime", "Irodori-TTS-Large", "Irodori-TTS-Lite", "Irodori-TTS-MF", "KittenTTS", "KittenTTS-2", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "Magpie-TTS", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Phonon", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "speech.cpp", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "tiny-voca", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "ZeroTTS", "Zonos", "ZONOS2", "ZONOS3-Mini"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -147,8 +152,9 @@ OPENAI_MODEL_ID = ""  #@param {type:"string"}
 
 #@markdown ---
 #@markdown Audio8-TTS (0.6B multilingual TTS, GPU recommended)
-#@markdown - Supports 11 languages including Japanese. `default` needs no reference; `clone` requires both a reference WAV and its exact transcript.
-#@markdown - Keep input within 150 characters for best quality. Only clone voices with consent and disclose synthetic audio where appropriate.
+#@markdown - Preview (default) supports 11 languages. For 23 languages, set `AUDIO8_HF_MODEL` to `Edge0/Audio8-TTS-Realistic-Air`. Both support Japanese.
+#@markdown - `default` needs no reference. `clone` requires both a reference WAV and its exact transcript.
+#@markdown - For Preview, upstream recommends up to 150 characters per input. Only clone voices with consent and disclose synthetic audio where appropriate.
 #@markdown - License: Apache-2.0 for both code and weights. See the upstream NOTICE for attribution details.
 AUDIO8_HF_MODEL = "Audio8/Audio8-TTS-Preview-0.6b"  #@param {type:"string"}
 AUDIO8_PROMPT_WAV = ""  #@param {type:"string"}
@@ -289,6 +295,18 @@ POCKET_PROMPT_WAV = ""  #@param {type:"string"}
 POCKET_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
 
 #@markdown ---
+#@markdown Phonon (CPU, English)
+#@markdown - Gradium's 31M English checkpoint (Q8) uses the bundled `default` voice. Set `TEST_TEXT` to English before running the smoke test.
+#@markdown - Runtime: MIT OR Apache-2.0. Weights, tokenizer and bundled voice: Apache-2.0.
+PHONON_TEMPERATURE = 0.3  #@param {type:"number"}
+
+#@markdown ---
+#@markdown tiny-voca (CPU, English)
+#@markdown - Built-in voices: `F2` and `M2`. Set `TEST_TEXT` to English for the smoke test. Speech output is 24 kHz mono WAV.
+#@markdown - Code and weights: Apache-2.0. The bundled phonemizer data retains its upstream license notices.
+TINY_VOCA_DEFAULT_VOICE = "F2"  #@param ["F2", "M2"]
+
+#@markdown ---
 #@markdown MeloTTS
 #@markdown - License: MIT for both code ([myshell-ai/MeloTTS](https://github.com/myshell-ai/MeloTTS)) and the per-language weight repos. Commercial use OK.
 MELO_LANGUAGE = "JP"  #@param ["JP", "EN", "ZH", "ES", "FR", "KR"]
@@ -405,6 +423,17 @@ ZONOS2_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
 ZONOS2_DEFAULT_REF = "AmericanFemale.mp3"  #@param {type:"string"}
 ZONOS2_ACCURATE_MODE = True  #@param {type:"boolean"}
 ZONOS2_SEED = -1  #@param {type:"integer"}
+
+#@markdown ---
+#@markdown ZONOS3-Mini (L4 recommended, 43 languages including Japanese)
+#@markdown - The official Transformers checkpoint includes the ZAC-1 decoder and speaker encoder.
+#@markdown - Use `default` for Savannah or set `ZONOS3_MINI_PROMPT_WAV` (up to 60 seconds used) for `clone`.
+#@markdown - Speaking rate is in UTF-8 bytes/second (0 leaves it unset). Speaker CFG above 1 strengthens voice conditioning and costs an extra model pass per step.
+ZONOS3_MINI_LANGUAGE = "ja"  #@param {type:"string"}
+ZONOS3_MINI_PROMPT_WAV = ""  #@param {type:"string"}
+ZONOS3_MINI_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+ZONOS3_MINI_SPEAKING_RATE = 0.0  #@param {type:"number"}
+ZONOS3_MINI_SPEAKER_CFG_SCALE = 1.0  #@param {type:"number"}
 
 #@markdown ---
 #@markdown OuteTTS (CPU OK, multilingual incl JP, voice cloning)
@@ -525,6 +554,15 @@ INDEXTTS2_EMOTION_VECTOR = ""  #@param {type:"string"}
 INDEXTTS2_EMOTION_ALPHA = 0.6  #@param {type:"number"}
 INDEXTTS2_USE_RANDOM = False  #@param {type:"boolean"}
 INDEXTTS2_USE_FP16 = True  #@param {type:"boolean"}
+
+#@markdown ---
+#@markdown IndexTTS-2.5 (L4 recommended, Japanese / English / Chinese / Spanish / Arabic)
+#@markdown - `default` uses the official demo reference. For `clone`, set `INDEXTTS25_PROMPT_WAV` to a recording you have permission to use.
+#@markdown - Write out numbers and dates as they should be spoken in Japanese. The API accepts `speed` from 0.5 to 2.0.
+#@markdown - Code and weights use the bilibili Model Use License Agreement. Commercial use is subject to its terms.
+INDEXTTS25_LANGUAGE = "ja"  #@param ["ja", "en", "zh", "es", "ar"]
+INDEXTTS25_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+INDEXTTS25_PROMPT_WAV = ""  #@param {type:"string"}
 
 #@markdown ---
 #@markdown Bark (GPU recommended, 13 languages, MIT)
@@ -667,6 +705,14 @@ LFM2_AUDIO_JP_SYSTEM_PROMPT = "Perform TTS in japanese."  #@param {type:"string"
 LFM2_AUDIO_JP_MAX_NEW_TOKENS = 1024  #@param {type:"integer"}
 LFM2_AUDIO_JP_AUDIO_TEMPERATURE = 0.8  #@param {type:"number"}
 LFM2_AUDIO_JP_AUDIO_TOP_K = 64  #@param {type:"integer"}
+
+#@markdown ---
+#@markdown Magpie-TTS (NVIDIA GPU required, 12 languages including Japanese)
+#@markdown - Select a built-in speaker with `voice`: `aria`, `jason`, `john`, `leo`, or `sofia`. The public checkpoint has no voice cloning.
+#@markdown - Magpie v2607 and NanoCodec weights use the NVIDIA Open Model License. Commercial use is permitted under its terms.
+MAGPIE_TTS_LANGUAGE = "ja"  #@param ["ar", "de", "en", "es", "fr", "hi", "it", "ja", "ko", "pt", "vi", "zh"]
+MAGPIE_TTS_DEFAULT_VOICE = "sofia"  #@param ["aria", "jason", "john", "leo", "sofia"]
+MAGPIE_TTS_TEXT_NORMALIZATION = True  #@param {type:"boolean"}
 
 #@markdown ---
 #@markdown Ming-omni-TTS (A100 required, ~34GB weights, Chinese/English-centric, voice cloning)
@@ -1009,6 +1055,10 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         POCKET_PROMPT_WAV,
         "--pocket-default-voice",
         POCKET_DEFAULT_VOICE,
+        "--phonon-temperature",
+        str(PHONON_TEMPERATURE),
+        "--tiny-voca-default-voice",
+        TINY_VOCA_DEFAULT_VOICE,
         "--melo-language",
         MELO_LANGUAGE,
         "--melo-default-voice",
@@ -1111,6 +1161,16 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         ZONOS2_DEFAULT_REF,
         "--zonos2-seed",
         str(ZONOS2_SEED),
+        "--zonos3-mini-language",
+        ZONOS3_MINI_LANGUAGE,
+        "--zonos3-mini-prompt-wav",
+        ZONOS3_MINI_PROMPT_WAV,
+        "--zonos3-mini-default-voice",
+        ZONOS3_MINI_DEFAULT_VOICE,
+        "--zonos3-mini-speaking-rate",
+        str(ZONOS3_MINI_SPEAKING_RATE),
+        "--zonos3-mini-speaker-cfg-scale",
+        str(ZONOS3_MINI_SPEAKER_CFG_SCALE),
         "--outetts-model-size",
         OUTETTS_MODEL_SIZE,
         "--outetts-backend",
@@ -1229,6 +1289,12 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         INDEXTTS2_EMOTION_VECTOR,
         "--indextts2-emotion-alpha",
         str(INDEXTTS2_EMOTION_ALPHA),
+        "--indextts25-language",
+        INDEXTTS25_LANGUAGE,
+        "--indextts25-default-voice",
+        INDEXTTS25_DEFAULT_VOICE,
+        "--indextts25-prompt-wav",
+        INDEXTTS25_PROMPT_WAV,
         "--bark-default-voice",
         BARK_DEFAULT_VOICE,
         "--chattts-default-voice",
@@ -1381,6 +1447,10 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         str(LFM2_AUDIO_JP_AUDIO_TEMPERATURE),
         "--lfm2-audio-jp-audio-top-k",
         str(LFM2_AUDIO_JP_AUDIO_TOP_K),
+        "--magpie-tts-language",
+        MAGPIE_TTS_LANGUAGE,
+        "--magpie-tts-default-voice",
+        MAGPIE_TTS_DEFAULT_VOICE,
         "--ming-omni-tts-hf-model",
         MING_OMNI_TTS_HF_MODEL,
         "--ming-omni-tts-default-voice",
@@ -1562,6 +1632,7 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         cmd.append("--zonos2-no-accurate-mode")
     if not SPEECH_CPP_USE_VULKAN:
         cmd.append("--speech-cpp-no-vulkan")
+    cmd.append("--magpie-tts-text-normalization" if MAGPIE_TTS_TEXT_NORMALIZATION else "--no-magpie-tts-text-normalization")
     cmd.append("--expose-public-url" if EXPOSE_PUBLIC_URL else "--no-expose-public-url")
     return cmd
 
@@ -1652,9 +1723,13 @@ This sample is fixed to `wav`. Conversion to formats like `mp3` is not performed
 
 ### Audio8-TTS
 
-A separate engine for [Audio8 TTS Preview 0.6B](https://huggingface.co/Audio8/Audio8-TTS-Preview-0.6b), a compact DualAR model with a bundled 44.1 kHz neural codec. It supports 11 recommended languages, including Japanese, English, Chinese, Cantonese, Korean, and major European languages. Upstream recommends keeping each input within 150 characters for best quality.
+Audio8-TTS runs two 0.6B DualAR checkpoints through the same Transformers interface. Each bundles a 44.1 kHz neural codec. The default, [Audio8 TTS Preview 0.6B](https://huggingface.co/Audio8/Audio8-TTS-Preview-0.6b), supports 11 languages, including Japanese, English, Chinese, Cantonese, and Korean. [Audio8-TTS-Realistic-Air](https://huggingface.co/Edge0/Audio8-TTS-Realistic-Air) supports 23 languages, including all 11 from Preview.
+
+To use Realistic Air, select `Audio8-TTS` and enter `Edge0/Audio8-TTS-Realistic-Air` in the Colab or WebUI model field (`AUDIO8_HF_MODEL`). For the CLI, pass `--audio8-hf-model Edge0/Audio8-TTS-Realistic-Air`. For Preview, upstream recommends keeping each input within 150 characters for best quality.
 
 The OpenAI-compatible wrapper exposes `voice="default"` for reference-free generation and `voice="clone"` for zero-shot cloning. Clone mode is enabled only when both `AUDIO8_PROMPT_WAV` and its exact transcript in `AUDIO8_PROMPT_TEXT` are configured; otherwise it returns HTTP 400 instead of silently falling back. A CUDA GPU with BF16 is the default on Colab, while CPU mode uses FP32. The default path was verified on an NVIDIA L4 runtime: the public `trycloudflare` endpoint returned HTTP 200 with a valid 44.1 kHz mono WAV, and `/v1/voices` exposed `default` as expected.
+
+On Colab L4, Realistic Air first launched in about 76 seconds and used about 2.6 GB of VRAM while serving. The public `trycloudflare` endpoint returned 44.1 kHz WAV for Japanese, English, and Vietnamese with `voice="default"`, and for `clone` with a reference WAV and transcript. A clone request without a reference returned HTTP 400. Startup logs confirmed the Realistic Air checkpoint. Performance and audio quality relative to Preview remain untested. T4 was untested.
 
 Code and weights are Apache-2.0 and the upstream `NOTICE` must be retained where required. Obtain consent before cloning a voice and disclose synthetic audio where appropriate.
 
@@ -1783,6 +1858,14 @@ Default backbone: `neuphonic/neutts-air` (~360M params, English only, Apache 2.0
 
 An ultra-lightweight English TTS using [ecyht2/tiny-tts](https://github.com/ecyht2/tiny-tts). The model has only 1.6M parameters (~3.4 MB), no GPU required, and can synthesize speech at 53× real-time on CPU alone. Audio is output at 44.1 kHz. There is no voice switching. License: Apache 2.0.
 
+### tiny-voca
+
+[tiny-voca](https://huggingface.co/n4ze3m/tiny-voca) is a 4.5M-parameter American English model. This integration uses the upstream PyTorch CPU inference path and the dizione phonemizer. It returns 24 kHz mono PCM WAV and splits long text into sentences before synthesis.
+
+Set `voice` to `F2` or `M2`. Omitting it or choosing `default` uses `TINY_VOCA_DEFAULT_VOICE` or `--tiny-voca-default-voice` (F2 by default). The public model has two fixed voices and no voice cloning. The API accepts `speed` from 0.25 to 4.0. In the Colab form, set `TEST_TEXT` to an English sentence.
+
+On Colab, first launch took about 22 seconds. The engine ran on CPU with no GPU process. The public `trycloudflare` endpoint returned 24 kHz WAV for English with the default F2 voice and with M2 at `speed=1.3`. A `clone` request returned HTTP 400.
+
 ### KittenTTS
 
 [KittenML/KittenTTS](https://github.com/KittenML/KittenTTS) v0.8 is a lightweight English TTS that runs entirely on CPU through ONNX Runtime. The selectable official checkpoints range from 15M to 80M parameters (about 25–80 MB), require no `HF_TOKEN`, and produce 24 kHz WAV audio. The wrapper pins the upstream v0.8.1 wheel because KittenTTS is currently a developer preview whose APIs may change.
@@ -1903,6 +1986,16 @@ The `voice` parameter exposes:
 
 `--zonos2-accurate-mode` (default on) favors a closer voice match; disable it (`--zonos2-no-accurate-mode`) for a more expressive read. Set `--zonos2-seed` to a non-negative value for reproducible output. For voice cloning, only use reference audio you have rights to (consent of the speaker). License: code is MIT (pyproject), weights are Apache 2.0 (HF model card) — both allow commercial use.
 
+### ZONOS3-Mini
+
+Zyphra's ZONOS3-Mini supports 43 languages, including Japanese. This wrapper loads the official Transformers checkpoint with its bundled ZAC-1 decoder and MECT-B2 speaker encoder. Use a Colab L4 with native CUDA bfloat16 support. The first launch downloads about 2.4 GB of model weights. [Model card and language codes](https://huggingface.co/Zyphra/ZONOS3-Mini-hf)
+
+`/v1/audio/speech` returns 44.1 kHz mono PCM WAV. Use `voice="default"` for the bundled Savannah voice. To clone a voice, set `--zonos3-mini-prompt-wav` to a reference file you have permission to use, then send `voice="clone"`. The speaker encoder uses up to the first 60 seconds of the clip. Requests for `clone` without a reference file return HTTP 400.
+
+`--zonos3-mini-language` selects the text normalization language and defaults to `ja`. Use `--zonos3-mini-speaking-rate` to condition the pace in UTF-8 bytes per second (0 leaves it unset). Keep the request's `speed` at 1.0. Raising `--zonos3-mini-speaker-cfg-scale` above 1 strengthens voice conditioning at the cost of an extra model pass per step.
+
+On Colab L4, first launch took about 71 seconds and the running engine used about 2.9 GB of VRAM. The public `trycloudflare` endpoint returned 44.1 kHz WAV for Japanese and English with `voice="default"` and for `clone` with a reference WAV. Requests for `clone` without a reference, an unknown voice, or a `speed` other than 1.0 returned HTTP 400. Non-default speaking-rate and speaker-CFG settings and T4 remain untested.
+
 ### OuteTTS
 
 A lightweight multilingual TTS using [edwko/OuteTTS](https://github.com/edwko/OuteTTS). Supports many languages including Japanese, with two model sizes (`0.6B` and `1B`) and multiple backends (`HF` for transformers, `LLAMACPP` for GGUF). Voice cloning is exposed via `--outetts-prompt-wav` (and an optional `--outetts-prompt-text` transcript). The default voice uses one of the bundled built-in speaker profiles, configurable via `--outetts-default-speaker` (e.g., `EN-FEMALE-1-NEUTRAL`). For best Japanese results, create a Japanese speaker profile from a reference clip with `clone`. Runs on CPU or GPU.
@@ -1945,6 +2038,14 @@ A streaming TTS using [kyutai-labs/delayed-streams-modeling](https://github.com/
 ### Pocket-TTS
 
 An ultra-lightweight CPU TTS using [kyutai-labs/pocket-tts](https://github.com/kyutai-labs/pocket-tts) — Kyutai Labs' 100M-parameter on-device TTS that runs at ~6× real-time on a MacBook Air M4 using only 2 CPU cores. GPU is **not** required. Default Hugging Face model: `kyutai/pocket-tts`; voices are sourced from `kyutai/tts-voices`. Six language models are available (`english` / `english_2026-01` / `english_2026-04` / `french_24l` / `german_24l` / `italian` / `portuguese` / `spanish_24l`); pick one via `--pocket-language`. The default voice uses the `POCKET_DEFAULT_SPEAKER` preset (default: `alba`); supplying `--pocket-prompt-wav` enables a `clone` voice from your own audio file or a `.safetensors` voice cache. The 21 built-in preset names (`alba`, `anna`, `charles`, …) can also be passed directly as the `voice` parameter. License: code is MIT, model weights are CC-BY-4.0; **individual voice licenses vary** (see [kyutai/tts-voices](https://huggingface.co/kyutai/tts-voices)). **Prohibited use:** voice impersonation or cloning without explicit and lawful consent, and disinformation, are explicitly forbidden by the upstream terms.
+
+### Phonon
+
+Gradium's [Phonon 31M English](https://huggingface.co/gradium/phonon-31m-en) runs on CPU with the official `ptts` runtime. The pinned Q8 weights are about 64.5 MB and download on first use without a Hugging Face token. The engine returns 24 kHz mono PCM WAV.
+
+Use `voice="default"` for the bundled speaker and keep `speed` at 1.0. Before launching the Colab cell, set `TEST_TEXT` to an English sentence for the smoke test. The sampling temperature defaults to `0.3` and can be set with `PHONON_TEMPERATURE` or `--phonon-temperature`.
+
+On Colab, first launch took about 19 seconds. The engine ran on CPU with no GPU process. The public `trycloudflare` endpoint returned 24 kHz WAV for English with `voice="default"`. A `clone` request returned HTTP 400.
 
 ### Spark-TTS
 
@@ -2038,6 +2139,18 @@ Although IndexTTS2 is presented as duration-controllable research, the official 
 **License warning:** the IndexTTS2 code and weights use the custom **Bilibili Model Use License**, not Apache-2.0. A separate license is required if the user or an affiliate exceeds 100 million monthly active users or RMB 1 billion annual revenue. The license must be retained with redistributed copies, restricts using the model or its outputs to improve other commercial AI models, and includes additional compliance and high-risk-use terms. The runtime also requires the `amphion/MaskGCT` semantic codec under **CC-BY-NC-4.0**, so the effective IndexTTS2 stack in this repository is **non-commercial**. Use only reference audio for which the speaker has given explicit consent.
 
 Verified end-to-end on Colab L4 from the pushed feature branch. A public trycloudflare request with an emotion vector returned a valid 22.05 kHz, 16-bit mono WAV, used about 7.1 GB of GPU memory, and generated 5.06 seconds of speech in 10.15 seconds after warm-up. Whisper recovered the English test sentence correctly, and the WAV was also downloaded, inspected, and played successfully on macOS. The CPU path is provided by upstream but was not benchmarked in this verification.
+
+### IndexTTS-2.5
+
+[IndexTTS-2.5](https://huggingface.co/IndexTeam/IndexTTS-2.5) supports Japanese, English, Chinese, Spanish, and Arabic. It uses the upstream multilingual runtime and its bundled semantic codec.
+
+Choose the language with `INDEXTTS25_LANGUAGE` in the form or `--indextts25-language` in the CLI. The default is `ja`. The Japanese text-processing path does not expand numbers or dates. Write them as they should be read aloud.
+
+Use `voice="default"` with the official demo reference to try the engine. To use a recording you have permission to use, set `INDEXTTS25_PROMPT_WAV` and request `voice="clone"`. Requests for `clone` without a reference return HTTP 400. The API returns 22.05 kHz mono PCM WAV and accepts request `speed` values from 0.5 to 2.0.
+
+On Colab L4, first launch took about 193 seconds and the running engine used about 5.9 GB of VRAM. The public `trycloudflare` endpoint returned 22.05 kHz WAV for Japanese with the default voice, a request at `speed=1.3`, and `clone` with a reference WAV. A clone request without a reference returned HTTP 400. Other languages and T4 remain untested.
+
+The bilibili agreement applies to the upstream code and checkpoint, including the bundled codec. Section 2.2 requires a separate written license if you or an affiliate exceeded 100 million monthly active users in the previous calendar month or RMB 1 billion in revenue in the previous calendar year. The agreement also covers attribution, downstream distribution, use in other AI models, and high-risk uses. The upstream project asks users to contact `indexspeech@bilibili.com` for commercial use. [License](https://huggingface.co/IndexTeam/IndexTTS-2.5/blob/main/LICENSE) [Upstream project](https://github.com/index-tts/index-tts)
 
 ### Fish-Speech (currently not working)
 
@@ -2268,6 +2381,18 @@ The `voice` parameter exposes only `default` — the single built-in Japanese vo
 
 **License**: code and weights are under the **LFM Open License v1.0** — commercial use is permitted for organizations under **USD 10M annual revenue**; above that threshold a separate commercial license from Liquid AI is required (qualified non-profits are exempt for research). The bundled **audio encoder is Apache-2.0** (derived from NVIDIA NeMo) and the **audio codec (Mimi) is CC-BY-4.0** (Kyutai). The license terminates on non-compliance and includes a patent-litigation termination clause.
 
+### Magpie-TTS
+
+NVIDIA's [Magpie-TTS v2607](https://huggingface.co/nvidia/magpie_tts_multilingual_357m) synthesizes 12 languages using five built-in speakers. The wrapper runs the NeMo Speech TTS runtime on a CUDA GPU and decodes with [NanoCodec](https://huggingface.co/nvidia/nemo-nano-codec-22khz-1.89kbps-21.5fps) to 22.05 kHz mono PCM WAV.
+
+Set `MAGPIE_TTS_LANGUAGE` or `--magpie-tts-language` to one of `ar`, `de`, `en`, `es`, `fr`, `hi`, `it`, `ja`, `ko`, `pt`, `vi`, or `zh`. The default is `ja`. The `ar` and `pt` settings use Modern Standard Arabic and Brazilian Portuguese. Text normalization is enabled by default and can be disabled with `--no-magpie-tts-text-normalization`.
+
+Set the request's `voice` to `aria`, `jason`, `john`, `leo`, or `sofia`. Omitting the voice or using `default` selects the configured speaker (Sofia by default). All five speakers are native English speakers, so other languages may sound accented. The public checkpoint has no zero-shot voice cloning. Keep the request's `speed` at 1.0.
+
+On Colab L4, first launch took about 235 seconds, including installation of NeMo and `pyopenjtalk`. The running engine used about 3.9 GB of VRAM. The public `trycloudflare` endpoint returned 22.05 kHz WAV for Japanese with Sofia and Jason. A `clone` request returned HTTP 400. Other languages and T4 remain untested.
+
+NeMo Speech code is Apache 2.0. Both weight licenses permit commercial use under their terms and require the applicable license and an NVIDIA attribution notice when redistributing weights. [Magpie-TTS license](https://www.nvidia.com/en-us/agreements/enterprise-software/nvidia-open-model-license/) [NanoCodec license](https://developer.download.nvidia.com/licenses/nvidia-open-model-license-agreement-june-2024.pdf)
+
 ### Ming-omni-TTS
 
 inclusionAI's [Ming-omni-tts](https://github.com/inclusionAI/Ming-omni-tts), the **16.8B-A3B** checkpoint — a Mixture-of-Experts audio language model (~3B active parameters) built on a custom 12.5 Hz continuous tokenizer with a DiT (diffusion-transformer) acoustic head over a 44.1 kHz codec. It supports zero-shot voice cloning, natural-language voice design, emotion/dialect/rate control, and even speech-with-BGM and TTA, with strong Chinese (incl. Cantonese) and English coverage. Default model: `inclusionAI/Ming-omni-tts-16.8B-A3B`.
@@ -2476,6 +2601,7 @@ The license for each engine is as follows. When using them, always check each pr
 | Engine | Code | Model Weights | Commercial Use | Notes |
 |---|---|---|---|---|
 | Audio8-TTS | Apache-2.0 | Apache-2.0 (`Audio8/Audio8-TTS-Preview-0.6b`) | OK | 0.6B multilingual preview with zero-shot voice cloning. Preserve upstream NOTICE attribution; obtain consent for cloned voices |
+| Audio8-TTS | [Apache-2.0](https://github.com/Edge0-AI/Audio8_TTS/blob/master/LICENSE) | [Apache-2.0](https://huggingface.co/Edge0/Audio8-TTS-Realistic-Air/blob/main/LICENSE) (`Edge0/Audio8-TTS-Realistic-Air`) | OK | Optional 0.6B checkpoint, 23 languages including Japanese. Preserve upstream NOTICE attribution. |
 | Breeze-TTS-2 | Apache-2.0 | BreezeBlue Research and Non-Commercial License v1.1 | **Not allowed** | EN/ZH; Voice Design / Clone / Direction. Open weights, derivatives, and self-hosted outputs are non-commercial. Paid hosted outputs follow separate service terms. Obtain consent for cloned voices |
 | Kokoro | Apache 2.0 | Apache 2.0 | OK | |
 | Kokoro-ONNX | Apache 2.0 | Apache 2.0 | OK | NVIDIA's ONNX repackaging of hexgrad/Kokoro-82M; both are Apache 2.0 |
@@ -2493,6 +2619,7 @@ The license for each engine is as follows. When using them, always check each pr
 | MOSS-TTS-Local-v1.5 | Apache 2.0 | Apache 2.0 | OK | ~4B MossTTSLocal params, verified on L4 (~12.4GB; the 8B v1.5 OOMs there). 48kHz stereo. 31 languages incl JP. Zero-shot voice cloning |
 | NeuTTS | Apache 2.0 | Apache 2.0 (Air) / NeuTTS Open License 1.0 (Nano) | OK (Air) / Check terms (Nano) | Voice cloning. EN / ES / DE / FR |
 | TinyTTS | Apache 2.0 | Apache 2.0 | OK | |
+| tiny-voca | [Apache 2.0](https://github.com/n4ze3m/tiny-voca/blob/0eea2be213b53ec0b1949c169b80e611544718e1/LICENSE) | [Apache 2.0](https://huggingface.co/n4ze3m/tiny-voca/blob/1e73262226dbf4ef02e9df277e81aaa1db5ce16c/LICENSE) | OK | Keep the phonemizer's [CMUdict](https://huggingface.co/n4ze3m/tiny-voca/blob/1e73262226dbf4ef02e9df277e81aaa1db5ce16c/phonemizer/LICENSE.cmudict) and [homograph data](https://huggingface.co/n4ze3m/tiny-voca/blob/1e73262226dbf4ef02e9df277e81aaa1db5ce16c/phonemizer/LICENSE.homograph-data) notices when redistributing its data. |
 | KittenTTS | Apache 2.0 | Apache 2.0 | OK | English-only CPU ONNX TTS. Eight preset voices. Developer preview; wrapper pins v0.8.1 |
 | KittenTTS-2 | Apache 2.0 (`kittenml`) | Stellon Labs Community License (`KittenML/kitten-tts-2`); `speaker/` MIT; s3gen decoder MIT (`ResembleAI/chatterbox-turbo`) | Conditional | Free for research and non-commercial use. Commercial use requires registering with Stellon Labs and ends above USD 1M annual revenue or total funding. Ship the license and notice and display "Powered by KittenML". No training other models on outputs |
 | Sine-Wave-TTS | MIT | N/A (no model weights) | OK | Japanese electronic vocalization, not intelligible speech. CPU only. Kuromoji-based analysis |
@@ -2508,17 +2635,20 @@ The license for each engine is as follows. When using them, always check each pr
 | ZeroTTS | MIT | MIT (`zeroweight-ai/ZeroTTS`) | OK | Vietnamese CPU/ONNX TTS with preset voice latents. Public package cannot encode new voices. Bundled MOSS codec decoder is Apache-2.0 |
 | Zonos | Apache 2.0 | Apache 2.0 | OK | EN/JA/ZH/FR/DE. Zero-shot voice cloning. Requires `espeak-ng` |
 | ZONOS2 | MIT | Apache 2.0 | OK | 41 languages (tier-1 EN/ZH/JA). Zero-shot voice cloning. Mini-SGLang backend; GPU sm_80+ (L4/A100) |
+| ZONOS3-Mini | [MIT](https://github.com/Zyphra/ZONOS3-Mini/blob/main/LICENSE) | [Apache 2.0](https://huggingface.co/Zyphra/ZONOS3-Mini-hf#license) | OK | Official Transformers checkpoint with bundled ZAC-1 decoder. Code includes third-party MIT, Apache 2.0 and BSD-2-Clause components. |
 | OuteTTS (0.6B) | Apache 2.0 | Apache 2.0 | OK | Multilingual incl JP. CPU OK. Voice cloning |
 | OuteTTS (1B)   | Apache 2.0 | CC-BY-NC-SA-4.0 + Llama 3.2 Community License | Not allowed | Llama-3.2-based; non-commercial weights |
 | Dia | Apache 2.0 | Apache 2.0 | OK | EN only. Multi-speaker `[S1]`/`[S2]` dialogue TTS |
 | Kyutai-TTS | MIT (Python) / Apache 2.0 (Rust) | CC-BY-4.0 | OK (with attribution) | EN / FR. DSM-based streaming TTS. GPU recommended |
 | Pocket-TTS (model) | MIT | CC-BY-4.0 | OK (with attribution) | 100M params, CPU-only. EN / FR / DE / IT / PT / ES |
 | Pocket-TTS (voices) | — | Per-voice (mixed) | Check per voice | Voice licenses listed at [kyutai/tts-voices](https://huggingface.co/kyutai/tts-voices); upstream prohibits non-consensual impersonation |
+| Phonon | [MIT](https://github.com/gradium-ai/xn-ptts/blob/v0.7.1/LICENSE-MIT) OR [Apache 2.0](https://github.com/gradium-ai/xn-ptts/blob/v0.7.1/LICENSE-APACHE) | [Apache 2.0](https://huggingface.co/gradium/phonon-31m-en/blob/8f7a37c94a4c58b04c8287300c53f11d2e208eae/LICENSE) | OK | Gradium 31M English Q8 checkpoint, tokenizer, and bundled voice. |
 | OpenVoice-V2 | MIT | MIT | OK | Multilingual (incl JP). Voice cloning. Currently not working: `av==10` (via `faster-whisper==0.9.0` pin) won't build on Python 3.13 |
 | VibeVoice-Realtime | MIT | MIT | Caution (research/R&D only) | 0.5B single-speaker streaming model. English supported; JP + 8 languages experimental. No voice cloning. Audible AI disclosure + provenance watermark |
 | OmniVoice | Apache 2.0 | CC-BY-NC | **Not allowed** | 0.6B, 600+ languages, auto/design/clone. Bundled Higgs Audio 2 tokenizer has a separate Boson Community License (>100k annual users require expanded license; attribution/redistribution restrictions) |
 | FireRedTTS2 | Apache 2.0 | Apache 2.0 | Caution | 1.5B, 7 languages incl JP, monologue or 4-speaker dialogue. Upstream limits zero-shot cloning to academic research |
 | IndexTTS2 | Bilibili Model Use License | Bilibili Model Use License + CC-BY-NC-4.0 MaskGCT codec | **Not allowed** | EN/ZH zero-shot cloning with independent emotion control. Separate Bilibili permission at >100M monthly users or >RMB 1B annual revenue. Public release does not enable precise duration control |
+| IndexTTS-2.5 | [bilibili Model Use License](https://github.com/index-tts/index-tts/blob/d9e41aac89fd00b3d71497fddb287b7f24613712/LICENSE) | [bilibili Model Use License](https://huggingface.co/IndexTeam/IndexTTS-2.5/blob/c39ce5ba981572cb187443877ff559dfb246ce63/LICENSE) (including bundled codec) | Conditional | Separate written license above 100M monthly active users or RMB 1B annual revenue. License and copyright notices must be retained. |
 | Fish-Speech | Apache 2.0 | Apache 2.0 | OK | Requires A100/L4 GPU (VRAM 24GB+) |
 | MeloTTS | MIT | MIT (per-language weight repos) | OK | Not working on Colab (Rust toolchain required by `tokenizers`) |
 | Style-Bert-VITS2 | AGPL-3.0 | CC-BY-SA-4.0 (`litagin/style_bert_vits2_jvnv`, inherited from the JVNV corpus) | Caution | Copyleft: AGPL §13 requires source disclosure to network users; CC-BY-SA requires attribution + share-alike. Not working on Colab |
@@ -2538,6 +2668,7 @@ The license for each engine is as follows. When using them, always check each pr
 | LFM2.5-Audio-JP | LFM Open License v1.0 | LFM Open License v1.0 | Caution | Japanese-only speech-text model, TTS path. Commercial OK **under $10M annual revenue**; above that needs a separate commercial license. Ungated (no HF_TOKEN) |
 | LFM2.5-Audio-JP (audio encoder) | Apache 2.0 | — | OK | FastConformer encoder derived from NVIDIA NeMo |
 | LFM2.5-Audio-JP (audio codec / Mimi) | — | CC-BY 4.0 | OK | Kyutai Mimi codec (24 kHz, 8 codebooks); attribution required |
+| Magpie-TTS | [Apache 2.0](https://github.com/NVIDIA-NeMo/Speech/blob/24c4f58a764350a62248094c70e487892e9d1a00/LICENSE) (NeMo Speech) | [NVIDIA Open Model License](https://www.nvidia.com/en-us/agreements/enterprise-software/nvidia-open-model-license/) (v2607), [NVIDIA Open Model License (June 2024)](https://developer.download.nvidia.com/licenses/nvidia-open-model-license-agreement-june-2024.pdf) (NanoCodec) | OK under license terms | Commercial use permitted. Redistributing weights requires the applicable license and NVIDIA attribution notice. |
 | Ming-omni-TTS | MIT | Apache 2.0 | OK | 16.8B-A3B MoE audio LM (~3B active), **A100 40GB required** (~34GB bf16 weights). Chinese/English-centric, dialect control. Zero-shot cloning. Code MIT (GitHub), weights Apache-2.0 (HF card). Ungated download (no HF_TOKEN) |
 | drama3-small | Apache-2.0 (audio.cpp, `JarodMica/audio.cpp`) | Fish Audio Community License v1.0 (`pentacoxian-dev/drama3-small-GGUF`, derivative of `fishaudio/drama-3`) | Conditional | Free for research / non-commercial use; commercial use only below USD 500k annual revenue; **Hosted Service for third parties needs a separate Fish Audio license**; display "Built with Fish Audio". No voice imitation without consent, no impersonation, no training other speech models on outputs |
 | DramaBox | LTX-2 Community License (Lightricks) | LTX-2 Community License | **Not allowed without commercial license** for orgs with annual revenue $10M+ | English. Non-compete clause; redistributions must propagate the same license. Perth watermark always applied |
@@ -2578,6 +2709,8 @@ This repository itself is intended for short-term operational verification and t
   https://github.com/Audio8-AI/Audio8_TTS
 - Audio8-TTS Preview 0.6B weights
   https://huggingface.co/Audio8/Audio8-TTS-Preview-0.6b
+- Audio8-TTS-Realistic-Air
+  https://huggingface.co/Edge0/Audio8-TTS-Realistic-Air
 - Breeze TTS 2
   https://github.com/breezeblue-ai/breeze-tts
 - Breeze TTS 2 weights and license
@@ -2620,6 +2753,10 @@ This repository itself is intended for short-term operational verification and t
   https://github.com/OpenBMB/VoxCPM
 - TinyTTS
   https://github.com/ecyht2/tiny-tts
+- tiny-voca
+  https://github.com/n4ze3m/tiny-voca
+- tiny-voca weights
+  https://huggingface.co/n4ze3m/tiny-voca
 - KittenTTS
   https://github.com/KittenML/KittenTTS
 - KittenTTS 2
@@ -2648,6 +2785,8 @@ This repository itself is intended for short-term operational verification and t
   https://github.com/Zyphra/Zonos
 - ZONOS2
   https://github.com/Zyphra/Zonos2
+- ZONOS3-Mini
+  https://github.com/Zyphra/ZONOS3-Mini
 - OuteTTS
   https://github.com/edwko/OuteTTS
 - Dia
@@ -2656,6 +2795,10 @@ This repository itself is intended for short-term operational verification and t
   https://github.com/kyutai-labs/delayed-streams-modeling
 - Pocket-TTS
   https://github.com/kyutai-labs/pocket-tts
+- Phonon runtime
+  https://github.com/gradium-ai/xn-ptts
+- Phonon 31M English
+  https://huggingface.co/gradium/phonon-31m-en
 - Orpheus-TTS
   https://github.com/canopyai/Orpheus-TTS
 - Spark-TTS
@@ -2678,6 +2821,8 @@ This repository itself is intended for short-term operational verification and t
   https://github.com/index-tts/index-tts
 - IndexTTS2 model
   https://huggingface.co/IndexTeam/IndexTTS-2
+- IndexTTS-2.5
+  https://huggingface.co/IndexTeam/IndexTTS-2.5
 - Fish Speech
   https://github.com/fishaudio/fish-speech
 - CosyVoice
@@ -2712,6 +2857,10 @@ This repository itself is intended for short-term operational verification and t
   https://huggingface.co/rednote-hilab/dots.tts-base
 - LFM2.5-Audio-JP (Hugging Face)
   https://huggingface.co/LiquidAI/LFM2.5-Audio-1.5B-JP
+- Magpie-TTS
+  https://huggingface.co/nvidia/magpie_tts_multilingual_357m
+- Magpie-TTS NanoCodec
+  https://huggingface.co/nvidia/nemo-nano-codec-22khz-1.89kbps-21.5fps
 - liquid-audio (LFM2-Audio library)
   https://github.com/Liquid4All/liquid-audio
 - Ming-omni-tts

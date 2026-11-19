@@ -58,6 +58,8 @@ def resolve_selected_voice(settings: Settings) -> str:
         return settings.zonos_default_voice
     if settings.engine == "ZONOS2":
         return settings.zonos2_default_voice
+    if settings.engine == "ZONOS3-Mini":
+        return settings.zonos3_mini_default_voice
     if settings.engine == "MioTTS":
         return settings.miotts_default_voice
     if settings.engine == "OuteTTS":
@@ -74,10 +76,16 @@ def resolve_selected_voice(settings: Settings) -> str:
         return settings.fireredtts2_default_voice
     if settings.engine == "IndexTTS2":
         return settings.indextts2_default_voice
+    if settings.engine == "IndexTTS-2.5":
+        return settings.indextts25_default_voice
     if settings.engine == "Kyutai-TTS":
         return settings.kyutai_default_voice
     if settings.engine == "Pocket-TTS":
         return settings.pocket_default_voice
+    if settings.engine == "Phonon":
+        return "default"
+    if settings.engine == "tiny-voca":
+        return settings.tiny_voca_default_voice
     if settings.engine == "Orpheus-TTS":
         return settings.orpheus_default_voice
     if settings.engine == "CosyVoice2":
@@ -106,6 +114,8 @@ def resolve_selected_voice(settings: Settings) -> str:
         return settings.higgs_v3_default_voice
     if settings.engine == "dots.tts":
         return settings.dots_tts_default_voice
+    if settings.engine == "Magpie-TTS":
+        return settings.magpie_tts_default_voice
     if settings.engine == "Ming-omni-TTS":
         return settings.ming_omni_tts_default_voice
     if settings.engine == "KittenTTS":
@@ -295,6 +305,10 @@ def print_engine_voice_hints(settings: Settings):
         print("特徴: MOSS-Audio-Tokenizer-v2 による 48kHz ステレオ出力。8B の MOSS-TTS-v1.5 より軽量で L4 でも動作。")
         print("      Python 3.12 venv で torch 2.9.1+cu128 / transformers 5.0.0 / accelerate を導入します。")
         print("ライセンス: コード / 重みとも Apache 2.0（商用 OK）。")
+    elif settings.engine == "tiny-voca":
+        print("tiny-voca は CPU で動く 4.5M パラメータの英語 TTS です。")
+        print(f"内蔵話者: F2 / M2（既定: {settings.tiny_voca_default_voice}）")
+        print("動作確認には英語の TEST_TEXT を指定してください。")
     elif settings.engine == "TinyTTS":
         print("TinyTTS は超軽量（~3.4MB）の英語専用 TTS です（CPU 動作、GPU 不要）。")
         print("voice パラメータは現在 'default' のみ対応です。")
@@ -365,6 +379,12 @@ def print_engine_voice_hints(settings: Settings):
         print("注意: GPU は sm_80+ 必須（L4 / A100。flashinfer / sgl_kernel / cutlass カーネルのため T4 不可）。")
         print("      初回は `uv sync`（GPU カーネルの取得）と重みダウンロードで起動に時間がかかります。")
         print("ライセンス: コードは MIT（pyproject）、重みは Apache-2.0（HF モデルカード）。いずれも商用 OK。")
+    elif settings.engine == "ZONOS3-Mini":
+        print("ZONOS3-Mini は日本語を含む43言語に対応する TTS です。Colab では L4 を選択してください。")
+        print(f"language: {settings.zonos3_mini_language} / デフォルト voice: {settings.zonos3_mini_default_voice}")
+        print("voice 候補: default（同梱の Savannah）、clone（--zonos3-mini-prompt-wav が必要）")
+        print(f"発話速度: {settings.zonos3_mini_speaking_rate} bytes/s（0 は指定なし）")
+        print(f"話者 CFG: {settings.zonos3_mini_speaker_cfg_scale}（1 は追加の推論なし）")
     elif settings.engine == "MioTTS":
         print("MioTTS は Aratako の LLM ベース TTS です（Qwen3-1.7B-Base で MioCodec トークン[25Hz]を生成 → 44.1kHz）。")
         print(f"GGUF: {settings.miotts_gguf_repo} / {settings.miotts_gguf_file}")
@@ -502,6 +522,9 @@ def print_engine_voice_hints(settings: Settings):
         print("対応言語: 中国語 / 英語 / 日本語 / 韓国語 / 独語 / 西語 / 仏語 / 伊語 / 露語 + 中国方言")
         print("日本語入力: 上流仕様では漢字・ひらがなをカタカナへ変換して入力する必要があります。")
         print("注意: Python 3.10 venv、GPU推奨。コードと重みはApache 2.0です。")
+    elif settings.engine == "Phonon":
+        print("Phonon は Gradium の 31M 英語 TTS です。CPU で実行し、同梱の default 話者を使います。")
+        print(f"temperature: {settings.phonon_temperature} / 動作確認には英語の TEST_TEXT を指定してください。")
     elif settings.engine == "Orpheus-TTS":
         print("Orpheus-TTS は Canopy Labs の英語 LLM-TTS です（Llama-3.2-3B ベース、vLLM バックエンド）。")
         print(f"モデル: {settings.orpheus_hf_model}")
@@ -583,6 +606,10 @@ def print_engine_voice_hints(settings: Settings):
         print("flash-attn は任意（未導入時は torch SDPA に自動フォールバック）。GPU 推奨（L4 で動作想定）。")
         print("ライセンス: コード / 重みは **LFM Open License v1.0**（年商 $10M 未満は商用 OK、超過は別途商用ライセンスが必要）。")
         print("           audio encoder は Apache-2.0（NVIDIA NeMo 由来）、audio codec(Mimi) は CC-BY-4.0（Kyutai）。")
+    elif settings.engine == "Magpie-TTS":
+        print("Magpie-TTS は日本語を含む12言語に対応します。Colab では L4 を選択してください。")
+        print(f"language: {settings.magpie_tts_language} / デフォルト voice: {settings.magpie_tts_default_voice}")
+        print("voice 候補: aria / jason / john / leo / sofia（公開チェックポイントは音声クローン非対応）")
     elif settings.engine == "Ming-omni-TTS":
         print("Ming-omni-TTS は inclusionAI の 16.8B-A3B MoE 音声 LM です（~3B active、12.5Hz 連続トークナイザ + DiT head、in-process）。")
         print(f"モデル: {settings.ming_omni_tts_hf_model}")
@@ -735,6 +762,11 @@ def print_engine_voice_hints(settings: Settings):
         print("注意: GPU推奨（CPUも上流で対応するが低速）。公開版では尺指定・speed変更は未有効です。")
         print("ライセンス警告: 本体はBilibili Model Use License。大規模事業者は別途許諾が必要です。")
         print("                 必須のMaskGCT semantic codecがCC-BY-NC-4.0のため実効上は非商用です。")
+    elif settings.engine == "IndexTTS-2.5":
+        print("IndexTTS-2.5 は日本語・英語・中国語・スペイン語・アラビア語に対応します。")
+        print(f"language: {settings.indextts25_language} / デフォルト voice: {settings.indextts25_default_voice}")
+        print("voice: default（公式デモの参照音声）、clone（--indextts25-prompt-wav が必要）")
+        print("Colab は L4 推奨。リクエストで speed を 0.5〜2.0 に指定できます。")
     elif settings.engine == "DramaBox":
         print("DramaBox は Resemble AI の表現力豊か（directable）な TTS です（LTX-2.3 + IC-LoRA、英語中心）。")
         print(f"モデル: {settings.dramabox_hf_model} + Gemma snapshot: {settings.dramabox_gemma_repo}")

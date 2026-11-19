@@ -98,6 +98,8 @@ def parse_args():
     parser.add_argument("--pocket-default-speaker", default="alba")
     parser.add_argument("--pocket-prompt-wav", default="")
     parser.add_argument("--pocket-default-voice", default="default")
+    parser.add_argument("--phonon-temperature", type=float, default=0.3)
+    parser.add_argument("--tiny-voca-default-voice", choices=["F2", "M2"], default="F2")
     parser.add_argument("--melo-language", default="JP")
     parser.add_argument("--melo-default-voice", default="JP")
     parser.add_argument("--style-bert-model-repo", default="litagin/style_bert_vits2_jvnv")
@@ -111,7 +113,11 @@ def parse_args():
     parser.add_argument("--qwen3-hf-model", default="Qwen/Qwen3-TTS-12Hz-0.6B-CustomVoice")
     parser.add_argument("--qwen3-language", default="Japanese")
     parser.add_argument("--qwen3-default-speaker", default="ono_anna")
-    parser.add_argument("--audio8-hf-model", default="Audio8/Audio8-TTS-Preview-0.6b")
+    parser.add_argument(
+        "--audio8-hf-model",
+        default="Audio8/Audio8-TTS-Preview-0.6b",
+        help="Audio8 Transformers model ID. Use Edge0/Audio8-TTS-Realistic-Air for the 23-language checkpoint.",
+    )
     parser.add_argument("--audio8-prompt-wav", default="")
     parser.add_argument("--audio8-prompt-text", default="")
     parser.add_argument("--audio8-default-voice", default="default")
@@ -189,6 +195,11 @@ def parse_args():
     parser.add_argument("--zonos2-no-accurate-mode", action="store_true")
     parser.add_argument("--zonos2-seed", type=int, default=-1)
     parser.add_argument("--zonos2-backend-port", type=int, default=5003)
+    parser.add_argument("--zonos3-mini-language", default="ja")
+    parser.add_argument("--zonos3-mini-prompt-wav", default="")
+    parser.add_argument("--zonos3-mini-default-voice", choices=["default", "clone"], default="default")
+    parser.add_argument("--zonos3-mini-speaking-rate", type=float, default=0.0)
+    parser.add_argument("--zonos3-mini-speaker-cfg-scale", type=float, default=1.0)
     parser.add_argument("--outetts-model-size", default="0.6B")
     parser.add_argument("--outetts-backend", default="HF")
     parser.add_argument("--outetts-default-speaker", default="EN-FEMALE-1-NEUTRAL")
@@ -251,6 +262,9 @@ def parse_args():
     parser.add_argument("--indextts2-emotion-alpha", type=float, default=0.6)
     parser.add_argument("--indextts2-use-random", action="store_true")
     parser.add_argument("--indextts2-no-fp16", action="store_true")
+    parser.add_argument("--indextts25-language", choices=["ja", "en", "zh", "es", "ar"], default="ja")
+    parser.add_argument("--indextts25-default-voice", choices=["default", "clone"], default="default")
+    parser.add_argument("--indextts25-prompt-wav", default="")
     parser.add_argument("--bark-default-voice", default="v2/en_speaker_6")
     parser.add_argument("--bark-use-small-models", action="store_true")
     parser.add_argument("--chattts-default-voice", default="default")
@@ -331,6 +345,12 @@ def parse_args():
     parser.add_argument("--lfm2-audio-jp-max-new-tokens", type=int, default=1024)
     parser.add_argument("--lfm2-audio-jp-audio-temperature", type=float, default=0.8)
     parser.add_argument("--lfm2-audio-jp-audio-top-k", type=int, default=64)
+    parser.add_argument(
+        "--magpie-tts-language", choices=["ar", "de", "en", "es", "fr", "hi", "it", "ja", "ko", "pt", "vi", "zh"],
+        default="ja",
+    )
+    parser.add_argument("--magpie-tts-default-voice", choices=["aria", "jason", "john", "leo", "sofia"], default="sofia")
+    parser.add_argument("--magpie-tts-text-normalization", action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument("--ming-omni-tts-hf-model", default="inclusionAI/Ming-omni-tts-16.8B-A3B")
     parser.add_argument("--ming-omni-tts-default-voice", default="default")
     parser.add_argument("--ming-omni-tts-prompt-wav", default="")
@@ -489,6 +509,8 @@ def main():
         pocket_default_speaker=args.pocket_default_speaker,
         pocket_prompt_wav=args.pocket_prompt_wav,
         pocket_default_voice=args.pocket_default_voice,
+        phonon_temperature=args.phonon_temperature,
+        tiny_voca_default_voice=args.tiny_voca_default_voice,
         melo_language=args.melo_language,
         melo_default_voice=args.melo_default_voice,
         style_bert_model_repo=args.style_bert_model_repo,
@@ -571,6 +593,11 @@ def main():
         zonos2_accurate_mode=not args.zonos2_no_accurate_mode,
         zonos2_seed=args.zonos2_seed,
         zonos2_backend_port=args.zonos2_backend_port,
+        zonos3_mini_language=args.zonos3_mini_language,
+        zonos3_mini_prompt_wav=args.zonos3_mini_prompt_wav,
+        zonos3_mini_default_voice=args.zonos3_mini_default_voice,
+        zonos3_mini_speaking_rate=args.zonos3_mini_speaking_rate,
+        zonos3_mini_speaker_cfg_scale=args.zonos3_mini_speaker_cfg_scale,
         outetts_model_size=args.outetts_model_size,
         outetts_backend=args.outetts_backend,
         outetts_default_speaker=args.outetts_default_speaker,
@@ -633,6 +660,9 @@ def main():
         indextts2_emotion_alpha=args.indextts2_emotion_alpha,
         indextts2_use_random=args.indextts2_use_random,
         indextts2_use_fp16=not args.indextts2_no_fp16,
+        indextts25_language=args.indextts25_language,
+        indextts25_default_voice=args.indextts25_default_voice,
+        indextts25_prompt_wav=args.indextts25_prompt_wav,
         bark_default_voice=args.bark_default_voice,
         bark_use_small_models=args.bark_use_small_models,
         chattts_default_voice=args.chattts_default_voice,
@@ -713,6 +743,9 @@ def main():
         lfm2_audio_jp_max_new_tokens=args.lfm2_audio_jp_max_new_tokens,
         lfm2_audio_jp_audio_temperature=args.lfm2_audio_jp_audio_temperature,
         lfm2_audio_jp_audio_top_k=args.lfm2_audio_jp_audio_top_k,
+        magpie_tts_language=args.magpie_tts_language,
+        magpie_tts_default_voice=args.magpie_tts_default_voice,
+        magpie_tts_text_normalization=args.magpie_tts_text_normalization,
         ming_omni_tts_hf_model=args.ming_omni_tts_hf_model,
         ming_omni_tts_default_voice=args.ming_omni_tts_default_voice,
         ming_omni_tts_prompt_wav=args.ming_omni_tts_prompt_wav,
