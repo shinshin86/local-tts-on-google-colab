@@ -10,7 +10,7 @@ Supported engines:
 
 | Engine | Colab Status | Languages | Commercial use |
 |---|---|---|---|
-| Audio8-TTS | Preview verified on L4. Realistic Air pending Colab verification (GPU recommended) | Preview: 11 languages. Realistic Air: 23 languages. Both include Japanese | OK |
+| Audio8-TTS | Preview and Realistic Air verified on Colab L4 (GPU, Realistic Air ~2.6 GB VRAM) | Preview: 11 languages. Realistic Air: 23 languages. Both include Japanese | OK |
 | Breeze-TTS-2 | Works on L4 (eager path, ~8.9GB VRAM observed; all four modes verified) | English / Chinese | Not allowed for self-hosted use |
 | Kokoro | Works | Japanese / English / Chinese and more | OK |
 | Kokoro-ONNX | Works | Japanese / English / Chinese and more | OK |
@@ -28,7 +28,7 @@ Supported engines:
 | MOSS-TTS-Local-v1.5 | Works on L4 (~4B MossTTSLocal, ~12.4GB VRAM — fits where the 8B v1.5 OOMs) | Japanese / English / Chinese / Korean and 31 languages | OK |
 | NeuTTS | Works (CPU OK, voice cloning) | English / Spanish / German / French | Conditional (default Air OK; Nano below $5M revenue) |
 | TinyTTS | Works | English | OK |
-| tiny-voca | Colab verification pending (CPU runtime) | English | OK |
+| tiny-voca | Verified in a Colab L4 runtime (CPU only, 0 GB VRAM) | English | OK |
 | KittenTTS | Works (CPU only, ONNX, 15M–80M params) | English | OK |
 | KittenTTS-2 | Works on L4 (1.7B speech LM, ~5.1GB VRAM, 115 built-in voices, voice cloning) | 16 languages incl. Japanese / English | Conditional (register for commercial use; ends above USD 1M revenue or funding) |
 | Sine-Wave-TTS | Works on Colab (CPU only, no model weights, Node.js 20+) | Japanese electronic vocalization (not intelligible speech) | OK |
@@ -44,18 +44,18 @@ Supported engines:
 | ZeroTTS | Works on Colab (CPU/ONNX, ~900MB download) | Vietnamese | OK |
 | Zonos | Works (GPU required, ~6GB VRAM) | Japanese / English / Chinese / French / German | OK |
 | ZONOS2 | Works (L4 verified, sm_80+ required) | 41 languages (tier-1: Japanese / English / Chinese) | OK |
-| ZONOS3-Mini | Colab verification pending (L4 recommended) | 43 languages, including Japanese | OK |
+| ZONOS3-Mini | Verified on Colab L4 (GPU, ~2.9 GB VRAM) | 43 languages, including Japanese | OK |
 | OuteTTS | Works (CPU OK) | Japanese / English / Chinese and many languages | Conditional (default 0.6B OK; 1B not allowed) |
 | Dia | Works (GPU recommended) | English (multi-speaker dialogue) | OK |
 | Kyutai-TTS | Works (GPU recommended) | English / French | Conditional (attribution required) |
 | Pocket-TTS | Works (CPU OK, ~6x real-time) | English / French / German / Italian / Portuguese / Spanish | Conditional (attribution; voice licenses vary) |
-| Phonon | Colab verification pending (CPU runtime) | English | OK |
+| Phonon | Verified in a Colab L4 runtime (CPU only, 0 GB VRAM) | English | OK |
 | OpenVoice-V2 | Not working (Python 3.13 / `av==10` build failure) | Japanese / English / Spanish / French / Chinese / Korean | OK |
 | VibeVoice-Realtime | Works (GPU required, 0.5B, single speaker) | English; experimental Japanese / German / French / Italian / Korean / Dutch / Polish / Portuguese / Spanish | Not allowed (research/R&D only) |
 | OmniVoice | Works on Colab L4 (GPU recommended, CPU possible but slow, 0.6B, ~2.35GB VRAM) | Japanese / English / Chinese and 600+ languages | Not allowed |
 | FireRedTTS2 | Works on Colab L4 (CUDA GPU required, 1.5B, bf16, ~8.8GB VRAM) | Japanese / English / Chinese / Korean / French / German / Russian | Conditional (zero-shot cloning is academic-only) |
 | IndexTTS2 | Works on Colab L4 (GPU recommended, CPU supported upstream but unverified, fp16, ~7.1GB VRAM) | English / Chinese | Not allowed |
-| IndexTTS-2.5 | Colab verification pending (L4 recommended) | Japanese / English / Chinese / Spanish / Arabic | Conditional |
+| IndexTTS-2.5 | Verified on Colab L4 (GPU, ~5.9 GB VRAM) | Japanese / English / Chinese / Spanish / Arabic | Conditional |
 | Fish-Speech | Not working | Japanese / English / Chinese and 80+ languages | OK |
 | MeloTTS | Not working | - | OK |
 | Style-Bert-VITS2 | Not working | - | Conditional (copyleft: AGPL-3.0 / CC-BY-SA-4.0) |
@@ -70,7 +70,7 @@ Supported engines:
 | Higgs-Audio-v3 | Works on Colab L4 / A100 (GPU required, ~19.9GB at load; T4 unsupported, slow first launch ~10-12 min via SGLang-Omni, **non-commercial weights — no hosted API**) | 100+ languages (incl. Japanese) | Not allowed (non-commercial weights) |
 | dots.tts | Works on Colab L4 (GPU required, bf16 resident ~5.4GB, 48 kHz output; ungated weights, no `HF_TOKEN`; zero-shot cloning model — `default` is a random speaker, use `clone` for a stable voice) | 24 languages (incl. Japanese) | OK |
 | LFM2.5-Audio-JP | Works on Colab L4 (GPU required, ~6.3GB VRAM resident; ungated weights, no `HF_TOKEN`; single built-in Japanese voice, no cloning; 24 kHz output) | Japanese | Conditional (revenue cap) |
-| Magpie-TTS | Colab verification pending (NVIDIA GPU required, L4 recommended) | 12 languages, including Japanese | OK under license terms |
+| Magpie-TTS | Verified on Colab L4 (NVIDIA GPU required, ~3.9 GB VRAM) | 12 languages, including Japanese | OK under license terms |
 | Ming-omni-TTS | Works on Colab A100 (verified; **A100 40GB required** — 16.8B-A3B MoE, ~35GB VRAM at load, needs `PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True` to fit and will not run on L4 24GB; ungated weights, no `HF_TOKEN`; zero-shot cloning; 44.1 kHz output) | Chinese / English-centric (dialect control incl. Cantonese) | OK |
 | drama3-small | Works on Colab L4 (verified through the public URL; GPU required, ~10 GB VRAM resident; audio.cpp at a pinned commit + the model repo's patch is **built with CUDA on first launch (~10 min)**, later launches reuse the build; Fish Audio Drama 3 derivative, pruned + IQ3_XXS GGUF ~10.5 GB; `default` is a random speaker and sometimes leaves multi-second silences, use `clone` for a stable voice; **Fish Audio Community License — no Hosted Service for third parties**) | Japanese / English | Conditional (non-commercial, or under USD 500k annual revenue) |
 | DramaBox | Works on Colab A100 (GPU required, VRAM ~24GB peak, **LTX-2 Community License — non-compete clause**) | English | Conditional (commercial license for $10M+ revenue) |
@@ -1725,9 +1725,11 @@ This sample is fixed to `wav`. Conversion to formats like `mp3` is not performed
 
 Audio8-TTS runs two 0.6B DualAR checkpoints through the same Transformers interface. Each bundles a 44.1 kHz neural codec. The default, [Audio8 TTS Preview 0.6B](https://huggingface.co/Audio8/Audio8-TTS-Preview-0.6b), supports 11 languages, including Japanese, English, Chinese, Cantonese, and Korean. [Audio8-TTS-Realistic-Air](https://huggingface.co/Edge0/Audio8-TTS-Realistic-Air) supports 23 languages, including all 11 from Preview.
 
-To use Realistic Air, select `Audio8-TTS` and enter `Edge0/Audio8-TTS-Realistic-Air` in the Colab or WebUI model field (`AUDIO8_HF_MODEL`). For the CLI, pass `--audio8-hf-model Edge0/Audio8-TTS-Realistic-Air`. Colab verification for Realistic Air is pending. For Preview, upstream recommends keeping each input within 150 characters for best quality.
+To use Realistic Air, select `Audio8-TTS` and enter `Edge0/Audio8-TTS-Realistic-Air` in the Colab or WebUI model field (`AUDIO8_HF_MODEL`). For the CLI, pass `--audio8-hf-model Edge0/Audio8-TTS-Realistic-Air`. For Preview, upstream recommends keeping each input within 150 characters for best quality.
 
 The OpenAI-compatible wrapper exposes `voice="default"` for reference-free generation and `voice="clone"` for zero-shot cloning. Clone mode is enabled only when both `AUDIO8_PROMPT_WAV` and its exact transcript in `AUDIO8_PROMPT_TEXT` are configured; otherwise it returns HTTP 400 instead of silently falling back. A CUDA GPU with BF16 is the default on Colab, while CPU mode uses FP32. The default path was verified on an NVIDIA L4 runtime: the public `trycloudflare` endpoint returned HTTP 200 with a valid 44.1 kHz mono WAV, and `/v1/voices` exposed `default` as expected.
+
+On Colab L4, Realistic Air first launched in about 76 seconds and used about 2.6 GB of VRAM while serving. The public `trycloudflare` endpoint returned 44.1 kHz WAV for Japanese, English, and Vietnamese with `voice="default"`, and for `clone` with a reference WAV and transcript. A clone request without a reference returned HTTP 400. Startup logs confirmed the Realistic Air checkpoint. Performance and audio quality relative to Preview remain untested. T4 was untested.
 
 Code and weights are Apache-2.0 and the upstream `NOTICE` must be retained where required. Obtain consent before cloning a voice and disclose synthetic audio where appropriate.
 
@@ -1858,9 +1860,11 @@ An ultra-lightweight English TTS using [ecyht2/tiny-tts](https://github.com/ecyh
 
 ### tiny-voca
 
-[tiny-voca](https://huggingface.co/n4ze3m/tiny-voca) is a 4.5M-parameter American English model. This integration uses the upstream PyTorch CPU inference path and the dizione phonemizer. It returns 24 kHz mono PCM WAV and splits long text into sentences before synthesis. Colab verification is pending.
+[tiny-voca](https://huggingface.co/n4ze3m/tiny-voca) is a 4.5M-parameter American English model. This integration uses the upstream PyTorch CPU inference path and the dizione phonemizer. It returns 24 kHz mono PCM WAV and splits long text into sentences before synthesis.
 
 Set `voice` to `F2` or `M2`. Omitting it or choosing `default` uses `TINY_VOCA_DEFAULT_VOICE` or `--tiny-voca-default-voice` (F2 by default). The public model has two fixed voices and no voice cloning. The API accepts `speed` from 0.25 to 4.0. In the Colab form, set `TEST_TEXT` to an English sentence.
+
+On Colab, first launch took about 22 seconds. The engine ran on CPU with no GPU process. The public `trycloudflare` endpoint returned 24 kHz WAV for English with the default F2 voice and with M2 at `speed=1.3`. A `clone` request returned HTTP 400.
 
 ### KittenTTS
 
@@ -1990,6 +1994,8 @@ Zyphra's ZONOS3-Mini supports 43 languages, including Japanese. This wrapper loa
 
 `--zonos3-mini-language` selects the text normalization language and defaults to `ja`. Use `--zonos3-mini-speaking-rate` to condition the pace in UTF-8 bytes per second (0 leaves it unset). Keep the request's `speed` at 1.0. Raising `--zonos3-mini-speaker-cfg-scale` above 1 strengthens voice conditioning at the cost of an extra model pass per step.
 
+On Colab L4, first launch took about 71 seconds and the running engine used about 2.9 GB of VRAM. The public `trycloudflare` endpoint returned 44.1 kHz WAV for Japanese and English with `voice="default"` and for `clone` with a reference WAV. Requests for `clone` without a reference, an unknown voice, or a `speed` other than 1.0 returned HTTP 400. Non-default speaking-rate and speaker-CFG settings and T4 remain untested.
+
 ### OuteTTS
 
 A lightweight multilingual TTS using [edwko/OuteTTS](https://github.com/edwko/OuteTTS). Supports many languages including Japanese, with two model sizes (`0.6B` and `1B`) and multiple backends (`HF` for transformers, `LLAMACPP` for GGUF). Voice cloning is exposed via `--outetts-prompt-wav` (and an optional `--outetts-prompt-text` transcript). The default voice uses one of the bundled built-in speaker profiles, configurable via `--outetts-default-speaker` (e.g., `EN-FEMALE-1-NEUTRAL`). For best Japanese results, create a Japanese speaker profile from a reference clip with `clone`. Runs on CPU or GPU.
@@ -2035,9 +2041,11 @@ An ultra-lightweight CPU TTS using [kyutai-labs/pocket-tts](https://github.com/k
 
 ### Phonon
 
-Gradium's [Phonon 31M English](https://huggingface.co/gradium/phonon-31m-en) runs on CPU with the official `ptts` runtime. The pinned Q8 weights are about 64.5 MB and download on first use without a Hugging Face token. The engine returns 24 kHz mono PCM WAV. Colab verification is pending.
+Gradium's [Phonon 31M English](https://huggingface.co/gradium/phonon-31m-en) runs on CPU with the official `ptts` runtime. The pinned Q8 weights are about 64.5 MB and download on first use without a Hugging Face token. The engine returns 24 kHz mono PCM WAV.
 
 Use `voice="default"` for the bundled speaker and keep `speed` at 1.0. Before launching the Colab cell, set `TEST_TEXT` to an English sentence for the smoke test. The sampling temperature defaults to `0.3` and can be set with `PHONON_TEMPERATURE` or `--phonon-temperature`.
+
+On Colab, first launch took about 19 seconds. The engine ran on CPU with no GPU process. The public `trycloudflare` endpoint returned 24 kHz WAV for English with `voice="default"`. A `clone` request returned HTTP 400.
 
 ### Spark-TTS
 
@@ -2134,11 +2142,13 @@ Verified end-to-end on Colab L4 from the pushed feature branch. A public tryclou
 
 ### IndexTTS-2.5
 
-[IndexTTS-2.5](https://huggingface.co/IndexTeam/IndexTTS-2.5) supports Japanese, English, Chinese, Spanish, and Arabic. It uses the upstream multilingual runtime and its bundled semantic codec. The model card estimates about 6 GB of VRAM for inference. Colab L4 usage is pending verification.
+[IndexTTS-2.5](https://huggingface.co/IndexTeam/IndexTTS-2.5) supports Japanese, English, Chinese, Spanish, and Arabic. It uses the upstream multilingual runtime and its bundled semantic codec.
 
 Choose the language with `INDEXTTS25_LANGUAGE` in the form or `--indextts25-language` in the CLI. The default is `ja`. The Japanese text-processing path does not expand numbers or dates. Write them as they should be read aloud.
 
 Use `voice="default"` with the official demo reference to try the engine. To use a recording you have permission to use, set `INDEXTTS25_PROMPT_WAV` and request `voice="clone"`. Requests for `clone` without a reference return HTTP 400. The API returns 22.05 kHz mono PCM WAV and accepts request `speed` values from 0.5 to 2.0.
+
+On Colab L4, first launch took about 193 seconds and the running engine used about 5.9 GB of VRAM. The public `trycloudflare` endpoint returned 22.05 kHz WAV for Japanese with the default voice, a request at `speed=1.3`, and `clone` with a reference WAV. A clone request without a reference returned HTTP 400. Other languages and T4 remain untested.
 
 The bilibili agreement applies to the upstream code and checkpoint, including the bundled codec. Section 2.2 requires a separate written license if you or an affiliate exceeded 100 million monthly active users in the previous calendar month or RMB 1 billion in revenue in the previous calendar year. The agreement also covers attribution, downstream distribution, use in other AI models, and high-risk uses. The upstream project asks users to contact `indexspeech@bilibili.com` for commercial use. [License](https://huggingface.co/IndexTeam/IndexTTS-2.5/blob/main/LICENSE) [Upstream project](https://github.com/index-tts/index-tts)
 
@@ -2373,11 +2383,13 @@ The `voice` parameter exposes only `default` — the single built-in Japanese vo
 
 ### Magpie-TTS
 
-NVIDIA's [Magpie-TTS v2607](https://huggingface.co/nvidia/magpie_tts_multilingual_357m) synthesizes 12 languages using five built-in speakers. The wrapper runs the NeMo Speech TTS runtime on a CUDA GPU and decodes with [NanoCodec](https://huggingface.co/nvidia/nemo-nano-codec-22khz-1.89kbps-21.5fps) to 22.05 kHz mono PCM WAV. Colab L4 verification is pending.
+NVIDIA's [Magpie-TTS v2607](https://huggingface.co/nvidia/magpie_tts_multilingual_357m) synthesizes 12 languages using five built-in speakers. The wrapper runs the NeMo Speech TTS runtime on a CUDA GPU and decodes with [NanoCodec](https://huggingface.co/nvidia/nemo-nano-codec-22khz-1.89kbps-21.5fps) to 22.05 kHz mono PCM WAV.
 
 Set `MAGPIE_TTS_LANGUAGE` or `--magpie-tts-language` to one of `ar`, `de`, `en`, `es`, `fr`, `hi`, `it`, `ja`, `ko`, `pt`, `vi`, or `zh`. The default is `ja`. The `ar` and `pt` settings use Modern Standard Arabic and Brazilian Portuguese. Text normalization is enabled by default and can be disabled with `--no-magpie-tts-text-normalization`.
 
 Set the request's `voice` to `aria`, `jason`, `john`, `leo`, or `sofia`. Omitting the voice or using `default` selects the configured speaker (Sofia by default). All five speakers are native English speakers, so other languages may sound accented. The public checkpoint has no zero-shot voice cloning. Keep the request's `speed` at 1.0.
+
+On Colab L4, first launch took about 235 seconds, including installation of NeMo and `pyopenjtalk`. The running engine used about 3.9 GB of VRAM. The public `trycloudflare` endpoint returned 22.05 kHz WAV for Japanese with Sofia and Jason. A `clone` request returned HTTP 400. Other languages and T4 remain untested.
 
 NeMo Speech code is Apache 2.0. Both weight licenses permit commercial use under their terms and require the applicable license and an NVIDIA attribution notice when redistributing weights. [Magpie-TTS license](https://www.nvidia.com/en-us/agreements/enterprise-software/nvidia-open-model-license/) [NanoCodec license](https://developer.download.nvidia.com/licenses/nvidia-open-model-license-agreement-june-2024.pdf)
 

@@ -10,7 +10,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 
 | エンジン | Colab 動作確認 | 言語 | 商用利用 |
 |---|---|---|---|
-| Audio8-TTS | Preview は L4 で動作確認済み。Realistic Air は Colab 未検証（GPU 推奨） | Preview は11言語、Realistic Air は23言語。いずれも日本語対応 | OK |
+| Audio8-TTS | Preview・Realistic Air ともに Colab L4 で動作確認済み（GPU、Realistic Air の VRAM は約 2.6 GB） | Preview は11言語、Realistic Air は23言語。いずれも日本語対応 | OK |
 | Breeze-TTS-2 | L4 で動作確認済み（eager経路、約8.9GB VRAM、4モード検証済み） | 英語 / 中国語 | セルフホストでは不可 |
 | Kokoro | 動作OK | 日本語 / 英語 / 中国語 他 | OK |
 | Kokoro-ONNX | 動作OK | 日本語 / 英語 / 中国語 他 | OK |
@@ -28,7 +28,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | MOSS-TTS-Local-v1.5 | L4 で動作確認（~4B MossTTSLocal、~12.4GB VRAM。8B 版が OOM する L4 でも動作） | 日本語 / 英語 / 中国語 / 韓国語 他 31言語 | OK |
 | NeuTTS | 動作OK (CPU可・voice cloning) | 英語 / スペイン語 / ドイツ語 / フランス語 | 条件付き（既定Airは可 / Nanoは年商$5M未満） |
 | TinyTTS | 動作OK | 英語 | OK |
-| tiny-voca | Colab 未検証（CPU で実行） | 英語 | OK |
+| tiny-voca | Colab L4 環境で動作確認済み（CPU のみ、VRAM 0 GB） | 英語 | OK |
 | KittenTTS | 動作OK（CPU のみ・ONNX・15M〜80M params） | 英語 | OK |
 | KittenTTS-2 | L4 で動作確認（1.7B の音声言語モデル、約5.1GB VRAM、組み込み voice 115種、ボイスクローン対応） | 日本語・英語を含む16言語 | 条件付き（商用は登録が必要。年商または累計調達額が100万ドルを超えると失効） |
 | Sine-Wave-TTS | 動作OK（CPU のみ・モデル重みなし・Node.js 20+） | 日本語の電子音声（言葉としては聞き取れない） | OK |
@@ -40,12 +40,12 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | ZeroTTS | Colab で動作確認済み（CPU/ONNX、約900MB取得） | ベトナム語 | OK |
 | Zonos | 動作OK (GPU必須・VRAM ~6GB) | 日本語 / 英語 / 中国語 / フランス語 / ドイツ語 | OK |
 | ZONOS2 | 動作OK (L4検証済・sm_80+必須) | 41言語 (tier-1: 日本語 / 英語 / 中国語) | OK |
-| ZONOS3-Mini | Colab 未検証（L4 推奨） | 日本語を含む43言語 | OK |
+| ZONOS3-Mini | Colab L4 で動作確認済み（GPU、VRAM 約 2.9 GB） | 日本語を含む43言語 | OK |
 | OuteTTS | 動作OK (CPU可) | 日本語 / 英語 / 中国語 他 多言語 | 条件付き（既定0.6Bは可 / 1Bは不可） |
 | Dia | 動作OK (GPU推奨) | 英語（マルチスピーカー対話） | OK |
 | Kyutai-TTS | 動作OK (GPU推奨) | 英語 / フランス語 | 条件付き（要クレジット） |
 | Pocket-TTS | 動作OK (CPU可・~6x realtime) | 英語 / 仏 / 独 / 伊 / 葡 / 西 | 条件付き（要クレジット / 音声ごとに要確認） |
-| Phonon | Colab 未検証（CPU で実行） | 英語 | OK |
+| Phonon | Colab L4 環境で動作確認済み（CPU のみ、VRAM 0 GB） | 英語 | OK |
 | Orpheus-TTS | 動作不可（HF gated 重み・Llama 3.2 ライセンス同意 + `HF_TOKEN` 必須） | 英語（Llama-3.2-3B ベース、vLLM） | 条件付き（Llama Community License） |
 | CosyVoice2 | 動作OK (GPU推奨・Python 3.10 venv) | 日本語 / 英語 / 中 / 韓 / 独 他 9言語 | OK |
 | CosyVoice3 | 動作OK (GPU推奨・Python 3.10 venv) | 日本語 / 英語 / 中 / 韓 / 独 他 9言語 + 中国方言 | OK |
@@ -55,7 +55,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | OmniVoice | Colab L4動作確認済み（GPU推奨、CPU実行可だが低速、0.6B、VRAM約2.35GB） | 日本語 / 英語 / 中国語など600言語以上 | 不可 |
 | FireRedTTS2 | Colab L4動作確認済み（CUDA GPU必須、1.5B、bf16、VRAM約8.8GB） | 日本語 / 英語 / 中国語 / 韓国語 / フランス語 / ドイツ語 / ロシア語 | 条件付き（ゼロショットクローンは学術用途のみ） |
 | IndexTTS2 | Colab L4動作確認済み（GPU推奨、CPUは上流対応・未検証、fp16、VRAM約7.1GB） | 英語 / 中国語 | 不可 |
-| IndexTTS-2.5 | Colab 未検証（L4 推奨） | 日本語 / 英語 / 中国語 / スペイン語 / アラビア語 | 条件付き |
+| IndexTTS-2.5 | Colab L4 で動作確認済み（GPU、VRAM 約 5.9 GB） | 日本語 / 英語 / 中国語 / スペイン語 / アラビア語 | 条件付き |
 | Fish-Speech | 動作不可 | 日本語 / 英語 / 中国語 他 80言語以上 | OK |
 | MeloTTS | 動作不可 | - | OK |
 | Style-Bert-VITS2 | 動作不可 | - | 条件付き（コピーレフト: AGPL-3.0 / CC-BY-SA-4.0） |
@@ -70,7 +70,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | Higgs-Audio-v3 | Colab L4 / A100 動作確認済み（GPU 必須、ロード時 ~19.9GB。T4 非対応、SGLang-Omni 経由で初回起動が遅い ~10-12 分、**非商用の重み — hosted API 不可**） | 100+ 言語（日本語含む） | 不可（重みが非商用） |
 | dots.tts | Colab L4 動作確認済み（GPU 必須、bf16 常駐 ~5.4GB、出力 48 kHz。重みは ungated で `HF_TOKEN` 不要。ゼロショット cloning モデルのため `default` は話者がランダム、安定した声色は `clone` を使用） | 24 言語（日本語含む） | OK |
 | LFM2.5-Audio-JP | Colab L4 動作確認済み（GPU 必須、VRAM 常駐 ~6.3GB。重みは ungated で `HF_TOKEN` 不要。内蔵の日本語ボイス1種のみ、cloning 非対応。出力 24 kHz） | 日本語 | 条件付き（年商上限あり） |
-| Magpie-TTS | Colab 未検証（NVIDIA GPU 必須、L4 推奨） | 日本語を含む12言語 | ライセンス条件の範囲で可 |
+| Magpie-TTS | Colab L4 で動作確認済み（NVIDIA GPU 必須、VRAM 約 3.9 GB） | 日本語を含む12言語 | ライセンス条件の範囲で可 |
 | Ming-omni-TTS | Colab A100 動作確認済み（**A100 40GB 必須** — 16.8B-A3B MoE、ロード時 ~35GB VRAM。40GB に収めるため `PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True` が必要で L4 24GB では動かない。重みは ungated で `HF_TOKEN` 不要。zero-shot cloning。出力 44.1 kHz） | 中国語 / 英語が中心（広東語などの方言制御あり） | OK |
 | drama3-small | Colab L4 動作確認済み（公開URL経由で確認。GPU 必須、VRAM 常駐 約10GB。固定コミットの audio.cpp にモデル同梱のパッチを当てて**初回起動時に CUDA でビルド（約10分）**し、2回目以降はビルドを再利用。Fish Audio Drama 3 を枝刈り・IQ3_XXS 量子化した GGUF で約10.5GB。`default` は話者がランダムで数秒の無音が入ることがあるため、声をそろえるなら `clone` を使用。**Fish Audio Community License のため、第三者向けの Hosted Service は不可**） | 日本語 / 英語 | 条件付き（非商用、または年商50万ドル未満） |
 | DramaBox | Colab A100 動作確認済み（GPU 必須、VRAM ~24GB ピーク、**LTX-2 Community License — 非競合条項あり**） | 英語 | 条件付き（年商$10M以上は要商用ライセンス） |
@@ -1726,9 +1726,11 @@ python3 tools/serve_samples.py --open   # http://127.0.0.1:8000
 
 Audio8-TTS は、2種類の 0.6B DualAR モデルを共通の Transformers API で動かします。どちらにも 44.1 kHz のニューラルコーデックが含まれます。初期設定の [Audio8 TTS Preview 0.6B](https://huggingface.co/Audio8/Audio8-TTS-Preview-0.6b) は、日本語、英語、中国語、広東語、韓国語など11言語に対応します。[Audio8-TTS-Realistic-Air](https://huggingface.co/Edge0/Audio8-TTS-Realistic-Air) は、Preview の11言語を含む23言語に対応します。
 
-Realistic Air を使うには、エンジンに `Audio8-TTS` を選び、Colab フォームまたは WebUI のモデル欄（`AUDIO8_HF_MODEL`）に `Edge0/Audio8-TTS-Realistic-Air` を入力します。CLI では `--audio8-hf-model Edge0/Audio8-TTS-Realistic-Air` を指定します。Realistic Air の Colab 動作は未検証です。Preview では、開発元が1回の入力を150文字以内に収めることを推奨しています。
+Realistic Air を使うには、エンジンに `Audio8-TTS` を選び、Colab フォームまたは WebUI のモデル欄（`AUDIO8_HF_MODEL`）に `Edge0/Audio8-TTS-Realistic-Air` を入力します。CLI では `--audio8-hf-model Edge0/Audio8-TTS-Realistic-Air` を指定します。Preview では、開発元が1回の入力を150文字以内に収めることを推奨しています。
 
 OpenAI互換ラッパーでは、参照音声なしの`voice="default"`と、ゼロショットVoice cloningの`voice="clone"`を提供します。cloneは`AUDIO8_PROMPT_WAV`と、その音声に一致する書き起こし`AUDIO8_PROMPT_TEXT`の両方を設定した場合だけ有効になり、未設定時は暗黙にdefaultへ切り替えずHTTP 400を返します。ColabではCUDA GPU + BF16を既定とし、CPU時はFP32を使用します。NVIDIA L4で既定構成を検証し、公開`trycloudflare`経由でHTTP 200と正常な44.1kHzモノラルWAVが返ること、`/v1/voices`に`default`が公開されることを確認しました。
+
+Realistic Air の初回起動は Colab L4 で約76秒、稼働中の VRAM 使用量は約 2.6 GB でした。公開 `trycloudflare` URL から、日本語・英語・ベトナム語を `voice="default"` で合成し、参照 WAV と書き起こしを指定した `clone` でも 44.1 kHz WAV が返ることを確認しました。参照未設定の `clone` は HTTP 400 を返しました。起動ログでも Realistic Air の読み込みを確認しました。Preview との速度・音質比較と T4 での動作は未検証です。
 
 コードと重みはいずれもApache-2.0です。必要に応じて上流`NOTICE`の帰属表示を維持してください。Voice cloningには本人の同意を得て、必要な場面では合成音声であることを明示してください。
 
@@ -1859,9 +1861,11 @@ GPU 必須: int4 パスは Triton カーネルを使用するため、Linux + CU
 
 ### tiny-voca
 
-[tiny-voca](https://huggingface.co/n4ze3m/tiny-voca) は、450万パラメータの米国英語向けモデルです。公式の PyTorch CPU 推論と、テキストを音素に変換する dizione を使います。長い入力は文ごとに分けて合成し、24 kHz のモノラル PCM WAV を返します。Colab での動作は未検証です。
+[tiny-voca](https://huggingface.co/n4ze3m/tiny-voca) は、450万パラメータの米国英語向けモデルです。公式の PyTorch CPU 推論と、テキストを音素に変換する dizione を使います。長い入力は文ごとに分けて合成し、24 kHz のモノラル PCM WAV を返します。
 
 `voice` に `F2` または `M2` を指定します。省略時や `default` の場合は、`TINY_VOCA_DEFAULT_VOICE` または `--tiny-voca-default-voice` の設定（初期値は F2）を使います。公開モデルの話者はこの2種類で、音声クローンには対応していません。リクエストの `speed` は 0.25〜4.0 を指定できます。Colab の動作確認用 `TEST_TEXT` には英語の文を入力してください。
+
+Colab では初回起動に約22秒かかりました。実行には CPU を使い、GPU プロセスはありませんでした。公開 `trycloudflare` URL から、既定の F2 と `speed=1.3` を指定した M2 で英語の 24 kHz WAV が返ることを確認しました。`clone` は HTTP 400 を返しました。
 
 ### KittenTTS
 
@@ -1991,6 +1995,8 @@ Zyphra の ZONOS3-Mini は、日本語を含む43言語に対応します。公�
 
 `--zonos3-mini-language` はテキスト正規化に使う言語を指定します（初期値は `ja`）。発話速度は `--zonos3-mini-speaking-rate` に UTF-8 のバイト数/秒で指定します（0 は指定なし）。リクエストの `speed` は 1.0 のまま使います。`--zonos3-mini-speaker-cfg-scale` を 1 より大きくすると、話者の特徴が強く反映され、生成ステップごとに推論が1回増えます。
 
+Colab L4 では初回起動に約71秒かかり、稼働中の VRAM 使用量は約 2.9 GB でした。公開 `trycloudflare` URL から、日本語・英語の `voice="default"` と参照 WAV を指定した `clone` で 44.1 kHz WAV が返ることを確認しました。参照未設定の `clone`、未対応の `voice`、1.0 以外の `speed` は HTTP 400 を返しました。発話速度と話者 CFG を既定値から変えた場合、および T4 での動作は未検証です。
+
 ### OuteTTS
 
 [edwko/OuteTTS](https://github.com/edwko/OuteTTS) を使った軽量多言語 TTS です。日本語を含む多言語に対応し、モデルサイズ（`0.6B` / `1B`）と backend（`HF` = transformers / `LLAMACPP` = GGUF）を選択できます。`--outetts-prompt-wav`（必要なら `--outetts-prompt-text` も）で voice cloning を有効にできます。デフォルト voice は `--outetts-default-speaker`（例: `EN-FEMALE-1-NEUTRAL`）で内蔵 speaker プロファイルを切り替えられます。日本語を発話させる場合は、日本語の参照音声から `clone` で speaker プロファイルを作るのが推奨です。CPU / GPU の両方で動作します。
@@ -2036,9 +2042,11 @@ Zyphra の ZONOS3-Mini は、日本語を含む43言語に対応します。公�
 
 ### Phonon
 
-Gradium の [Phonon 31M 英語版](https://huggingface.co/gradium/phonon-31m-en) を公式の `ptts` ランタイムで CPU 上で実行します。約 64.5 MB の Q8 重みを初回にダウンロードします。Hugging Face のトークンは不要です。出力は 24 kHz のモノラル PCM WAV です。Colab での動作は未検証です。
+Gradium の [Phonon 31M 英語版](https://huggingface.co/gradium/phonon-31m-en) を公式の `ptts` ランタイムで CPU 上で実行します。約 64.5 MB の Q8 重みを初回にダウンロードします。Hugging Face のトークンは不要です。出力は 24 kHz のモノラル PCM WAV です。
 
 同梱の話者を使うには `voice="default"` を指定します。`speed` は 1.0 です。Colab セルを実行する前に、動作確認用の `TEST_TEXT` に英語の文を入力してください。サンプリング温度は初期値が `0.3` で、`PHONON_TEMPERATURE` または `--phonon-temperature` で変更できます。
+
+Colab では初回起動に約19秒かかりました。実行には CPU を使い、GPU プロセスはありませんでした。公開 `trycloudflare` URL から、英語の `voice="default"` で 24 kHz WAV が返ることを確認しました。`clone` は HTTP 400 を返しました。
 
 ### Spark-TTS
 
@@ -2135,11 +2143,13 @@ IndexTTS2は尺制御を特徴とする研究ですが、公式READMEは精密�
 
 ### IndexTTS-2.5
 
-[IndexTTS-2.5](https://huggingface.co/IndexTeam/IndexTTS-2.5) は、日本語、英語、中国語、スペイン語、アラビア語に対応します。上流の多言語推論コードと同梱の音声コーデックを使います。モデルカードによると、推論時の VRAM の目安は約 6 GB です。Colab L4 での動作は未検証です。
+[IndexTTS-2.5](https://huggingface.co/IndexTeam/IndexTTS-2.5) は、日本語、英語、中国語、スペイン語、アラビア語に対応します。上流の多言語推論コードと同梱の音声コーデックを使います。
 
 言語はフォームの `INDEXTTS25_LANGUAGE` または CLI の `--indextts25-language` で指定します（初期値は `ja`）。日本語の前処理では数字や日付が読み上げ用に展開されないため、読ませたいとおりに書いてください。
 
 `voice="default"` では公式デモの参照音声を使います。使用許可のある音声でクローンする場合は `INDEXTTS25_PROMPT_WAV` に音声ファイルを設定し、`voice="clone"` を指定します。参照音声の指定がなければ HTTP 400 を返します。出力は 22.05 kHz のモノラル PCM WAV で、リクエストの `speed` は 0.5〜2.0 を指定できます。
+
+Colab L4 では初回起動に約193秒かかり、稼働中の VRAM 使用量は約 5.9 GB でした。公開 `trycloudflare` URL から、日本語の既定話者、`speed=1.3` の指定、参照 WAV を使った `clone` で 22.05 kHz WAV が返ることを確認しました。参照未設定の `clone` は HTTP 400 を返しました。日本語以外の言語と T4 での動作は未検証です。
 
 上流コードと同梱コーデックを含む重みには、bilibili の利用規約が適用されます。第2.2条では、利用者または関連会社が前暦月の月間アクティブユーザー1億人、または前暦年の売上10億元（人民元）を超えた場合、書面での別途許諾が必要です。帰属表示、再配布、他のAIモデルの改良、高リスク用途にも条件があります。上流プロジェクトは、商用利用の際に `indexspeech@bilibili.com` へ連絡するよう案内しています。 [利用規約](https://huggingface.co/IndexTeam/IndexTTS-2.5/blob/main/LICENSE) [上流プロジェクト](https://github.com/index-tts/index-tts)
 
@@ -2374,11 +2384,13 @@ TTS は **sequential generation** を使います。system prompt（`Perform TTS
 
 ### Magpie-TTS
 
-NVIDIA の [Magpie-TTS v2607](https://huggingface.co/nvidia/magpie_tts_multilingual_357m) は、5種類の話者で12言語を読み上げます。CUDA GPU 上で NeMo Speech の TTS 推論を実行し、[NanoCodec](https://huggingface.co/nvidia/nemo-nano-codec-22khz-1.89kbps-21.5fps) で 22.05 kHz のモノラル PCM WAV に変換します。Colab L4 での動作は未検証です。
+NVIDIA の [Magpie-TTS v2607](https://huggingface.co/nvidia/magpie_tts_multilingual_357m) は、5種類の話者で12言語を読み上げます。CUDA GPU 上で NeMo Speech の TTS 推論を実行し、[NanoCodec](https://huggingface.co/nvidia/nemo-nano-codec-22khz-1.89kbps-21.5fps) で 22.05 kHz のモノラル PCM WAV に変換します。
 
 言語は `MAGPIE_TTS_LANGUAGE` または `--magpie-tts-language` で指定します。選べる値は `ar`、`de`、`en`、`es`、`fr`、`hi`、`it`、`ja`、`ko`、`pt`、`vi`、`zh` で、初期値は `ja` です。`ar` は現代標準アラビア語、`pt` はブラジルポルトガル語です。テキスト正規化を無効にする場合は `--no-magpie-tts-text-normalization` を指定します。
 
 リクエストの `voice` には `aria`、`jason`、`john`、`leo`、`sofia` を指定できます。省略時または `default` の場合は、起動時に設定した話者（初期値は Sofia）を使います。5種類とも英語を母語とする話者のため、他の言語でも英語の発音の特徴が残る場合があります。公開モデルはゼロショット音声クローンに対応していません。`speed` は 1.0 を指定してください。
+
+Colab L4 では NeMo と `pyopenjtalk` のインストールを含め、初回起動に約235秒かかりました。稼働中の VRAM 使用量は約 3.9 GB でした。公開 `trycloudflare` URL から、Sofia と Jason の日本語音声が 22.05 kHz WAV で返ることを確認しました。`clone` は HTTP 400 を返しました。日本語以外の言語と T4 での動作は未検証です。
 
 NeMo Speech のコードは Apache 2.0 です。Magpie-TTS と NanoCodec の重みは、各ライセンスの条件に従って商用利用できます。重みを再配布する場合は、該当するライセンスと NVIDIA の帰属表示が必要です。 [Magpie-TTS のライセンス](https://www.nvidia.com/en-us/agreements/enterprise-software/nvidia-open-model-license/) [NanoCodec のライセンス](https://developer.download.nvidia.com/licenses/nvidia-open-model-license-agreement-june-2024.pdf)
 
