@@ -260,6 +260,9 @@ def parse_args():
     parser.add_argument("--indextts2-emotion-alpha", type=float, default=0.6)
     parser.add_argument("--indextts2-use-random", action="store_true")
     parser.add_argument("--indextts2-no-fp16", action="store_true")
+    parser.add_argument("--indextts25-language", choices=["ja", "en", "zh", "es", "ar"], default="ja")
+    parser.add_argument("--indextts25-default-voice", choices=["default", "clone"], default="default")
+    parser.add_argument("--indextts25-prompt-wav", default="")
     parser.add_argument("--bark-default-voice", default="v2/en_speaker_6")
     parser.add_argument("--bark-use-small-models", action="store_true")
     parser.add_argument("--chattts-default-voice", default="default")
@@ -647,6 +650,9 @@ def main():
         indextts2_emotion_alpha=args.indextts2_emotion_alpha,
         indextts2_use_random=args.indextts2_use_random,
         indextts2_use_fp16=not args.indextts2_no_fp16,
+        indextts25_language=args.indextts25_language,
+        indextts25_default_voice=args.indextts25_default_voice,
+        indextts25_prompt_wav=args.indextts25_prompt_wav,
         bark_default_voice=args.bark_default_voice,
         bark_use_small_models=args.bark_use_small_models,
         chattts_default_voice=args.chattts_default_voice,

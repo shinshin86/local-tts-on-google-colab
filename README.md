@@ -53,6 +53,7 @@ Supported engines:
 | OmniVoice | Works on Colab L4 (GPU recommended, CPU possible but slow, 0.6B, ~2.35GB VRAM) | Japanese / English / Chinese and 600+ languages | Not allowed |
 | FireRedTTS2 | Works on Colab L4 (CUDA GPU required, 1.5B, bf16, ~8.8GB VRAM) | Japanese / English / Chinese / Korean / French / German / Russian | Conditional (zero-shot cloning is academic-only) |
 | IndexTTS2 | Works on Colab L4 (GPU recommended, CPU supported upstream but unverified, fp16, ~7.1GB VRAM) | English / Chinese | Not allowed |
+| IndexTTS-2.5 | Colab verification pending (L4 recommended) | Japanese / English / Chinese / Spanish / Arabic | Conditional |
 | Fish-Speech | Not working | Japanese / English / Chinese and 80+ languages | OK |
 | MeloTTS | Not working | - | OK |
 | Style-Bert-VITS2 | Not working | - | Conditional (copyleft: AGPL-3.0 / CC-BY-SA-4.0) |
@@ -139,7 +140,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Audio8-TTS", "Bark", "Breeze-TTS-2", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "drama3-small", "DramaBox", "F5-TTS", "FireRedTTS2", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "IndexTTS2", "Irodori-TTS", "Irodori-TTS-Anime", "Irodori-TTS-Large", "Irodori-TTS-Lite", "Irodori-TTS-MF", "KittenTTS", "KittenTTS-2", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "speech.cpp", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "ZeroTTS", "Zonos", "ZONOS2", "ZONOS3-Mini"]
+ENGINE = "Kokoro"  #@param ["Audio8-TTS", "Bark", "Breeze-TTS-2", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "drama3-small", "DramaBox", "F5-TTS", "FireRedTTS2", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "IndexTTS2", "IndexTTS-2.5", "Irodori-TTS", "Irodori-TTS-Anime", "Irodori-TTS-Large", "Irodori-TTS-Lite", "Irodori-TTS-MF", "KittenTTS", "KittenTTS-2", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "speech.cpp", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "ZeroTTS", "Zonos", "ZONOS2", "ZONOS3-Mini"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -538,6 +539,15 @@ INDEXTTS2_EMOTION_VECTOR = ""  #@param {type:"string"}
 INDEXTTS2_EMOTION_ALPHA = 0.6  #@param {type:"number"}
 INDEXTTS2_USE_RANDOM = False  #@param {type:"boolean"}
 INDEXTTS2_USE_FP16 = True  #@param {type:"boolean"}
+
+#@markdown ---
+#@markdown IndexTTS-2.5 (L4 recommended, Japanese / English / Chinese / Spanish / Arabic)
+#@markdown - `default` uses the official demo reference. For `clone`, set `INDEXTTS25_PROMPT_WAV` to a recording you have permission to use.
+#@markdown - Write out numbers and dates as they should be spoken in Japanese. The API accepts `speed` from 0.5 to 2.0.
+#@markdown - Code and weights use the bilibili Model Use License Agreement. Commercial use is subject to its terms.
+INDEXTTS25_LANGUAGE = "ja"  #@param ["ja", "en", "zh", "es", "ar"]
+INDEXTTS25_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
+INDEXTTS25_PROMPT_WAV = ""  #@param {type:"string"}
 
 #@markdown ---
 #@markdown Bark (GPU recommended, 13 languages, MIT)
@@ -1252,6 +1262,12 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         INDEXTTS2_EMOTION_VECTOR,
         "--indextts2-emotion-alpha",
         str(INDEXTTS2_EMOTION_ALPHA),
+        "--indextts25-language",
+        INDEXTTS25_LANGUAGE,
+        "--indextts25-default-voice",
+        INDEXTTS25_DEFAULT_VOICE,
+        "--indextts25-prompt-wav",
+        INDEXTTS25_PROMPT_WAV,
         "--bark-default-voice",
         BARK_DEFAULT_VOICE,
         "--chattts-default-voice",
@@ -2072,6 +2088,16 @@ Although IndexTTS2 is presented as duration-controllable research, the official 
 
 Verified end-to-end on Colab L4 from the pushed feature branch. A public trycloudflare request with an emotion vector returned a valid 22.05 kHz, 16-bit mono WAV, used about 7.1 GB of GPU memory, and generated 5.06 seconds of speech in 10.15 seconds after warm-up. Whisper recovered the English test sentence correctly, and the WAV was also downloaded, inspected, and played successfully on macOS. The CPU path is provided by upstream but was not benchmarked in this verification.
 
+### IndexTTS-2.5
+
+[IndexTTS-2.5](https://huggingface.co/IndexTeam/IndexTTS-2.5) supports Japanese, English, Chinese, Spanish, and Arabic. It uses the upstream multilingual runtime and its bundled semantic codec. The model card estimates about 6 GB of VRAM for inference. Colab L4 usage is pending verification.
+
+Choose the language with `INDEXTTS25_LANGUAGE` in the form or `--indextts25-language` in the CLI. The default is `ja`. The Japanese text-processing path does not expand numbers or dates. Write them as they should be read aloud.
+
+Use `voice="default"` with the official demo reference to try the engine. To use a recording you have permission to use, set `INDEXTTS25_PROMPT_WAV` and request `voice="clone"`. Requests for `clone` without a reference return HTTP 400. The API returns 22.05 kHz mono PCM WAV and accepts request `speed` values from 0.5 to 2.0.
+
+The bilibili agreement applies to the upstream code and checkpoint, including the bundled codec. Section 2.2 requires a separate written license if you or an affiliate exceeded 100 million monthly active users in the previous calendar month or RMB 1 billion in revenue in the previous calendar year. The agreement also covers attribution, downstream distribution, use in other AI models, and high-risk uses. The upstream project asks users to contact `indexspeech@bilibili.com` for commercial use. [License](https://huggingface.co/IndexTeam/IndexTTS-2.5/blob/main/LICENSE) [Upstream project](https://github.com/index-tts/index-tts)
+
 ### Fish-Speech (currently not working)
 
 A high-quality TTS using [fishaudio/fish-speech](https://github.com/fishaudio/fish-speech). Japanese is Tier 1 supported (highest quality) and it supports 80+ languages. It requires 24GB+ VRAM and targets A100/L4 GPUs, but on Colab the runtime crashes with OOM during model loading, so it currently does not work. License: Apache 2.0.
@@ -2554,6 +2580,7 @@ The license for each engine is as follows. When using them, always check each pr
 | OmniVoice | Apache 2.0 | CC-BY-NC | **Not allowed** | 0.6B, 600+ languages, auto/design/clone. Bundled Higgs Audio 2 tokenizer has a separate Boson Community License (>100k annual users require expanded license; attribution/redistribution restrictions) |
 | FireRedTTS2 | Apache 2.0 | Apache 2.0 | Caution | 1.5B, 7 languages incl JP, monologue or 4-speaker dialogue. Upstream limits zero-shot cloning to academic research |
 | IndexTTS2 | Bilibili Model Use License | Bilibili Model Use License + CC-BY-NC-4.0 MaskGCT codec | **Not allowed** | EN/ZH zero-shot cloning with independent emotion control. Separate Bilibili permission at >100M monthly users or >RMB 1B annual revenue. Public release does not enable precise duration control |
+| IndexTTS-2.5 | [bilibili Model Use License](https://github.com/index-tts/index-tts/blob/d9e41aac89fd00b3d71497fddb287b7f24613712/LICENSE) | [bilibili Model Use License](https://huggingface.co/IndexTeam/IndexTTS-2.5/blob/c39ce5ba981572cb187443877ff559dfb246ce63/LICENSE) (including bundled codec) | Conditional | Separate written license above 100M monthly active users or RMB 1B annual revenue. License and copyright notices must be retained. |
 | Fish-Speech | Apache 2.0 | Apache 2.0 | OK | Requires A100/L4 GPU (VRAM 24GB+) |
 | MeloTTS | MIT | MIT (per-language weight repos) | OK | Not working on Colab (Rust toolchain required by `tokenizers`) |
 | Style-Bert-VITS2 | AGPL-3.0 | CC-BY-SA-4.0 (`litagin/style_bert_vits2_jvnv`, inherited from the JVNV corpus) | Caution | Copyleft: AGPL §13 requires source disclosure to network users; CC-BY-SA requires attribution + share-alike. Not working on Colab |
@@ -2717,6 +2744,8 @@ This repository itself is intended for short-term operational verification and t
   https://github.com/index-tts/index-tts
 - IndexTTS2 model
   https://huggingface.co/IndexTeam/IndexTTS-2
+- IndexTTS-2.5
+  https://huggingface.co/IndexTeam/IndexTTS-2.5
 - Fish Speech
   https://github.com/fishaudio/fish-speech
 - CosyVoice

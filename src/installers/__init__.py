@@ -17,6 +17,7 @@ from .gpt_sovits import install as install_gpt_sovits
 from .higgs_audio import install as install_higgs_audio
 from .higgs_v3 import install as install_higgs_v3
 from .indextts2 import install as install_indextts2
+from .indextts25 import install as install_indextts25
 from .irodori import install as install_irodori
 from .irodori_anime import install as install_irodori_anime
 from .irodori_lite import install as install_irodori_lite
@@ -84,6 +85,7 @@ INSTALLERS = {
     "Higgs-Audio-v2": install_higgs_audio,
     "Higgs-Audio-v3": install_higgs_v3,
     "IndexTTS2": install_indextts2,
+    "IndexTTS-2.5": install_indextts25,
     "Irodori-TTS": install_irodori,
     "Irodori-TTS-Anime": install_irodori_anime,
     "Irodori-TTS-Lite": install_irodori_lite,

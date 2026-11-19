@@ -40,6 +40,7 @@
       "Higgs-Audio-v2",
       "Higgs-Audio-v3",
       "IndexTTS2",
+      "IndexTTS-2.5",
       "Irodori-TTS",
       "Irodori-TTS-Anime",
       "Irodori-TTS-Large",
@@ -1375,6 +1376,56 @@
           "default": true,
           "type": "boolean",
           "flag": null
+        }
+      ]
+    },
+    {
+      "id": "IndexTTS-2.5",
+      "title": "IndexTTS-2.5 (L4 recommended, Japanese / English / Chinese / Spanish / Arabic)",
+      "status": "Colab verification pending (L4 recommended)",
+      "status_ja": "Colab 未検証（L4 推奨）",
+      "languages": "Japanese / English / Chinese / Spanish / Arabic",
+      "languages_ja": "日本語 / 英語 / 中国語 / スペイン語 / アラビア語",
+      "description": "[IndexTTS-2.5](https://huggingface.co/IndexTeam/IndexTTS-2.5) supports Japanese, English, Chinese, Spanish, and Arabic. It uses the upstream multilingual runtime and its bundled semantic codec. The model card estimates about 6 GB of VRAM for inference. Colab L4 usage is pending verification.",
+      "description_ja": "[IndexTTS-2.5](https://huggingface.co/IndexTeam/IndexTTS-2.5) は、日本語、英語、中国語、スペイン語、アラビア語に対応します。上流の多言語推論コードと同梱の音声コーデックを使います。モデルカードによると、推論時の VRAM の目安は約 6 GB です。Colab L4 での動作は未検証です。",
+      "notes": [
+        "- `default` uses the official demo reference. For `clone`, set `INDEXTTS25_PROMPT_WAV` to a recording you have permission to use.",
+        "- Write out numbers and dates as they should be spoken in Japanese. The API accepts `speed` from 0.5 to 2.0.",
+        "- Code and weights use the bilibili Model Use License Agreement. Commercial use is subject to its terms."
+      ],
+      "notes_ja": [
+        "- ライセンス: コードは [bilibili Model Use License](https://github.com/index-tts/index-tts/blob/d9e41aac89fd00b3d71497fddb287b7f24613712/LICENSE)、モデル重みは [bilibili Model Use License](https://huggingface.co/IndexTeam/IndexTTS-2.5/blob/c39ce5ba981572cb187443877ff559dfb246ce63/LICENSE)（同梱コーデックを含む）。商用利用: 条件付き。 備考: 月間アクティブユーザー1億人超、または年間売上10億元超は書面での別途許諾が必要。ライセンスと著作権表示を保持。"
+      ],
+      "prefix": "INDEXTTS25",
+      "params": [
+        {
+          "name": "INDEXTTS25_LANGUAGE",
+          "default": "ja",
+          "type": "select",
+          "options": [
+            "ja",
+            "en",
+            "zh",
+            "es",
+            "ar"
+          ],
+          "flag": "--indextts25-language"
+        },
+        {
+          "name": "INDEXTTS25_DEFAULT_VOICE",
+          "default": "default",
+          "type": "select",
+          "options": [
+            "default",
+            "clone"
+          ],
+          "flag": "--indextts25-default-voice"
+        },
+        {
+          "name": "INDEXTTS25_PROMPT_WAV",
+          "default": "",
+          "type": "string",
+          "flag": "--indextts25-prompt-wav"
         }
       ]
     },

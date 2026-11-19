@@ -298,6 +298,10 @@ class Settings:
     indextts2_emotion_alpha: float = 0.6
     indextts2_use_random: bool = False
     indextts2_use_fp16: bool = True
+    # IndexTTS-2.5 has its own multilingual inference API and checkpoint.
+    indextts25_language: str = "ja"
+    indextts25_default_voice: str = "default"
+    indextts25_prompt_wav: str = ""
     bark_default_voice: str = "v2/en_speaker_6"
     bark_use_small_models: bool = False
     chattts_default_voice: str = "default"

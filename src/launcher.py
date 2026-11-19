@@ -76,6 +76,8 @@ def resolve_selected_voice(settings: Settings) -> str:
         return settings.fireredtts2_default_voice
     if settings.engine == "IndexTTS2":
         return settings.indextts2_default_voice
+    if settings.engine == "IndexTTS-2.5":
+        return settings.indextts25_default_voice
     if settings.engine == "Kyutai-TTS":
         return settings.kyutai_default_voice
     if settings.engine == "Pocket-TTS":
@@ -743,6 +745,11 @@ def print_engine_voice_hints(settings: Settings):
         print("注意: GPU推奨（CPUも上流で対応するが低速）。公開版では尺指定・speed変更は未有効です。")
         print("ライセンス警告: 本体はBilibili Model Use License。大規模事業者は別途許諾が必要です。")
         print("                 必須のMaskGCT semantic codecがCC-BY-NC-4.0のため実効上は非商用です。")
+    elif settings.engine == "IndexTTS-2.5":
+        print("IndexTTS-2.5 は日本語・英語・中国語・スペイン語・アラビア語に対応します。")
+        print(f"language: {settings.indextts25_language} / デフォルト voice: {settings.indextts25_default_voice}")
+        print("voice: default（公式デモの参照音声）、clone（--indextts25-prompt-wav が必要）")
+        print("Colab は L4 推奨。リクエストで speed を 0.5〜2.0 に指定できます。")
     elif settings.engine == "DramaBox":
         print("DramaBox は Resemble AI の表現力豊か（directable）な TTS です（LTX-2.3 + IC-LoRA、英語中心）。")
         print(f"モデル: {settings.dramabox_hf_model} + Gemma snapshot: {settings.dramabox_gemma_repo}")
