@@ -47,6 +47,7 @@ from .outetts import install as install_outetts
 from .piper import install as install_piper
 from .piper_plus import install as install_piper_plus
 from .pocket_tts import install as install_pocket_tts
+from .phonon import install as install_phonon
 from .sarashina_tts import install as install_sarashina_tts
 from .scenema import install as install_scenema
 from .sine_wave_tts import install as install_sine_wave_tts
@@ -118,6 +119,7 @@ INSTALLERS = {
     "Piper": install_piper,
     "Piper-Plus": install_piper_plus,
     "Pocket-TTS": install_pocket_tts,
+    "Phonon": install_phonon,
     "Qwen3-TTS": install_qwen3_tts,
     "Sarashina-TTS": install_sarashina_tts,
     "Scenema": install_scenema,

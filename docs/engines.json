@@ -66,6 +66,7 @@
       "OpenVoice-V2",
       "Orpheus-TTS",
       "OuteTTS",
+      "Phonon",
       "Piper",
       "Piper-Plus",
       "Pocket-TTS",
@@ -3154,6 +3155,32 @@
             "clone"
           ],
           "flag": "--outetts-default-voice"
+        }
+      ]
+    },
+    {
+      "id": "Phonon",
+      "title": "Phonon (CPU, English)",
+      "status": "Colab verification pending (CPU runtime)",
+      "status_ja": "Colab 未検証（CPU で実行）",
+      "languages": "English",
+      "languages_ja": "英語",
+      "description": "Gradium's [Phonon 31M English](https://huggingface.co/gradium/phonon-31m-en) runs on CPU with the official `ptts` runtime. The pinned Q8 weights are about 64.5 MB and download on first use without a Hugging Face token. The engine returns 24 kHz mono PCM WAV. Colab verification is pending.",
+      "description_ja": "Gradium の [Phonon 31M 英語版](https://huggingface.co/gradium/phonon-31m-en) を公式の `ptts` ランタイムで CPU 上で実行します。約 64.5 MB の Q8 重みを初回にダウンロードします。Hugging Face のトークンは不要です。出力は 24 kHz のモノラル PCM WAV です。Colab での動作は未検証です。",
+      "notes": [
+        "- Gradium's 31M English checkpoint (Q8) uses the bundled `default` voice. Set `TEST_TEXT` to English before running the smoke test.",
+        "- Runtime: MIT OR Apache-2.0. Weights, tokenizer and bundled voice: Apache-2.0."
+      ],
+      "notes_ja": [
+        "- ライセンス: コードは [MIT](https://github.com/gradium-ai/xn-ptts/blob/v0.7.1/LICENSE-MIT) OR [Apache 2.0](https://github.com/gradium-ai/xn-ptts/blob/v0.7.1/LICENSE-APACHE)、モデル重みは [Apache 2.0](https://huggingface.co/gradium/phonon-31m-en/blob/8f7a37c94a4c58b04c8287300c53f11d2e208eae/LICENSE)。商用利用: OK。 備考: Gradium 31M 英語版の Q8 重み、トークナイザー、同梱話者。"
+      ],
+      "prefix": "PHONON",
+      "params": [
+        {
+          "name": "PHONON_TEMPERATURE",
+          "default": 0.3,
+          "type": "number",
+          "flag": "--phonon-temperature"
         }
       ]
     },

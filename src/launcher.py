@@ -82,6 +82,8 @@ def resolve_selected_voice(settings: Settings) -> str:
         return settings.kyutai_default_voice
     if settings.engine == "Pocket-TTS":
         return settings.pocket_default_voice
+    if settings.engine == "Phonon":
+        return "default"
     if settings.engine == "Orpheus-TTS":
         return settings.orpheus_default_voice
     if settings.engine == "CosyVoice2":
@@ -514,6 +516,9 @@ def print_engine_voice_hints(settings: Settings):
         print("対応言語: 中国語 / 英語 / 日本語 / 韓国語 / 独語 / 西語 / 仏語 / 伊語 / 露語 + 中国方言")
         print("日本語入力: 上流仕様では漢字・ひらがなをカタカナへ変換して入力する必要があります。")
         print("注意: Python 3.10 venv、GPU推奨。コードと重みはApache 2.0です。")
+    elif settings.engine == "Phonon":
+        print("Phonon は Gradium の 31M 英語 TTS です。CPU で実行し、同梱の default 話者を使います。")
+        print(f"temperature: {settings.phonon_temperature} / 動作確認には英語の TEST_TEXT を指定してください。")
     elif settings.engine == "Orpheus-TTS":
         print("Orpheus-TTS は Canopy Labs の英語 LLM-TTS です（Llama-3.2-3B ベース、vLLM バックエンド）。")
         print(f"モデル: {settings.orpheus_hf_model}")

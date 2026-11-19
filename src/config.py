@@ -123,6 +123,7 @@ class Settings:
     pocket_default_speaker: str = "alba"
     pocket_prompt_wav: str = ""
     pocket_default_voice: str = "default"
+    phonon_temperature: float = 0.3
     melo_language: str = "JP"
     melo_default_voice: str = "JP"
     style_bert_model_repo: str = "litagin/style_bert_vits2_jvnv"
