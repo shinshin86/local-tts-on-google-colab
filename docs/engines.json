@@ -80,6 +80,7 @@
       "StyleTTS2",
       "Supertonic",
       "TinyTTS",
+      "tiny-voca",
       "VibeVoice-Realtime",
       "VoxCPM2",
       "Voxtral-TTS",
@@ -4019,6 +4020,36 @@
       ],
       "prefix": "",
       "params": []
+    },
+    {
+      "id": "tiny-voca",
+      "title": "tiny-voca (CPU, English)",
+      "status": "Colab verification pending (CPU runtime)",
+      "status_ja": "Colab 未検証（CPU で実行）",
+      "languages": "English",
+      "languages_ja": "英語",
+      "description": "[tiny-voca](https://huggingface.co/n4ze3m/tiny-voca) is a 4.5M-parameter American English model. This integration uses the upstream PyTorch CPU inference path and the dizione phonemizer. It returns 24 kHz mono PCM WAV and splits long text into sentences before synthesis. Colab verification is pending.",
+      "description_ja": "[tiny-voca](https://huggingface.co/n4ze3m/tiny-voca) は、450万パラメータの米国英語向けモデルです。公式の PyTorch CPU 推論と、テキストを音素に変換する dizione を使います。長い入力は文ごとに分けて合成し、24 kHz のモノラル PCM WAV を返します。Colab での動作は未検証です。",
+      "notes": [
+        "- Built-in voices: `F2` and `M2`. Set `TEST_TEXT` to English for the smoke test. Speech output is 24 kHz mono WAV.",
+        "- Code and weights: Apache-2.0. The bundled phonemizer data retains its upstream license notices."
+      ],
+      "notes_ja": [
+        "- ライセンス: コードは [Apache 2.0](https://github.com/n4ze3m/tiny-voca/blob/0eea2be213b53ec0b1949c169b80e611544718e1/LICENSE)、モデル重みは [Apache 2.0](https://huggingface.co/n4ze3m/tiny-voca/blob/1e73262226dbf4ef02e9df277e81aaa1db5ce16c/LICENSE)。商用利用: OK。 備考: 音素化データを再配布する場合は、[CMUdict](https://huggingface.co/n4ze3m/tiny-voca/blob/1e73262226dbf4ef02e9df277e81aaa1db5ce16c/phonemizer/LICENSE.cmudict) と [homograph data](https://huggingface.co/n4ze3m/tiny-voca/blob/1e73262226dbf4ef02e9df277e81aaa1db5ce16c/phonemizer/LICENSE.homograph-data) のライセンス表記を保持。"
+      ],
+      "prefix": "TINY_VOCA_DEFAULT",
+      "params": [
+        {
+          "name": "TINY_VOCA_DEFAULT_VOICE",
+          "default": "F2",
+          "type": "select",
+          "options": [
+            "F2",
+            "M2"
+          ],
+          "flag": "--tiny-voca-default-voice"
+        }
+      ]
     },
     {
       "id": "VibeVoice-Realtime",

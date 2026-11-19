@@ -84,6 +84,8 @@ def resolve_selected_voice(settings: Settings) -> str:
         return settings.pocket_default_voice
     if settings.engine == "Phonon":
         return "default"
+    if settings.engine == "tiny-voca":
+        return settings.tiny_voca_default_voice
     if settings.engine == "Orpheus-TTS":
         return settings.orpheus_default_voice
     if settings.engine == "CosyVoice2":
@@ -303,6 +305,10 @@ def print_engine_voice_hints(settings: Settings):
         print("特徴: MOSS-Audio-Tokenizer-v2 による 48kHz ステレオ出力。8B の MOSS-TTS-v1.5 より軽量で L4 でも動作。")
         print("      Python 3.12 venv で torch 2.9.1+cu128 / transformers 5.0.0 / accelerate を導入します。")
         print("ライセンス: コード / 重みとも Apache 2.0（商用 OK）。")
+    elif settings.engine == "tiny-voca":
+        print("tiny-voca は CPU で動く 4.5M パラメータの英語 TTS です。")
+        print(f"内蔵話者: F2 / M2（既定: {settings.tiny_voca_default_voice}）")
+        print("動作確認には英語の TEST_TEXT を指定してください。")
     elif settings.engine == "TinyTTS":
         print("TinyTTS は超軽量（~3.4MB）の英語専用 TTS です（CPU 動作、GPU 不要）。")
         print("voice パラメータは現在 'default' のみ対応です。")

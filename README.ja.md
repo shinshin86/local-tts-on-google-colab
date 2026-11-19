@@ -28,6 +28,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | MOSS-TTS-Local-v1.5 | L4 で動作確認（~4B MossTTSLocal、~12.4GB VRAM。8B 版が OOM する L4 でも動作） | 日本語 / 英語 / 中国語 / 韓国語 他 31言語 | OK |
 | NeuTTS | 動作OK (CPU可・voice cloning) | 英語 / スペイン語 / ドイツ語 / フランス語 | 条件付き（既定Airは可 / Nanoは年商$5M未満） |
 | TinyTTS | 動作OK | 英語 | OK |
+| tiny-voca | Colab 未検証（CPU で実行） | 英語 | OK |
 | KittenTTS | 動作OK（CPU のみ・ONNX・15M〜80M params） | 英語 | OK |
 | KittenTTS-2 | L4 で動作確認（1.7B の音声言語モデル、約5.1GB VRAM、組み込み voice 115種、ボイスクローン対応） | 日本語・英語を含む16言語 | 条件付き（商用は登録が必要。年商または累計調達額が100万ドルを超えると失効） |
 | Sine-Wave-TTS | 動作OK（CPU のみ・モデル重みなし・Node.js 20+） | 日本語の電子音声（言葉としては聞き取れない） | OK |
@@ -143,7 +144,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Audio8-TTS", "Bark", "Breeze-TTS-2", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "drama3-small", "DramaBox", "F5-TTS", "FireRedTTS2", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "IndexTTS2", "IndexTTS-2.5", "Irodori-TTS", "Irodori-TTS-Anime", "Irodori-TTS-Large", "Irodori-TTS-Lite", "Irodori-TTS-MF", "KittenTTS", "KittenTTS-2", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "Magpie-TTS", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Phonon", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "speech.cpp", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "ZeroTTS", "Zonos", "ZONOS2", "ZONOS3-Mini"]
+ENGINE = "Kokoro"  #@param ["Audio8-TTS", "Bark", "Breeze-TTS-2", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "drama3-small", "DramaBox", "F5-TTS", "FireRedTTS2", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "IndexTTS2", "IndexTTS-2.5", "Irodori-TTS", "Irodori-TTS-Anime", "Irodori-TTS-Large", "Irodori-TTS-Lite", "Irodori-TTS-MF", "KittenTTS", "KittenTTS-2", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "Magpie-TTS", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Phonon", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "speech.cpp", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "tiny-voca", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "ZeroTTS", "Zonos", "ZONOS2", "ZONOS3-Mini"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -299,6 +300,12 @@ POCKET_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
 #@markdown - Gradium's 31M English checkpoint (Q8) uses the bundled `default` voice. Set `TEST_TEXT` to English before running the smoke test.
 #@markdown - Runtime: MIT OR Apache-2.0. Weights, tokenizer and bundled voice: Apache-2.0.
 PHONON_TEMPERATURE = 0.3  #@param {type:"number"}
+
+#@markdown ---
+#@markdown tiny-voca (CPU, English)
+#@markdown - Built-in voices: `F2` and `M2`. Set `TEST_TEXT` to English for the smoke test. Speech output is 24 kHz mono WAV.
+#@markdown - Code and weights: Apache-2.0. The bundled phonemizer data retains its upstream license notices.
+TINY_VOCA_DEFAULT_VOICE = "F2"  #@param ["F2", "M2"]
 
 #@markdown ---
 #@markdown MeloTTS
@@ -1051,6 +1058,8 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         POCKET_DEFAULT_VOICE,
         "--phonon-temperature",
         str(PHONON_TEMPERATURE),
+        "--tiny-voca-default-voice",
+        TINY_VOCA_DEFAULT_VOICE,
         "--melo-language",
         MELO_LANGUAGE,
         "--melo-default-voice",
@@ -1848,6 +1857,12 @@ GPU 必須: int4 パスは Triton カーネルを使用するため、Linux + CU
 
 [ecyht2/tiny-tts](https://github.com/ecyht2/tiny-tts) を使った超軽量の英語 TTS です。モデルはわずか 1.6M パラメータ（約 3.4MB）で、GPU 不要・CPU のみで 53 倍速のリアルタイム合成が可能です。音声は 44.1kHz で出力されます。voice の切り替え機能はありません。ライセンス: Apache 2.0。
 
+### tiny-voca
+
+[tiny-voca](https://huggingface.co/n4ze3m/tiny-voca) は、450万パラメータの米国英語向けモデルです。公式の PyTorch CPU 推論と、テキストを音素に変換する dizione を使います。長い入力は文ごとに分けて合成し、24 kHz のモノラル PCM WAV を返します。Colab での動作は未検証です。
+
+`voice` に `F2` または `M2` を指定します。省略時や `default` の場合は、`TINY_VOCA_DEFAULT_VOICE` または `--tiny-voca-default-voice` の設定（初期値は F2）を使います。公開モデルの話者はこの2種類で、音声クローンには対応していません。リクエストの `speed` は 0.25〜4.0 を指定できます。Colab の動作確認用 `TEST_TEXT` には英語の文を入力してください。
+
 ### KittenTTS
 
 [KittenML/KittenTTS](https://github.com/KittenML/KittenTTS) v0.8 は、ONNX Runtime により完全に CPU で動く軽量な英語 TTS です。選択できる公式チェックポイントは 15M〜80M パラメータ（約 25〜80MB）で、`HF_TOKEN` は不要、24kHz WAV を出力します。KittenTTS は API が変更される可能性のある Developer preview のため、本ラッパーは上流 v0.8.1 wheel に固定しています。
@@ -2593,6 +2608,7 @@ Colab T4 で確認済み: エンジン・`/v1` エンドポイント・trycloudf
 | MOSS-TTS-Local-v1.5 | Apache 2.0 | Apache 2.0 | OK | ~4B MossTTSLocal パラメータ、L4 で動作確認（~12.4GB。8B 版は L4 で OOM）。48kHz ステレオ。31言語（日本語含む）。ゼロショット voice cloning |
 | NeuTTS | Apache 2.0 | Apache 2.0 (Air) / NeuTTS Open License 1.0 (Nano) | OK (Air) / 規約要確認 (Nano) | ボイスクローン。英 / 西 / 独 / 仏 |
 | TinyTTS | Apache 2.0 | Apache 2.0 | OK | |
+| tiny-voca | [Apache 2.0](https://github.com/n4ze3m/tiny-voca/blob/0eea2be213b53ec0b1949c169b80e611544718e1/LICENSE) | [Apache 2.0](https://huggingface.co/n4ze3m/tiny-voca/blob/1e73262226dbf4ef02e9df277e81aaa1db5ce16c/LICENSE) | OK | 音素化データを再配布する場合は、[CMUdict](https://huggingface.co/n4ze3m/tiny-voca/blob/1e73262226dbf4ef02e9df277e81aaa1db5ce16c/phonemizer/LICENSE.cmudict) と [homograph data](https://huggingface.co/n4ze3m/tiny-voca/blob/1e73262226dbf4ef02e9df277e81aaa1db5ce16c/phonemizer/LICENSE.homograph-data) のライセンス表記を保持。 |
 | KittenTTS | Apache 2.0 | Apache 2.0 | OK | 英語専用の CPU ONNX TTS。内蔵 8 voice。Developer preview のため v0.8.1 に固定 |
 | KittenTTS-2 | Apache 2.0（`kittenml`） | Stellon Labs Community License（`KittenML/kitten-tts-2`）。`speaker/` は MIT、s3gen デコーダは MIT（`ResembleAI/chatterbox-turbo`） | 条件付き | 研究・非商用は無料。商用は Stellon Labs への登録が必要で、年商または累計調達額が100万ドルを超えると失効。ライセンス本文と通知文を添え、「Powered by KittenML」を表示する。出力を他モデルの学習に使うのは禁止 |
 | Sine-Wave-TTS | MIT | 対象外（モデル重みなし） | OK | 日本語の電子音声。言葉としては聞き取れない。CPUのみ。Kuromoji解析 |
@@ -2726,6 +2742,10 @@ Colab T4 で確認済み: エンジン・`/v1` エンドポイント・trycloudf
   https://github.com/OpenBMB/VoxCPM
 - TinyTTS
   https://github.com/ecyht2/tiny-tts
+- tiny-voca
+  https://github.com/n4ze3m/tiny-voca
+- tiny-voca weights
+  https://huggingface.co/n4ze3m/tiny-voca
 - KittenTTS
   https://github.com/KittenML/KittenTTS
 - KittenTTS 2

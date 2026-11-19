@@ -28,6 +28,7 @@ Supported engines:
 | MOSS-TTS-Local-v1.5 | Works on L4 (~4B MossTTSLocal, ~12.4GB VRAM — fits where the 8B v1.5 OOMs) | Japanese / English / Chinese / Korean and 31 languages | OK |
 | NeuTTS | Works (CPU OK, voice cloning) | English / Spanish / German / French | Conditional (default Air OK; Nano below $5M revenue) |
 | TinyTTS | Works | English | OK |
+| tiny-voca | Colab verification pending (CPU runtime) | English | OK |
 | KittenTTS | Works (CPU only, ONNX, 15M–80M params) | English | OK |
 | KittenTTS-2 | Works on L4 (1.7B speech LM, ~5.1GB VRAM, 115 built-in voices, voice cloning) | 16 languages incl. Japanese / English | Conditional (register for commercial use; ends above USD 1M revenue or funding) |
 | Sine-Wave-TTS | Works on Colab (CPU only, no model weights, Node.js 20+) | Japanese electronic vocalization (not intelligible speech) | OK |
@@ -142,7 +143,7 @@ REPO_URL = "https://github.com/shinshin86/local-tts-on-google-colab.git"  #@para
 REPO_REF = "main"  #@param {type:"string"}
 WORKDIR = "/content/local-tts-on-google-colab"  #@param {type:"string"}
 
-ENGINE = "Kokoro"  #@param ["Audio8-TTS", "Bark", "Breeze-TTS-2", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "drama3-small", "DramaBox", "F5-TTS", "FireRedTTS2", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "IndexTTS2", "IndexTTS-2.5", "Irodori-TTS", "Irodori-TTS-Anime", "Irodori-TTS-Large", "Irodori-TTS-Lite", "Irodori-TTS-MF", "KittenTTS", "KittenTTS-2", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "Magpie-TTS", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Phonon", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "speech.cpp", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "ZeroTTS", "Zonos", "ZONOS2", "ZONOS3-Mini"]
+ENGINE = "Kokoro"  #@param ["Audio8-TTS", "Bark", "Breeze-TTS-2", "ChatTTS", "Chatterbox", "CosyVoice2", "CosyVoice3", "CSM-1B", "Dia", "dots.tts", "drama3-small", "DramaBox", "F5-TTS", "FireRedTTS2", "Fish-Speech", "GPT-SoVITS", "Higgs-Audio-v2", "Higgs-Audio-v3", "IndexTTS2", "IndexTTS-2.5", "Irodori-TTS", "Irodori-TTS-Anime", "Irodori-TTS-Large", "Irodori-TTS-Lite", "Irodori-TTS-MF", "KittenTTS", "KittenTTS-2", "Kokoro", "Kokoro-ONNX", "Kyutai-TTS", "LFM2.5-Audio-JP", "Magpie-TTS", "MaskGCT", "MeloTTS", "Ming-omni-TTS", "MioTTS", "MisoTTS", "MOSS-TTS-Nano", "MOSS-TTS-v1.5", "MOSS-TTS-Local-v1.5", "NeuTTS", "OmniVoice", "OpenVoice-V2", "Orpheus-TTS", "OuteTTS", "Phonon", "Piper", "Piper-Plus", "Pocket-TTS", "Qwen3-TTS", "Sarashina-TTS", "Scenema", "Sine-Wave-TTS", "Spark-TTS", "speech.cpp", "Style-Bert-VITS2", "StyleTTS2", "Supertonic", "TinyTTS", "tiny-voca", "VibeVoice-Realtime", "VoxCPM2", "Voxtral-TTS", "Vyvo-Multilingual", "ZeroTTS", "Zonos", "ZONOS2", "ZONOS3-Mini"]
 EXPOSE_PUBLIC_URL = True  #@param {type:"boolean"}
 TEST_TEXT = "こんにちは。これは OpenAI 互換 TTS の動作確認です。"  #@param {type:"string"}
 TEST_SPEED = 1.0  #@param {type:"number"}
@@ -298,6 +299,12 @@ POCKET_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
 #@markdown - Gradium's 31M English checkpoint (Q8) uses the bundled `default` voice. Set `TEST_TEXT` to English before running the smoke test.
 #@markdown - Runtime: MIT OR Apache-2.0. Weights, tokenizer and bundled voice: Apache-2.0.
 PHONON_TEMPERATURE = 0.3  #@param {type:"number"}
+
+#@markdown ---
+#@markdown tiny-voca (CPU, English)
+#@markdown - Built-in voices: `F2` and `M2`. Set `TEST_TEXT` to English for the smoke test. Speech output is 24 kHz mono WAV.
+#@markdown - Code and weights: Apache-2.0. The bundled phonemizer data retains its upstream license notices.
+TINY_VOCA_DEFAULT_VOICE = "F2"  #@param ["F2", "M2"]
 
 #@markdown ---
 #@markdown MeloTTS
@@ -1050,6 +1057,8 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         POCKET_DEFAULT_VOICE,
         "--phonon-temperature",
         str(PHONON_TEMPERATURE),
+        "--tiny-voca-default-voice",
+        TINY_VOCA_DEFAULT_VOICE,
         "--melo-language",
         MELO_LANGUAGE,
         "--melo-default-voice",
@@ -1847,6 +1856,12 @@ Default backbone: `neuphonic/neutts-air` (~360M params, English only, Apache 2.0
 
 An ultra-lightweight English TTS using [ecyht2/tiny-tts](https://github.com/ecyht2/tiny-tts). The model has only 1.6M parameters (~3.4 MB), no GPU required, and can synthesize speech at 53× real-time on CPU alone. Audio is output at 44.1 kHz. There is no voice switching. License: Apache 2.0.
 
+### tiny-voca
+
+[tiny-voca](https://huggingface.co/n4ze3m/tiny-voca) is a 4.5M-parameter American English model. This integration uses the upstream PyTorch CPU inference path and the dizione phonemizer. It returns 24 kHz mono PCM WAV and splits long text into sentences before synthesis. Colab verification is pending.
+
+Set `voice` to `F2` or `M2`. Omitting it or choosing `default` uses `TINY_VOCA_DEFAULT_VOICE` or `--tiny-voca-default-voice` (F2 by default). The public model has two fixed voices and no voice cloning. The API accepts `speed` from 0.25 to 4.0. In the Colab form, set `TEST_TEXT` to an English sentence.
+
 ### KittenTTS
 
 [KittenML/KittenTTS](https://github.com/KittenML/KittenTTS) v0.8 is a lightweight English TTS that runs entirely on CPU through ONNX Runtime. The selectable official checkpoints range from 15M to 80M parameters (about 25–80 MB), require no `HF_TOKEN`, and produce 24 kHz WAV audio. The wrapper pins the upstream v0.8.1 wheel because KittenTTS is currently a developer preview whose APIs may change.
@@ -2592,6 +2607,7 @@ The license for each engine is as follows. When using them, always check each pr
 | MOSS-TTS-Local-v1.5 | Apache 2.0 | Apache 2.0 | OK | ~4B MossTTSLocal params, verified on L4 (~12.4GB; the 8B v1.5 OOMs there). 48kHz stereo. 31 languages incl JP. Zero-shot voice cloning |
 | NeuTTS | Apache 2.0 | Apache 2.0 (Air) / NeuTTS Open License 1.0 (Nano) | OK (Air) / Check terms (Nano) | Voice cloning. EN / ES / DE / FR |
 | TinyTTS | Apache 2.0 | Apache 2.0 | OK | |
+| tiny-voca | [Apache 2.0](https://github.com/n4ze3m/tiny-voca/blob/0eea2be213b53ec0b1949c169b80e611544718e1/LICENSE) | [Apache 2.0](https://huggingface.co/n4ze3m/tiny-voca/blob/1e73262226dbf4ef02e9df277e81aaa1db5ce16c/LICENSE) | OK | Keep the phonemizer's [CMUdict](https://huggingface.co/n4ze3m/tiny-voca/blob/1e73262226dbf4ef02e9df277e81aaa1db5ce16c/phonemizer/LICENSE.cmudict) and [homograph data](https://huggingface.co/n4ze3m/tiny-voca/blob/1e73262226dbf4ef02e9df277e81aaa1db5ce16c/phonemizer/LICENSE.homograph-data) notices when redistributing its data. |
 | KittenTTS | Apache 2.0 | Apache 2.0 | OK | English-only CPU ONNX TTS. Eight preset voices. Developer preview; wrapper pins v0.8.1 |
 | KittenTTS-2 | Apache 2.0 (`kittenml`) | Stellon Labs Community License (`KittenML/kitten-tts-2`); `speaker/` MIT; s3gen decoder MIT (`ResembleAI/chatterbox-turbo`) | Conditional | Free for research and non-commercial use. Commercial use requires registering with Stellon Labs and ends above USD 1M annual revenue or total funding. Ship the license and notice and display "Powered by KittenML". No training other models on outputs |
 | Sine-Wave-TTS | MIT | N/A (no model weights) | OK | Japanese electronic vocalization, not intelligible speech. CPU only. Kuromoji-based analysis |
@@ -2725,6 +2741,10 @@ This repository itself is intended for short-term operational verification and t
   https://github.com/OpenBMB/VoxCPM
 - TinyTTS
   https://github.com/ecyht2/tiny-tts
+- tiny-voca
+  https://github.com/n4ze3m/tiny-voca
+- tiny-voca weights
+  https://huggingface.co/n4ze3m/tiny-voca
 - KittenTTS
   https://github.com/KittenML/KittenTTS
 - KittenTTS 2

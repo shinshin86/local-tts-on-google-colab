@@ -99,6 +99,7 @@ def parse_args():
     parser.add_argument("--pocket-prompt-wav", default="")
     parser.add_argument("--pocket-default-voice", default="default")
     parser.add_argument("--phonon-temperature", type=float, default=0.3)
+    parser.add_argument("--tiny-voca-default-voice", choices=["F2", "M2"], default="F2")
     parser.add_argument("--melo-language", default="JP")
     parser.add_argument("--melo-default-voice", default="JP")
     parser.add_argument("--style-bert-model-repo", default="litagin/style_bert_vits2_jvnv")
@@ -509,6 +510,7 @@ def main():
         pocket_prompt_wav=args.pocket_prompt_wav,
         pocket_default_voice=args.pocket_default_voice,
         phonon_temperature=args.phonon_temperature,
+        tiny_voca_default_voice=args.tiny_voca_default_voice,
         melo_language=args.melo_language,
         melo_default_voice=args.melo_default_voice,
         style_bert_model_repo=args.style_bert_model_repo,
