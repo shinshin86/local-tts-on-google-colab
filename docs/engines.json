@@ -128,8 +128,8 @@
     {
       "id": "Audio8-TTS",
       "title": "Audio8-TTS (0.6B multilingual TTS, GPU recommended)",
-      "status": "Preview verified on L4. Realistic Air pending Colab verification (GPU recommended)",
-      "status_ja": "Preview は L4 で動作確認済み。Realistic Air は Colab 未検証（GPU 推奨）",
+      "status": "Preview and Realistic Air verified on Colab L4 (GPU, Realistic Air ~2.6 GB VRAM)",
+      "status_ja": "Preview・Realistic Air ともに Colab L4 で動作確認済み（GPU、Realistic Air の VRAM は約 2.6 GB）",
       "languages": "Preview: 11 languages. Realistic Air: 23 languages. Both include Japanese",
       "languages_ja": "Preview は11言語、Realistic Air は23言語。いずれも日本語対応",
       "description": "Audio8-TTS runs two 0.6B DualAR checkpoints through the same Transformers interface. Each bundles a 44.1 kHz neural codec. The default, [Audio8 TTS Preview 0.6B](https://huggingface.co/Audio8/Audio8-TTS-Preview-0.6b), supports 11 languages, including Japanese, English, Chinese, Cantonese, and Korean. [Audio8-TTS-Realistic-Air](https://huggingface.co/Edge0/Audio8-TTS-Realistic-Air) supports 23 languages, including all 11 from Preview.",
@@ -761,8 +761,8 @@
     {
       "id": "drama3-small",
       "title": "drama3-small (Fish Audio Drama 3 derivative GGUF on audio.cpp, Japanese / English, L4 GPU required)",
-      "status": "Works on Colab L4 (verified through the public URL; GPU required, ~10 GB VRAM resident; audio.cpp at a pinned commit + the model repo's patch is **built with CUDA on first launch (~10 min)**, later launches reuse the build; Fish Audio Drama 3 derivative, pruned + IQ3_XXS GGUF ~10.5 GB; `default` is a random speaker and sometimes leaves multi-second silences, use `clone` for a stable voice; **Fish Audio Community License — no Hosted Service for third parties**)",
-      "status_ja": "Colab L4 動作確認済み（公開URL経由で確認。GPU 必須、VRAM 常駐 約10GB。固定コミットの audio.cpp にモデル同梱のパッチを当てて**初回起動時に CUDA でビルド（約10分）**し、2回目以降はビルドを再利用。Fish Audio Drama 3 を枝刈り・IQ3_XXS 量子化した GGUF で約10.5GB。`default` は話者がランダムで数秒の無音が入ることがあるため、声をそろえるなら `clone` を使用。**Fish Audio Community License のため、第三者向けの Hosted Service は不可**）",
+      "status": "Works on Colab L4 (verified through the public URL, default model and `--drama3-model japanese`; GPU required, ~10 GB VRAM resident; audio.cpp at a pinned commit + the model repo's patch is **built with CUDA on first launch (~10 min)**, later launches reuse the build; Fish Audio Drama 3 derivative, pruned + IQ3_XXS GGUF ~10.5 GB; `default` is a random speaker and sometimes leaves multi-second silences, use `clone` for a stable voice; **Fish Audio Community License — no Hosted Service for third parties**)",
+      "status_ja": "Colab L4 動作確認済み（公開URL経由で確認。既定モデルと `--drama3-model japanese` の両方。GPU 必須、VRAM 常駐 約10GB。固定コミットの audio.cpp にモデル同梱のパッチを当てて**初回起動時に CUDA でビルド（約10分）**し、2回目以降はビルドを再利用。Fish Audio Drama 3 を枝刈り・IQ3_XXS 量子化した GGUF で約10.5GB。`default` は話者がランダムで数秒の無音が入ることがあるため、声をそろえるなら `clone` を使用。**Fish Audio Community License のため、第三者向けの Hosted Service は不可**）",
       "languages": "Japanese / English",
       "languages_ja": "日本語 / 英語",
       "description": "[pentacoxian-dev/drama3-small-GGUF](https://huggingface.co/pentacoxian-dev/drama3-small-GGUF) is a compressed derivative of [Fish Audio Drama 3](https://huggingface.co/fishaudio/drama-3) for Japanese and English (Japanese with English technical terms included). The 35B-A3B mixture-of-experts backbone keeps 100 of 256 experts in most layers, the experts are quantized to IQ3_XXS, and the output head is reduced to speech tokens, giving one GGUF of about 10.5 GB. Fish Audio does not sponsor or endorse it. Built with Fish Audio.",
@@ -770,13 +770,24 @@
       "notes": [
         "- [pentacoxian-dev/drama3-small-GGUF](https://huggingface.co/pentacoxian-dev/drama3-small-GGUF) is a pruned, IQ3_XXS-quantized derivative of [Fish Audio Drama 3](https://huggingface.co/fishaudio/drama-3) (about 10.5 GB). It runs on [audio.cpp](https://github.com/JarodMica/audio.cpp) at a pinned commit plus the patch from the model repo; the first launch builds audio.cpp with CUDA, which takes a while. VRAM about 11 GB for short lines, 13-15 GB for 30-40 s outputs.",
         "- `default` uses no reference voice; steer delivery with English directions in square brackets such as `[softly, whispering]`, inline tags such as `[laughs]`, or `DRAMA3_INSTRUCTIONS` (prepended as a direction). Set `DRAMA3_PROMPT_WAV` (10-30 s) and its transcript `DRAMA3_PROMPT_TEXT` (required) for `voice=\"clone\"`.",
-        "- License: audio.cpp code Apache-2.0. Weights: **Fish Audio Community License v1.0** (free for research / non-commercial use; limited commercial use under USD 500k annual revenue; offering a Hosted Service to third parties needs a separate license from Fish Audio, so keep the public URL to yourself). Do not imitate an identifiable person's voice without consent or remove watermarks / provenance signals. Built with Fish Audio."
+        "- License: audio.cpp code Apache-2.0. Weights: **Fish Audio Community License v1.0** (free for research / non-commercial use; limited commercial use under USD 500k annual revenue; offering a Hosted Service to third parties needs a separate license from Fish Audio, so keep the public URL to yourself). Do not imitate an identifiable person's voice without consent or remove watermarks / provenance signals. Built with Fish Audio.",
+        "- `DRAMA3_MODEL = \"japanese\"` swaps in [StudioYebisu-ship-it/Drama-3-Japanese-speech-cpp-gguf](https://huggingface.co/StudioYebisu-ship-it/Drama-3-Japanese-speech-cpp-gguf) (the audio.cpp-layout IQ3_XXS GGUF of [Aratako/Drama-3-Japanese](https://huggingface.co/Aratako/Drama-3-Japanese), a Japanese fine-tune of Drama 3; about 10 GB, Japanese only, same license). The audio.cpp build is shared, so switching only downloads the other GGUF."
       ],
       "notes_ja": [
         "- ライセンス: コードは Apache-2.0（audio.cpp、`JarodMica/audio.cpp`）、モデル重みは Fish Audio Community License v1.0（`pentacoxian-dev/drama3-small-GGUF`、`fishaudio/drama-3` の派生モデル）。商用利用: 条件付き。 備考: 研究・非商用は無料。商用は年商50万ドル未満のときだけ可。**第三者向けの Hosted Service は Fish Audio との別契約が必要**。「Built with Fish Audio」の表示が必要。同意のない声の模倣・なりすまし・出力を使った他の音声モデルの学習は禁止"
       ],
       "prefix": "DRAMA3",
       "params": [
+        {
+          "name": "DRAMA3_MODEL",
+          "default": "small",
+          "type": "select",
+          "options": [
+            "small",
+            "japanese"
+          ],
+          "flag": "--drama3-model"
+        },
         {
           "name": "DRAMA3_DEFAULT_VOICE",
           "default": "default",
@@ -1385,12 +1396,12 @@
     {
       "id": "IndexTTS-2.5",
       "title": "IndexTTS-2.5 (L4 recommended, Japanese / English / Chinese / Spanish / Arabic)",
-      "status": "Colab verification pending (L4 recommended)",
-      "status_ja": "Colab 未検証（L4 推奨）",
+      "status": "Verified on Colab L4 (GPU, ~5.9 GB VRAM)",
+      "status_ja": "Colab L4 で動作確認済み（GPU、VRAM 約 5.9 GB）",
       "languages": "Japanese / English / Chinese / Spanish / Arabic",
       "languages_ja": "日本語 / 英語 / 中国語 / スペイン語 / アラビア語",
-      "description": "[IndexTTS-2.5](https://huggingface.co/IndexTeam/IndexTTS-2.5) supports Japanese, English, Chinese, Spanish, and Arabic. It uses the upstream multilingual runtime and its bundled semantic codec. The model card estimates about 6 GB of VRAM for inference. Colab L4 usage is pending verification.",
-      "description_ja": "[IndexTTS-2.5](https://huggingface.co/IndexTeam/IndexTTS-2.5) は、日本語、英語、中国語、スペイン語、アラビア語に対応します。上流の多言語推論コードと同梱の音声コーデックを使います。モデルカードによると、推論時の VRAM の目安は約 6 GB です。Colab L4 での動作は未検証です。",
+      "description": "[IndexTTS-2.5](https://huggingface.co/IndexTeam/IndexTTS-2.5) supports Japanese, English, Chinese, Spanish, and Arabic. It uses the upstream multilingual runtime and its bundled semantic codec.",
+      "description_ja": "[IndexTTS-2.5](https://huggingface.co/IndexTeam/IndexTTS-2.5) は、日本語、英語、中国語、スペイン語、アラビア語に対応します。上流の多言語推論コードと同梱の音声コーデックを使います。",
       "notes": [
         "- `default` uses the official demo reference. For `clone`, set `INDEXTTS25_PROMPT_WAV` to a recording you have permission to use.",
         "- Write out numbers and dates as they should be spoken in Japanese. The API accepts `speed` from 0.5 to 2.0.",
@@ -2149,12 +2160,12 @@
     {
       "id": "Magpie-TTS",
       "title": "Magpie-TTS (NVIDIA GPU required, 12 languages including Japanese)",
-      "status": "Colab verification pending (NVIDIA GPU required, L4 recommended)",
-      "status_ja": "Colab 未検証（NVIDIA GPU 必須、L4 推奨）",
+      "status": "Verified on Colab L4 (NVIDIA GPU required, ~3.9 GB VRAM)",
+      "status_ja": "Colab L4 で動作確認済み（NVIDIA GPU 必須、VRAM 約 3.9 GB）",
       "languages": "12 languages, including Japanese",
       "languages_ja": "日本語を含む12言語",
-      "description": "NVIDIA's [Magpie-TTS v2607](https://huggingface.co/nvidia/magpie_tts_multilingual_357m) synthesizes 12 languages using five built-in speakers. The wrapper runs the NeMo Speech TTS runtime on a CUDA GPU and decodes with [NanoCodec](https://huggingface.co/nvidia/nemo-nano-codec-22khz-1.89kbps-21.5fps) to 22.05 kHz mono PCM WAV. Colab L4 verification is pending.",
-      "description_ja": "NVIDIA の [Magpie-TTS v2607](https://huggingface.co/nvidia/magpie_tts_multilingual_357m) は、5種類の話者で12言語を読み上げます。CUDA GPU 上で NeMo Speech の TTS 推論を実行し、[NanoCodec](https://huggingface.co/nvidia/nemo-nano-codec-22khz-1.89kbps-21.5fps) で 22.05 kHz のモノラル PCM WAV に変換します。Colab L4 での動作は未検証です。",
+      "description": "NVIDIA's [Magpie-TTS v2607](https://huggingface.co/nvidia/magpie_tts_multilingual_357m) synthesizes 12 languages using five built-in speakers. The wrapper runs the NeMo Speech TTS runtime on a CUDA GPU and decodes with [NanoCodec](https://huggingface.co/nvidia/nemo-nano-codec-22khz-1.89kbps-21.5fps) to 22.05 kHz mono PCM WAV.",
+      "description_ja": "NVIDIA の [Magpie-TTS v2607](https://huggingface.co/nvidia/magpie_tts_multilingual_357m) は、5種類の話者で12言語を読み上げます。CUDA GPU 上で NeMo Speech の TTS 推論を実行し、[NanoCodec](https://huggingface.co/nvidia/nemo-nano-codec-22khz-1.89kbps-21.5fps) で 22.05 kHz のモノラル PCM WAV に変換します。",
       "notes": [
         "- Select a built-in speaker with `voice`: `aria`, `jason`, `john`, `leo`, or `sofia`. The public checkpoint has no voice cloning.",
         "- Magpie v2607 and NanoCodec weights use the NVIDIA Open Model License. Commercial use is permitted under its terms."
@@ -3162,12 +3173,12 @@
     {
       "id": "Phonon",
       "title": "Phonon (CPU, English)",
-      "status": "Colab verification pending (CPU runtime)",
-      "status_ja": "Colab 未検証（CPU で実行）",
+      "status": "Verified in a Colab L4 runtime (CPU only, 0 GB VRAM)",
+      "status_ja": "Colab L4 環境で動作確認済み（CPU のみ、VRAM 0 GB）",
       "languages": "English",
       "languages_ja": "英語",
-      "description": "Gradium's [Phonon 31M English](https://huggingface.co/gradium/phonon-31m-en) runs on CPU with the official `ptts` runtime. The pinned Q8 weights are about 64.5 MB and download on first use without a Hugging Face token. The engine returns 24 kHz mono PCM WAV. Colab verification is pending.",
-      "description_ja": "Gradium の [Phonon 31M 英語版](https://huggingface.co/gradium/phonon-31m-en) を公式の `ptts` ランタイムで CPU 上で実行します。約 64.5 MB の Q8 重みを初回にダウンロードします。Hugging Face のトークンは不要です。出力は 24 kHz のモノラル PCM WAV です。Colab での動作は未検証です。",
+      "description": "Gradium's [Phonon 31M English](https://huggingface.co/gradium/phonon-31m-en) runs on CPU with the official `ptts` runtime. The pinned Q8 weights are about 64.5 MB and download on first use without a Hugging Face token. The engine returns 24 kHz mono PCM WAV.",
+      "description_ja": "Gradium の [Phonon 31M 英語版](https://huggingface.co/gradium/phonon-31m-en) を公式の `ptts` ランタイムで CPU 上で実行します。約 64.5 MB の Q8 重みを初回にダウンロードします。Hugging Face のトークンは不要です。出力は 24 kHz のモノラル PCM WAV です。",
       "notes": [
         "- Gradium's 31M English checkpoint (Q8) uses the bundled `default` voice. Set `TEST_TEXT` to English before running the smoke test.",
         "- Runtime: MIT OR Apache-2.0. Weights, tokenizer and bundled voice: Apache-2.0."
@@ -4024,12 +4035,12 @@
     {
       "id": "tiny-voca",
       "title": "tiny-voca (CPU, English)",
-      "status": "Colab verification pending (CPU runtime)",
-      "status_ja": "Colab 未検証（CPU で実行）",
+      "status": "Verified in a Colab L4 runtime (CPU only, 0 GB VRAM)",
+      "status_ja": "Colab L4 環境で動作確認済み（CPU のみ、VRAM 0 GB）",
       "languages": "English",
       "languages_ja": "英語",
-      "description": "[tiny-voca](https://huggingface.co/n4ze3m/tiny-voca) is a 4.5M-parameter American English model. This integration uses the upstream PyTorch CPU inference path and the dizione phonemizer. It returns 24 kHz mono PCM WAV and splits long text into sentences before synthesis. Colab verification is pending.",
-      "description_ja": "[tiny-voca](https://huggingface.co/n4ze3m/tiny-voca) は、450万パラメータの米国英語向けモデルです。公式の PyTorch CPU 推論と、テキストを音素に変換する dizione を使います。長い入力は文ごとに分けて合成し、24 kHz のモノラル PCM WAV を返します。Colab での動作は未検証です。",
+      "description": "[tiny-voca](https://huggingface.co/n4ze3m/tiny-voca) is a 4.5M-parameter American English model. This integration uses the upstream PyTorch CPU inference path and the dizione phonemizer. It returns 24 kHz mono PCM WAV and splits long text into sentences before synthesis.",
+      "description_ja": "[tiny-voca](https://huggingface.co/n4ze3m/tiny-voca) は、450万パラメータの米国英語向けモデルです。公式の PyTorch CPU 推論と、テキストを音素に変換する dizione を使います。長い入力は文ごとに分けて合成し、24 kHz のモノラル PCM WAV を返します。",
       "notes": [
         "- Built-in voices: `F2` and `M2`. Set `TEST_TEXT` to English for the smoke test. Speech output is 24 kHz mono WAV.",
         "- Code and weights: Apache-2.0. The bundled phonemizer data retains its upstream license notices."
@@ -4446,8 +4457,8 @@
     {
       "id": "ZONOS3-Mini",
       "title": "ZONOS3-Mini (L4 recommended, 43 languages including Japanese)",
-      "status": "Colab verification pending (L4 recommended)",
-      "status_ja": "Colab 未検証（L4 推奨）",
+      "status": "Verified on Colab L4 (GPU, ~2.9 GB VRAM)",
+      "status_ja": "Colab L4 で動作確認済み（GPU、VRAM 約 2.9 GB）",
       "languages": "43 languages, including Japanese",
       "languages_ja": "日本語を含む43言語",
       "description": "Zyphra's ZONOS3-Mini supports 43 languages, including Japanese. This wrapper loads the official Transformers checkpoint with its bundled ZAC-1 decoder and MECT-B2 speaker encoder. Use a Colab L4 with native CUDA bfloat16 support. The first launch downloads about 2.4 GB of model weights. [Model card and language codes](https://huggingface.co/Zyphra/ZONOS3-Mini-hf)",

@@ -436,7 +436,9 @@ def parse_args():
     parser.add_argument("--speech-cpp-device", default="auto")
     parser.add_argument("--speech-cpp-no-vulkan", action="store_true")
     parser.add_argument("--speech-cpp-backend-port", type=int, default=5007)
+    parser.add_argument("--drama3-model", choices=["small", "japanese"], default="small")
     parser.add_argument("--drama3-hf-revision", default="4a3078e885344bb9b24d511cec389d2726854d15")
+    parser.add_argument("--drama3-japanese-hf-revision", default="cca4c0d8cfab67a2bccbb634d52e544199ac5108")
     parser.add_argument("--drama3-cuda-arch", default="")
     parser.add_argument("--drama3-default-voice", default="default")
     parser.add_argument("--drama3-prompt-wav", default="")
@@ -822,7 +824,9 @@ def main():
         speech_cpp_device=args.speech_cpp_device,
         speech_cpp_use_vulkan=not args.speech_cpp_no_vulkan,
         speech_cpp_backend_port=args.speech_cpp_backend_port,
+        drama3_model=args.drama3_model,
         drama3_hf_revision=args.drama3_hf_revision,
+        drama3_japanese_hf_revision=args.drama3_japanese_hf_revision,
         drama3_cuda_arch=args.drama3_cuda_arch,
         drama3_default_voice=args.drama3_default_voice,
         drama3_prompt_wav=args.drama3_prompt_wav,

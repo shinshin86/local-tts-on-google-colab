@@ -14,8 +14,16 @@ from src.runtime import ensure_venv, popen, run, tail_log, uv_pip_install, wait_
 # The commit is not on any branch of JarodMica/audio.cpp, so it is fetched as a tarball by SHA.
 AUDIOCPP_TARBALL_URL = "https://codeload.github.com/JarodMica/audio.cpp/tar.gz/{commit}"
 HF_RESOLVE_URL = "https://huggingface.co/{repo}/resolve/{revision}/{filename}"
-GGUF_FILENAME = "drama3-small-IQ3_XXS.gguf"
 PATCH_FILENAME = "drama3-small-audiocpp.patch"
+# Selectable GGUFs. Both run on the same patched audio.cpp build; the patch always comes from
+# the pentacoxian-dev repo (settings.drama3_hf_repo / drama3_hf_revision).
+MODELS = {
+    # pentacoxian-dev/drama3-small-GGUF: pruned Fish Audio Drama 3, Japanese / English.
+    "small": {"filename": "drama3-small-IQ3_XXS.gguf"},
+    # StudioYebisu-ship-it/Drama-3-Japanese-speech-cpp-gguf: the audio.cpp-layout IQ3_XXS
+    # build of Aratako/Drama-3-Japanese (a Japanese LoRA fine-tune of Drama 3).
+    "japanese": {"filename": "drama3-japanese-small-IQ3_XXS-audiocpp.gguf"},
+}
 MODEL_ID = "drama3-small"
 CLONE_PRESET = "clone"
 
@@ -86,7 +94,18 @@ def _build_audiocpp(settings: Settings, src_dir: Path) -> Path:
     return server_bin
 
 
+def _model_source(settings: Settings) -> tuple[str, str, str]:
+    """Return (repo, revision, GGUF filename) for --drama3-model."""
+    if settings.drama3_model not in MODELS:
+        raise RuntimeError(f"Unsupported --drama3-model: {settings.drama3_model}. Choose one of {sorted(MODELS)}.")
+    filename = MODELS[settings.drama3_model]["filename"]
+    if settings.drama3_model == "japanese":
+        return settings.drama3_japanese_hf_repo, settings.drama3_japanese_hf_revision, filename
+    return settings.drama3_hf_repo, settings.drama3_hf_revision, filename
+
+
 def _download_model(settings: Settings, model_dir: Path) -> Path:
+    repo, revision, filename = _model_source(settings)
     python_bin = ensure_venv(model_dir.parent)
     uv_pip_install(python_bin, ["huggingface_hub"])
     run(
@@ -96,21 +115,22 @@ def _download_model(settings: Settings, model_dir: Path) -> Path:
             "import sys; from huggingface_hub import snapshot_download; "
             "snapshot_download(sys.argv[1], revision=sys.argv[2], local_dir=sys.argv[3], "
             "allow_patterns=[sys.argv[4], 'silence_codes.json', 'LICENSE', 'NOTICE'])",
-            settings.drama3_hf_repo,
-            settings.drama3_hf_revision,
+            repo,
+            revision,
             str(model_dir),
-            GGUF_FILENAME,
+            filename,
         ]
     )
-    gguf = model_dir / GGUF_FILENAME
+    gguf = model_dir / filename
     if not gguf.exists():
-        raise RuntimeError(f"{GGUF_FILENAME} was not downloaded into {model_dir}.")
+        raise RuntimeError(f"{filename} was not downloaded into {model_dir}.")
     return gguf
 
 
 def install(settings: Settings) -> dict:
     app_dir = settings.engines_dir / "drama3-small"
-    model_dir = app_dir / "model"
+    # One directory per model so switching --drama3-model keeps the other GGUF and its silence_codes.json.
+    model_dir = app_dir / "model" if settings.drama3_model == "small" else app_dir / f"model-{settings.drama3_model}"
     model_dir.mkdir(parents=True, exist_ok=True)
 
     server_bin = _build_audiocpp(settings, app_dir / "audio.cpp")

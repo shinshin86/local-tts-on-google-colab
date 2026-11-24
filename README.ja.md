@@ -72,7 +72,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | LFM2.5-Audio-JP | Colab L4 動作確認済み（GPU 必須、VRAM 常駐 ~6.3GB。重みは ungated で `HF_TOKEN` 不要。内蔵の日本語ボイス1種のみ、cloning 非対応。出力 24 kHz） | 日本語 | 条件付き（年商上限あり） |
 | Magpie-TTS | Colab L4 で動作確認済み（NVIDIA GPU 必須、VRAM 約 3.9 GB） | 日本語を含む12言語 | ライセンス条件の範囲で可 |
 | Ming-omni-TTS | Colab A100 動作確認済み（**A100 40GB 必須** — 16.8B-A3B MoE、ロード時 ~35GB VRAM。40GB に収めるため `PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True` が必要で L4 24GB では動かない。重みは ungated で `HF_TOKEN` 不要。zero-shot cloning。出力 44.1 kHz） | 中国語 / 英語が中心（広東語などの方言制御あり） | OK |
-| drama3-small | Colab L4 動作確認済み（公開URL経由で確認。GPU 必須、VRAM 常駐 約10GB。固定コミットの audio.cpp にモデル同梱のパッチを当てて**初回起動時に CUDA でビルド（約10分）**し、2回目以降はビルドを再利用。Fish Audio Drama 3 を枝刈り・IQ3_XXS 量子化した GGUF で約10.5GB。`default` は話者がランダムで数秒の無音が入ることがあるため、声をそろえるなら `clone` を使用。**Fish Audio Community License のため、第三者向けの Hosted Service は不可**） | 日本語 / 英語 | 条件付き（非商用、または年商50万ドル未満） |
+| drama3-small | Colab L4 動作確認済み（公開URL経由で確認。既定モデルと `--drama3-model japanese` の両方。GPU 必須、VRAM 常駐 約10GB。固定コミットの audio.cpp にモデル同梱のパッチを当てて**初回起動時に CUDA でビルド（約10分）**し、2回目以降はビルドを再利用。Fish Audio Drama 3 を枝刈り・IQ3_XXS 量子化した GGUF で約10.5GB。`default` は話者がランダムで数秒の無音が入ることがあるため、声をそろえるなら `clone` を使用。**Fish Audio Community License のため、第三者向けの Hosted Service は不可**） | 日本語 / 英語 | 条件付き（非商用、または年商50万ドル未満） |
 | DramaBox | Colab A100 動作確認済み（GPU 必須、VRAM ~24GB ピーク、**LTX-2 Community License — 非競合条項あり**） | 英語 | 条件付き（年商$10M以上は要商用ライセンス） |
 | Scenema | **Colab A100（40GB VRAM）必須**。初回起動時に約 38GB ダウンロード。音声モデルは LTX-2.3 派生のため **LTX-2 Community License**（DramaBox と同じ）。Gemma 3 12B IT 利用（HF gated、`HF_TOKEN` 必須） | 英語中心の多言語 | 条件付き（年商$10M以上は要商用ライセンス / Gemma規約） |
 | MioTTS | Colab L4 動作確認済み（GPU 必須、**VRAM 約4.6GB** 常駐 — LLM 約3.2GB + codec 約1.4GB。T4 16GB でも十分。LLM ベース — Qwen3-1.7B-Base GGUF をプリビルド llama-cpp-python CUDA wheel で host し MioCodec トークン[25Hz]を生成 → 44.1kHz。**実時間の約4倍速、RTF ≈ 0.25**。重みは ungated で `HF_TOKEN` 不要。プリセット音声 / ゼロショットクローン。**デフォルトプリセットは商用利用不可** — 商用時は自分の音声で clone） | 日本語 / 英語 | 既定は不可（自分の声でcloneすれば可） |
@@ -860,6 +860,8 @@ SPEECH_CPP_USE_VULKAN = True  #@param {type:"boolean"}
 #@markdown - [pentacoxian-dev/drama3-small-GGUF](https://huggingface.co/pentacoxian-dev/drama3-small-GGUF) is a pruned, IQ3_XXS-quantized derivative of [Fish Audio Drama 3](https://huggingface.co/fishaudio/drama-3) (about 10.5 GB). It runs on [audio.cpp](https://github.com/JarodMica/audio.cpp) at a pinned commit plus the patch from the model repo; the first launch builds audio.cpp with CUDA, which takes a while. VRAM about 11 GB for short lines, 13-15 GB for 30-40 s outputs.
 #@markdown - `default` uses no reference voice; steer delivery with English directions in square brackets such as `[softly, whispering]`, inline tags such as `[laughs]`, or `DRAMA3_INSTRUCTIONS` (prepended as a direction). Set `DRAMA3_PROMPT_WAV` (10-30 s) and its transcript `DRAMA3_PROMPT_TEXT` (required) for `voice="clone"`.
 #@markdown - License: audio.cpp code Apache-2.0. Weights: **Fish Audio Community License v1.0** (free for research / non-commercial use; limited commercial use under USD 500k annual revenue; offering a Hosted Service to third parties needs a separate license from Fish Audio, so keep the public URL to yourself). Do not imitate an identifiable person's voice without consent or remove watermarks / provenance signals. Built with Fish Audio.
+#@markdown - `DRAMA3_MODEL = "japanese"` swaps in [StudioYebisu-ship-it/Drama-3-Japanese-speech-cpp-gguf](https://huggingface.co/StudioYebisu-ship-it/Drama-3-Japanese-speech-cpp-gguf) (the audio.cpp-layout IQ3_XXS GGUF of [Aratako/Drama-3-Japanese](https://huggingface.co/Aratako/Drama-3-Japanese), a Japanese fine-tune of Drama 3; about 10 GB, Japanese only, same license). The audio.cpp build is shared, so switching only downloads the other GGUF.
+DRAMA3_MODEL = "small"  #@param ["small", "japanese"]
 DRAMA3_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
 DRAMA3_PROMPT_WAV = ""  #@param {type:"string"}
 DRAMA3_PROMPT_TEXT = ""  #@param {type:"string"}
@@ -1588,6 +1590,8 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         str(SPEECH_CPP_STEPS),
         "--speech-cpp-device",
         SPEECH_CPP_DEVICE,
+        "--drama3-model",
+        DRAMA3_MODEL,
         "--drama3-default-voice",
         DRAMA3_DEFAULT_VOICE,
         "--drama3-prompt-wav",
@@ -2561,6 +2565,8 @@ Colab T4 で確認済み: エンジン・`/v1` エンドポイント・trycloudf
 
 この GGUF を読み込めるのは、モデルリポジトリの `drama3-small-audiocpp.patch` を当てたコミット `9277495a` の [audio.cpp](https://github.com/JarodMica/audio.cpp) だけです。本家の audio.cpp や llama.cpp では読み込めません。このコミットは audio.cpp のどのブランチにも含まれていないため、インストーラーは SHA を指定して tarball で取得します。そこにパッチを当て、`fish_drama3` だけを実行中の GPU 向けに CUDA でビルドします(`--model-set custom --models fish_drama3`。`--model-set custom` を付けないと、ビルドスクリプトは全モデルをビルドします)。Colab L4 ではビルドに約10分かかります。コミットとモデルのリビジョンを記録したファイルを残すので、同じランタイムで2回目以降に起動するとビルドを再利用し、1分ほどで使えるようになります。重みはリビジョン `4a3078e8` に固定しています(`--drama3-hf-revision`)。起動後は `audiocpp_server` が `127.0.0.1` でモデルを返し、いつものポートで待ち受ける FastAPI のプロキシがその前に立ちます。
 
+**`--drama3-model japanese`。** GGUF を [StudioYebisu-ship-it/Drama-3-Japanese-speech-cpp-gguf](https://huggingface.co/StudioYebisu-ship-it/Drama-3-Japanese-speech-cpp-gguf) の `drama3-japanese-small-IQ3_XXS-audiocpp.gguf` に切り替えます(リビジョン `cca4c0d8` に固定、`--drama3-japanese-hf-revision`)。これは [Aratako/Drama-3-Japanese](https://huggingface.co/Aratako/Drama-3-Japanese)(Drama 3 を約7万時間の日本語音声で LoRA ファインチューニングしたモデル)を audio.cpp 用に IQ3_XXS で量子化したもので、約 10GB、日本語専用です。同じパッチ済み audio.cpp のビルドで動くため、同じランタイムでモデルを切り替えても、もう一方の GGUF をダウンロードするだけで済みます。モデルカードの推奨は `max_pause_frames` 18、temperature 0.8 / top-p 0.85 / top-k 30 です。このラッパーの既定値は変えていないので、カードの設定で動かしたいときは各フラグで指定してください。同じリポジトリの Q4_K / Q5_K の GGUF と speech.cpp 用ファイルは使いません(Q4_K は Vulkan で約 23GB の VRAM が必要で、L4 には収まりきりません)。ライセンスは同じ Fish Audio Community License v1.0 です。Built with Fish Audio.
+
 | voice | 説明 |
 |---|---|
 | `default` | 参照音声なし。リクエストごとに話者がランダムに変わります。 |
@@ -2578,6 +2584,12 @@ Colab T4 で確認済み: エンジン・`/v1` エンドポイント・trycloudf
 - `--drama3-prompt-wav` / `--drama3-prompt-text` を設定した `voice="clone"` も公開 URL 経由で動き、2回目の起動ではビルドを再利用しました。
 - 次のリクエストは HTTP 400 になりました。参照 WAV なしの `clone`、未知の voice、パス形式の `voice_ref`、`reference_text` のない base64 の `voice_ref`、`speed`、`response_format="pcm"`。
 - 今回の検証では、ASR での読み上げ内容の確認はしていません。
+
+**`--drama3-model japanese` の Colab 検証(L4)。**
+- `DRAMA3_MODEL = "japanese"` にした正規のセルで、audio.cpp のビルド、固定コミット + パッチでの Drama-3-Japanese GGUF の読み込み(VRAM 常駐 約10GB、生成中 約10.8GB)、スモークテストを確認し、公開 `trycloudflare` URL も立ち上がりました。
+- 公開 URL 経由で、`default` で挨拶・ナレーション・`[囁き]` の3文を生成し、ナレーション音声を base64 の参照音声(`reference_text` 付き)にして別の文をクローン生成しました。4本とも 44.1kHz・約6秒で、無音は最長 1.1 秒、1リクエストは 9〜10 秒でした。faster-whisper(small)の書き起こしは4本とも入力文と一致しました。
+- 参照 WAV なしの `clone`、未知の voice、`speed` 1.3、`reference_text` なしの base64 `voice_ref` は HTTP 400 を返しました。
+- このモデルで未確認: `--drama3-prompt-wav`(既定モデルと同じコード経路)、長い出力、モデルカード推奨のサンプリング設定と `max_pause_frames` 18。
 
 **ライセンス**: audio.cpp のコードは Apache-2.0 です。重みには **Fish Audio Community License v1.0** が適用されます。
 - 研究目的と非商用(個人の趣味、評価やテスト)の利用は無料です。
@@ -2672,6 +2684,7 @@ Colab T4 で確認済み: エンジン・`/v1` エンドポイント・trycloudf
 | Magpie-TTS | [Apache 2.0](https://github.com/NVIDIA-NeMo/Speech/blob/24c4f58a764350a62248094c70e487892e9d1a00/LICENSE)（NeMo Speech） | [NVIDIA Open Model License](https://www.nvidia.com/en-us/agreements/enterprise-software/nvidia-open-model-license/)（v2607）、[NVIDIA Open Model License (June 2024)](https://developer.download.nvidia.com/licenses/nvidia-open-model-license-agreement-june-2024.pdf)（NanoCodec） | ライセンス条件の範囲で可 | 商用利用可。重みの再配布時は該当ライセンスと NVIDIA の帰属表示が必要。 |
 | Ming-omni-TTS | MIT | Apache 2.0 | OK | 16.8B-A3B MoE 音声 LM（active ~3B）。**A100 40GB 必須**（bf16 で ~34GB の重み）。中国語/英語が中心、方言制御あり。zero-shot cloning。コード MIT（GitHub）、重み Apache-2.0（HF カード）。ungated（HF_TOKEN 不要） |
 | drama3-small | Apache-2.0（audio.cpp、`JarodMica/audio.cpp`） | Fish Audio Community License v1.0（`pentacoxian-dev/drama3-small-GGUF`、`fishaudio/drama-3` の派生モデル） | 条件付き | 研究・非商用は無料。商用は年商50万ドル未満のときだけ可。**第三者向けの Hosted Service は Fish Audio との別契約が必要**。「Built with Fish Audio」の表示が必要。同意のない声の模倣・なりすまし・出力を使った他の音声モデルの学習は禁止 |
+| drama3-small（`--drama3-model japanese`） | Apache-2.0（audio.cpp、`JarodMica/audio.cpp`） | Fish Audio Community License v1.0（`StudioYebisu-ship-it/Drama-3-Japanese-speech-cpp-gguf`、`fishaudio/drama-3` をファインチューニングした `Aratako/Drama-3-Japanese` の量子化版） | 条件付き | drama3-small と同じ条件。商用は年商50万ドル未満のときだけ可。**第三者向けの Hosted Service は不可**。「Built with Fish Audio」の表示が必要 |
 | DramaBox | LTX-2 Community License (Lightricks) | LTX-2 Community License | **年商 $10M+ の組織は商用ライセンス必須** | 英語。非競合条項あり、再配布時は同ライセンス継承必須、Perth ウォーターマーク常時付与 |
 | Scenema (code) | MIT | — | — | リポジトリ: `ScenemaAI/scenema-audio` |
 | Scenema (音声重み) | — | LTX-2 Community License (Lightricks) | **年商 $10M+ の組織は商用ライセンス必須** | 音声 transformer は LTX-2.3 派生のため LTX-2 Community License が継承される。DramaBox と同じ注意点（非競合条項、acceptable use 制限、再配布時のライセンス継承） |
@@ -2870,6 +2883,10 @@ Colab T4 で確認済み: エンジン・`/v1` エンドポイント・trycloudf
   https://huggingface.co/inclusionAI/Ming-omni-tts-16.8B-A3B
 - drama3-small (Hugging Face)
   https://huggingface.co/pentacoxian-dev/drama3-small-GGUF
+- Drama-3-Japanese GGUF (Hugging Face)
+  https://huggingface.co/StudioYebisu-ship-it/Drama-3-Japanese-speech-cpp-gguf
+- Aratako/Drama-3-Japanese (Hugging Face)
+  https://huggingface.co/Aratako/Drama-3-Japanese
 - Fish Audio Drama 3 (Hugging Face)
   https://huggingface.co/fishaudio/drama-3
 - audio.cpp
