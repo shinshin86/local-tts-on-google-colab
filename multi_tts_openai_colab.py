@@ -727,6 +727,8 @@ SPEECH_CPP_USE_VULKAN = True  #@param {type:"boolean"}
 #@markdown - [pentacoxian-dev/drama3-small-GGUF](https://huggingface.co/pentacoxian-dev/drama3-small-GGUF) is a pruned, IQ3_XXS-quantized derivative of [Fish Audio Drama 3](https://huggingface.co/fishaudio/drama-3) (about 10.5 GB). It runs on [audio.cpp](https://github.com/JarodMica/audio.cpp) at a pinned commit plus the patch from the model repo; the first launch builds audio.cpp with CUDA, which takes a while. VRAM about 11 GB for short lines, 13-15 GB for 30-40 s outputs.
 #@markdown - `default` uses no reference voice; steer delivery with English directions in square brackets such as `[softly, whispering]`, inline tags such as `[laughs]`, or `DRAMA3_INSTRUCTIONS` (prepended as a direction). Set `DRAMA3_PROMPT_WAV` (10-30 s) and its transcript `DRAMA3_PROMPT_TEXT` (required) for `voice="clone"`.
 #@markdown - License: audio.cpp code Apache-2.0. Weights: **Fish Audio Community License v1.0** (free for research / non-commercial use; limited commercial use under USD 500k annual revenue; offering a Hosted Service to third parties needs a separate license from Fish Audio, so keep the public URL to yourself). Do not imitate an identifiable person's voice without consent or remove watermarks / provenance signals. Built with Fish Audio.
+#@markdown - `DRAMA3_MODEL = "japanese"` swaps in [StudioYebisu-ship-it/Drama-3-Japanese-speech-cpp-gguf](https://huggingface.co/StudioYebisu-ship-it/Drama-3-Japanese-speech-cpp-gguf) (the audio.cpp-layout IQ3_XXS GGUF of [Aratako/Drama-3-Japanese](https://huggingface.co/Aratako/Drama-3-Japanese), a Japanese fine-tune of Drama 3; about 10 GB, Japanese only, same license). The audio.cpp build is shared, so switching only downloads the other GGUF.
+DRAMA3_MODEL = "small"  #@param ["small", "japanese"]
 DRAMA3_DEFAULT_VOICE = "default"  #@param ["default", "clone"]
 DRAMA3_PROMPT_WAV = ""  #@param {type:"string"}
 DRAMA3_PROMPT_TEXT = ""  #@param {type:"string"}
@@ -1455,6 +1457,8 @@ def build_bootstrap_command(workdir: Path) -> list[str]:
         str(SPEECH_CPP_STEPS),
         "--speech-cpp-device",
         SPEECH_CPP_DEVICE,
+        "--drama3-model",
+        DRAMA3_MODEL,
         "--drama3-default-voice",
         DRAMA3_DEFAULT_VOICE,
         "--drama3-prompt-wav",

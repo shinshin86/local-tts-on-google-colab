@@ -529,8 +529,13 @@ class Settings:
     # audio.cpp code Apache-2.0; weights Fish Audio Community License v1.0
     # (non-commercial / under-USD-500k commercial; Hosted Services need a
     # separate license; "Built with Fish Audio" attribution).
+    # drama3_model "japanese" swaps in StudioYebisu-ship-it's audio.cpp-layout IQ3_XXS
+    # GGUF of Aratako/Drama-3-Japanese (same Fish Audio Community License v1.0).
+    drama3_model: str = "small"
     drama3_hf_repo: str = "pentacoxian-dev/drama3-small-GGUF"
     drama3_hf_revision: str = "4a3078e885344bb9b24d511cec389d2726854d15"
+    drama3_japanese_hf_repo: str = "StudioYebisu-ship-it/Drama-3-Japanese-speech-cpp-gguf"
+    drama3_japanese_hf_revision: str = "cca4c0d8cfab67a2bccbb634d52e544199ac5108"
     drama3_audiocpp_commit: str = "9277495adfdc9b41004bd91db7b7a4e5d456c8df"
     drama3_cuda_arch: str = ""
     drama3_default_voice: str = "default"

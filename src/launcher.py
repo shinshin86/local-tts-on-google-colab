@@ -972,7 +972,10 @@ def print_engine_voice_hints(settings: Settings):
     elif settings.engine == "drama3-small":
         print("drama3-small は Fish Audio Drama 3 を枝刈り・3bit 量子化した GGUF を audio.cpp で動かすエンジンです（日本語 / 英語）。Built with Fish Audio.")
         print(f"audio.cpp: {settings.drama3_audiocpp_commit[:8]} + モデル同梱パッチ（初回は CUDA ビルドに時間がかかります）")
-        print(f"モデル: {settings.drama3_hf_repo}@{settings.drama3_hf_revision[:8]}（約 10.5GB）")
+        if settings.drama3_model == "japanese":
+            print(f"モデル: {settings.drama3_japanese_hf_repo}@{settings.drama3_japanese_hf_revision[:8]}（Aratako/Drama-3-Japanese の audio.cpp 用 IQ3_XXS、約 10GB、日本語専用）")
+        else:
+            print(f"モデル: {settings.drama3_hf_repo}@{settings.drama3_hf_revision[:8]}（約 10.5GB）")
         print(f"デフォルト voice: {settings.drama3_default_voice}")
         print("voice 候補: default（参照音声なし。文頭の [英語の指示] や instructions で話し方を指定）")
         if settings.drama3_prompt_wav:
