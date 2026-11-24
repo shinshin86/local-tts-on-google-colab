@@ -72,7 +72,7 @@ Google Colab 上で選択したローカル TTS を一時的に OpenAI 互換 `/
 | LFM2.5-Audio-JP | Colab L4 動作確認済み（GPU 必須、VRAM 常駐 ~6.3GB。重みは ungated で `HF_TOKEN` 不要。内蔵の日本語ボイス1種のみ、cloning 非対応。出力 24 kHz） | 日本語 | 条件付き（年商上限あり） |
 | Magpie-TTS | Colab L4 で動作確認済み（NVIDIA GPU 必須、VRAM 約 3.9 GB） | 日本語を含む12言語 | ライセンス条件の範囲で可 |
 | Ming-omni-TTS | Colab A100 動作確認済み（**A100 40GB 必須** — 16.8B-A3B MoE、ロード時 ~35GB VRAM。40GB に収めるため `PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True` が必要で L4 24GB では動かない。重みは ungated で `HF_TOKEN` 不要。zero-shot cloning。出力 44.1 kHz） | 中国語 / 英語が中心（広東語などの方言制御あり） | OK |
-| drama3-small | Colab L4 動作確認済み（公開URL経由で確認。GPU 必須、VRAM 常駐 約10GB。固定コミットの audio.cpp にモデル同梱のパッチを当てて**初回起動時に CUDA でビルド（約10分）**し、2回目以降はビルドを再利用。Fish Audio Drama 3 を枝刈り・IQ3_XXS 量子化した GGUF で約10.5GB。`default` は話者がランダムで数秒の無音が入ることがあるため、声をそろえるなら `clone` を使用。**Fish Audio Community License のため、第三者向けの Hosted Service は不可**） | 日本語 / 英語 | 条件付き（非商用、または年商50万ドル未満） |
+| drama3-small | Colab L4 動作確認済み（公開URL経由で確認。既定モデルと `--drama3-model japanese` の両方。GPU 必須、VRAM 常駐 約10GB。固定コミットの audio.cpp にモデル同梱のパッチを当てて**初回起動時に CUDA でビルド（約10分）**し、2回目以降はビルドを再利用。Fish Audio Drama 3 を枝刈り・IQ3_XXS 量子化した GGUF で約10.5GB。`default` は話者がランダムで数秒の無音が入ることがあるため、声をそろえるなら `clone` を使用。**Fish Audio Community License のため、第三者向けの Hosted Service は不可**） | 日本語 / 英語 | 条件付き（非商用、または年商50万ドル未満） |
 | DramaBox | Colab A100 動作確認済み（GPU 必須、VRAM ~24GB ピーク、**LTX-2 Community License — 非競合条項あり**） | 英語 | 条件付き（年商$10M以上は要商用ライセンス） |
 | Scenema | **Colab A100（40GB VRAM）必須**。初回起動時に約 38GB ダウンロード。音声モデルは LTX-2.3 派生のため **LTX-2 Community License**（DramaBox と同じ）。Gemma 3 12B IT 利用（HF gated、`HF_TOKEN` 必須） | 英語中心の多言語 | 条件付き（年商$10M以上は要商用ライセンス / Gemma規約） |
 | MioTTS | Colab L4 動作確認済み（GPU 必須、**VRAM 約4.6GB** 常駐 — LLM 約3.2GB + codec 約1.4GB。T4 16GB でも十分。LLM ベース — Qwen3-1.7B-Base GGUF をプリビルド llama-cpp-python CUDA wheel で host し MioCodec トークン[25Hz]を生成 → 44.1kHz。**実時間の約4倍速、RTF ≈ 0.25**。重みは ungated で `HF_TOKEN` 不要。プリセット音声 / ゼロショットクローン。**デフォルトプリセットは商用利用不可** — 商用時は自分の音声で clone） | 日本語 / 英語 | 既定は不可（自分の声でcloneすれば可） |
@@ -2584,6 +2584,12 @@ Colab T4 で確認済み: エンジン・`/v1` エンドポイント・trycloudf
 - `--drama3-prompt-wav` / `--drama3-prompt-text` を設定した `voice="clone"` も公開 URL 経由で動き、2回目の起動ではビルドを再利用しました。
 - 次のリクエストは HTTP 400 になりました。参照 WAV なしの `clone`、未知の voice、パス形式の `voice_ref`、`reference_text` のない base64 の `voice_ref`、`speed`、`response_format="pcm"`。
 - 今回の検証では、ASR での読み上げ内容の確認はしていません。
+
+**`--drama3-model japanese` の Colab 検証(L4)。**
+- `DRAMA3_MODEL = "japanese"` にした正規のセルで、audio.cpp のビルド、固定コミット + パッチでの Drama-3-Japanese GGUF の読み込み(VRAM 常駐 約10GB、生成中 約10.8GB)、スモークテストを確認し、公開 `trycloudflare` URL も立ち上がりました。
+- 公開 URL 経由で、`default` で挨拶・ナレーション・`[囁き]` の3文を生成し、ナレーション音声を base64 の参照音声(`reference_text` 付き)にして別の文をクローン生成しました。4本とも 44.1kHz・約6秒で、無音は最長 1.1 秒、1リクエストは 9〜10 秒でした。faster-whisper(small)の書き起こしは4本とも入力文と一致しました。
+- 参照 WAV なしの `clone`、未知の voice、`speed` 1.3、`reference_text` なしの base64 `voice_ref` は HTTP 400 を返しました。
+- このモデルで未確認: `--drama3-prompt-wav`(既定モデルと同じコード経路)、長い出力、モデルカード推奨のサンプリング設定と `max_pause_frames` 18。
 
 **ライセンス**: audio.cpp のコードは Apache-2.0 です。重みには **Fish Audio Community License v1.0** が適用されます。
 - 研究目的と非商用(個人の趣味、評価やテスト)の利用は無料です。
